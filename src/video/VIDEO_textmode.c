@@ -1,12 +1,13 @@
 #include "VIDEO_textmode.h"
+#define TAB_SIZE    8
 
 // Globals
 
 // The VGA framebuffer starts at 0xB8000.
 uint16_t *video_memory = (uint16_t *)0xB8000;
 // Stores the cursor position.
-u8int cursor_x = 0;
-u8int cursor_y = 0;
+uint8_t cursor_x = 0;
+uint8_t cursor_y = 0;
 
 // Updates the hardware cursor.
 static void move_cursor()
@@ -24,8 +25,8 @@ static void scroll()
 {
 
     // Get a space character with the default colour attributes.
-    u8int attributeByte = (0 /*black*/ << 4) | (15 /*white*/ & 0x0F);
-    u16int blank = 0x20 /* space */ | (attributeByte << 8);
+    uint8_t attributeByte = (0 /*black*/ << 4) | (15 /*white*/ & 0x0F);
+    uint16_t blank = 0x20 /* space */ | (attributeByte << 8);
 
     // Row 25 is the end, this means we need to scroll up
     if(cursor_y >= 25)
@@ -51,7 +52,7 @@ static void scroll()
 
 
 // Writes a single character out to the screen.
-void monitor_put(uint8_t c)
+void VIDEO_print_char(uint8_t c)
 {
     // The background colour is black (0), the foreground is white (15).
     uint8_t backColour = 0;
@@ -75,7 +76,7 @@ void monitor_put(uint8_t c)
     // where it is divisible by 8.
     else if (c == 0x09)
     {
-        cursor_x = (cursor_x+8) & ~(8-1);
+        cursor_x = (cursor_x+TAB_SIZE) & ~(TAB_SIZE-1);
     }
 
     // Handle carriage return
@@ -90,6 +91,8 @@ void monitor_put(uint8_t c)
         cursor_x = 0;
         cursor_y++;
     }
+
+
     // Handle any other printable character.
     else if(c >= ' ')
     {
@@ -113,6 +116,14 @@ void monitor_put(uint8_t c)
 
 }
 
+void VIDEO_print_string ( char * string )
+{
+    while (string)
+        {
+            monitor_put(*string);
+            string++;
+        }
+}
 
 void VIDEO_clear_screen ( void )
 {

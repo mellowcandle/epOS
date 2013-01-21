@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "OS_types.h"
  
 void kmain(void)
 {
@@ -21,5 +21,5 @@ void kmain(void)
    unsigned char *videoram = (unsigned char *)0xB8000;
    videoram[0] = 65; /* character 'A' */
    videoram[1] = 0x07; /* light grey (7) on black (0). */
-mbd = mbd; // to avoid Compiler errors
+
 }
