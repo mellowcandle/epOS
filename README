@@ -1,0 +1,39 @@
+epOS, by Ramon Fried (2013)
+---------------------------
+
+Required tools:
+---------------
+
+Source control:
+git
+
+Crosscompile toolchain:
+Follow the explainations in http://wiki.osdev.org/GCC_Cross-Compiler, to develop a x86_64 GCC tool-chain.
+The versions used:
+binutils-2.23.1
+gcc-4.7.2
+
+Emulator:
+Boschs 2.6
+Download and build bochs 2.6
+with the following configuration:
+ ./configure --enable-smp \
+             --enable-cpu-level=6 \
+             --enable-all-optimizations \
+             --enable-x86-64 \
+             --enable-pci \
+             --enable-vmx \
+             --enable-debugger \
+             --enable-disasm \
+             --enable-debugger-gui \
+             --enable-logging \
+             --enable-fpu \
+             --enable-3dnow \
+             --enable-sb16=dummy \
+             --enable-cdrom \
+             --enable-x86-debugger \
+             --enable-iodebug \
+             --disable-plugins \
+             --disable-docbook \
+             --with-x --with-x11 --with-term
+
