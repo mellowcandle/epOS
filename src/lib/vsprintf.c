@@ -5,8 +5,8 @@
  *      Author: gombotz
  */
 
-#include "OS_varargs.h"
-#include "OS_ctype.h"
+#include "lib/OS_varargs.h"
+#include "lib/OS_ctype.h"
 char * itoa( int value, char * str, int base )
 {
     char * rc;

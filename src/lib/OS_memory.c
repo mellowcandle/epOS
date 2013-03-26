@@ -1,4 +1,4 @@
-#include "OS_memory.h"
+#include "lib/OS_memory.h"
 
 void *memset(void *s, int c, size_t n)
 {
@@ -38,9 +38,9 @@ void *memmove(void *s1, const void *s2, size_t n)
 {
  // this only work on c99, VLA needed.
     unsigned char tmp[n];
-    memcpy(tmp,src,n);
-    memcpy(dest,tmp,n);
-    return dest;
+    memcpy(tmp,s2,n);
+    memcpy(s1,tmp,n);
+    return s1;
 
 }
 

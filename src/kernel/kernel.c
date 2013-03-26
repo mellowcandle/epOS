@@ -1,5 +1,5 @@
 #include "OS_types.h"
- 
+#include "video/VIDEO_textmode.h"
 void kmain(void)
 {
    extern uint32_t magic;
@@ -18,8 +18,12 @@ void kmain(void)
    //char * boot_loader_name =(char*) ((long*)mbd)[16];
  
    /* Print a letter to screen to see everything is working: */
-   unsigned char *videoram = (unsigned char *)0xB8000;
-   videoram[0] = 65; /* character 'A' */
-   videoram[1] = 0x07; /* light grey (7) on black (0). */
+//   volatile unsigned char *videoram = (unsigned char *)0xB8000;
+//   videoram[0] = 65; /* character 'A' */
+//   videoram[1] = 0x07; /* light grey (7) on black (0). */
 
+   VIDEO_clear_screen ();
+   VIDEO_print_string("Hello world");
+
+   while(1);
 }

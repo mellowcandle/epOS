@@ -1,14 +1,15 @@
-epOS, by Ramon Fried (2013)
+epOS, an educational Intel 8086 32bit Operating system by Ramon Fried (2013)
 ---------------------------
 
 Required tools:
 ---------------
+IDE - I'm using eclipse-CDT for coding, and cgdb (curses) for debugging.
 
 Source control:
 git
 
 Crosscompile toolchain:
-Follow the explainations in http://wiki.osdev.org/GCC_Cross-Compiler, to develop a x86_64 GCC tool-chain.
+Follow the explainations in http://wiki.osdev.org/GCC_Cross-Compiler, to develop aGCC tool-chain.
 The versions used:
 binutils-2.23.1
 gcc-4.7.2
@@ -36,4 +37,11 @@ with the following configuration:
              --disable-plugins \
              --disable-docbook \
              --with-x --with-x11 --with-term
+
+
+
+Creating a bootdisk:
+follow the guide here:
+http://etud.insa-toulouse.fr/~projet_tut_OS/w/Bochs_%2B_Grub
+
 

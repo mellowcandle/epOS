@@ -3,43 +3,39 @@
 
 .PHONY: all clean dist check testdrivers todolist
 
-
-
-CC	= x86_64-elf-gcc
-LD	= x86_64-elf-ld
+CC	= i586-elf-gcc
+LD	= i586-elf-ld
 ASM	= nasm
-WARNINGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
-            -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
-            -Wredundant-decls -Wnested-externs -Winline -Wno-long-long \
-            -Wuninitialized -Wconversion -Wstrict-prototypes
-CFLAGS := -g -std=c99 $(WARNINGS)
+WARNINGS := -Wall -Wextra -pedantic
 
-PROJDIRS := inc src tests
+CFLAGS := -g -std=c99 -nostdlib -nostartfiles -nodefaultlibs $(WARNINGS)
 
-SRCFILES := $(shell find $(PROJDIRS) -type f -name "\*.c")
-SRCFILES += $(shell find $(PROJDIRS) -type f -name "\*.s")
+PROJDIRS := inc src
 
-HDRFILES := $(shell find $(PROJDIRS) -type f -name "\*.h")
+INCLUDES := -Iinc
+SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.c")
+SRCFILES += $(shell find $(PROJDIRS) -type f -name "*.s")
 
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
-OBJFILES += $(patsubst %.s,%.o,$(SRCFILES))
-
-TSTFILES := $(patsubst %.c,%_t,$(SRCFILES))
+OBJFILES := $(patsubst %.s,%.o,$(OBJFILES))
 
 all: kernel.img
 
+#kernel.bin: src/kernel/kernel.o src/kernel/loader.o
 kernel.bin: $(OBJFILES)
 	$(LD) -T make/linker.ld -o $@ $^
 
 kernel.img: kernel.bin
 	dd if=/dev/zero of=pad bs=1 count=750
-	cat stage1 stage2 pad $< > $@
+	cat make/stage1 make/stage2 pad $< > $@
+	
 clean:
-
-%.o: %.c Makefile
-	@$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
-%o: %.s
-	nasm -f elf -o $@ $<
+	$(RM) $(OBJFILES) kernel.bin kernel.img
+.c.o:
+	@$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
+	
+.s.o:
+	$(ASM) -f elf -o $@ $<
 
 
 
