@@ -23,7 +23,9 @@ void kmain(void)
 //   videoram[1] = 0x07; /* light grey (7) on black (0). */
 
    VIDEO_clear_screen ();
-   VIDEO_print_string("Hello world");
-
+   VIDEO_print_string("EP-OS by Ramon Fried, all rights reservered.\r\n");
+   VIDEO_print_string("Initializing GDT......");
+   Init_GDT();
+   VIDEO_print_string("Done\r\n");
    while(1);
 }
