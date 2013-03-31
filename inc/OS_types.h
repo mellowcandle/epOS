@@ -12,5 +12,13 @@ typedef short           int16_t;
 
 typedef uint32_t    size_t;
 
+typedef int             intptr_t;
+typedef unsigned int   uintptr_t;
 #define NULL   ( ( void * ) 0 )
+
+#define bool    _Bool
+#define true    1
+#define false   0
+
+
 #endif // OS_TYPES_H_INCLUDED

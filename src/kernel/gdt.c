@@ -29,7 +29,7 @@ struct gdt_ptr
 } __attribute__((packed));
 
 /* Our GDT, with 3 entries, and finally our special GDT pointer */
-struct gdt_entry gdt[3];
+struct gdt_entry gdt[5];
 struct gdt_ptr gp;
 
 
@@ -58,24 +58,35 @@ void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned cha
 void Init_GDT()
 {
     /* Setup the GDT pointer and limit */
-    gp.limit = (sizeof(struct gdt_entry) * 3) - 1;
+    gp.limit = (sizeof(struct gdt_entry) * 5) - 1;
     gp.base = &gdt;
 
     /* Our NULL descriptor */
     gdt_set_gate(0, 0, 0, 0, 0);
 
-    /* The second entry is our Code Segment. The base address
+    /* The second entry is the kernel Code Segment. The base address
     *  is 0, the limit is 4GBytes, it uses 4KByte granularity,
     *  uses 32-bit opcodes, and is a Code Segment descriptor.
     *  Please check the table above in the tutorial in order
     *  to see exactly what each value means */
     gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);
 
-    /* The third entry is our Data Segment. It's EXACTLY the
+    /* The third entry is the kernel Data Segment. It's EXACTLY the
     *  same as our code segment, but the descriptor type in
     *  this entry's access byte says it's a Data Segment */
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);
 
+    /* The third entry is the user Code Segment. The base address
+    *  is 0, the limit is 4GBytes, it uses 4KByte granularity,
+    *  uses 32-bit opcodes, and is a Code Segment descriptor.
+    *  Please check the table above in the tutorial in order
+    *  to see exactly what each value means */
+    gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);
+
+    /* The third entry is the user Data Segment. It's EXACTLY the
+    *  same as our code segment, but the descriptor type in
+    *  this entry's access byte says it's a Data Segment */
+    gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);
     /* Flush out the old GDT and install the new changes! */
     gdt_flush();
 }

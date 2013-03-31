@@ -1,15 +1,19 @@
 #include "OS_types.h"
+#include "boot/multiboot.h"
 #include "video/VIDEO_textmode.h"
 void kmain(void)
 {
    extern uint32_t magic;
    extern void *mbd;
- 
-   if ( magic != 0x2BADB002 )
+
+   multiboot_info_t *mbi = mbd;
+
+   if ( magic != MULTIBOOT_BOOTLOADER_MAGIC )
    {
       /* Something went not according to specs. Print an error */
       /* message and halt, but do *not* rely on the multiboot */
       /* data structure. */
+           return;
    }
  
    /* You could either use multiboot.h */
@@ -24,8 +28,17 @@ void kmain(void)
 
    VIDEO_clear_screen ();
    VIDEO_print_string("EP-OS by Ramon Fried, all rights reservered.\r\n");
+
    VIDEO_print_string("Initializing GDT......");
    Init_GDT();
    VIDEO_print_string("Done\r\n");
+   VIDEO_print_string("Initializing IDT......");
+   Init_IDT();
+   VIDEO_print_string("Done\r\n");
+
+   //VIDEO_print_string("Checking for APIC support......");
+
+
+
    while(1);
 }

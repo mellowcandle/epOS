@@ -21,6 +21,11 @@ OBJFILES := $(patsubst %.s,%.o,$(OBJFILES))
 
 all: kernel.img
 
+test:
+	echo "Source files: "
+	echo $(SRCFILES)
+	echo "Object files: "
+	echo $(OBJFILES)
 #kernel.bin: src/kernel/kernel.o src/kernel/loader.o
 kernel.bin: $(OBJFILES)
 	$(LD) -T make/linker.ld -o $@ $^
