@@ -1,6 +1,8 @@
 #include "OS_types.h"
 #include "boot/multiboot.h"
 #include "video/VIDEO_textmode.h"
+#include "kernel/isr.h"
+
 void kmain(void)
 {
    extern uint32_t magic;
@@ -36,6 +38,7 @@ void kmain(void)
    Init_IDT();
    VIDEO_print_string("Done\r\n");
 
+   init_timer(50);
    //VIDEO_print_string("Checking for APIC support......");
 
 

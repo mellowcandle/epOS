@@ -6,7 +6,7 @@
 CC	= i586-elf-gcc
 LD	= i586-elf-ld
 ASM	= nasm
-WARNINGS := -Wall -Wextra -pedantic
+WARNINGS := -Wall -Wextra 
 
 CFLAGS := -g -std=c99 -nostdlib -nostartfiles -nodefaultlibs $(WARNINGS)
 
