@@ -8,7 +8,7 @@ LD	= i686-elf-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra 
 
-CFLAGS := -g -std=c99 -nostdlib -nostartfiles -nodefaultlibs $(WARNINGS)
+CFLAGS := -g -std=gnu99 -nostdlib -nostartfiles -nodefaultlibs $(WARNINGS)
 
 PROJDIRS := inc src
 

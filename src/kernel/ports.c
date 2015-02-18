@@ -13,6 +13,11 @@ uint16_t PORT_inb(uint16_t port)
    return ret;
 }
 
+void    PORT_outw(uint16_t port, uint16_t value)
+{
+    __asm volatile ("outw %1, %0" : : "dN" (port), "a" (value));
+}
+
 uint16_t PORT_inw(uint16_t port)
 {
    uint16_t ret;

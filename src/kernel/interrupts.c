@@ -12,7 +12,6 @@
 
 isr_t interrupt_handlers[256];
 
-
 void register_interrupt_handler(uint8_t n, isr_t handler)
 {
     interrupt_handlers[n] = handler;
@@ -21,7 +20,7 @@ void register_interrupt_handler(uint8_t n, isr_t handler)
 // This gets called from our ASM interrupt handler stub.
 void isr_handler(registers_t regs)
 {
-	VIDEO_print_string("recieved interrupt\n");
+    VIDEO_print_string("recieved interrupt\n");
 
     if (interrupt_handlers[regs.int_no] != 0)
     {

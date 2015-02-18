@@ -7,7 +7,7 @@ void kmain(void)
 {
    extern uint32_t magic;
    extern void *mbd;
-
+   int a;
    multiboot_info_t *mbi = mbd;
 
    if ( magic != MULTIBOOT_BOOTLOADER_MAGIC )
@@ -37,11 +37,14 @@ void kmain(void)
    VIDEO_print_string("Initializing IDT......");
    Init_IDT();
    VIDEO_print_string("Done\r\n");
+ 
+   disable_i8259();
+   enableAPIC();
 
-   init_timer(50);
+//init_timer(50);
    //VIDEO_print_string("Checking for APIC support......");
 
-
+   VIDEO_print_string("APIC was enabled succesfully\r\n");
 
    while(1);
 }
