@@ -11,8 +11,7 @@ FLAGS       equ  MODULEALIGN | MEMINFO  ; this is the Multiboot 'flag' field
 MAGIC       equ  0x1BADB002             ; 'magic number' lets bootloader find the header
 CHECKSUM    equ -(MAGIC + FLAGS)        ; checksum required
 
-section .text
-
+section .multiboot
 align 4
     dd MAGIC
     dd FLAGS
@@ -20,6 +19,8 @@ align 4
 
 ; reserve initial kernel stack space
 STACKSIZE equ 0x4000                    ; that's 16k.
+
+section .text
 
 loader:
     mov  esp, stack + STACKSIZE         ; set up the stack

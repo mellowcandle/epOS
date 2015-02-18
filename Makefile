@@ -3,8 +3,8 @@
 
 .PHONY: all clean dist check testdrivers todolist
 
-CC	= i586-elf-gcc
-LD	= i586-elf-ld
+CC	= i686-elf-gcc
+LD	= i686-elf-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra 
 

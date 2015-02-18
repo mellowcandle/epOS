@@ -1,29 +1,26 @@
-ENTRY (loader)
+OUTPUT_FORMAT("elf32-i386") 
+ENTRY(loader)
 
-SECTIONS
-{
-    . = 0x00100000;
+SECTIONS {
+  .text 0x0100000 : {
+    code = .;
+    *(.multiboot)
+    *(.text)
+    . = ALIGN(4096);
+  }
 
-    .text ALIGN (0x1000) :
-    {
-        *(.text)
-    }
+  .data : {
+    data = .;
+    *(.data)
+    . = ALIGN(4096);
+  }
 
-    .rodata ALIGN (0x1000) :
-    {
-        *(.rodata*)
-    }
+  .bss : {
+    bss = .;
+    *(.bss)
+    . = ALIGN(4096);
+  }
 
-    .data ALIGN (0x1000) :
-    {
-        *(.data)
-    }
-
-    .bss :
-    {
-        sbss = .;
-        *(COMMON)
-        *(.bss)
-        ebss = .;
-    }
+  end = .;
 }
+
