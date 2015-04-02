@@ -1,7 +1,7 @@
 # Make file for epOS by Ramon Fried
 # Last modifcation: 21/1/2013
 
-.PHONY: all clean dist check testdrivers todolist
+.PHONY: all clean clean_dep dist check testdrivers todolist
 
 CC	= i686-elf-gcc
 LD	= i686-elf-ld
@@ -18,6 +18,12 @@ SRCFILES += $(shell find $(PROJDIRS) -type f -name "*.s")
 
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 OBJFILES := $(patsubst %.s,%.o,$(OBJFILES))
+DEPFILES := $(OBJFILES)
+
+-include $(dep)   # include all dep files in the makefile
+
+%.d: %.c
+	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
 all: kernel.img
 
@@ -36,6 +42,9 @@ kernel.img: kernel.bin
 	
 clean:
 	$(RM) $(OBJFILES) kernel.bin kernel.img
+
+cleandep:
+	rm -f $(dep)
 .c.o:
 	@$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
 	
