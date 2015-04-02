@@ -1,12 +1,8 @@
 epOS, an educational Intel 8086 32bit Operating system by Ramon Fried (2013)
 ---------------------------
 
-Required tools:
----------------
-IDE - I'm using eclipse-CDT for coding, and cgdb (curses) for debugging.
+sudo apt-get install bochs vgabios git nasm
 
-Source control:
-git
 
 Crosscompile toolchain:
 Follow the explainations in http://wiki.osdev.org/GCC_Cross-Compiler, to develop aGCC tool-chain.
