@@ -1,7 +1,7 @@
 # Make file for epOS by Ramon Fried
 # Last modifcation: 21/1/2013
 
-.PHONY: all clean clean_dep dist check testdrivers todolist
+.PHONY: all clean clean_dep dist check testdrivers todolist cscope cscope_update
 
 CC	= i686-elf-gcc
 LD	= i686-elf-ld
@@ -51,5 +51,11 @@ cleandep:
 .s.o:
 	$(ASM) -f elf -o $@ $<
 
+cscope:
+	@echo "Preparing cscope tags"
+	@find $(PROJDIRS) -name *.[csh] > cscope.files
+	@cscope -b -q -k
 
-
+cscope_update:
+	@echo "Updating cscope tags"
+	@cscope -b -q -k
