@@ -3,8 +3,9 @@
 
 .PHONY: all clean clean_dep dist check testdrivers todolist cscope cscope_update
 
-CC	= i686-elf-gcc
-LD	= i686-elf-ld
+TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64/bin
+CC	= $(TOOLCHAIN_PATH)/i686-elf-gcc
+LD	= $(TOOLCHAIN_PATH)/i686-elf-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra 
 
