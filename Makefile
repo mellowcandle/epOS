@@ -26,7 +26,7 @@ DEPFILES := $(OBJFILES)
 %.d: %.c
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
-all: kernel.img
+all: kernel.bin
 
 test:
 	echo "Source files: "

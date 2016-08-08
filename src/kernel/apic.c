@@ -8,6 +8,12 @@
 #define IA32_APIC_BASE_MSR_ENABLE 0x800
 #define APIC_SPURIOUS_INTERRUPT_VECTOR      0x0F
 
+/* APIC Timer definitions */
+#define APIC_DIVIDE_CONFIG_REGISTER			0x3E0
+#define APIC_INITIAL_COUNT_REGISTER			0x380
+#define APIC_LVT_TIMER_REGISTER				0x320
+#define APIC_CURRENT_COUNT_REGISTER			0x390
+
 /* I8259 definitions, only for disabling it */
 #define PIC1            0x20   /* IO base address for master PIC */
 #define PIC2            0xA0   /* IO base address for slave PIC */
