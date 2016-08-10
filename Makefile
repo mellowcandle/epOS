@@ -1,5 +1,4 @@
 # Make file for epOS by Ramon Fried
-# Last modifcation: 21/1/2013
 
 .PHONY: all clean clean_dep dist check testdrivers todolist cscope cscope_update
 
@@ -26,7 +25,7 @@ DEPFILES := $(OBJFILES)
 %.d: %.c
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
-all: kernel.bin
+all: kernel.iso
 
 test:
 	echo "Source files: "
@@ -37,9 +36,12 @@ test:
 kernel.bin: $(OBJFILES)
 	$(LD) -T make/linker.ld -o $@ $^
 
-kernel.img: kernel.bin
-	dd if=/dev/zero of=pad bs=1 count=750
-	cat make/stage1 make/stage2 pad $< > $@
+kernel.iso: kernel.bin
+	rm -rf isodir
+	mkdir -p isodir/boot/grub
+	cp kernel.bin isodir/boot/kernel.bin
+	cp make/grub.cfg isodir/boot/grub/grub.cfg
+	grub-mkrescue -o kernel.iso isodir
 	
 clean:
 	$(RM) $(OBJFILES) kernel.bin kernel.img
