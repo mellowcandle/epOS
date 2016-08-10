@@ -7,7 +7,7 @@
 
 #include "kernel/isr.h"
 #include "video/VIDEO_textmode.h"
-uint32_t tick = 0;
+volatile uint32_t tick = 0;
 
 static void timer_callback(registers_t regs)
 {

@@ -10,9 +10,9 @@ WARNINGS := -Wall -Wextra
 
 CFLAGS := -g -std=gnu99 -nostdlib -nostartfiles -nodefaultlibs $(WARNINGS)
 
-PROJDIRS := inc src
+PROJDIRS := include kernel lib boot drivers
 
-INCLUDES := -Iinc
+INCLUDES := -Iinclude
 SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.c")
 SRCFILES += $(shell find $(PROJDIRS) -type f -name "*.s")
 
