@@ -1,6 +1,6 @@
 # Make file for epOS by Ramon Fried
 
-.PHONY: all clean clean_dep dist check testdrivers todolist cscope cscope_update multiboot
+.PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot
 
 TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64/bin
 CC	= $(TOOLCHAIN_PATH)/i686-elf-gcc
@@ -51,10 +51,8 @@ kernel.iso: multiboot
 	@grub-mkrescue -o kernel.iso isodir
 	
 clean:
-	$(RM) $(OBJFILES) kernel.bin kernel.img
+	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.img
 
-cleandep:
-	@rm -f $(dep)
 .c.o:
 	@$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
 	
