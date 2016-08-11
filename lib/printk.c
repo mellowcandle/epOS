@@ -1,13 +1,10 @@
-/*
- * vsprintf.c
- *
- *  Created on: Jan 21, 2013
- *      Author: gombotz
- */
-
+#include "printk.h"
 #include "lib/OS_varargs.h"
 #include "lib/OS_ctype.h"
-char * itoa( int value, char * str, int base )
+#include "video/VIDEO_textmode.h"
+static char buffer[256]={0};
+
+static char * itoa( int value, char * str, int base )
 {
     char * rc;
     char * ptr;
@@ -42,30 +39,30 @@ char * itoa( int value, char * str, int base )
         *low++ = *ptr;
         *ptr-- = tmp;
     }
-    return rc;
+    return ptr;
 }
 
 // very simple printf, only supports basic stuff
-void do_printf(char * buffer, char * fmt,va_list args)
+int do_printk(char * buffer, const char * fmt,va_list args)
 {
-    int i;
     char * ptr;
-    char c;
-    while (fmt)
+    int len = 0;
+	char c;
+    while (*fmt)
         {
-            if (fmt++ != '%')
+            if (*fmt != '%')
             {
-                    buffer++;
+                    *buffer++ = *fmt++;
             }
             else // Formatting in place... :)
                 {
+					fmt++;
                     switch (*fmt)
                     {
                         case 'd':
                         case 'i':
                         case 'u':
-                            buffer = itoa( va_arg(args,int), buffer, 10 );
-
+                            buffer = itoa(va_arg(args,int), buffer, 10);
                             break;
                         case 's':
                             ptr = va_arg(args, char *);
@@ -73,15 +70,31 @@ void do_printf(char * buffer, char * fmt,va_list args)
                                 (*buffer++ = *ptr++);
                             break;
                         case 'c':
-                            c = ptr = va_arg(args, char);
+                            c = va_arg(args, char);
                             if (isascii(c))
                                 *buffer++ = c;
                             break;
-
+						case 'x':
+						case 'X':
+                            buffer = itoa(va_arg(args,int), buffer, 16);
+							break;
                         default:
                             break;
                     }
                     fmt++;
+					len++;
                 }
         }
+	*buffer='\0';
+	return len;
+}
+int printk (const char *format, ...)
+{
+	va_list arg;
+	int done;
+	va_start (arg, format);
+	done = do_printk(buffer, format, arg);
+	va_end (arg);
+	VIDEO_print_string(buffer);
+	return done;
 }

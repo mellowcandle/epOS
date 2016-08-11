@@ -2,7 +2,7 @@
 #include "boot/multiboot.h"
 #include "video/VIDEO_textmode.h"
 #include "kernel/isr.h"
-
+#include "printk.h"
 void kmain(void)
 {
    extern uint32_t magic;
@@ -29,29 +29,29 @@ void kmain(void)
 //   videoram[1] = 0x07; /* light grey (7) on black (0). */
 
    VIDEO_clear_screen ();
-   VIDEO_print_string("EP-OS by Ramon Fried, all rights reservered.\r\n");
+   printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
 
-   VIDEO_print_string("Initializing GDT......");
+   printk("Initializing GDT......");
    Init_GDT();
-   VIDEO_print_string("Done\r\n");
-   VIDEO_print_string("Initializing IDT......");
+   printk("Done\r\n");
+   printk("Initializing IDT......");
    Init_IDT();
-   VIDEO_print_string("Done\r\n");
+   printk("Done\r\n");
  
    disable_i8259();
    enableAPIC();
 
 //   init_timer(50);
-   //VIDEO_print_string("Checking for APIC support......");
+   //printk("Checking for APIC support......");
 
 
-	VIDEO_print_string("APIC was enabled succesfully\r\n");
+	printk("APIC was enabled succesfully\r\n");
 
 	multiboot_memory_map_t* mmap = mbi->mmap_addr;
 	int i = 0;
-	while(mmap < mbt->mmap_addr + mbt->mmap_length) {
+	while(mmap < mbi->mmap_addr + mbi->mmap_length) {
 		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
-	VIDEO_print_string("Memory region %u: size: %u address: %u length: %u type: %u",
+	printk("Memory region %u: size: %u address: %u length: %u type: %u\r\n",
 			mmap->size, mmap->addr, mmap->addr, mmap->type);
 	}
    while(1);
