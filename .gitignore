@@ -3,4 +3,5 @@
 *.bin
 .cproject
 .project
+cscope*
 *~
