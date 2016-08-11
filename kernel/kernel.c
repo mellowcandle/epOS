@@ -41,10 +41,18 @@ void kmain(void)
    disable_i8259();
    enableAPIC();
 
-//init_timer(50);
+//   init_timer(50);
    //VIDEO_print_string("Checking for APIC support......");
 
-   VIDEO_print_string("APIC was enabled succesfully\r\n");
 
+	VIDEO_print_string("APIC was enabled succesfully\r\n");
+
+	multiboot_memory_map_t* mmap = mbi->mmap_addr;
+	int i = 0;
+	while(mmap < mbt->mmap_addr + mbt->mmap_length) {
+		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
+	VIDEO_print_string("Memory region %u: size: %u address: %u length: %u type: %u",
+			mmap->size, mmap->addr, mmap->addr, mmap->type);
+	}
    while(1);
 }
