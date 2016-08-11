@@ -3,7 +3,7 @@
 void *memset(void *s, int c, size_t n)
 {
 	uint8_t * p = s;
-	for (int i = 0; i < n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		p[i] = (uint8_t) c;	
 	}
