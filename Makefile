@@ -18,7 +18,7 @@ SRCFILES += $(shell find $(PROJDIRS) -type f -name "*.s")
 
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 OBJFILES := $(patsubst %.s,%.o,$(OBJFILES))
-DEPFILES := $(OBJFILES)
+DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
 
 -include $(dep)   # include all dep files in the makefile
 
