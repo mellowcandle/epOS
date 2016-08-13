@@ -2,6 +2,7 @@
 #include "lib/OS_varargs.h"
 #include "lib/OS_ctype.h"
 #include "video/VIDEO_textmode.h"
+#include "OS_types.h"
 static char buffer[256]={0};
 
 static char * itoa( int value, char * str, int base )
@@ -9,6 +10,7 @@ static char * itoa( int value, char * str, int base )
     char * rc;
     char * ptr;
     char * low;
+	char * end;
     // Check for supported base.
     if ( base < 2 || base > 36 )
     {
@@ -32,6 +34,7 @@ static char * itoa( int value, char * str, int base )
     } while ( value );
     // Terminating the string.
     *ptr-- = '\0';
+	end = ptr+1;
     // Invert the numbers.
     while ( low < ptr )
     {
@@ -39,14 +42,85 @@ static char * itoa( int value, char * str, int base )
         *low++ = *ptr;
         *ptr-- = tmp;
     }
-    return ptr;
+    return end;
 }
 
+static char * uitoa( unsigned int value, char * str, int base )
+{
+    char * rc;
+    char * ptr;
+    char * low;
+	char * end;
+    // Check for supported base.
+    if ( base < 2 || base > 36 )
+    {
+        *str = '\0';
+        return str;
+    }
+    rc = ptr = str;
+    // Remember where the numbers start.
+    low = ptr;
+    // The actual conversion.
+    do
+    {
+        // Modulo is negative for negative value. This trick makes abs() unnecessary.
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+        value /= base;
+    } while ( value );
+    // Terminating the string.
+    *ptr-- = '\0';
+	end = ptr+1;
+    // Invert the numbers.
+    while ( low < ptr )
+    {
+        char tmp = *low;
+        *low++ = *ptr;
+        *ptr-- = tmp;
+    }
+    return end;
+}
+
+static char * lluitoa( unsigned long long value, char * str, int base )
+{
+    char * rc;
+    char * ptr;
+    char * low;
+	char * end;
+    // Check for supported base.
+    if ( base < 2 || base > 36 )
+    {
+        *str = '\0';
+        return str;
+    }
+    rc = ptr = str;
+    // Remember where the numbers start.
+    low = ptr;
+    // The actual conversion.
+    do
+    {
+        // Modulo is negative for negative value. This trick makes abs() unnecessary.
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+        value /= base;
+    } while ( value );
+    // Terminating the string.
+    *ptr-- = '\0';
+	end = ptr+1;
+    // Invert the numbers.
+    while ( low < ptr )
+    {
+        char tmp = *low;
+        *low++ = *ptr;
+        *ptr-- = tmp;
+    }
+    return end;
+}
 // very simple printf, only supports basic stuff
-int do_printk(char * buffer, const char * fmt,va_list args)
+static int do_printk(char * buffer, const char * fmt,va_list args)
 {
     char * ptr;
     int len = 0;
+
+	bool ll = false;
 	char c;
     while (*fmt)
         {
@@ -57,13 +131,24 @@ int do_printk(char * buffer, const char * fmt,va_list args)
             else // Formatting in place... :)
                 {
 					fmt++;
-                    switch (*fmt)
+					if ((*fmt == 'l') && (*(fmt+1) == 'l'))
+					{
+						ll = true;
+						fmt+=2;
+					}
+
+					switch (*fmt)
                     {
                         case 'd':
-                        case 'i':
+					    case 'i':
+								buffer = itoa(va_arg(args,int), buffer, 10);
+								break;
                         case 'u':
-                            buffer = itoa(va_arg(args,int), buffer, 10);
-                            break;
+								if (!ll)
+									buffer = uitoa(va_arg(args,int), buffer, 10);
+								else
+									buffer = lluitoa(va_arg(args,long long), buffer, 10);
+					            break;
                         case 's':
                             ptr = va_arg(args, char *);
                             while (*ptr)
@@ -83,6 +168,7 @@ int do_printk(char * buffer, const char * fmt,va_list args)
                     }
                     fmt++;
 					len++;
+					ll = false;
                 }
         }
 	*buffer='\0';
