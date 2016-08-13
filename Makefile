@@ -2,13 +2,13 @@
 
 .PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot
 
-TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64/bin
-CC	= $(TOOLCHAIN_PATH)/i686-elf-gcc
-LD	= $(TOOLCHAIN_PATH)/i686-elf-ld
+TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
+CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
+LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra 
 
-CFLAGS := -g -std=gnu99 -nostdlib -nostartfiles -nodefaultlibs $(WARNINGS)
+CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
 
 PROJDIRS := include kernel lib boot drivers
 
@@ -34,7 +34,7 @@ test:
 	@echo $(OBJFILES)
 #kernel.bin: src/kernel/kernel.o src/kernel/loader.o
 kernel.bin: $(OBJFILES)
-	$(LD) -T make/linker.ld -o $@ $^
+	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T make/linker.ld -ffreestanding -nostdlib -o $@ $^ -lgcc 
 
 
 multiboot: kernel.bin
