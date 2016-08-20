@@ -47,12 +47,7 @@ void kmain(void)
 
 	printk("APIC was enabled succesfully\r\n");
 
-	multiboot_memory_map_t* mmap = mbi->mmap_addr;
-	int i = 0;
-	while(mmap < mbi->mmap_addr + mbi->mmap_length) {
-		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
-		printk("Memory region size: %u address: %llu length: %llu type: %u\r\n",
-			mmap->size, mmap->addr, mmap->len, mmap->type);
-	}
-   while(1);
+	mem_init(mbi);
+
+	while(1);
 }

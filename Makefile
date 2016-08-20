@@ -10,7 +10,7 @@ WARNINGS := -Wall -Wextra
 
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
 
-PROJDIRS := include kernel lib boot drivers
+PROJDIRS := include kernel lib boot drivers mem
 
 INCLUDES := -Iinclude
 SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.c")
