@@ -20,6 +20,9 @@ done
 if [[ $DEBUG -eq 1 ]]; then
 	qemu-system-i386 -s -S -cdrom kernel.iso
 else
-	qemu-system-i386 -cdrom kernel.iso
+	qemu-system-i386 -m 1G,slots=3,maxmem=4G -cdrom kernel.iso
 fi
+
+                   qemu-system-x86_64 -m 1G,slots=3,maxmem=4G
+
 #qemu-system-i386 -kernel ./kernel.bin
