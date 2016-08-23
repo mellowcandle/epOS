@@ -1,6 +1,8 @@
 #ifndef OS_TYPES_H_INCLUDED
 #define OS_TYPES_H_INCLUDED
 
+typedef unsigned long long uint64_t;
+
 typedef unsigned int uint32_t;
 typedef int           int32_t;
 
