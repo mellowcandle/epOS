@@ -6,13 +6,19 @@
 
 static uint32_t total_memory = 0;
 static uintptr_t physical_start = 0;
+static uintptr_t pages_start;
+
+static uint32_t total_pages;
+static uint32_t *page_bitmap = NULL;
 
 void mem_init(multiboot_info_t *mbi)
 {
+	
+	uint32_t reserved_pages;
+
 	printk("Memory init:\r\ndetecting physical memory.\r\n");
 	
 	multiboot_memory_map_t* mmap = mbi->mmap_addr;
-	int i = 0;
 	
 	while(mmap < mbi->mmap_addr + mbi->mmap_length) {
 		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
@@ -43,8 +49,25 @@ void mem_init(multiboot_info_t *mbi)
 		panic();
 	}
 
+	total_pages = total_memory / PAGE_SIZE;
 	printk("Physical memory zone set to: %u size: %u\r\n", physical_start, total_memory);
+	printk("Number of pages: %u\r\n", total_pages);
 
+
+	// Now we calculate how many pages we need to reserve to ourselves for physical allocator management.
+	reserved_pages = (total_pages / 32 * sizeof(uint32_t)) / PAGE_SIZE;
+	if ((total_pages / 32 * sizeof(uint32_t)) % PAGE_SIZE)
+		reserved_pages++;
+
+	printk("reserved_pages = %u\r\n", reserved_pages);
+
+	page_bitmap = physical_start;
+	pages_start = page_bitmap + (reserved_pages * PAGE_SIZE);
+
+	// Clear the memory bitmap
+	//
+
+	memset(page_bitmap, 0, reserved_pages * PAGE_SIZE);
 
 }
 
