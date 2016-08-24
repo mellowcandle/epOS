@@ -4,6 +4,10 @@
 
 #define PAGE_SIZE 4096
 
+// These are defined in the linker script, with these we calculate the size of the kernel on runtime.
+extern unsigned long kernel_start;
+extern unsigned long kernel_end;
+
 static uint32_t total_memory = 0;
 static uintptr_t physical_start = 0;
 static uintptr_t pages_start;
@@ -15,6 +19,8 @@ void mem_init(multiboot_info_t *mbi)
 {
 	
 	uint32_t reserved_pages;
+	uint32_t kernel_size;
+	uint32_t required_kernel_pages;
 
 	printk("Memory init:\r\ndetecting physical memory.\r\n");
 	
@@ -28,7 +34,7 @@ void mem_init(multiboot_info_t *mbi)
 			break;
 		}
 
-		printk("Memory region size: %u address: %llu length: %llu type: %u\r\n",
+		printk("Memory region size: %u address: 0x%llx length: 0x%llx type: %u\r\n",
 			mmap->size, mmap->addr, mmap->len, mmap->type);
 		// We only support one zone, we'll take the biggest.
 		//
@@ -49,10 +55,18 @@ void mem_init(multiboot_info_t *mbi)
 		panic();
 	}
 
-	total_pages = total_memory / PAGE_SIZE;
-	printk("Physical memory zone set to: %u size: %u\r\n", physical_start, total_memory);
-	printk("Number of pages: %u\r\n", total_pages);
+	kernel_size = (uint32_t) (&kernel_end - &kernel_start);
+	required_kernel_pages = (kernel_size / PAGE_SIZE) + 1;
+	
+	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", &kernel_start, &kernel_end);
+	printk("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
 
+	physical_start += required_kernel_pages * PAGE_SIZE;
+	total_memory -= required_kernel_pages * PAGE_SIZE;
+	total_pages = total_memory / PAGE_SIZE;
+
+	printk("Physical memory zone set to: 0x%x size: 0x%x\r\n", physical_start, total_memory);
+	printk("Number of pages: %u\r\n", total_pages);
 
 	// Now we calculate how many pages we need to reserve to ourselves for physical allocator management.
 	reserved_pages = (total_pages / 32 * sizeof(uint32_t)) / PAGE_SIZE;
@@ -65,8 +79,6 @@ void mem_init(multiboot_info_t *mbi)
 	pages_start = page_bitmap + (reserved_pages * PAGE_SIZE);
 
 	// Clear the memory bitmap
-	//
-
 	memset(page_bitmap, 0, reserved_pages * PAGE_SIZE);
 
 }

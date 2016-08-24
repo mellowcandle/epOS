@@ -3,7 +3,7 @@ ENTRY(loader)
 
 SECTIONS {
   .text 0x0100000 : {
-    code = .;
+    kernel_start = .;
     *(.multiboot)
     *(.text)
     . = ALIGN(4096);
@@ -21,6 +21,6 @@ SECTIONS {
     . = ALIGN(4096);
   }
 
-  end = .;
+  kernel_end = .;
 }
 
