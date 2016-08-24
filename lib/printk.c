@@ -161,7 +161,10 @@ static int do_printk(char * buffer, const char * fmt,va_list args)
                             break;
 						case 'x':
 						case 'X':
-                            buffer = itoa(va_arg(args,int), buffer, 16);
+							if (!ll)
+								buffer = itoa(va_arg(args,int), buffer, 16);
+							else
+								buffer = lluitoa(va_arg(args,long long), buffer, 16);
 							break;
                         default:
                             break;
