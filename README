@@ -1,43 +1,16 @@
-epOS, an educational Intel 8086 32bit Operating system by Ramon Fried (2013)
----------------------------
+#epOS, an eduhttps://youtu.be/4-4OjLYzMd4cational Intel 8086 32bit Operating system by Ramon Fried (2013-2016)
 
-sudo apt-get install bochs vgabios git nasm
+##Highlights
 
+* Multiboot 1.0 compliancy
+* Bitmap Page frame allocator
 
-Crosscompile toolchain:
-Follow the explainations in http://wiki.osdev.org/GCC_Cross-Compiler, to develop aGCC tool-chain.
-The versions used:
-binutils-2.23.1
-gcc-4.7.2
+##Todo's
 
-Emulator:
-Boschs 2.6
-Download and build bochs 2.6
-with the following configuration:
- ./configure --enable-smp \
-             --enable-cpu-level=6 \
-             --enable-all-optimizations \
-             --enable-x86-64 \
-             --enable-pci \
-             --enable-vmx \
-             --enable-debugger \
-             --enable-disasm \
-             --enable-debugger-gui \
-             --enable-logging \
-             --enable-fpu \
-             --enable-3dnow \
-             --enable-sb16=dummy \
-             --enable-cdrom \
-             --enable-x86-debugger \
-             --enable-iodebug \
-             --disable-plugins \
-             --disable-docbook \
-             --with-x --with-x11 --with-term
+* Integrate cppcheck to makefile
+* Enable Higher-half paging enabled kernel
+* Add testing framework
 
 
-
-Creating a bootdisk:
-follow the guide here:
-http://etud.insa-toulouse.fr/~projet_tut_OS/w/Bochs_%2B_Grub
 
 
