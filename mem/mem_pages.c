@@ -15,6 +15,13 @@ static uintptr_t pages_start;
 static uint32_t total_pages;
 static uint32_t *page_bitmap = NULL;
 
+
+#define BIT_CHECK(a,b) ((a) & (1<<(b)))
+#define BIT_SET(a,b) ((a) |= (1<<(b)))
+#define BIT_CLEAR(a,b) ((a) &= ~(1<<(b)))
+#define IS_PAGE_ALIGNED(POINTER) \
+	    (((uintptr_t)(const void *)(POINTER)) % (PAGE_SIZE) == 0)
+
 void mem_init(multiboot_info_t *mbi)
 {
 	
@@ -85,9 +92,62 @@ void mem_init(multiboot_info_t *mbi)
 
 void mem_page_free(addr_t page)
 {
+	int entry;
+	int bit;
+
+	// Sanity, check that the address given is page aligned.
+	if (! IS_PAGE_ALIGNED(page))
+	{
+		printk("recieved unaligned page to free, that's a problem :(\r\n");
+		panic();
+	}
+
+	page -= physical_start;
+	entry = page / PAGE_SIZE;
+	bit = page % PAGE_SIZE;
+
+	// Sanity, check that the address given was actually alocated.
+	if (! BIT_CHECK(page_bitmap[entry],bit))
+	{
+		printk("Trying to free an already free page, that's a problem :(\r\n");
+		panic();
+	}
+
+	BIT_CLEAR(page_bitmap[entry],bit);
+
+
 }
 
 addr_t mem_page_get()
 {
-	return NULL;
+	uint32_t i = 0;
+	uint32_t j = 0;
+	bool found = false;
+	
+	for (i = 0; i < total_pages; i++)
+	{
+		if (page_bitmap[i])
+		{
+			// There's at least one free page in this int bitmap, find it and mark it.
+			//
+			//
+			for (j=0; j < 32; j++)
+			{
+				if (! BIT_CHECK(page_bitmap[i],j))
+				{
+					BIT_SET(page_bitmap[i],j);
+					found = true;
+					break;
+				}
+			}
+			printk("ERROR:  internal error\r\n");
+			panic();
+		}
+
+	}
+
+	if (found)
+		return (addr_t) ((i*32 + j) * PAGE_SIZE) + physical_start;
+	else
+		return NULL;
 }
