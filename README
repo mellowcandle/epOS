@@ -1,11 +1,11 @@
-#epOS, an eduhttps://youtu.be/4-4OjLYzMd4cational Intel 8086 32bit Operating system by Ramon Fried (2013-2016)
+# epOS, an eduational Intel 8086 32bit Operating system by Ramon Fried (2013-2016)
 
-##Highlights
+## Highlights
 
 * Multiboot 1.0 compliancy
 * Bitmap Page frame allocator
 
-##Todo's
+## Todo's
 
 * Integrate cppcheck to makefile
 * Enable Higher-half paging enabled kernel
