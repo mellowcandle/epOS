@@ -2,10 +2,13 @@
  * gdt.c
  *
  *  Created on: Mar 26, 2013
- *      Author: gombotz
+ *      Author: Ramon Fried
  */
 
-void gdt_flush();
+#include <kernel/cpu.h>
+#include <OS_types.h>
+
+extern void gdt_flush();
 
 /* Defines a GDT entry. We say packed, because it prevents the
 *  compiler from doing things that it thinks is best: Prevent
@@ -34,7 +37,7 @@ struct gdt_ptr gp;
 
 
 /* Setup a descriptor in the Global Descriptor Table */
-void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)
+static void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)
 {
     /* Setup the descriptor base address */
     gdt[num].base_low = (base & 0xFFFF);
@@ -59,7 +62,7 @@ void Init_GDT()
 {
     /* Setup the GDT pointer and limit */
     gp.limit = (sizeof(struct gdt_entry) * 5) - 1;
-    gp.base = &gdt;
+    gp.base = (uint32_t) &gdt;
 
     /* Our NULL descriptor */
     gdt_set_gate(0, 0, 0, 0, 0);

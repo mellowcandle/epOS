@@ -112,4 +112,7 @@ static inline void cpuSetMSR(uint32_t msr, uint32_t lo, uint32_t hi)
 	   asm volatile("wrmsr" : : "a"(lo), "d"(hi), "c"(msr));
 }
 
+void Init_IDT();
+void Init_GDT();
+
 #endif /* CPU_H_ */

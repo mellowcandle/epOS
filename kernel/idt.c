@@ -4,8 +4,10 @@
  *  Created on: Mar 30, 2013
  *      Author: gombotz
  */
-#include "OS_types.h"
-
+#include <OS_types.h>
+#include <kernel/cpu.h>
+#include <lib/OS_memory.h>
+#include <kernel/ports.h>
 // A struct describing an interrupt gate.
 struct idt_entry_struct
     {
