@@ -31,7 +31,7 @@ void mem_init(multiboot_info_t *mbi)
 
 	printk("Memory init:\r\ndetecting physical memory.\r\n");
 	
-	multiboot_memory_map_t* mmap = mbi->mmap_addr;
+	multiboot_memory_map_t* mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
 	
 	while(mmap < mbi->mmap_addr + mbi->mmap_length) {
 		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
@@ -62,7 +62,7 @@ void mem_init(multiboot_info_t *mbi)
 		panic();
 	}
 
-	kernel_size = (uint32_t) (&kernel_end - &kernel_start);
+	kernel_size = ((uint32_t) &kernel_end - (uint32_t) &kernel_start);
 	required_kernel_pages = (kernel_size / PAGE_SIZE) + 1;
 	
 	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", &kernel_start, &kernel_end);
