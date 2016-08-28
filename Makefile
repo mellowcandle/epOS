@@ -1,12 +1,15 @@
 # Make file for epOS by Ramon Fried
 
-.PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot
+.PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot style
 
 TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
 LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra 
+
+ASTYLE ?= astyle
+ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header --add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
 
@@ -67,3 +70,6 @@ cscope:
 cscope_update:
 	@echo "Updating cscope tags"
 	@cscope -b -q -k
+
+style:
+	@find $(PROJDIRS) -name *.[ch] | xargs ${ASTYLE} ${ASTYLE_CONFIG} 
