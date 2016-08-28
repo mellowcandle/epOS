@@ -7,7 +7,7 @@ WARNINGS := -Wall -Wextra
 CFLAGS := -g -std=gnu99 $(WARNINGS)
 
 
-SRCFILES := tests.c
+SRCFILES := tests.c ../lib/printk.c
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 
 INCLUDES := -I../include
