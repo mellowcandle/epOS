@@ -30,56 +30,58 @@
  */
 bool cpuHasAPIC()
 {
-   uint32_t eax, edx;
-   cpuid(CPUID_GETFEATURES, &eax, &edx);
-   return edx & CPUID_FEAT_EDX_APIC;
+	uint32_t eax, edx;
+	cpuid(CPUID_GETFEATURES, &eax, &edx);
+	return edx & CPUID_FEAT_EDX_APIC;
 }
- 
+
 /* Set the physical address for local APIC registers */
 void cpuSetAPICBase(uintptr_t apic)
 {
-   uint32_t edx = 0;
-   uint32_t eax = (apic & 0xfffff100) | IA32_APIC_BASE_MSR_ENABLE;
- 
+	uint32_t edx = 0;
+	uint32_t eax = (apic & 0xfffff100) | IA32_APIC_BASE_MSR_ENABLE;
+
 #ifdef __PHYSICAL_MEMORY_EXTENSION__
-   edx = (apic >> 32) & 0x0f;
+	edx = (apic >> 32) & 0x0f;
 #endif
- 
-   cpuSetMSR(IA32_APIC_BASE_MSR, eax, edx);
+
+	cpuSetMSR(IA32_APIC_BASE_MSR, eax, edx);
 }
- 
+
 /**
  * Get the physical address of the APIC registers page
  * make sure you map it to virtual memory ;)
  */
 uintptr_t cpuGetAPICBase()
 {
-   uint32_t eax, edx;
-   cpuGetMSR(IA32_APIC_BASE_MSR, &eax, &edx);
- 
-   return (eax & 0xfffff100);
+	uint32_t eax, edx;
+	cpuGetMSR(IA32_APIC_BASE_MSR, &eax, &edx);
+
+	return (eax & 0xfffff100);
 }
-static uint32_t readAPICRegister(uint32_t reg) {
-    return *((volatile uint32_t *) (cpuGetAPICBase() + reg * 16));
+static uint32_t readAPICRegister(uint32_t reg)
+{
+	return *((volatile uint32_t *)(cpuGetAPICBase() + reg * 16));
 }
 
-static void writeAPICRegister(uint32_t reg, uint32_t value) {
-    *((volatile uint32_t *) (cpuGetAPICBase() + reg * 16)) = value;
+static void writeAPICRegister(uint32_t reg, uint32_t value)
+{
+	*((volatile uint32_t *)(cpuGetAPICBase() + reg * 16)) = value;
 }
 void enableAPIC()
 {
-    /* Hardware enable the Local APIC if it wasn't enabled */
-    cpuSetAPICBase(cpuGetAPICBase());
- 
-    /* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
-    writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
+	/* Hardware enable the Local APIC if it wasn't enabled */
+	cpuSetAPICBase(cpuGetAPICBase());
+
+	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
+	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
 
 }
 
 void disable_i8259()
 {
-    PORT_outb(0xff,PIC1_DATA);
-    PORT_outb(0xff,PIC2_DATA);
+	PORT_outb(0xff, PIC1_DATA);
+	PORT_outb(0xff, PIC2_DATA);
 }
 
 

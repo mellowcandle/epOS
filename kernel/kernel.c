@@ -8,22 +8,23 @@
 #include <serial.h>
 void kmain(void)
 {
-   extern uint32_t magic;
-   extern void *mbd;
-   multiboot_info_t *mbi = mbd;
+	extern uint32_t magic;
+	extern void *mbd;
+	multiboot_info_t *mbi = mbd;
 
-   if ( magic != MULTIBOOT_BOOTLOADER_MAGIC )
-   {
-	  /* Something went not according to specs. Print an error */
-	  /* message and halt, but do *not* rely on the multiboot */
-	  /* data structure. */
-		   return;
-   }
+	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
+	{
+		/* Something went not according to specs. Print an error */
+		/* message and halt, but do *not* rely on the multiboot */
+		/* data structure. */
+		return;
+	}
+
 	init_serial();
 
 
 	//   VIDEO_clear_screen();
-   printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
+	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
 
 	printk("Initializing GDT......\r\n");
 	Init_GDT();
@@ -34,7 +35,7 @@ void kmain(void)
 //	enableAPIC();
 
 //   init_timer(50);
-   //printk("Checking for APIC support......");
+	//printk("Checking for APIC support......");
 
 
 	printk("APIC was enabled succesfully\r\n");
@@ -45,5 +46,5 @@ void kmain(void)
 	/* printk("Got a mem page: 0x%x\r\n", addr); */
 	/* mem_page_free(addr);                      */
 
-	while(1);
+	while (1);
 }
