@@ -16,6 +16,7 @@ static uint32_t total_pages;
 static uint32_t *page_bitmap = NULL;
 
 
+#define KERNEL_VIRTUAL_BASE 0xC0000000
 #define BIT_CHECK(a,b) ((a) & (1<<(b)))
 #define BIT_SET(a,b) ((a) |= (1<<(b)))
 #define BIT_CLEAR(a,b) ((a) &= ~(1<<(b)))
@@ -31,9 +32,9 @@ void mem_init(multiboot_info_t *mbi)
 
 	printk("Memory init:\r\ndetecting physical memory.\r\n");
 	
-	multiboot_memory_map_t* mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
+	multiboot_memory_map_t* mmap = (multiboot_memory_map_t *) (mbi->mmap_addr + KERNEL_VIRTUAL_BASE);
 	
-	while(mmap < mbi->mmap_addr + mbi->mmap_length) {
+	while(mmap < mbi->mmap_addr + KERNEL_VIRTUAL_BASE +  mbi->mmap_length) {
 		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
 		if (mmap->size == 0)
 		{
@@ -86,7 +87,7 @@ void mem_init(multiboot_info_t *mbi)
 	pages_start = page_bitmap + (reserved_pages * PAGE_SIZE);
 
 	// Clear the memory bitmap
-	memset(page_bitmap, 0, reserved_pages * PAGE_SIZE);
+//	memset(page_bitmap, 0, reserved_pages * PAGE_SIZE);
 
 }
 

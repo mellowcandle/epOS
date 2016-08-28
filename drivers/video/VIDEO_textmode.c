@@ -129,6 +129,11 @@ void VIDEO_print_string ( char * string )
         }
 }
 
+void VIDEO_init()
+{
+
+}
+
 void VIDEO_clear_screen ( void )
 {
 	// Make an attribute byte for the default colours

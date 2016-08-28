@@ -184,6 +184,7 @@ int printk (const char *format, ...)
 	va_start (arg, format);
 	done = do_printk(buffer, format, arg);
 	va_end (arg);
-	VIDEO_print_string(buffer);
+	serial_write_string(buffer);
+//	VIDEO_print_string(buffer);
 	return done;
 }

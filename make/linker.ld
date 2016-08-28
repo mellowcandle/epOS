@@ -22,10 +22,10 @@ SECTIONS {
 
    .text : AT(ADDR(.text) - 0xC0000000) {
 	kernel_start = .;
-    *(.multiboot)
 	*(.text)
     *(.rodata*)
    }
+	kernel_end = .;
 
    .data ALIGN (0x1000) : AT(ADDR(.data) - 0xC0000000) {
        *(.data)
@@ -36,6 +36,5 @@ SECTIONS {
        *(COMMON)
        *(.bss)
        _ebss = .;
-	kernel_end = .;
    }
 }

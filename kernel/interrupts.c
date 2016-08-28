@@ -4,10 +4,10 @@
  *  Created on: Mar 30, 2013
  *      Author: gombotz
  */
-#include "OS_types.h"
-#include "video/VIDEO_textmode.h"
-#include "kernel/ports.h"
-#include "kernel/isr.h"
+#include <OS_types.h>
+#include <printk.h>
+#include <kernel/ports.h>
+#include <kernel/isr.h>
 
 
 isr_t interrupt_handlers[256];
@@ -20,8 +20,8 @@ void register_interrupt_handler(uint8_t n, isr_t handler)
 // This gets called from our ASM interrupt handler stub.
 void isr_handler(registers_t regs)
 {
-    VIDEO_print_string("recieved interrupt\n");
-
+    //VIDEO_print_string("recieved interrupt\n");
+	printk("Recieved interrupt\r\n");
     if (interrupt_handlers[regs.int_no] != 0)
     {
         isr_t handler = interrupt_handlers[regs.int_no];
