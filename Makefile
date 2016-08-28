@@ -74,7 +74,7 @@ kernel.iso: multiboot
 	@mkdir -p isodir/boot/grub
 	@cp kernel.bin isodir/boot/kernel.bin
 	@cp make/grub.cfg isodir/boot/grub/grub.cfg
-	@grub-mkrescue -o kernel.iso isodir
+	@grub-mkrescue -o kernel.iso isodir > /dev/null 2>&1 
 	
 clean:
 	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.img
