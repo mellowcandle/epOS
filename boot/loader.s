@@ -25,9 +25,9 @@
 
 extern kmain                            ; _main is defined elsewhere
 
-global mbd
-global magic
-
+global mbd ; Grub structure
+global magic ; Grub magic number
+global BootPageDirectory; Page directory
  
 ; setting up the Multiboot header - see GRUB docs for details
 MODULEALIGN equ  1<<0             ; align loaded modules on page boundaries

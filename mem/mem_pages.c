@@ -34,7 +34,6 @@
 // These are defined in the linker script, with these we calculate the size of the kernel on runtime.
 extern unsigned long kernel_start;
 extern unsigned long kernel_end;
-
 static uint32_t total_memory = 0;
 static uintptr_t physical_start = 0;
 static uintptr_t pages_start;
@@ -49,6 +48,58 @@ static uint32_t *page_bitmap = NULL;
 #define BIT_CLEAR(a,b) ((a) &= ~(1<<(b)))
 #define IS_PAGE_ALIGNED(POINTER) \
 	    (((uintptr_t)(const void *)(POINTER)) % (PAGE_SIZE) == 0)
+
+#define PAGE_DIRECTORY_SIZE 1024
+#define PAGE_TABLE_SIZE 1024
+
+
+typedef struct page
+{
+   uint32_t present    : 1;   // Page present in memory
+   uint32_t rw         : 1;   // Read-only if clear, readwrite if set
+   uint32_t user       : 1;   // Supervisor level only if clear
+   uint32_t accessed   : 1;   // Has the page been accessed since last refresh?
+   uint32_t dirty      : 1;   // Has the page been written to since last refresh?
+   uint32_t unused     : 7;   // Amalgamation of unused and reserved bits
+   uint32_t frame      : 20;  // Frame address (shifted right 12 bits)
+} page_t;
+
+typedef struct page_table
+{
+   page_t pages[PAGE_TABLE_SIZE];
+} page_table_t;
+
+typedef struct page_directory {
+   /**
+      Array of pointers to pagetables.
+   **/
+   page_table_t *tables[1024];
+   /**
+      Array of pointers to the pagetables above, but gives their *physical*
+      location, for loading into the CR3 register.
+   **/
+   uint32_t tablesPhysical[1024];
+   /**
+      The physical address of tablesPhysical. This comes into play
+      when we get our kernel heap allocated and the directory
+      may be in a different location in virtual memory.
+   **/
+   uint32_t physicalAddr;
+} page_directory_t;
+
+
+static page_directory_t __attribute__((aligned(0x1000))) kernel_pgd;
+
+void mem_switch_page_directory(page_directory_t * dir)
+{
+	void * m = 0;
+	asm volatile("mov %0, %%cr3":: "r"(&dir->tablesPhysical));
+	asm volatile ("invlpg (%0)" : : "b"(m) : "memory") ;
+	uint32_t cr0;
+//	asm volatile("mov %%cr0, %0": "=r"(cr0));
+//	cr0 |= 0x80000000; // Enable paging!
+//	asm volatile("mov %0, %%cr0":: "r"(cr0));
+}
 
 void mem_init(multiboot_info_t *mbi)
 {
@@ -118,6 +169,7 @@ void mem_init(multiboot_info_t *mbi)
 
 	page_bitmap = physical_start;
 	pages_start = page_bitmap + (reserved_pages * PAGE_SIZE);
+
 
 	// Clear the memory bitmap
 //	memset(page_bitmap, 0, reserved_pages * PAGE_SIZE);
