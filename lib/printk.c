@@ -232,7 +232,7 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 			case 'X':
 				if (!ll)
 				{
-					buffer = itoa(va_arg(args, int), buffer, 16);
+					buffer = uitoa(va_arg(args, int), buffer, 16);
 				}
 				else
 				{
