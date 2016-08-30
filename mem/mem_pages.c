@@ -49,8 +49,8 @@ static uint32_t *page_bitmap = NULL;
 #define IS_PAGE_ALIGNED(POINTER) \
 	    (((uintptr_t)(const void *)(POINTER)) % (PAGE_SIZE) == 0)
 
-#define PAGE_DIRECTORY_SIZE 1024
-#define PAGE_TABLE_SIZE 1024
+#define PAGE_DIRECTORY_SIZE 12
+#define PAGE_TABLE_SIZE 12
 
 
 typedef struct page
@@ -73,27 +73,17 @@ typedef struct page_directory {
    /**
       Array of pointers to pagetables.
    **/
-   page_table_t *tables[1024];
-   /**
-      Array of pointers to the pagetables above, but gives their *physical*
-      location, for loading into the CR3 register.
-   **/
-   uint32_t tablesPhysical[1024];
-   /**
-      The physical address of tablesPhysical. This comes into play
-      when we get our kernel heap allocated and the directory
-      may be in a different location in virtual memory.
-   **/
-   uint32_t physicalAddr;
+   uint32_t tables[1024];
+
 } page_directory_t;
 
 
 static page_directory_t __attribute__((aligned(0x1000))) kernel_pgd;
-
+static page_table_t __attribute__((aligned(0x1000))) kernel_pgt[1024];
 void mem_switch_page_directory(page_directory_t * dir)
 {
 	void * m = 0;
-	asm volatile("mov %0, %%cr3":: "r"(&dir->tablesPhysical));
+//	asm volatile("mov %0, %%cr3":: "r"(&dir->tablesPhysical));
 	asm volatile ("invlpg (%0)" : : "b"(m) : "memory") ;
 	uint32_t cr0;
 //	asm volatile("mov %%cr0, %0": "=r"(cr0));
@@ -110,6 +100,14 @@ void mem_init(multiboot_info_t *mbi)
 
 	printk("Memory init:\r\ndetecting physical memory.\r\n");
 
+
+	for (int i=0; i < PAGE_DIRECTORY_SIZE; i++)
+	{
+		kernel_pgd.tables[i] = (uint32_t) &kernel_pgt[i] - KERNEL_VIRTUAL_BASE;
+		printk("pagetable: %u physical: %x\r\n", i, (uint32_t)  kernel_pgd.tables[i]);
+	}
+
+	while(1);
 	multiboot_memory_map_t *mmap = (multiboot_memory_map_t *)(mbi->mmap_addr + KERNEL_VIRTUAL_BASE);
 
 	while (mmap < mbi->mmap_addr + KERNEL_VIRTUAL_BASE +  mbi->mmap_length)
@@ -157,6 +155,7 @@ void mem_init(multiboot_info_t *mbi)
 	printk("Physical memory zone set to: 0x%x size: 0x%x\r\n", physical_start, total_memory);
 	printk("Number of pages: %u\r\n", total_pages);
 
+#if 0
 	// Now we calculate how many pages we need to reserve to ourselves for physical allocator management.
 	reserved_pages = (total_pages / 32 * sizeof(uint32_t)) / PAGE_SIZE;
 
@@ -170,7 +169,11 @@ void mem_init(multiboot_info_t *mbi)
 	page_bitmap = physical_start;
 	pages_start = page_bitmap + (reserved_pages * PAGE_SIZE);
 
+#endif
 
+//	for (int i =0; i < required_kernel_pages;i++)
+//		map_page(
+//	 Map the kernel back again
 	// Clear the memory bitmap
 //	memset(page_bitmap, 0, reserved_pages * PAGE_SIZE);
 
