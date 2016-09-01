@@ -67,11 +67,14 @@ void kmain(void)
 
 	printk("APIC was enabled succesfully\r\n");
 	mem_init(mbi);
-
-	/* addr_t addr;                              */
-	/* addr = mem_page_get();                    */
-	/* printk("Got a mem page: 0x%x\r\n", addr); */
-	/* mem_page_free(addr);                      */
-
+	printk("Bla Bla\r\n");
+#if 0
+	addr_t addr;                              
+	addr = mem_page_get();                    
+	printk("Got a mem page: 0x%x\r\n", addr); 
+	int * ptr = addr;
+	*ptr = 123;
+	mem_page_free(addr);                      
+#endif
 	while (1);
 }

@@ -25,15 +25,28 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+
+/*
+ * Memory map:
+ *
+ * 0x00000000-0xC0000000 User space usage
+ * 0xC0000000-0xD0000000 Kernel (256 MB to grow to....)
+ * 0xD0000000-0xE0000000 Kernel heap
+ * 0xE0000000........... Unused (for future use)
+ *
+ */
+
 #include <mem/mem_pages.h>
 #include <printk.h>
 #include <OS_types.h>
-
+#include <kernel/isr.h>
 #define PAGE_SIZE 4096
 
 // These are defined in the linker script, with these we calculate the size of the kernel on runtime.
-extern unsigned long kernel_start;
-extern unsigned long kernel_end;
+extern uint32_t kernel_start;
+extern uint32_t kernel_end;
+extern uint32_t pdt;
+
 static uint32_t total_memory = 0;
 static uintptr_t physical_start = 0;
 static uintptr_t pages_start;
@@ -42,7 +55,11 @@ static uint32_t total_pages;
 static uint32_t *page_bitmap = NULL;
 
 
+static uint32_t * kernel_pdt = &pdt;
+
 #define KERNEL_VIRTUAL_BASE 0xC0000000
+#define KERNEL_HEAP_VIR_BASE 0xD0000000
+
 #define BIT_CHECK(a,b) ((a) & (1<<(b)))
 #define BIT_SET(a,b) ((a) |= (1<<(b)))
 #define BIT_CLEAR(a,b) ((a) &= ~(1<<(b)))
@@ -52,50 +69,14 @@ static uint32_t *page_bitmap = NULL;
 #define PAGE_DIRECTORY_SIZE 1024
 #define PAGE_TABLE_SIZE 1024
 
+void page_fault_handler(registers_t regs);
 
-typedef struct page
-{
-   uint32_t present    : 1;   // Page present in memory
-   uint32_t rw         : 1;   // Read-only if clear, readwrite if set
-   uint32_t user       : 1;   // Supervisor level only if clear
-   uint32_t accessed   : 1;   // Has the page been accessed since last refresh?
-   uint32_t dirty      : 1;   // Has the page been written to since last refresh?
-   uint32_t unused     : 7;   // Amalgamation of unused and reserved bits
-   uint32_t frame      : 20;  // Frame address (shifted right 12 bits)
-} page_t;
-
-typedef struct page_table
-{
-   page_t pages[PAGE_TABLE_SIZE];
-} page_table_t;
-
-typedef struct page_directory {
-   /**
-      Array of pointers to pagetables.
-   **/
-   page_table_t *tables[1024];
-   /**
-      Array of pointers to the pagetables above, but gives their *physical*
-      location, for loading into the CR3 register.
-   **/
-   uint32_t tablesPhysical[1024];
-   /**
-      The physical address of tablesPhysical. This comes into play
-      when we get our kernel heap allocated and the directory
-      may be in a different location in virtual memory.
-   **/
-   uint32_t physicalAddr;
-} page_directory_t;
-
-
-static page_directory_t __attribute__((aligned(0x1000))) kernel_pgd;
-
-void mem_switch_page_directory(page_directory_t * dir)
+void mem_switch_page_directory(addr_t new_dir)
 {
 	void * m = 0;
-	asm volatile("mov %0, %%cr3":: "r"(&dir->tablesPhysical));
+	asm volatile("mov %0, %%cr3":: "r"(new_dir));
 	asm volatile ("invlpg (%0)" : : "b"(m) : "memory") ;
-	uint32_t cr0;
+//	uint32_t cr0;
 //	asm volatile("mov %%cr0, %0": "=r"(cr0));
 //	cr0 |= 0x80000000; // Enable paging!
 //	asm volatile("mov %0, %%cr0":: "r"(cr0));
@@ -107,6 +88,10 @@ void mem_init(multiboot_info_t *mbi)
 	uint32_t reserved_pages;
 	uint32_t kernel_size;
 	uint32_t required_kernel_pages;
+	uint32_t addr;
+
+
+	register_interrupt_handler(14, page_fault_handler);
 
 	printk("Memory init:\r\ndetecting physical memory.\r\n");
 
@@ -144,10 +129,14 @@ void mem_init(multiboot_info_t *mbi)
 		panic();
 	}
 
+	// Map the page directory to itself.
+	kernel_pdt[1023] = (uint32_t) kernel_pdt | 3;
+
+
 	kernel_size = ((uint32_t) &kernel_end - (uint32_t) &kernel_start);
 	required_kernel_pages = (kernel_size / PAGE_SIZE) + 1;
 
-	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", &kernel_start, &kernel_end);
+	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start, &kernel_end);
 	printk("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
 
 	physical_start += required_kernel_pages * PAGE_SIZE;
@@ -157,24 +146,23 @@ void mem_init(multiboot_info_t *mbi)
 	printk("Physical memory zone set to: 0x%x size: 0x%x\r\n", physical_start, total_memory);
 	printk("Number of pages: %u\r\n", total_pages);
 
-	// Now we calculate how many pages we need to reserve to ourselves for physical allocator management.
-	reserved_pages = (total_pages / 32 * sizeof(uint32_t)) / PAGE_SIZE;
-
-	if ((total_pages / 32 * sizeof(uint32_t)) % PAGE_SIZE)
-	{
-		reserved_pages++;
-	}
-
-	printk("reserved_pages = %u\r\n", reserved_pages);
-
 	page_bitmap = physical_start;
-	pages_start = page_bitmap + (reserved_pages * PAGE_SIZE);
+
+	printk("Starting to map from %x\r\n", addr);
+}
 
 
-	// Clear the memory bitmap
-//	memset(page_bitmap, 0, reserved_pages * PAGE_SIZE);
+void * mem_page_map(addr_t page)
+{
 
 }
+
+
+void mem_page_unmap(addr_t page)
+{
+
+}
+
 
 void mem_page_free(addr_t page)
 {
@@ -241,4 +229,39 @@ addr_t mem_page_get()
 	{
 		return NULL;
 	}
+}
+
+void page_fault_handler(registers_t regs)
+{
+
+	addr_t cr2, err_code = regs.err_code;
+
+	bool page_present; // else missing
+	bool page_read;  // else write
+	bool page_user;  // else kernel
+
+	__asm__ volatile ("mov %%cr2, %0" : "=r" (cr2));
+
+	if (err_code & 1)
+		page_present = true;
+	else
+		page_present = false;
+
+	if (err_code & (1 << 1))
+		page_read = false;
+	else
+		page_read = true;
+
+	if (err_code & (1 << 2))
+		page_user = true;
+	else
+		page_user = false;
+	
+
+	printk("Page fault: linear address: 0x%x\r\n", cr2);
+	printk("Details: Page %s, ", page_present ? "present":"not present");
+	printk("Ocurred on %s, ", page_read ? "read" : "write");
+	printk("Page ownership %s\r\n", page_user ? "user" : "kernel");
+	
+	panic();
 }
