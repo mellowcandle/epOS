@@ -69,12 +69,13 @@ void kmain(void)
 	mem_init(mbi);
 	printk("Bla Bla\r\n");
 #if 0
-	addr_t addr;                              
-	addr = mem_page_get();                    
-	printk("Got a mem page: 0x%x\r\n", addr); 
-	int * ptr = addr;
+	addr_t addr;
+	addr = mem_page_get();
+	printk("Got a mem page: 0x%x\r\n", addr);
+	int *ptr = addr;
 	*ptr = 123;
-	mem_page_free(addr);                      
+	mem_page_free(addr);
 #endif
+
 	while (1);
 }

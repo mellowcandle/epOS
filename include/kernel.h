@@ -29,6 +29,9 @@
 #ifndef KERNEL_H_M1BAK62D
 #define KERNEL_H_M1BAK62D
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 void panic(void);
 
 #endif /* end of include guard: KERNEL_H_M1BAK62D */
