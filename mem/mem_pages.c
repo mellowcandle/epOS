@@ -73,7 +73,7 @@ static uint32_t *kernel_pdt = &pdt;
 
 #define KERNEL_VIRTUAL_BASE 0xC0000000
 
-#define PHYSICAL_ALLOCATOR_BITMAP_BASE 0xD0000000
+#define PHYSICAL_ALLOCATOR_BITMAP_BASE 0xC0000000
 
 #define KERNEL_HEAP_VIR_START 0xD0000000
 #define KERNEL_HEAP_VIR_END 0xE0000000
@@ -192,6 +192,11 @@ void mem_init(multiboot_info_t *mbi)
 	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start, &kernel_end);
 	printk("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
 
+
+	// ugly hack
+	//
+	physical_start = ((uint32_t) &kernel_start) - KERNEL_VIRTUAL_BASE;
+
 	physical_start += required_kernel_pages * PAGE_SIZE;
 	total_memory -= required_kernel_pages * PAGE_SIZE;
 
@@ -289,14 +294,7 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 		mem_tlb_flush(access_ptr);	
 	}
 
-	// set all the bitmap to free
-	printk("Still alive1\r\n");
-
-//	for (i = 0; i < 10; i++)
-//		printk("i=%u, physical equals: %c\r\n",i, * (char * )(PHYSICAL_ALLOCATOR_BITMAP_BASE + i));
-	access_ptr = PHYSICAL_ALLOCATOR_BITMAP_BASE;
-	memset((char *) access_ptr, 0, 11900);
-	printk("Still alive\r\n");
+	memset( (void *)PHYSICAL_ALLOCATOR_BITMAP_BASE, 0, required_bytes);
 }
 
 void *mem_page_map(addr_t page)
