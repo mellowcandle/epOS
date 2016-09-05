@@ -32,7 +32,8 @@ ASM	= nasm
 WARNINGS := -Wall -Wextra 
 
 ASTYLE ?= astyle
-ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header --add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
+ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
+	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
 
@@ -60,7 +61,7 @@ test:
 	@echo $(OBJFILES)
 #kernel.bin: src/kernel/kernel.o src/kernel/loader.o
 kernel.bin: $(OBJFILES)
-	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T make/linker.ld -ffreestanding -nostdlib -o $@ $^ -lgcc 
+	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T make/linker.ld -Wl,-Map=kernel.map -ffreestanding -nostdlib -o $@ $^ -lgcc
 
 
 multiboot: kernel.bin
