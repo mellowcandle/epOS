@@ -3,5 +3,10 @@
 *.bin
 .cproject
 .project
+.gdb_history
+kernel.iso
+kernel.bin
 cscope*
+isodir
+toolchain/i686-elf-4.9.1-Linux-x86_64/
 *~
