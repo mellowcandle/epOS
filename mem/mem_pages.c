@@ -27,7 +27,7 @@
 
 #include <mem/mem_pages.h>
 #include <printk.h>
-#include <OS_types.h>
+#include <types.h>
 
 #define PAGE_SIZE 4096
 

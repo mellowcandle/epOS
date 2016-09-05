@@ -28,7 +28,7 @@
 #ifndef VIDEO_TEXTMODE_H_LSC3MFDI
 #define VIDEO_TEXTMODE_H_LSC3MFDI
 
-#include "OS_types.h"
+#include "types.h"
 
 void VIDEO_clear_screen(void);
 void VIDEO_print_string(char *string);

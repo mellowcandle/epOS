@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include "OS_types.h"
+#include <types.h>
 
 /*
 The memmove function copies n characters from the object pointed to by s2 into the object pointed to by s1. Copying takes place as if the n characters from the object pointed to by s2 are first copied into a temporary array of n characters that does not overlap the objects pointed to by s1 and s2, and then the n characters from the temporary array are copied into the object pointed to by s1.

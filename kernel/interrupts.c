@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <OS_types.h>
+#include <types.h>
 #include <printk.h>
 #include <kernel/ports.h>
 #include <kernel/isr.h>

@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include "lib/OS_ctype.h"
+#include <lib/ctype.h>
 
 char _ctmp;
 unsigned char _ctype[] = {0x00,			/* EOF */

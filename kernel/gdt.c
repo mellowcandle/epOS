@@ -26,7 +26,7 @@
 */
 
 #include <kernel/cpu.h>
-#include <OS_types.h>
+#include <types.h>
 
 extern void gdt_flush();
 

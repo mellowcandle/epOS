@@ -29,7 +29,7 @@
 #ifndef MEM_PAGES_H_HGKLOSQ7
 #define MEM_PAGES_H_HGKLOSQ7
 
-#include <OS_types.h>
+#include <types.h>
 #include <boot/multiboot.h>
 
 typedef uintptr_t addr_t;

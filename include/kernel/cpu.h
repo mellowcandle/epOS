@@ -28,7 +28,7 @@
 #ifndef CPU_H_
 #define CPU_H_
 
-#include "OS_types.h"
+#include <types.h>
 
 #define CPUID_VENDOR_INTEL        "GenuineIntel"
 

@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <OS_types.h>
+#include <types.h>
 #include <boot/multiboot.h>
 #include <video/VIDEO_textmode.h>
 #include <kernel/isr.h>

@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <lib/OS_memory.h>
+#include <lib/string.h>
 
 void *memset(void *s, int c, size_t n)
 {

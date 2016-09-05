@@ -25,11 +25,11 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include "printk.h"
-#include "lib/OS_varargs.h"
-#include "lib/OS_ctype.h"
-#include "video/VIDEO_textmode.h"
-#include "OS_types.h"
+#include <printk.h>
+#include <lib/varargs.h>
+#include <lib/ctype.h>
+#include <video/VIDEO_textmode.h>
+#include <types.h>
 static char buffer[256] = {0};
 
 static char *itoa(int value, char *str, int base)
