@@ -25,19 +25,29 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-
-#ifndef MEM_PAGES_H_HGKLOSQ7
-#define MEM_PAGES_H_HGKLOSQ7
+#ifndef BITS_H_W0QIETBW
+#define BITS_H_W0QIETBW
 
 #include <types.h>
 #include <boot/multiboot.h>
 
-typedef uintptr_t addr_t;
+#define BIT_CHECK(a,b) ((a) & (1<<(b)))
+#define BIT_SET(a,b) ((a) |= (1<<(b)))
+#define BIT_CLEAR(a,b) ((a) &= ~(1<<(b)))
 
-void mem_init(multiboot_info_t *mbi);
-void mem_page_free(addr_t page);
-addr_t mem_page_get(void);
+static inline uint32_t divide_up(uint32_t value, uint32_t align)
+{
+	uint32_t ret;
+	ret = value / align;
 
+	if (value % align)
+	{
+		ret++;
+	}
 
-#endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
+	return ret;
+}
+
+#endif /* end of include guard: BITS_H_W0QIETBW */
+
 

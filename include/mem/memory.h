@@ -25,57 +25,52 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+
+#ifndef MEM_PAGES_H_HGKLOSQ7
+#define MEM_PAGES_H_HGKLOSQ7
+
 #include <types.h>
 #include <boot/multiboot.h>
-#include <video/VIDEO_textmode.h>
-#include <kernel/isr.h>
-#include <printk.h>
-#include <mem/memory.h>
-#include <kernel/cpu.h>
-#include <serial.h>
-void kmain(void)
+
+#define PAGE_SIZE 4096
+#define PAGE_DIRECTORY_SIZE 1024
+#define PAGE_TABLE_SIZE 1024
+
+#define IS_PAGE_ALIGNED(POINTER) \
+	    (((uintptr_t)(const void *)(POINTER)) % (PAGE_SIZE) == 0)
+
+#define FRAME_TO_PDE_INDEX(_x) (_x >> 22)
+#define FRAME_TO_PTE_INDEX(_x) ((_x << 10) >> 22)
+#define VADDR_TO_PAGE_DIR (_x) ((_x ~0xFFF) / 0x400000)
+
+#define PDE_MIRROR_BASE 0xFFC00000
+#define PDT_MIRROR_BASE 0xFFFFF000
+
+#define KERNEL_VIRTUAL_BASE 0xC0000000
+
+#define PHYSICAL_ALLOCATOR_BITMAP_BASE 0xD0000000
+
+#define KERNEL_HEAP_VIR_START 0xD0000000
+#define KERNEL_HEAP_VIR_END 0xE0000000
+#define KERNEL_HEAP_SIZE (KERNEL_HEAP_VIR_END - KERNEL_HEAP_VIR_START)
+
+#define PAGE_ENTRY_PRESENT (1)
+#define PAGE_ENTRY_WRITEABLE (1 << 1)
+#define PAGE_ENTRY_USER (1 << 2)
+
+typedef uintptr_t addr_t;
+
+void mem_init(multiboot_info_t *mbi);
+void mem_page_free(addr_t page);
+addr_t mem_page_get(void);
+
+static inline void mem_tlb_flush(void *m)
 {
-	extern uint32_t magic;
-	extern void *mbd;
-	multiboot_info_t *mbi = mbd;
-
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
-	{
-		/* Something went not according to specs. Print an error */
-		/* message and halt, but do *not* rely on the multiboot */
-		/* data structure. */
-		return;
-	}
-
-	init_serial();
-
-
-	//   VIDEO_clear_screen();
-	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
-
-	printk("Initializing GDT......\r\n");
-	Init_GDT();
-	printk("Initializing IDT......\r\n");
-	Init_IDT();
-
-	disable_i8259();
-//	enableAPIC();
-
-//   init_timer(50);
-	//printk("Checking for APIC support......");
-
-
-	printk("APIC was enabled succesfully\r\n");
-	mem_init(mbi);
-	printk("Bla Bla\r\n");
-#if 0
-	addr_t addr;
-	addr = mem_page_get();
-	printk("Got a mem page: 0x%x\r\n", addr);
-	int *ptr = addr;
-	*ptr = 123;
-	mem_page_free(addr);
-#endif
-
-	while (1);
+	/* Clobber memory to avoid optimizer re-ordering access before invlpg, which may cause nasty bugs. */
+	__asm volatile("invlpg (%0)" : : "b"(m) : "memory");
 }
+
+extern uint32_t pdt;
+
+#endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
+

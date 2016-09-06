@@ -78,28 +78,3 @@ void *memmove(void *s1, const void *s2, size_t n)
 	return s1;
 
 }
-
-
-
-void *realloc(void *ptr, size_t size)
-{
-// TODO: Implement
-	return NULL;
-}
-
-void free(void *ptr)
-{
-// TODO: Implement
-}
-
-void *malloc(size_t size)
-{
-// TODO: Implement
-	return NULL;
-}
-
-void *calloc(size_t nmemb, size_t size)
-{
-// TODO: Implement
-	return NULL;
-}
