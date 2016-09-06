@@ -32,12 +32,45 @@
 #include <OS_types.h>
 #include <boot/multiboot.h>
 
+#define PAGE_SIZE 4096
+#define PAGE_DIRECTORY_SIZE 1024
+#define PAGE_TABLE_SIZE 1024
+
+#define IS_PAGE_ALIGNED(POINTER) \
+	    (((uintptr_t)(const void *)(POINTER)) % (PAGE_SIZE) == 0)
+
+#define FRAME_TO_PDE_INDEX(_x) (_x >> 22)
+#define FRAME_TO_PTE_INDEX(_x) ((_x << 10) >> 22)
+#define VADDR_TO_PAGE_DIR (_x) ((_x ~0xFFF) / 0x400000)
+
+#define PDE_MIRROR_BASE 0xFFC00000
+#define PDT_MIRROR_BASE 0xFFFFF000
+
+#define KERNEL_VIRTUAL_BASE 0xC0000000
+
+#define PHYSICAL_ALLOCATOR_BITMAP_BASE 0xD0000000
+
+#define KERNEL_HEAP_VIR_START 0xD0000000
+#define KERNEL_HEAP_VIR_END 0xE0000000
+#define KERNEL_HEAP_SIZE (KERNEL_HEAP_VIR_END - KERNEL_HEAP_VIR_START)
+
+#define PAGE_ENTRY_PRESENT (1)
+#define PAGE_ENTRY_WRITEABLE (1 << 1)
+#define PAGE_ENTRY_USER (1 << 2)
+
 typedef uintptr_t addr_t;
 
 void mem_init(multiboot_info_t *mbi);
 void mem_page_free(addr_t page);
 addr_t mem_page_get(void);
 
+static inline void mem_tlb_flush(void *m)
+{
+	/* Clobber memory to avoid optimizer re-ordering access before invlpg, which may cause nasty bugs. */
+	__asm volatile("invlpg (%0)" : : "b"(m) : "memory");
+}
+
+extern uint32_t pdt;
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
 
