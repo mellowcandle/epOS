@@ -29,8 +29,19 @@
 #ifndef KERNEL_H_M1BAK62D
 #define KERNEL_H_M1BAK62D
 
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#define MAX(_x, _y) (((_x) > (_y)) ? (_x) : (_y))
+#define MIN(_x, _y) (((_x) < (_y)) ? (_x) : (_y))
+
+/**
+ * container_of - cast a member of a structure out to the containing structure
+ * @ptr:	the pointer to the member.
+ * @type:	the type of the container struct this is embedded in.
+ * @member:	the name of the member within the struct.
+ *
+ */
+
+#define OFFSET_OF(_type, _member) ((size_t) &((type *) 0)->member)
+#define CONTAINER_OF(_ptr, _type, _member) (_type *) ((char *) ptr - OFFSET_OF(_type, _member))
 
 void panic(void);
 
