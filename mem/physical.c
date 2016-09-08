@@ -44,6 +44,12 @@
 #include <kernel/bits.h>
 
 
+extern uint32_t kernel_start;
+extern uint32_t kernel_end;
+
+#define PAGE_TO_BITMAP_INDEX(_x) (_x / 32)
+#define PAGE_TO_BITMAP_OFFSET(_x) (_x % 32)
+
 typedef struct
 {
 	addr_t phys_start;
@@ -52,8 +58,6 @@ typedef struct
 	uint32_t *bitmap;
 } phys_memory;
 
-extern uint32_t kernel_start;
-extern uint32_t kernel_end;
 
 static phys_memory physmem;
 
@@ -124,34 +128,76 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 
 }
 
-void mem_page_free(addr_t page)
+
+
+
+void mem_free_pages(addr_t addr, uint32_t count)
 {
-	int entry;
-	int bit;
+	uint32_t i,j;
 
-	// Sanity, check that the address given is page aligned.
-	if (! IS_PAGE_ALIGNED(page))
+	if (!IS_PAGE_ALIGNED(addr))
 	{
-		printk("recieved unaligned page to free, that's a problem :(\r\n");
+		printk("mem_free_pages: addr: 0x%x is not page aligned\r\n", addr);
 		panic();
 	}
-
-	page -= physmem.phys_start;
-	entry = page / PAGE_SIZE;
-	bit = page % PAGE_SIZE;
-
-	// Sanity, check that the address given was actually alocated.
-	if (! BIT_CHECK(physmem.bitmap[entry], bit))
+	uint32_t page_num = ((char *) addr - (char *) physmem.phys_start) / PAGE_SIZE;
+		
+	for (i = PAGE_TO_BITMAP_INDEX(page_num), j = PAGE_TO_BITMAP_OFFSET(page_num); count > 0; count--)
 	{
-		printk("Trying to free an already free page, that's a problem :(\r\n");
-		panic();
+		BIT_CLEAR(physmem.bitmap[i],j);
+		j++;
+		if (j == 32)
+		{
+			i++;
+			j = 0;
+		}
 	}
-
-	BIT_CLEAR(physmem.bitmap[entry], bit);
-
 
 }
 
+void mem_free_page(addr_t addr)
+{
+	mem_free_pages(addr, 1);
+}
+
+addr_t mem_get_pages(uint32_t count)
+{
+	uint32_t i = 0;
+	uint32_t j = 0;
+	uint32_t page = 0;
+	uint32_t found = 0;
+
+	while (page < physmem.total_pages)
+	{
+		// 32 pages are full, skip it.
+		if (physmem.bitmap[PAGE_TO_BITMAP_INDEX(page)] == 0xFFFFFFFF)
+		{
+			page += 32;
+			continue;
+		}
+		else
+		{
+			// Find the right spot
+
+	}
+
+}
+
+addr_t mem_get_page()
+{
+	return mem_get_pages(1);
+}
+
+uint32_t _mem_bitmap_get_next_free_page(uint32_t from)
+{
+	uint32_t i = PAGE_TO_BITMAP_INDEX(from);
+	uint32_t j = PAGE_TO_BITMAP_OFFSET(from);
+	bool found = false;
+
+	for (;from < physmem.total_pages; i++);
+}
+
+#if 0
 addr_t mem_page_get()
 {
 	uint32_t i = 0;
@@ -190,4 +236,4 @@ addr_t mem_page_get()
 		return NULL;
 	}
 }
-
+#endif
