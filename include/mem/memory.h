@@ -60,9 +60,7 @@
 
 typedef uintptr_t addr_t;
 
-void mem_init(multiboot_info_t *mbi);
-void mem_page_free(addr_t page);
-addr_t mem_page_get(void);
+extern uint32_t pdt;
 
 static inline void mem_tlb_flush(void *m)
 {
@@ -70,7 +68,20 @@ static inline void mem_tlb_flush(void *m)
 	__asm volatile("invlpg (%0)" : : "b"(m) : "memory");
 }
 
-extern uint32_t pdt;
+
+void mem_init(multiboot_info_t *mbi);
+addr_t mem_get_pages(uint32_t count);
+void mem_free_pages(addr_t addr, uint32_t count);
+
+static inline void  mem_free_page(addr_t addr)
+{
+	mem_free_pages(addr, 1);
+}
+
+static inline addr_t mem_get_page()
+{
+	return mem_get_pages(1);
+}
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
 

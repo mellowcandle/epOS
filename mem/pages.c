@@ -167,9 +167,7 @@ void mem_init(multiboot_info_t *mbi)
 
 	mem_phys_init(physical_start, total_memory);
 
-	while (1);
-
-//	mem_heap_init();
+	mem_heap_init();
 }
 
 
@@ -243,7 +241,8 @@ void mem_heap_init()
 	addr_t vaddr =  KERNEL_HEAP_VIR_START;
 	char *access_ptr;
 	uint8_t *pde_mirror = (uint8_t *) PDE_MIRROR_BASE;
-
+	assert(0 == 5);
+while(1);
 	uint32_t i, j;
 
 	printk("mem_heap_init: pte_count = 0x%x pde_count = 0x%x\r\n", pte_count, pde_count);
@@ -251,17 +250,20 @@ void mem_heap_init()
 	for (i = 0; i < pde_count; i++)
 	{
 		// Get PTE page
-		page = mem_page_get();
+		page = mem_get_page();
+
+
 		// Put it in PDT
 		kernel_pdt[FRAME_TO_PTE_INDEX(vaddr)] = page;
 		// Invalidate cache
 		mem_tlb_flush(pde_mirror + (i * PAGE_SIZE));
 		// Clear the PDE table
 		memset(pde_mirror + (i * PAGE_SIZE), 0, PAGE_SIZE);
+		printk("clear PDEe: 0x%x\r\n", page);
 
 		for (j = 0; j < MIN(pte_count, 1024) ; j++)
 		{
-			page = mem_page_get();
+			page = mem_get_page();
 			*(uint32_t *)(pde_mirror + (j * sizeof(uint32_t))) = page;
 			access_ptr = (char *) vaddr;
 			memset(access_ptr, 0, PAGE_SIZE);

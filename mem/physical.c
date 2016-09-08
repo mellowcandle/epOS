@@ -75,6 +75,7 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 	uint8_t *pde_mirror = (uint8_t *) PDE_MIRROR_BASE;
 
 	physmem.phys_start = physmem.phys_bitmap = phy_start;
+	physmem.bitmap = (uint32_t *) PHYSICAL_ALLOCATOR_BITMAP_BASE;
 	printk("Physical memory zone set to: 0x%x size: 0x%x\r\n", physmem.phys_start, total_memory);
 	printk("Number of pages: %u Required Bytes: %u\r\n", physmem.total_pages, required_bytes);
 
@@ -129,8 +130,6 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 }
 
 
-
-
 void mem_free_pages(addr_t addr, uint32_t count)
 {
 	uint32_t i,j;
@@ -155,85 +154,53 @@ void mem_free_pages(addr_t addr, uint32_t count)
 
 }
 
-void mem_free_page(addr_t addr)
-{
-	mem_free_pages(addr, 1);
-}
 
 addr_t mem_get_pages(uint32_t count)
 {
-	uint32_t i = 0;
-	uint32_t j = 0;
-	uint32_t page = 0;
+	/* OK. this implementation is pretty bad. 
+	 * it's only here as a workaround until I'll implement something more efficiant */
+
+	uint32_t page_end = 0;
+	uint32_t page_start = 0;
 	uint32_t found = 0;
 
-	while (page < physmem.total_pages)
+	addr_t addr;
+
+	for(page_end = 0; page_end < physmem.total_pages; page_end++)
 	{
-		// 32 pages are full, skip it.
-		if (physmem.bitmap[PAGE_TO_BITMAP_INDEX(page)] == 0xFFFFFFFF)
+		if (!BIT_CHECK(physmem.bitmap[PAGE_TO_BITMAP_INDEX(page_end)], PAGE_TO_BITMAP_OFFSET(page_end)))
 		{
-			page += 32;
-			continue;
+			found++;
+			if (found == count)
+			{
+				page_start = page_end - count;
+				break;
+			}
 		}
 		else
 		{
-			// Find the right spot
-
-	}
-
-}
-
-addr_t mem_get_page()
-{
-	return mem_get_pages(1);
-}
-
-uint32_t _mem_bitmap_get_next_free_page(uint32_t from)
-{
-	uint32_t i = PAGE_TO_BITMAP_INDEX(from);
-	uint32_t j = PAGE_TO_BITMAP_OFFSET(from);
-	bool found = false;
-
-	for (;from < physmem.total_pages; i++);
-}
-
-#if 0
-addr_t mem_page_get()
-{
-	uint32_t i = 0;
-	uint32_t j = 0;
-	bool found = false;
-
-	for (i = 0; i < physmem.total_pages; i++)
-	{
-		if (physmem.bitmap[i])
-		{
-			// There's at least one free page in this int bitmap, find it and mark it.
-			//
-			//
-			for (j = 0; j < 32; j++)
-			{
-				if (! BIT_CHECK(physmem.bitmap[i], j))
-				{
-					BIT_SET(physmem.bitmap[i], j);
-					found = true;
-					break;
-				}
-			}
-
-			printk("ERROR:  internal error\r\n");
-			panic();
+			found = 0;
 		}
 
 	}
-
 	if (found)
 	{
-		return (addr_t)((i * 32 + j) * PAGE_SIZE) + physmem.phys_start;
+		addr = (page_start * PAGE_SIZE) + physmem.phys_start;
+		printk("mem_get_pages: found %u continous pages starting from 0x%x\r\n", count, addr);
+
+		for (uint32_t i = page_start; i < page_end; i++)
+		{
+			BIT_SET(physmem.bitmap[PAGE_TO_BITMAP_INDEX(i)],PAGE_TO_BITMAP_OFFSET(i));
+		}
+
+		return addr;
 	}
 	else
 	{
-		return NULL;
+		printk("mem_get_pages: could not find %u continous free pages\r\n", count);
 	}
+	return 0;
 }
-#endif
+
+
+
