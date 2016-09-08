@@ -42,17 +42,14 @@
 
 #define OFFSET_OF(_type, _member) ((size_t) &((type *) 0)->member)
 #define CONTAINER_OF(_ptr, _type, _member) (_type *) ((char *) ptr - OFFSET_OF(_type, _member))
-#if 0
-#define assert(test) \
-  ((test) \
-	? (printk("assertion failed, " __FILE__ ":" __LINE__ ": " #test), panic()) \
-	: 0)
-#endif
 
 #define assert(_x) \
-  ((!_x) \
-    ? (printk("assertion failed %s : %s : %s,\r\n", __FILE__, __LINE__, #_x ), panic()) \
-    : 0)
+	do { \
+		if (!(_x)) { \
+			printk("!!! assert failed %s:%u : (%s) !!!\r\n", __FILE__, __LINE__, #_x); \
+			panic(); \
+		} \
+	} while (0)
 
 void panic(void);
 
