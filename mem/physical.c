@@ -140,7 +140,8 @@ void mem_free_pages(addr_t addr, uint32_t count)
 		panic();
 	}
 	uint32_t page_num = ((char *) addr - (char *) physmem.phys_start) / PAGE_SIZE;
-		
+	
+	count++; // This make sure we erase also the last page	
 	for (i = PAGE_TO_BITMAP_INDEX(page_num), j = PAGE_TO_BITMAP_OFFSET(page_num); count > 0; count--)
 	{
 		BIT_CLEAR(physmem.bitmap[i],j);
@@ -173,7 +174,7 @@ addr_t mem_get_pages(uint32_t count)
 			found++;
 			if (found == count)
 			{
-				page_start = page_end - count;
+				page_start = page_end - count + 1;
 				break;
 			}
 		}
@@ -188,7 +189,7 @@ addr_t mem_get_pages(uint32_t count)
 		addr = (page_start * PAGE_SIZE) + physmem.phys_start;
 		printk("mem_get_pages: found %u continous pages starting from 0x%x\r\n", count, addr);
 
-		for (uint32_t i = page_start; i < page_end; i++)
+		for (uint32_t i = page_start; i <= page_end; i++)
 		{
 			BIT_SET(physmem.bitmap[PAGE_TO_BITMAP_INDEX(i)],PAGE_TO_BITMAP_OFFSET(i));
 		}
