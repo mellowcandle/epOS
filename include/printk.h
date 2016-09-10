@@ -30,4 +30,6 @@
 
 int printk(const char *format, ...);
 
+#define FUNC_ENTER() printk("+ %s\r\n", __FUNCTION__)
+#define FUNC_LEAVE() printk("- %s\r\n", __FUNCTION__)
 #endif /* end of include guard: PRINTK_H_X0OBSDIJ */
