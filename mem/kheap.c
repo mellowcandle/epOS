@@ -41,29 +41,37 @@
 #include <mem/memory.h>
 #include <printk.h>
 
+
+typedef struct
+{
+
+	uint32_t total_pages;
+	uint32_t used_pages;
+	addr_t   location;
+	bool initalized;
+} heap_t;
+
+static heap_t kernel_heap = {0};
+
 void mem_heap_init()
 {
 	addr_t physical;
-	uint32_t count = KERNEL_HEAP_SIZE / PAGE_SIZE;
 
-	physical = mem_get_pages(count);
-	if (!physical)
-		goto error;
+	FUNC_ENTER();
 
-	if (mem_map_con_pages(physical, count, KERNEL_HEAP_VIR_START) != 0)
-		goto error;
-
-	return;
-
-error:
-	printk("Can't allocate kernel HEAP\r\n");
-	panic();
-
+	kernel_heap.total_pages =  KERNEL_HEAP_SIZE / PAGE_SIZE;
+	kernel_heap.location = KERNEL_HEAP_VIR_START;
+	kernel_heap.initalized = true;
+	FUNC_LEAVE();
 }
 
 int mem_heap_free(void *addr , int count)
 {
+	FUNC_ENTER();
+
+	assert(kernel_heap.initalized);
 	//todo: implement
+	FUNC_LEAVE();
 	return 0;
 }
 
@@ -81,33 +89,42 @@ int mem_heap_unlock()
 
 void *mem_heap_alloc(int count)
 {
-#if 0
-	static int first = 0;
+	addr_t ret_address;
+	addr_t physical;
+	FUNC_ENTER();
 
-	addr_t pos = KERNEL_HEAP_VIR_START;
+	assert(kernel_heap.initalized);
 
-	int pte_index;
-	int pde_index;
-
-	while (pos < KERNEL_HEAP_VIR_END)
+	if (kernel_heap.total_pages - kernel_heap.used_pages < count)
 	{
-		/* Find a free spot */
-		pde_index = FRAME_TO_PTE_INDEX(pos);
-		pte_index = FRAME_TO_PTE_INDEX(pos);
-
-		if (kernel_pdt[pte_index] & PAGE_ENTRY_PRESENT)
-		{
-			if (
-		}
-
-
-}
-
-if (!first)
-	{
-#endif
-		//todo: implement
-		return NULL;
+		printk("not enough physical pages\r\n");
+		panic();
 	}
+
+	physical = mem_get_pages(count);
+
+	if (!physical)
+	{
+		goto error;
+	}
+
+	if (mem_map_con_pages(physical, count, kernel_heap.location) != 0)
+	{
+		goto error;
+	}
+
+	ret_address = kernel_heap.location;
+	kernel_heap.location += count * PAGE_SIZE;
+	kernel_heap.used_pages += count;
+
+	FUNC_LEAVE();
+	return (void *) ret_address;
+
+error:
+	printk("Can't allocate kernel HEAP\r\n");
+	panic();
+
+	return NULL;
+}
 
 

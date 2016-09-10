@@ -107,6 +107,7 @@ void mem_init(multiboot_info_t *mbi)
 	uint32_t required_kernel_pages;
 	uint32_t addr;
 
+	FUNC_ENTER();
 	register_interrupt_handler(14, page_fault_handler);
 
 	printk("Memory init:\r\ndetecting physical memory.\r\n");
@@ -169,12 +170,7 @@ void mem_init(multiboot_info_t *mbi)
 
 	mem_heap_init();
 
-	char * test;
-	test = (char *) KERNEL_HEAP_VIR_START;
-	for (int b = 0; b < KERNEL_HEAP_SIZE; b++)
-	{
-		test[b] = 1;
-	}
+	FUNC_LEAVE();
 }
 
 
@@ -236,22 +232,22 @@ int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual)
 	uint32_t pte_count = count;
 	uint32_t pde_count = divide_up(pte_count, 1024);
 	addr_t page;
-	char * access_ptr ;
+	char *access_ptr ;
 	uint32_t i, j;
 
-//	for (int p = 0; p < 1024; p++)
-//		printk("PDT: %u = 0x%x\r\n",p, kernel_pdt[p]);
+	FUNC_ENTER();
 
-	uint32_t * pte;
+	uint32_t *pte;
 	printk("mem_map_con_pages: pte_count = 0x%x pde_count = 0x%x\r\n", pte_count, pde_count);
 
 	for (i = 0; i < pde_count; i++)
 	{
 		// Get PDE page
 		printk("i = %u\r\n", i);
-		access_ptr = (char *) (PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
+		access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
 
-		printk ("kernel pdt entry: %u, real one: %u,  0x%x\r\n",FRAME_TO_PDE_INDEX(virtual), VADDR_TO_PAGE_DIR(virtual),  kernel_pdt[FRAME_TO_PDE_INDEX(virtual)]);
+		printk("kernel pdt entry: %u, real one: %u,  0x%x\r\n", FRAME_TO_PDE_INDEX(virtual), VADDR_TO_PAGE_DIR(virtual),  kernel_pdt[FRAME_TO_PDE_INDEX(virtual)]);
+
 		if (!(kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
 		{
 			page = mem_get_page();
@@ -268,7 +264,7 @@ int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual)
 
 		for (j = 0; j < MIN(pte_count, 1024) ; j++)
 		{
-			pte = (uint32_t *) (access_ptr + (j * sizeof(uint32_t)));
+			pte = (uint32_t *)(access_ptr + (j * sizeof(uint32_t)));
 
 //			printk("PTE is = 0x%x, access_ptr = 0x%x\r\n", pte, access_ptr);
 
@@ -291,11 +287,14 @@ int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual)
 
 	}
 
+	FUNC_LEAVE();
 	return 0;
 }
 
 int mem_unmap_con_pages(addr_t virtual, uint32_t count)
 {
+	FUNC_ENTER();
+	FUNC_LEAVE();
 	return 0;
 }
 
