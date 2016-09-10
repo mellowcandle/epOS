@@ -41,7 +41,7 @@
 
 #define FRAME_TO_PDE_INDEX(_x) (_x >> 22)
 #define FRAME_TO_PTE_INDEX(_x) ((_x << 10) >> 22)
-#define VADDR_TO_PAGE_DIR (_x) ((_x ~0xFFF) / 0x400000)
+#define VADDR_TO_PAGE_DIR(_x) ((_x & ~0xFFF) / 0x400000)
 
 #define PDE_MIRROR_BASE 0xFFC00000
 #define PDT_MIRROR_BASE 0xFFFFF000
@@ -50,8 +50,8 @@
 
 #define PHYSICAL_ALLOCATOR_BITMAP_BASE 0xD0000000
 
-#define KERNEL_HEAP_VIR_START 0xD0000000
-#define KERNEL_HEAP_VIR_END 0xE0000000
+#define KERNEL_HEAP_VIR_START 0xE0000000
+#define KERNEL_HEAP_VIR_END 0xF0000000
 #define KERNEL_HEAP_SIZE (KERNEL_HEAP_VIR_END - KERNEL_HEAP_VIR_START)
 
 #define PAGE_ENTRY_PRESENT (1)
@@ -72,6 +72,8 @@ static inline void mem_tlb_flush(void *m)
 void mem_init(multiboot_info_t *mbi);
 addr_t mem_get_pages(uint32_t count);
 void mem_free_pages(addr_t addr, uint32_t count);
+int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual);
+int mem_unmap_con_pages(addr_t virtual, uint32_t count);
 
 static inline void  mem_free_page(addr_t addr)
 {
@@ -81,6 +83,17 @@ static inline void  mem_free_page(addr_t addr)
 static inline addr_t mem_get_page()
 {
 	return mem_get_pages(1);
+}
+
+static inline int mem_page_map(addr_t physical, addr_t virtual)
+{
+	return mem_map_con_pages(physical, 1, virtual);
+}
+
+
+static inline int mem_page_unmap(addr_t virtual)
+{
+	return mem_unmap_con_pages(virtual, 1);
 }
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */

@@ -168,21 +168,17 @@ void mem_init(multiboot_info_t *mbi)
 	mem_phys_init(physical_start, total_memory);
 
 	mem_heap_init();
+
+	char * test;
+	test = (char *) KERNEL_HEAP_VIR_START;
+	for (int b = 0; b < KERNEL_HEAP_SIZE; b++)
+	{
+		test[b] = 1;
+	}
 }
 
 
 
-
-void *mem_page_map(addr_t page)
-{
-
-}
-
-
-void mem_page_unmap(addr_t page)
-{
-
-}
 
 
 
@@ -233,42 +229,59 @@ void page_fault_handler(registers_t regs)
 	panic();
 }
 
-void mem_heap_init()
+
+
+int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual)
 {
-	uint32_t pte_count = KERNEL_HEAP_SIZE / PAGE_SIZE / 1024;
+	uint32_t pte_count = count;
 	uint32_t pde_count = divide_up(pte_count, 1024);
 	addr_t page;
-	addr_t vaddr =  KERNEL_HEAP_VIR_START;
-	char *access_ptr;
-	uint8_t *pde_mirror = (uint8_t *) PDE_MIRROR_BASE;
-	assert(0 == 5);
-while(1);
+	char * access_ptr ;
 	uint32_t i, j;
 
-	printk("mem_heap_init: pte_count = 0x%x pde_count = 0x%x\r\n", pte_count, pde_count);
+//	for (int p = 0; p < 1024; p++)
+//		printk("PDT: %u = 0x%x\r\n",p, kernel_pdt[p]);
+
+	uint32_t * pte;
+	printk("mem_map_con_pages: pte_count = 0x%x pde_count = 0x%x\r\n", pte_count, pde_count);
 
 	for (i = 0; i < pde_count; i++)
 	{
-		// Get PTE page
-		page = mem_get_page();
+		// Get PDE page
+		printk("i = %u\r\n", i);
+		access_ptr = (char *) (PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
 
+		printk ("kernel pdt entry: %u, real one: %u,  0x%x\r\n",FRAME_TO_PDE_INDEX(virtual), VADDR_TO_PAGE_DIR(virtual),  kernel_pdt[FRAME_TO_PDE_INDEX(virtual)]);
+		if (!(kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
+		{
+			page = mem_get_page();
 
-		// Put it in PDT
-		kernel_pdt[FRAME_TO_PTE_INDEX(vaddr)] = page;
-		// Invalidate cache
-		mem_tlb_flush(pde_mirror + (i * PAGE_SIZE));
-		// Clear the PDE table
-		memset(pde_mirror + (i * PAGE_SIZE), 0, PAGE_SIZE);
-		printk("clear PDEe: 0x%x\r\n", page);
+			assert(page != 0);
+
+			// Put it in PDT
+			kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | 3;
+			// Invalidate cache
+			mem_tlb_flush(access_ptr);
+			// Clear the PDE table
+			memset(access_ptr, 0, PAGE_SIZE);
+		}
 
 		for (j = 0; j < MIN(pte_count, 1024) ; j++)
 		{
-			page = mem_get_page();
-			*(uint32_t *)(pde_mirror + (j * sizeof(uint32_t))) = page;
-			access_ptr = (char *) vaddr;
-			memset(access_ptr, 0, PAGE_SIZE);
-			mem_tlb_flush((void *) KERNEL_HEAP_VIR_START + (i * PAGE_SIZE));
-			vaddr += PAGE_SIZE;
+			pte = (uint32_t *) (access_ptr + (j * sizeof(uint32_t)));
+
+//			printk("PTE is = 0x%x, access_ptr = 0x%x\r\n", pte, access_ptr);
+
+
+			assert(!(*pte & 3)); // the PDE is already mapped. that's a bug.
+
+			page = physical + (((i * 1024) + j) * PAGE_SIZE);
+
+			*pte = page | 3;
+
+			mem_tlb_flush((void *) KERNEL_HEAP_VIR_START + (((i * 1024) + j) * PAGE_SIZE));
+//			printk("flushing address: %x\r\n", KERNEL_HEAP_VIR_START + (((i * 1024) + j) * PAGE_SIZE));
+			virtual += PAGE_SIZE;
 		}
 
 		if (j == 1024)
@@ -278,55 +291,12 @@ while(1);
 
 	}
 
-}
-/* HEAP Handling goes here */
-
-int mem_heap_lock()
-{
-	//todo: implement when necessary
 	return 0;
 }
 
-int mem_heap_unlock()
+int mem_unmap_con_pages(addr_t virtual, uint32_t count)
 {
-	//todo: implement when necessary
 	return 0;
 }
 
-void *mem_heap_alloc(int count)
-{
-#if 0
-	static int first = 0;
-
-	addr_t pos = KERNEL_HEAP_VIR_START;
-
-	int pte_index;
-	int pde_index;
-
-	while (pos < KERNEL_HEAP_VIR_END)
-	{
-		/* Find a free spot */
-		pde_index = FRAME_TO_PTE_INDEX(pos);
-		pte_index = FRAME_TO_PTE_INDEX(pos);
-
-		if (kernel_pdt[pte_index] & PAGE_ENTRY_PRESENT)
-		{
-			if (
-		}
-
-
-}
-
-if (!first)
-	{
-#endif
-		//todo: implement
-		return NULL;
-	}
-
-	int mem_heap_free(void *addr , int count)
-	{
-		//todo: implement
-		return 0;
-	}
 

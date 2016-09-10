@@ -25,59 +25,89 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+
+/*
+ * Memory map:
+ *
+ * 0x00000000-0xC0000000 User space usage
+ * 0xC0000000-0xD0000000 Kernel (256 MB to grow to....)
+ * 0xD0000000-0xE0000000 Kernel heap
+ * 0xE0000000........... Unused (for future use)
+ *
+ */
+
+#include <kernel.h>
 #include <types.h>
-#include <boot/multiboot.h>
-#include <video/VIDEO_textmode.h>
-#include <kernel/isr.h>
-#include <printk.h>
 #include <mem/memory.h>
-#include <kernel/cpu.h>
-#include <serial.h>
-#include <lib/list.h>
+#include <printk.h>
 
-void kmain(void)
+void mem_heap_init()
 {
-	extern uint32_t magic;
-	extern void *mbd;
-	multiboot_info_t *mbi = mbd;
+	addr_t physical;
+	uint32_t count = KERNEL_HEAP_SIZE / PAGE_SIZE;
 
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
+	physical = mem_get_pages(count);
+	if (!physical)
+		goto error;
+
+	if (mem_map_con_pages(physical, count, KERNEL_HEAP_VIR_START) != 0)
+		goto error;
+
+	return;
+
+error:
+	printk("Can't allocate kernel HEAP\r\n");
+	panic();
+
+}
+
+int mem_heap_free(void *addr , int count)
+{
+	//todo: implement
+	return 0;
+}
+
+int mem_heap_lock()
+{
+	//todo: implement when necessary
+	return 0;
+}
+
+int mem_heap_unlock()
+{
+	//todo: implement when necessary
+	return 0;
+}
+
+void *mem_heap_alloc(int count)
+{
+#if 0
+	static int first = 0;
+
+	addr_t pos = KERNEL_HEAP_VIR_START;
+
+	int pte_index;
+	int pde_index;
+
+	while (pos < KERNEL_HEAP_VIR_END)
 	{
-		/* Something went not according to specs. Print an error */
-		/* message and halt, but do *not* rely on the multiboot */
-		/* data structure. */
-		return;
+		/* Find a free spot */
+		pde_index = FRAME_TO_PTE_INDEX(pos);
+		pte_index = FRAME_TO_PTE_INDEX(pos);
+
+		if (kernel_pdt[pte_index] & PAGE_ENTRY_PRESENT)
+		{
+			if (
+		}
+
+
+}
+
+if (!first)
+	{
+#endif
+		//todo: implement
+		return NULL;
 	}
 
-	init_serial();
 
-
-	//   VIDEO_clear_screen();
-	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
-
-	printk("Initializing GDT......\r\n");
-	Init_GDT();
-	printk("Initializing IDT......\r\n");
-	Init_IDT();
-
-	disable_i8259();
-//	enableAPIC();
-
-//   init_timer(50);
-	//printk("Checking for APIC support......");
-
-
-	printk("APIC was enabled succesfully\r\n");
-	mem_init(mbi);
-	printk("Bla Bla\r\n");
-#if 0
-	addr_t addr;
-	addr = mem_page_get();
-	printk("Got a mem page: 0x%x\r\n", addr);
-	int *ptr = addr;
-	*ptr = 123;
-	mem_page_free(addr);
-#endif
-
-	while (1);
-}

@@ -93,6 +93,7 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 		total_memory -= PAGE_SIZE;
 
 		// Put it in PDT
+		printk("Physical writing to kernel PDT, index %u\r\n", FRAME_TO_PDE_INDEX(vaddr));
 		kernel_pdt[FRAME_TO_PDE_INDEX(vaddr)] = page | 3;
 		// Invalidate cache
 		access_ptr = pde_mirror + (FRAME_TO_PDE_INDEX(vaddr) * 0x1000);
