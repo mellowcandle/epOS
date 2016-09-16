@@ -27,9 +27,11 @@
 
 #include <types.h>
 #include <kernel/ports.h>
-
+#include <printk.h>
 
 #define PORT 0x3f8   /* COM1 */
+
+void serial_write_string(const char *string);
 
 void init_serial()
 {
@@ -40,6 +42,8 @@ void init_serial()
 	PORT_outb(PORT + 3, 0x03);    // 8 bits, no parity, one stop bit
 	PORT_outb(PORT + 2, 0xC7);    // Enable FIFO, clear them, with 14-byte threshold
 	PORT_outb(PORT + 4, 0x0B);    // IRQs enabled, RTS/DSR set
+
+	register_logger(&serial_write_string);
 }
 
 int serial_received()
@@ -66,7 +70,7 @@ void write_serial(char a)
 	PORT_outb(PORT, a);
 }
 
-void serial_write_string(char *string)
+void serial_write_string(const char *string)
 {
 	while (*string)
 	{

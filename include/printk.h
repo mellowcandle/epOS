@@ -28,6 +28,8 @@
 #ifndef PRINTK_H_X0OBSDIJ
 #define PRINTK_H_X0OBSDIJ
 
+typedef void (* log_func)(const char *string);
+void register_logger(log_func func);
 int printk(const char *format, ...);
 
 #define FUNC_ENTER() printk("+ %s\r\n", __FUNCTION__)

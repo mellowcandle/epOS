@@ -51,7 +51,6 @@ void kmain(void)
 
 	init_serial();
 
-
 	//   VIDEO_clear_screen();
 	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
 

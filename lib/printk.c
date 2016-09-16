@@ -32,9 +32,11 @@
 #include <types.h>
 static char buffer[256] = {0};
 
+
+static log_func logger = NULL;
+
 static char *itoa(int value, char *str, int base)
 {
-	char *rc;
 	char *ptr;
 	char *low;
 	char *end;
@@ -46,7 +48,7 @@ static char *itoa(int value, char *str, int base)
 		return str;
 	}
 
-	rc = ptr = str;
+	ptr = str;
 
 	// Set '-' for negative decimals.
 	if (value < 0 && base == 10)
@@ -83,7 +85,6 @@ static char *itoa(int value, char *str, int base)
 
 static char *uitoa(unsigned int value, char *str, int base)
 {
-	char *rc;
 	char *ptr;
 	char *low;
 	char *end;
@@ -95,7 +96,7 @@ static char *uitoa(unsigned int value, char *str, int base)
 		return str;
 	}
 
-	rc = ptr = str;
+	ptr = str;
 	// Remember where the numbers start.
 	low = ptr;
 
@@ -125,7 +126,6 @@ static char *uitoa(unsigned int value, char *str, int base)
 
 static char *lluitoa(unsigned long long value, char *str, int base)
 {
-	char *rc;
 	char *ptr;
 	char *low;
 	char *end;
@@ -137,7 +137,7 @@ static char *lluitoa(unsigned long long value, char *str, int base)
 		return str;
 	}
 
-	rc = ptr = str;
+	ptr = str;
 	// Remember where the numbers start.
 	low = ptr;
 
@@ -219,7 +219,7 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 				break;
 
 			case 'c':
-				c = va_arg(args, char);
+				c = (char) va_arg(args, int);
 
 				if (isascii(c))
 				{
@@ -254,6 +254,14 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 	*buffer = '\0';
 	return len;
 }
+
+
+void register_logger(log_func func)
+{
+	logger = func;
+}
+
+
 int printk(const char *format, ...)
 {
 	va_list arg;
@@ -261,7 +269,11 @@ int printk(const char *format, ...)
 	va_start(arg, format);
 	done = do_printk(buffer, format, arg);
 	va_end(arg);
-	serial_write_string(buffer);
-//	VIDEO_print_string(buffer);
+
+	if (logger)
+	{
+		logger(buffer);
+	}
+
 	return done;
 }
