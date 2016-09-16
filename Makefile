@@ -29,7 +29,7 @@ TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
 LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 ASM	= nasm
-WARNINGS := -Wall -Wextra 
+WARNINGS := -Wall -Wextra
 
 ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
@@ -75,15 +75,17 @@ kernel.iso: multiboot
 	@mkdir -p isodir/boot/grub
 	@cp kernel.bin isodir/boot/kernel.bin
 	@cp make/grub.cfg isodir/boot/grub/grub.cfg
-	@grub-mkrescue -o kernel.iso isodir > /dev/null 2>&1 
-	
+	@grub-mkrescue -o kernel.iso isodir > /dev/null 2>&1
+
 clean:
 	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.img
 
 .c.o:
+	@echo "(CC) $@"
 	@$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
-	
+
 .s.o:
+	@echo "(AS) $@"
 	@$(ASM) -f elf -o $@ $<
 
 cscope:
@@ -96,4 +98,4 @@ cscope_update:
 	@cscope -b -q -k
 
 style:
-	@find $(PROJDIRS) -name *.[ch] | xargs ${ASTYLE} ${ASTYLE_CONFIG} 
+	@find $(PROJDIRS) -name *.[ch] | xargs ${ASTYLE} ${ASTYLE_CONFIG}
