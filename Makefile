@@ -23,7 +23,7 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot style
+.PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot style lines
 
 TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
@@ -99,3 +99,6 @@ cscope_update:
 
 style:
 	@find $(PROJDIRS) -name *.[ch] | xargs ${ASTYLE} ${ASTYLE_CONFIG}
+
+lines:
+	@cloc --exclude-dir=toolchain --exclude-lang=XML,D,Markdown,make,Python,DTD .
