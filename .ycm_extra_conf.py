@@ -26,6 +26,7 @@ import ycm_core
 flags = [
 '-Wall',
 '-Wextra',
+'-Wno-unused-value',
 '-nostdlib',
 '-m32',
 '-ffreestanding',
