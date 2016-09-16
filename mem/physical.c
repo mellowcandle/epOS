@@ -59,7 +59,7 @@ typedef struct
 } phys_memory;
 
 
-static phys_memory physmem;
+static volatile phys_memory physmem;
 
 void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 {
