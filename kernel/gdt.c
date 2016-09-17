@@ -78,7 +78,7 @@ static void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsig
 *  finally call gdt_flush() in our assembler file in order
 *  to tell the processor where the new GDT is and update the
 *  new segment registers */
-void Init_GDT()
+void gdt_init()
 {
 	/* Setup the GDT pointer and limit */
 	gp.limit = (sizeof(struct gdt_entry) * 5) - 1;

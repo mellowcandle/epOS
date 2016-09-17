@@ -41,6 +41,7 @@
 #include <mem/memory.h>
 #include <printk.h>
 #include <lib/kmalloc.h>
+#include <lib/string.h>
 
 typedef struct
 {
@@ -56,7 +57,6 @@ static heap_t kernel_heap = {0};
 
 void mem_heap_init()
 {
-	addr_t physical;
 
 	FUNC_ENTER();
 

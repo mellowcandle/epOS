@@ -51,32 +51,13 @@ void kmain(void)
 
 	init_serial();
 
-	//   VIDEO_clear_screen();
 	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
 
-	printk("Initializing GDT......\r\n");
-	Init_GDT();
-	printk("Initializing IDT......\r\n");
-	Init_IDT();
-
-	disable_i8259();
-//	enableAPIC();
-
-//   init_timer(50);
-	//printk("Checking for APIC support......");
-
-
-	printk("APIC was enabled succesfully\r\n");
+	gdt_init();
+	idt_init();
 	mem_init(mbi);
+
 	printk("Bla Bla\r\n");
-#if 0
-	addr_t addr;
-	addr = mem_page_get();
-	printk("Got a mem page: 0x%x\r\n", addr);
-	int *ptr = addr;
-	*ptr = 123;
-	mem_page_free(addr);
-#endif
 
 	while (1);
 }

@@ -25,15 +25,16 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include "kernel/isr.h"
-#include "video/VIDEO_textmode.h"
+#include <kernel/isr.h>
+#include <kernel/ports.h>
+#include <printk.h>
+
 volatile uint32_t tick = 0;
 
 static void timer_callback(registers_t regs)
 {
 	tick++;
-	VIDEO_print_string("Tick\n");
-
+	printk("Tick\r\n");
 }
 
 void init_timer(uint32_t frequency)
