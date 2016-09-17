@@ -2,8 +2,6 @@
 
 /**  Durand's Ridiculously Amazing Super Duper Memory functions.  */
 
-//#define DEBUG
-
 #define LIBALLOC_MAGIC	0xc001c0de
 #define MAXCOMPLETE		5
 #define MAXEXP	32
@@ -29,9 +27,9 @@ unsigned int l_inuse = 0;			//< The amount of memory in use (malloc'ed).
 #endif
 
 
-static int l_initialized = 0;			//< Flag to indicate initialization.
-static int l_pageSize  = 4096;			//< Individual page size
-static int l_pageCount = 16;			//< Minimum number of pages to allocate.
+static unsigned int l_initialized = 0;			//< Flag to indicate initialization.
+static unsigned int l_pageSize  = 4096;			//< Individual page size
+static unsigned int l_pageCount = 16;			//< Minimum number of pages to allocate.
 
 
 // ***********   HELPER FUNCTIONS  *******************************
@@ -51,7 +49,7 @@ static inline int getexp(unsigned int size)
 	}
 
 
-	int shift = MINEXP;
+	unsigned int shift = MINEXP;
 
 	while (shift < MAXEXP)
 	{
@@ -73,7 +71,7 @@ static inline int getexp(unsigned int size)
 
 static void 	*liballoc_memset(void *s, int c, size_t n)
 {
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < n ; i++)
 	{
@@ -148,7 +146,6 @@ static void dump_array()
 	}
 
 	printk("'*' denotes a split to the left/right of a tag\r\n");
-	fflush(stdout);
 }
 #endif
 
@@ -583,7 +580,7 @@ void   *krealloc(void *p, size_t size)
 {
 	void *ptr;
 	struct boundary_tag *tag;
-	int real_size;
+	size_t real_size;
 
 	if (size == 0)
 	{
@@ -596,18 +593,12 @@ void   *krealloc(void *p, size_t size)
 		return kmalloc(size);
 	}
 
-	if (mem_heap_lock != NULL)
-	{
-		mem_heap_lock();    // lockit
-	}
+	mem_heap_lock();    // lockit
 
 	tag = (struct boundary_tag *)((unsigned int)p - sizeof(struct boundary_tag));
 	real_size = tag->size;
 
-	if (mem_heap_unlock != NULL)
-	{
-		mem_heap_unlock();
-	}
+	mem_heap_unlock();
 
 	if (real_size > size)
 	{

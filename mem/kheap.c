@@ -65,7 +65,7 @@ void mem_heap_init()
 	kernel_heap.initalized = true;
 
 
-	test_heap();
+//	test_heap();
 	FUNC_LEAVE();
 }
 
@@ -115,9 +115,9 @@ void *mem_heap_alloc(size_t count)
 		goto error;
 	}
 
-	if (mem_map_con_pages(physical, count, kernel_heap.location) != 0)
+	for (size_t i = 0; i < count; i++)
 	{
-		goto error;
+		mem_page_map(physical + i * (PAGE_SIZE), kernel_heap.location + i * (PAGE_SIZE));
 	}
 
 	ret_address = kernel_heap.location;
@@ -147,5 +147,15 @@ void test_heap()
 	kfree(c);
 	d = kmalloc(15);
 	e = kmalloc(12);
+
+	memset(a,1,10);
+	memset(b,0,20);
+	memset(d,1,15);
+	memset(e,1,12);
+
+	kfree(a);
+	kfree(b);
+	kfree(d);
+	kfree(e);
 
 }

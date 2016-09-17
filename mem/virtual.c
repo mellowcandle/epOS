@@ -105,7 +105,6 @@ void mem_init(multiboot_info_t *mbi)
 	uint32_t physical_start;
 	uint32_t kernel_size;
 	uint32_t required_kernel_pages;
-	uint32_t addr;
 
 	FUNC_ENTER();
 	register_interrupt_handler(14, page_fault_handler);
@@ -173,11 +172,6 @@ void mem_init(multiboot_info_t *mbi)
 	FUNC_LEAVE();
 }
 
-
-
-
-
-
 void page_fault_handler(registers_t regs)
 {
 
@@ -225,75 +219,63 @@ void page_fault_handler(registers_t regs)
 	panic();
 }
 
-
-
-int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual)
+int mem_page_map(addr_t physical, addr_t virtual)
 {
-	uint32_t pte_count = count;
-	uint32_t pde_count = divide_up(pte_count, 1024);
+
 	addr_t page;
-	char *access_ptr ;
-	uint32_t i, j;
+	char * access_ptr;
+	uint32_t * pte;
 
 	FUNC_ENTER();
 
-	uint32_t *pte;
-	printk("mem_map_con_pages: pte_count = 0x%x pde_count = 0x%x\r\n", pte_count, pde_count);
+	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
 
-	for (i = 0; i < pde_count; i++)
+	// Check if the PDT exists
+	if (!(kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
 	{
-		// Get PDE page
-		printk("i = %u\r\n", i);
-		access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
+		printk("mem_map_page: PDT missing, creating and mapping\r\n");
+		page = mem_get_page();
 
-		printk("kernel pdt entry: %u, real one: %u,  0x%x\r\n", FRAME_TO_PDE_INDEX(virtual), VADDR_TO_PAGE_DIR(virtual),  kernel_pdt[FRAME_TO_PDE_INDEX(virtual)]);
+		assert(page != 0);
 
-		if (!(kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
-		{
-			page = mem_get_page();
-
-			assert(page != 0);
-
-			// Put it in PDT
-			kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | 3;
-			// Invalidate cache
-			mem_tlb_flush(access_ptr);
-			// Clear the PDE table
-			memset(access_ptr, 0, PAGE_SIZE);
-		}
-
-		for (j = 0; j < MIN(pte_count, 1024) ; j++)
-		{
-			pte = (uint32_t *)(access_ptr + (j * sizeof(uint32_t)));
-
-//			printk("PTE is = 0x%x, access_ptr = 0x%x\r\n", pte, access_ptr);
-
-
-			assert(!(*pte & 3)); // the PDE is already mapped. that's a bug.
-
-			page = physical + (((i * 1024) + j) * PAGE_SIZE);
-
-			*pte = page | 3;
-
-			mem_tlb_flush((void *) KERNEL_HEAP_VIR_START + (((i * 1024) + j) * PAGE_SIZE));
-//			printk("flushing address: %x\r\n", KERNEL_HEAP_VIR_START + (((i * 1024) + j) * PAGE_SIZE));
-			virtual += PAGE_SIZE;
-		}
-
-		if (j == 1024)
-		{
-			pte_count -= 1024;
-		}
-
+		// Put it in PDT
+		kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | 3;
+		// Invalidate cache
+		mem_tlb_flush(access_ptr);
+		// Clear the PDE table
+		memset(access_ptr, 0, PAGE_SIZE);
 	}
+	// Insert the PTE.
+	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
+
+	assert(!(*pte & 3));
+
+	*pte = physical | 3;
+
+	mem_tlb_flush((void *) virtual);
 
 	FUNC_LEAVE();
 	return 0;
 }
 
-int mem_unmap_con_pages(addr_t virtual, uint32_t count)
+
+int mem_page_unmap(addr_t virtual)
 {
+	char * access_ptr;
+	uint32_t * pte;
+
 	FUNC_ENTER();
+
+	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
+
+	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
+
+	assert(*pte & 3);
+
+	*pte = 0;
+
+	mem_tlb_flush((void *) virtual);
+
 	FUNC_LEAVE();
 	return 0;
 }

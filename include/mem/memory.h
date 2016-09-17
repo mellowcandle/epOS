@@ -85,16 +85,10 @@ static inline addr_t mem_get_page()
 	return mem_get_pages(1);
 }
 
-static inline int mem_page_map(addr_t physical, addr_t virtual)
-{
-	return mem_map_con_pages(physical, 1, virtual);
-}
+int mem_page_map(addr_t physical, addr_t virtual);
+int mem_page_unmap(addr_t virtual);
 
 
-static inline int mem_page_unmap(addr_t virtual)
-{
-	return mem_unmap_con_pages(virtual, 1);
-}
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
 
