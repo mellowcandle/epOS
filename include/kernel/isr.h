@@ -40,6 +40,8 @@ typedef struct registers
 
 typedef void (*isr_t)(registers_t);
 
+void register_interrupt_handler(uint8_t n, isr_t handler);
+
 
 // A few defines to make life a little easier
 #define IRQ0 32
@@ -60,5 +62,4 @@ typedef void (*isr_t)(registers_t);
 #define IRQ15 47
 
 
-void init_timer(uint32_t frequency);
 #endif /* ISR_H_ */
