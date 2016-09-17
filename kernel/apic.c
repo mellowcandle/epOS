@@ -107,8 +107,8 @@ void enableAPIC()
 
 void disable_i8259()
 {
-	PORT_outb(0xff, PIC1_DATA);
-	PORT_outb(0xff, PIC2_DATA);
+	outb(0xff, PIC1_DATA);
+	outb(0xff, PIC2_DATA);
 }
 
 

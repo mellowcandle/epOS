@@ -31,7 +31,7 @@
 #include "types.h"
 
 void VIDEO_clear_screen(void);
-void VIDEO_print_string(char *string);
+void VIDEO_print_string(const char *string);
 void VIDEO_print_char(uint8_t c);
 
 #endif /* end of include guard: VIDEO_TEXTMODE_H_LSC3MFDI */

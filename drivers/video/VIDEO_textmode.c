@@ -25,8 +25,8 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include "video/VIDEO_textmode.h"
-#include "kernel/ports.h"
+#include <video/VIDEO_textmode.h>
+#include <kernel/ports.h>
 #define TAB_SIZE    8
 
 //prototypes
@@ -45,10 +45,10 @@ static void move_cursor()
 {
 	// The screen is 80 characters wide...
 	uint16_t cursorLocation = (uint16_t)(cursor_y * 80 + cursor_x);
-	PORT_outb(0x3D4, 14);                  // Tell the VGA board we are setting the high cursor byte.
-	PORT_outb(0x3D5, cursorLocation >> 8); // Send the high cursor byte.
-	PORT_outb(0x3D4, 15);                  // Tell the VGA board we are setting the low cursor byte.
-	PORT_outb(0x3D5, cursorLocation);      // Send the low cursor byte.
+	outb(0x3D4, 14);                  // Tell the VGA board we are setting the high cursor byte.
+	outb(0x3D5, cursorLocation >> 8); // Send the high cursor byte.
+	outb(0x3D4, 15);                  // Tell the VGA board we are setting the low cursor byte.
+	outb(0x3D5, cursorLocation);      // Send the low cursor byte.
 }
 
 // Scrolls the text on the screen up by one line.
@@ -149,7 +149,7 @@ void VIDEO_print_char(uint8_t c)
 
 }
 
-void VIDEO_print_string(char *string)
+void VIDEO_print_string(const char *string)
 {
 	while (*string)
 	{
