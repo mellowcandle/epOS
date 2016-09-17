@@ -29,7 +29,7 @@ TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
 LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 ASM	= nasm
-WARNINGS := -Wall -Wextra -Wno-unused-value
+WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
 
 ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
