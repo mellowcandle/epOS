@@ -75,7 +75,7 @@ extern int mem_heap_unlock();
  * \return NULL if the pages were not allocated.
  * \return A pointer to the allocated memory.
  */
-extern void *mem_heap_alloc(int);
+extern void *mem_heap_alloc(size_t);
 
 /** This frees previously allocated memory. The void* parameter passed
  * to the function is the exact same value returned from a previous

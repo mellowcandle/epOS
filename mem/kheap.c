@@ -40,7 +40,7 @@
 #include <types.h>
 #include <mem/memory.h>
 #include <printk.h>
-
+#include <lib/kmalloc.h>
 
 typedef struct
 {
@@ -50,6 +50,7 @@ typedef struct
 	addr_t   location;
 	bool initalized;
 } heap_t;
+void test_heap();
 
 static heap_t kernel_heap = {0};
 
@@ -62,6 +63,9 @@ void mem_heap_init()
 	kernel_heap.total_pages =  KERNEL_HEAP_SIZE / PAGE_SIZE;
 	kernel_heap.location = KERNEL_HEAP_VIR_START;
 	kernel_heap.initalized = true;
+
+
+	test_heap();
 	FUNC_LEAVE();
 }
 
@@ -69,8 +73,11 @@ int mem_heap_free(void *addr , int count)
 {
 	FUNC_ENTER();
 
+
 	assert(kernel_heap.initalized);
 	//todo: implement
+	addr = addr;
+	count = count;
 	FUNC_LEAVE();
 	return 0;
 }
@@ -87,7 +94,7 @@ int mem_heap_unlock()
 	return 0;
 }
 
-void *mem_heap_alloc(int count)
+void *mem_heap_alloc(size_t count)
 {
 	addr_t ret_address;
 	addr_t physical;
@@ -128,3 +135,17 @@ error:
 }
 
 
+
+void test_heap()
+{
+
+	char *a , *b, *c, *d, *e;
+
+	a = kmalloc(10);
+	b = kmalloc(20);
+	c = kmalloc(30);
+	kfree(c);
+	d = kmalloc(15);
+	e = kmalloc(12);
+
+}
