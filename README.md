@@ -4,11 +4,12 @@
 
 * Multiboot 1.0 compliancy
 * Bitmap Page frame allocator
+* Higer half kernel
+* Paging enabled
 
 ## Todo's
 
 * Integrate cppcheck to makefile
-* Enable Higher-half paging enabled kernel
 * Add testing framework
 
 
