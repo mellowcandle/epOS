@@ -26,7 +26,7 @@
 */
 
 #include <types.h>
-#include <kernel/cpu.h>
+#include <cpu.h>
 #include <lib/string.h>
 
 // A struct describing an interrupt gate.

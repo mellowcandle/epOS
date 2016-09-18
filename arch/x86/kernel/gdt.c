@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <kernel/cpu.h>
+#include <cpu.h>
 #include <types.h>
 
 extern void gdt_flush();

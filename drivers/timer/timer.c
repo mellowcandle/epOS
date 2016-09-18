@@ -25,8 +25,8 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <kernel/isr.h>
-#include <kernel/cpu.h>
+#include <isr.h>
+#include <cpu.h>
 #include <printk.h>
 
 volatile uint32_t tick = 0;

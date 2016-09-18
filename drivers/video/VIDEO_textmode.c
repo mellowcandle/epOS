@@ -26,7 +26,7 @@
 */
 
 #include <video/VIDEO_textmode.h>
-#include <kernel/cpu.h>
+#include <cpu.h>
 #define TAB_SIZE    8
 
 //prototypes

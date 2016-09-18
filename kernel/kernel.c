@@ -28,10 +28,10 @@
 #include <types.h>
 #include <boot/multiboot.h>
 #include <video/VIDEO_textmode.h>
-#include <kernel/isr.h>
+#include <isr.h>
 #include <printk.h>
 #include <mem/memory.h>
-#include <kernel/cpu.h>
+#include <cpu.h>
 #include <serial.h>
 #include <lib/list.h>
 

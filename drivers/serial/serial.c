@@ -26,7 +26,7 @@
 */
 
 #include <types.h>
-#include <kernel/cpu.h>
+#include <cpu.h>
 #include <printk.h>
 
 #define PORT 0x3f8   /* COM1 */

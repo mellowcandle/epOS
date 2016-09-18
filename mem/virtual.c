@@ -39,7 +39,7 @@
 #include <mem/memory.h>
 #include <printk.h>
 #include <types.h>
-#include <kernel/isr.h>
+#include <isr.h>
 #include <lib/kmalloc.h>
 #include <lib/string.h>
 #include <kernel.h>

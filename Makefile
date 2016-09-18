@@ -37,9 +37,9 @@ ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --in
 
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
 
-PROJDIRS := include kernel lib boot drivers mem
+PROJDIRS := include kernel lib boot drivers mem arch
 
-INCLUDES := -Iinclude
+INCLUDES := -Iinclude -Iarch/x86/include
 SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.c")
 SRCFILES += $(shell find $(PROJDIRS) -type f -name "*.s")
 

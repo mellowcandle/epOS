@@ -27,8 +27,8 @@
 
 #include <types.h>
 #include <printk.h>
-#include <kernel/cpu.h>
-#include <kernel/isr.h>
+#include <cpu.h>
+#include <isr.h>
 
 
 isr_t interrupt_handlers[256];

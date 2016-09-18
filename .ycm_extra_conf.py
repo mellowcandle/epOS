@@ -45,6 +45,7 @@ flags = [
 '-x',
 'c',
 '-Iinclude',
+'-Iarch/x86/include',
 ]
 
 
