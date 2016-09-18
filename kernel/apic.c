@@ -27,7 +27,6 @@
 
 #include <types.h>
 #include <kernel/cpu.h>
-#include <kernel/ports.h>
 #include <kernel/apic.h>
 
 #define IA32_APIC_BASE_MSR 0x1B

@@ -28,7 +28,7 @@
 #include <types.h>
 #include <kernel/cpu.h>
 #include <lib/string.h>
-#include <kernel/ports.h>
+
 // A struct describing an interrupt gate.
 struct idt_entry_struct
 {

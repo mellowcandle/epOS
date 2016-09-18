@@ -27,7 +27,7 @@
 
 #include <types.h>
 #include <printk.h>
-#include <kernel/ports.h>
+#include <kernel/cpu.h>
 #include <kernel/isr.h>
 
 

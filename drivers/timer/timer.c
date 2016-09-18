@@ -26,7 +26,7 @@
 */
 
 #include <kernel/isr.h>
-#include <kernel/ports.h>
+#include <kernel/cpu.h>
 #include <printk.h>
 
 volatile uint32_t tick = 0;

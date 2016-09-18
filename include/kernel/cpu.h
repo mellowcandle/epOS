@@ -107,6 +107,9 @@ enum cpuid_requests
 };
 
 
+void gdt_init();
+void idt_init();
+
 /** issue a single request to CPUID. Fits 'intel features', for instance
  *  *  note that even if only "eax" and "edx" are of interest, other registers
  *   *  will be modified by the operation, so we need to tell the compiler about
@@ -114,29 +117,51 @@ enum cpuid_requests
  *    */
 static inline void cpuid(int code, uint32_t *a, uint32_t *d)
 {
-	asm volatile("cpuid":"=a"(*a), "=d"(*d):"a"(code):"ecx", "ebx");
+	__asm volatile("cpuid":"=a"(*a), "=d"(*d):"a"(code):"ecx", "ebx");
 }
 
 /** issue a complete request, storing general registers output as a string
  *  */
 static inline int cpuid_string(int code, uint32_t where[4])
 {
-	asm volatile("cpuid":"=a"(*where), "=b"(*(where+1)),
+	__asm volatile("cpuid":"=a"(*where), "=b"(*(where+1)),
 	             "=c"(*(where+2)), "=d"(*(where+3)):"a"(code));
 	return (int)where[0];
 }
 
 static inline void cpuGetMSR(uint32_t msr, uint32_t *lo, uint32_t *hi)
 {
-	asm volatile("rdmsr" : "=a"(*lo), "=d"(*hi) : "c"(msr));
+	__asm volatile("rdmsr" : "=a"(*lo), "=d"(*hi) : "c"(msr));
 }
 
 static inline void cpuSetMSR(uint32_t msr, uint32_t lo, uint32_t hi)
 {
-	asm volatile("wrmsr" : : "a"(lo), "d"(hi), "c"(msr));
+	__asm volatile("wrmsr" : : "a"(lo), "d"(hi), "c"(msr));
 }
 
-void gdt_init();
-void idt_init();
 
+// Write a byte out to the specified port.
+static inline void outb(uint16_t port, uint8_t value)
+{
+	__asm volatile("outb %1, %0" : : "dN"(port), "a"(value));
+}
+
+static inline uint16_t inb(uint16_t port)
+{
+	uint8_t ret;
+	__asm volatile("inb %1, %0" : "=a"(ret) : "dN"(port));
+	return ret;
+}
+
+static inline void outw(uint16_t port, uint16_t value)
+{
+	__asm volatile("outw %1, %0" : : "dN"(port), "a"(value));
+}
+
+static inline uint16_t inw(uint16_t port)
+{
+	uint16_t ret;
+	__asm volatile("inw %1, %0" : "=a"(ret) : "dN"(port));
+	return ret;
+}
 #endif /* CPU_H_ */
