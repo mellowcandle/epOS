@@ -85,7 +85,7 @@ static inline addr_t mem_get_page()
 	return mem_get_pages(1);
 }
 
-int mem_page_map(addr_t physical, addr_t virtual);
+int mem_page_map(addr_t physical, addr_t virtual, int flags);
 int mem_page_unmap(addr_t virtual);
 
 

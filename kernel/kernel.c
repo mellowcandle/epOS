@@ -34,6 +34,7 @@
 #include <cpu.h>
 #include <serial.h>
 #include <lib/list.h>
+#include <apic.h>
 
 void kmain(void)
 {
@@ -56,7 +57,7 @@ void kmain(void)
 	gdt_init();
 	idt_init();
 	mem_init(mbi);
-
+	enableAPIC();
 	printk("Bla Bla\r\n");
 
 	while (1);

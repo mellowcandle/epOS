@@ -110,6 +110,8 @@ enum cpuid_requests
 void gdt_init();
 void idt_init();
 
+
+
 /** issue a single request to CPUID. Fits 'intel features', for instance
  *  *  note that even if only "eax" and "edx" are of interest, other registers
  *   *  will be modified by the operation, so we need to tell the compiler about
@@ -127,6 +129,13 @@ static inline int cpuid_string(int code, uint32_t where[4])
 	__asm volatile("cpuid":"=a"(*where), "=b"(*(where+1)),
 	             "=c"(*(where+2)), "=d"(*(where+3)):"a"(code));
 	return (int)where[0];
+}
+
+static inline bool cpu_msr_supported()
+{
+	uint32_t a, d; // eax, edx
+	cpuid(1, &a, &d);
+	return d & CPUID_FEAT_EDX_MSR;
 }
 
 static inline void cpuGetMSR(uint32_t msr, uint32_t *lo, uint32_t *hi)

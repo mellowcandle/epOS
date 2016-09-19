@@ -117,7 +117,7 @@ void *mem_heap_alloc(size_t count)
 
 	for (size_t i = 0; i < count; i++)
 	{
-		mem_page_map(physical + i * (PAGE_SIZE), kernel_heap.location + i * (PAGE_SIZE));
+		mem_page_map(physical + i * (PAGE_SIZE), kernel_heap.location + i * (PAGE_SIZE), 0);
 	}
 
 	ret_address = kernel_heap.location;

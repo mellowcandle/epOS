@@ -219,7 +219,7 @@ void page_fault_handler(registers_t regs)
 	panic();
 }
 
-int mem_page_map(addr_t physical, addr_t virtual)
+int mem_page_map(addr_t physical, addr_t virtual, int flags)
 {
 
 	addr_t page;

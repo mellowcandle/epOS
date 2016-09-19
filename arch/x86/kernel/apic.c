@@ -26,8 +26,10 @@
 */
 
 #include <types.h>
+#include <mem/memory.h>
 #include <cpu.h>
 #include <apic.h>
+#include <printk.h>
 
 #define IA32_APIC_BASE_MSR 0x1B
 #define IA32_APIC_BASE_MSR_BSP 0x100 // Processor is a BSP
@@ -67,10 +69,6 @@ void cpuSetAPICBase(uintptr_t apic)
 	uint32_t edx = 0;
 	uint32_t eax = (apic & 0xfffff100) | IA32_APIC_BASE_MSR_ENABLE;
 
-#ifdef __PHYSICAL_MEMORY_EXTENSION__
-	edx = (apic >> 32) & 0x0f;
-#endif
-
 	cpuSetMSR(IA32_APIC_BASE_MSR, eax, edx);
 }
 
@@ -82,8 +80,7 @@ uintptr_t cpuGetAPICBase()
 {
 	uint32_t eax, edx;
 	cpuGetMSR(IA32_APIC_BASE_MSR, &eax, &edx);
-
-	return (eax & 0xfffff100);
+	return (eax & 0xfffff000);
 }
 static uint32_t readAPICRegister(uint32_t reg)
 {
@@ -94,20 +91,35 @@ static void writeAPICRegister(uint32_t reg, uint32_t value)
 {
 	*((volatile uint32_t *)(cpuGetAPICBase() + reg * 16)) = value;
 }
-void enableAPIC()
-{
-	/* Hardware enable the Local APIC if it wasn't enabled */
-	cpuSetAPICBase(cpuGetAPICBase());
-
-	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
-	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
-
-}
-
-void disable_i8259()
+static void disable_i8259()
 {
 	outb(0xff, PIC1_DATA);
 	outb(0xff, PIC2_DATA);
 }
+
+void enableAPIC()
+{
+
+	/* First thing first, disable the PIC */
+
+	disable_i8259();
+
+	addr_t apic_base = cpuGetAPICBase();
+	/* Hardware enable the Local APIC if it wasn't enabled */
+	cpuSetAPICBase(apic_base);
+
+	/* this usually maps to 0xFEE00000 */
+
+	/* Idendity map the APIC base */
+	mem_page_map(apic_base, apic_base, 0);
+
+	printk("APIC Base was set to: 0x%x\r\n", apic_base);
+	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
+	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
+
+
+
+}
+
 
 
