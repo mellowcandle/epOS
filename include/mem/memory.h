@@ -33,11 +33,16 @@
 #include <boot/multiboot.h>
 
 #define PAGE_SIZE 4096
+#define PAGE_MASK (~(PAGE_SIZE-1))
+
 #define PAGE_DIRECTORY_SIZE 1024
 #define PAGE_TABLE_SIZE 1024
 
 #define IS_PAGE_ALIGNED(POINTER) \
 	    (((uintptr_t)(const void *)(POINTER)) % (PAGE_SIZE) == 0)
+
+#define PAGE_ALIGN_DOWN(_x) (_x & PAGE_MASK)
+#define PAGE_ALIGN_UP(_x) (((_x)+PAGE_SIZE - 1) & PAGE_MASK)
 
 #define FRAME_TO_PDE_INDEX(_x) (_x >> 22)
 #define FRAME_TO_PTE_INDEX(_x) ((_x << 10) >> 22)
