@@ -55,3 +55,12 @@ object pointed to by s1 is greater than, equal to, or less than the object point
 */
 int   memcmp(const void *s1, const void *s2, size_t n);
 
+size_t strlen ( const char * str );
+
+int strcmp(const char *s1, const char *s2);
+int strncmp(const char *s1, const char *s2, size_t n);
+char *strcpy(char *restrict s1, const char *restrict s2);
+char * strncpy(char *restrict s1, const char *restrict s2, size_t n);
+char * strcat(char *restrict s1, const char *restrict s2);
+
+
