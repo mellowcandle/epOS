@@ -23,7 +23,7 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot style lines prepare
+.PHONY: all clean dist testdrivers todolist cscope cscope_update multiboot style lines prepare
 
 TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
@@ -54,12 +54,6 @@ DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
 
 all: kernel.iso
 
-test:
-	@echo "Source files: "
-	@echo $(SRCFILES)
-	@echo "Object files: "
-	@echo $(OBJFILES)
-#kernel.bin: src/kernel/kernel.o src/kernel/loader.o
 kernel.bin: $(OBJFILES)
 	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T make/linker.ld -Wl,-Map=kernel.map -ffreestanding -nostdlib -o $@ $^ -lgcc
 
