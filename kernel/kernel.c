@@ -57,7 +57,7 @@ void kmain(void)
 	gdt_init();
 	idt_init();
 	mem_init(mbi);
-	enableAPIC();
+//	enableAPIC();
 	printk("Bla Bla\r\n");
 
 	while (1);

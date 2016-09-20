@@ -39,7 +39,7 @@ CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
 
 PROJDIRS := include kernel lib boot drivers mem arch
 
-INCLUDES := -Iinclude -Iarch/x86/include
+INCLUDES := -Iinclude -Iarch/x86/include -Idrivers/include
 SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.c")
 SRCFILES += $(shell find $(PROJDIRS) -type f -name "*.s")
 
