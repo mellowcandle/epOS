@@ -7,4 +7,6 @@ before_install:
     - sudo apt-get install -qq nasm
 
 script:
-    "make"
+    - "make prepare"
+    - "make"
+

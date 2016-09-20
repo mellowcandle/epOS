@@ -23,7 +23,7 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot style lines
+.PHONY: all clean dist check testdrivers todolist cscope cscope_update multiboot style lines prepare
 
 TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
@@ -102,3 +102,6 @@ style:
 
 lines:
 	@cloc --exclude-dir=toolchain --exclude-lang=XML,D,Markdown,make,Python,DTD .
+
+prepare:
+	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
