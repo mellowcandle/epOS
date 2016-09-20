@@ -90,8 +90,8 @@ pdt:
     times (KERNEL_PAGE_NUMBER - 1) dd 0                 ; Pages before kernel space.
     ; This page directory entry defines a 4MB page containing the kernel.
     dd 0x00000083
-    times (1024 - KERNEL_PAGE_NUMBER - 1) dd 0  ; Pages after the kernel image.
-
+    times (1024 - KERNEL_PAGE_NUMBER - 2) dd 0  ; Pages after the kernel image.
+	dd (pdt - KERNEL_VIRTUAL_BASE) + 3
 
 section .text
 align 4

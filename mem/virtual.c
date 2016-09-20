@@ -145,13 +145,6 @@ void mem_init(multiboot_info_t *mbi)
 		panic();
 	}
 
-	//TODO: Move to assembly. doesn't belong here.
-	addr_t mirror = (addr_t)(((char *) kernel_pdt) - KERNEL_VIRTUAL_BASE);
-	// Map the page directory to itself.
-	kernel_pdt[1023] = mirror | 3;
-
-	mem_tlb_flush((void *) PDE_MIRROR_BASE);
-
 	kernel_size = ((uint32_t) &kernel_end - (uint32_t) &kernel_start);
 	required_kernel_pages = (kernel_size / PAGE_SIZE) + 1;
 
