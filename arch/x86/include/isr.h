@@ -41,7 +41,7 @@ typedef struct registers
 typedef void (*isr_t)(registers_t);
 
 void register_interrupt_handler(uint8_t n, isr_t handler);
-
+void irq_reg_dump(registers_t *regs);
 
 // A few defines to make life a little easier
 #define IRQ0 32

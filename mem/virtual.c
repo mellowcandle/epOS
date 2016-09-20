@@ -216,6 +216,7 @@ void page_fault_handler(registers_t regs)
 	printk("Ocurred on %s, ", page_read ? "read" : "write");
 	printk("Page ownership %s\r\n", page_user ? "user" : "kernel");
 
+	irq_reg_dump(&regs);
 	panic();
 }
 
@@ -223,8 +224,8 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 {
 
 	addr_t page;
-	char * access_ptr;
-	uint32_t * pte;
+	char *access_ptr;
+	uint32_t *pte;
 
 	FUNC_ENTER();
 
@@ -245,6 +246,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 		// Clear the PDE table
 		memset(access_ptr, 0, PAGE_SIZE);
 	}
+
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
@@ -261,8 +263,8 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 
 int mem_page_unmap(addr_t virtual)
 {
-	char * access_ptr;
-	uint32_t * pte;
+	char *access_ptr;
+	uint32_t *pte;
 
 	FUNC_ENTER();
 
