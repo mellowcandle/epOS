@@ -8,5 +8,5 @@ before_install:
 
 script:
     - "make prepare"
-    - "make"
+    - "make kernel.bin"
 

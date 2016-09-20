@@ -77,7 +77,7 @@ EntryPoint:
   
 
 section .data
-align 0x1000
+align 4096
 pdt:
     ; This page directory entry identity-maps the first 4MB of the 32-bit physical address space.
     ; All bits are clear except the following:
