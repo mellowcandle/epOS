@@ -1,5 +1,7 @@
 # epOS, an eduational Intel 8086 32bit Operating system by Ramon Fried (2013-2016)
 
+[![Build Status](https://travis-ci.org/mellowcandle/epOS.svg?branch=master)](https://travis-ci.org/mellowcandle/epOS)
+
 <a href="https://scan.coverity.com/projects/mellowcandle-epos">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/10219/badge.svg"/>
