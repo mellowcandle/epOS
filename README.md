@@ -7,6 +7,11 @@
 * Higer half kernel
 * Paging enabled
 
+## In Progress
+
+* ACPICA porting (https://www.acpica.org/)
+* IOPIC
+
 ## Todo's
 
 * Integrate cppcheck to makefile
