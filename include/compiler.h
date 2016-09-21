@@ -26,34 +26,13 @@
 */
 
 
-#ifndef KERNEL_H_M1BAK62D
-#define KERNEL_H_M1BAK62D
+#ifndef COMPILER_H_M1BAK62D
+#define COMPILER_H_M1BAK62D
 
-#include <compiler.h>
 
-#define MAX(_x, _y) (((_x) > (_y)) ? (_x) : (_y))
-#define MIN(_x, _y) (((_x) < (_y)) ? (_x) : (_y))
+#ifndef __GNUC__
+#  define  __attribute__(x)  /*NOTHING*/
+#endif
 
-/**
- * container_of - cast a member of a structure out to the containing structure
- * @ptr:	the pointer to the member.
- * @type:	the type of the container struct this is embedded in.
- * @member:	the name of the member within the struct.
- *
- */
-
-#define OFFSET_OF(_type, _member) ((size_t) &((type *) 0)->member)
-#define CONTAINER_OF(_ptr, _type, _member) (_type *) ((char *) ptr - OFFSET_OF(_type, _member))
-
-#define assert(_x) \
-	do { \
-		if (!(_x)) { \
-			printk("!!! assert failed %s:%u : (%s) !!!\r\n", __FILE__, __LINE__, #_x); \
-			panic(); \
-		} \
-	} while (0)
-
-void panic(void);
-
-#endif /* end of include guard: KERNEL_H_M1BAK62D */
+#endif /* end of include guard: COMPILER_H_M1BAK62D */
 

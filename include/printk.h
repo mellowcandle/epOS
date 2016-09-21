@@ -28,6 +28,8 @@
 #ifndef PRINTK_H_X0OBSDIJ
 #define PRINTK_H_X0OBSDIJ
 
+#include <compiler.h>
+
 typedef void (* log_func)(const char *string);
 void register_logger(log_func func);
 
