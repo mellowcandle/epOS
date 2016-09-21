@@ -74,10 +74,8 @@
 
 
 
-//static  uint32_t * kernel_pdt = (uint32_t *) PDT_MIRROR_BASE;
-extern uint32_t pdt;
-//TODO: Once we enable mirror in assembly, we can drop this crap.
-static uint32_t *kernel_pdt = &pdt;
+static uint32_t *current_pdt = (uint32_t *) PDT_MIRROR_BASE;
+
 // These are defined in the linker script, with these we calculate the size of the kernel on runtime.
 extern uint32_t kernel_end, kernel_start;
 
@@ -86,6 +84,7 @@ void mem_heap_init();
 void mem_phys_init(addr_t phy_start, uint32_t total_pages);
 
 static heap_t kernel_heap;
+
 #if 0
 void mem_switch_page_directory(addr_t new_dir)
 {
@@ -227,7 +226,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
 
 	// Check if the PDT exists
-	if (!(kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
+	if (!(current_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
 	{
 		printk("mem_map_page: PDT missing, creating and mapping\r\n");
 		page = mem_get_page();
@@ -235,7 +234,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 		assert(page != 0);
 
 		// Put it in PDT
-		kernel_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | 3;
+		current_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | 3;
 		// Invalidate cache
 		mem_tlb_flush(access_ptr);
 		// Clear the PDE table
