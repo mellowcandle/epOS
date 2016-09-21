@@ -73,6 +73,9 @@ int mem_heap_free(heap_t *heap, void *addr , int count)
 {
 	FUNC_ENTER();
 
+	/* We don't actually support freeing, as the heap only grow, never shrink
+	 * This function is here only for completness (and the kmalloc impl...)
+	 */
 
 	assert(heap->initalized);
 
@@ -92,7 +95,7 @@ int mem_heap_unlock(heap_t *heap)
 	return 0;
 }
 
-void *mem_heap_alloc(heap_t *heap, size_t count)
+void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages)
 {
 	addr_t ret_address;
 	addr_t physical;
@@ -106,7 +109,14 @@ void *mem_heap_alloc(heap_t *heap, size_t count)
 		panic();
 	}
 
-	physical = mem_get_pages(count);
+	if (hw_pages)
+	{
+		physical = hw_pages;
+	}
+	else
+	{
+		physical = mem_get_pages(count);
+	}
 
 	if (!physical)
 	{

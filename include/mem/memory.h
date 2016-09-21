@@ -106,10 +106,21 @@ int mem_page_unmap(addr_t virtual);
 /* Heap Management */
 void mem_heap_init(heap_t *heap, addr_t vir_start, size_t size);
 void mem_heap_destroy(heap_t *heap);
-int mem_heap_free(heap_t *heap, void *addr , int count);
 int mem_heap_lock(heap_t *heap);
 int mem_heap_unlock(heap_t *heap);
-void *mem_heap_alloc(heap_t *heap, size_t count);
+void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages);
+
+static inline void *mem_heap_alloc(heap_t *heap, size_t count)
+{
+	return _mem_heap_map_alloc(heap, count, 0);
+}
+
+static inline void *mem_heap_map(heap_t *heap, size_t count, addr_t hw_pages)
+{
+	return _mem_heap_map_alloc(heap, count, hw_pages);
+}
+
+int mem_heap_free(heap_t *heap, void *addr , int count);
 
 heap_t *get_kernel_heap();
 
