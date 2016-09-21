@@ -53,9 +53,19 @@ void mem_heap_init(heap_t *heap, addr_t vir_start, size_t size)
 	heap->total_pages =  size / PAGE_SIZE;
 	heap->location = vir_start;
 	heap->initalized = true;
-
+	heap->used_pages = 0;
 
 //	test_heap();
+	FUNC_LEAVE();
+}
+void mem_heap_destroy(heap_t *heap)
+{
+
+	FUNC_ENTER();
+
+	heap->initalized = false;
+	//TODO: Actually release all the virtual / physical pages the heap used.
+
 	FUNC_LEAVE();
 }
 
@@ -65,9 +75,7 @@ int mem_heap_free(heap_t *heap, void *addr , int count)
 
 
 	assert(heap->initalized);
-	//todo: implement
-	addr = addr;
-	count = count;
+
 	FUNC_LEAVE();
 	return 0;
 }

@@ -105,6 +105,7 @@ int mem_page_unmap(addr_t virtual);
 
 /* Heap Management */
 void mem_heap_init(heap_t *heap, addr_t vir_start, size_t size);
+void mem_heap_destroy(heap_t *heap);
 int mem_heap_free(heap_t *heap, void *addr , int count);
 int mem_heap_lock(heap_t *heap);
 int mem_heap_unlock(heap_t *heap);
