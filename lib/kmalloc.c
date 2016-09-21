@@ -296,7 +296,7 @@ static struct boundary_tag *allocate_new_tag(unsigned int size)
 		pages = l_pageCount;
 	}
 
-	tag = (struct boundary_tag *)mem_heap_alloc(pages);
+	tag = (struct boundary_tag *)kheap_alloc(pages);
 
 	if (tag == NULL)
 	{
@@ -333,7 +333,7 @@ void *kmalloc(size_t size)
 	void *ptr;
 	struct boundary_tag *tag = NULL;
 
-	mem_heap_lock();
+	kheap_lock();
 
 	if (l_initialized == 0)
 	{
@@ -382,7 +382,7 @@ void *kmalloc(size_t size)
 	{
 		if ((tag = allocate_new_tag(size)) == NULL)
 		{
-			mem_heap_unlock();
+			kheap_unlock();
 			return NULL;
 		}
 
@@ -443,7 +443,7 @@ void *kmalloc(size_t size)
 #endif
 
 
-	mem_heap_unlock();
+	kheap_unlock();
 	return ptr;
 }
 
@@ -461,14 +461,14 @@ void kfree(void *ptr)
 		return;
 	}
 
-	mem_heap_lock();
+	kheap_lock();
 
 
 	tag = (struct boundary_tag *)((unsigned int)ptr - sizeof(struct boundary_tag));
 
 	if (tag->magic != LIBALLOC_MAGIC)
 	{
-		mem_heap_unlock();		// release the lock
+		kheap_unlock();		// release the lock
 		return;
 	}
 
@@ -527,7 +527,7 @@ void kfree(void *ptr)
 				pages = l_pageCount;
 			}
 
-			mem_heap_free(tag, pages);
+			kheap_free(tag, pages);
 
 #ifdef DEBUG
 			l_allocated -= pages * l_pageSize;
@@ -535,7 +535,7 @@ void kfree(void *ptr)
 			dump_array();
 #endif
 
-			mem_heap_unlock();
+			kheap_unlock();
 			return;
 		}
 
@@ -554,7 +554,7 @@ void kfree(void *ptr)
 	dump_array();
 #endif
 
-	mem_heap_unlock();
+	kheap_unlock();
 }
 
 
@@ -593,12 +593,12 @@ void   *krealloc(void *p, size_t size)
 		return kmalloc(size);
 	}
 
-	mem_heap_lock();    // lockit
+	kheap_lock();    // lockit
 
 	tag = (struct boundary_tag *)((unsigned int)p - sizeof(struct boundary_tag));
 	real_size = tag->size;
 
-	mem_heap_unlock();
+	kheap_unlock();
 
 	if (real_size > size)
 	{

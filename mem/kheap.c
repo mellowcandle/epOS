@@ -43,38 +43,28 @@
 #include <lib/kmalloc.h>
 #include <lib/string.h>
 
-typedef struct
-{
-
-	uint32_t total_pages;
-	uint32_t used_pages;
-	addr_t   location;
-	bool initalized;
-} heap_t;
 void test_heap();
 
-static heap_t kernel_heap = {0};
-
-void mem_heap_init()
+void mem_heap_init(heap_t *heap, addr_t vir_start, size_t size)
 {
 
 	FUNC_ENTER();
 
-	kernel_heap.total_pages =  KERNEL_HEAP_SIZE / PAGE_SIZE;
-	kernel_heap.location = KERNEL_HEAP_VIR_START;
-	kernel_heap.initalized = true;
+	heap->total_pages =  size / PAGE_SIZE;
+	heap->location = vir_start;
+	heap->initalized = true;
 
 
 //	test_heap();
 	FUNC_LEAVE();
 }
 
-int mem_heap_free(void *addr , int count)
+int mem_heap_free(heap_t *heap, void *addr , int count)
 {
 	FUNC_ENTER();
 
 
-	assert(kernel_heap.initalized);
+	assert(heap->initalized);
 	//todo: implement
 	addr = addr;
 	count = count;
@@ -82,27 +72,27 @@ int mem_heap_free(void *addr , int count)
 	return 0;
 }
 
-int mem_heap_lock()
+int mem_heap_lock(heap_t *heap)
 {
 	//todo: implement when necessary
 	return 0;
 }
 
-int mem_heap_unlock()
+int mem_heap_unlock(heap_t *heap)
 {
 	//todo: implement when necessary
 	return 0;
 }
 
-void *mem_heap_alloc(size_t count)
+void *mem_heap_alloc(heap_t *heap, size_t count)
 {
 	addr_t ret_address;
 	addr_t physical;
 	FUNC_ENTER();
 
-	assert(kernel_heap.initalized);
+	assert(heap->initalized);
 
-	if (kernel_heap.total_pages - kernel_heap.used_pages < count)
+	if (heap->total_pages - heap->used_pages < count)
 	{
 		printk("not enough physical pages\r\n");
 		panic();
@@ -117,18 +107,18 @@ void *mem_heap_alloc(size_t count)
 
 	for (size_t i = 0; i < count; i++)
 	{
-		mem_page_map(physical + i * (PAGE_SIZE), kernel_heap.location + i * (PAGE_SIZE), 0);
+		mem_page_map(physical + i * (PAGE_SIZE), heap->location + i * (PAGE_SIZE), 0);
 	}
 
-	ret_address = kernel_heap.location;
-	kernel_heap.location += count * PAGE_SIZE;
-	kernel_heap.used_pages += count;
+	ret_address = heap->location;
+	heap->location += count * PAGE_SIZE;
+	heap->used_pages += count;
 
 	FUNC_LEAVE();
 	return (void *) ret_address;
 
 error:
-	printk("Can't allocate kernel HEAP\r\n");
+	printk("Can't allocate HEAP\r\n");
 	panic();
 
 	return NULL;
@@ -148,10 +138,10 @@ void test_heap()
 	d = kmalloc(15);
 	e = kmalloc(12);
 
-	memset(a,1,10);
-	memset(b,0,20);
-	memset(d,1,15);
-	memset(e,1,12);
+	memset(a, 1, 10);
+	memset(b, 0, 20);
+	memset(d, 1, 15);
+	memset(e, 1, 12);
 
 	kfree(a);
 	kfree(b);

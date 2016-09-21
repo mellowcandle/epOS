@@ -63,9 +63,19 @@
 #define PAGE_ENTRY_WRITEABLE (1 << 1)
 #define PAGE_ENTRY_USER (1 << 2)
 
+
 typedef uintptr_t addr_t;
 
 extern uint32_t pdt;
+
+typedef struct
+{
+
+	uint32_t total_pages;
+	uint32_t used_pages;
+	addr_t   location;
+	bool initalized;
+} heap_t;
 
 static inline void mem_tlb_flush(void *m)
 {
@@ -93,7 +103,14 @@ static inline addr_t mem_get_page()
 int mem_page_map(addr_t physical, addr_t virtual, int flags);
 int mem_page_unmap(addr_t virtual);
 
+/* Heap Management */
+void mem_heap_init(heap_t *heap, addr_t vir_start, size_t size);
+int mem_heap_free(heap_t *heap, void *addr , int count);
+int mem_heap_lock(heap_t *heap);
+int mem_heap_unlock(heap_t *heap);
+void *mem_heap_alloc(heap_t *heap, size_t count);
 
+heap_t *get_kernel_heap();
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
 

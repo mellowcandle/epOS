@@ -85,7 +85,7 @@ void page_fault_handler(registers_t regs);
 void mem_heap_init();
 void mem_phys_init(addr_t phy_start, uint32_t total_pages);
 
-
+static heap_t kernel_heap;
 #if 0
 void mem_switch_page_directory(addr_t new_dir)
 {
@@ -98,6 +98,10 @@ void mem_switch_page_directory(addr_t new_dir)
 //	asm volatile("mov %0, %%cr0":: "r"(cr0));
 }
 #endif
+heap_t *get_kernel_heap()
+{
+	return &kernel_heap;
+}
 
 void mem_init(multiboot_info_t *mbi)
 {
@@ -151,16 +155,14 @@ void mem_init(multiboot_info_t *mbi)
 	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start, &kernel_end);
 	printk("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
 
-	// TODO: ugly hack
 	physical_start = ((uint32_t) &kernel_start) - KERNEL_VIRTUAL_BASE;
-
 	physical_start += required_kernel_pages * PAGE_SIZE;
 	total_memory -= required_kernel_pages * PAGE_SIZE;
 
 
 	mem_phys_init(physical_start, total_memory);
 
-	mem_heap_init();
+	mem_heap_init(&kernel_heap, KERNEL_HEAP_VIR_START, KERNEL_HEAP_SIZE);
 
 	FUNC_LEAVE();
 }

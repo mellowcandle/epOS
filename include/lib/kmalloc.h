@@ -28,7 +28,7 @@
 #define _KMALLLOC_H
 
 #include <types.h>
-
+#include <mem/memory.h>
 /** This is a boundary tag which is prepended to the
  * page or section of a page which we have allocated. It is
  * used to identify valid memory blocks that the
@@ -58,7 +58,10 @@ struct	boundary_tag
  * \return 0 if the lock was acquired successfully. Anything else is
  * failure.
  */
-extern int mem_heap_lock();
+static inline int kheap_lock()
+{
+	return mem_heap_lock(get_kernel_heap());
+}
 
 /** This function unlocks what was previously locked by the liballoc_lock
  * function.  If it disabled interrupts, it enables interrupts. If it
@@ -66,8 +69,10 @@ extern int mem_heap_lock();
  *
  * \return 0 if the lock was successfully released.
  */
-extern int mem_heap_unlock();
-
+static inline int kheap_unlock()
+{
+	return mem_heap_unlock(get_kernel_heap());
+}
 /** This is the hook into the local system which allocates pages. It
  * accepts an integer parameter which is the number of pages
  * required.  The page size was set up in the liballoc_init function.
@@ -75,7 +80,10 @@ extern int mem_heap_unlock();
  * \return NULL if the pages were not allocated.
  * \return A pointer to the allocated memory.
  */
-extern void *mem_heap_alloc(size_t);
+static inline void *kheap_alloc(size_t size)
+{
+	return mem_heap_alloc(get_kernel_heap(), size);
+}
 
 /** This frees previously allocated memory. The void* parameter passed
  * to the function is the exact same value returned from a previous
@@ -85,8 +93,10 @@ extern void *mem_heap_alloc(size_t);
  *
  * \return 0 if the memory was successfully freed.
  */
-extern int mem_heap_free(void *, int);
-
+static inline int kheap_free(void *addr, int count)
+{
+	return mem_heap_free(get_kernel_heap(), addr, count);
+}
 
 
 void     *kmalloc(size_t);				//< The standard function.
