@@ -30,8 +30,16 @@
 
 typedef void (* log_func)(const char *string);
 void register_logger(log_func func);
-int printk(const char *format, ...);
+
+int printk(const char *format, ...) 
+	__attribute__((format(printf, 1, 2)));  /* 1=format 2=params */
 
 #define FUNC_ENTER() printk("+ %s\r\n", __FUNCTION__)
 #define FUNC_LEAVE() printk("- %s\r\n", __FUNCTION__)
+
+#define pr_error(x)	printk("ERROR: " x)
+#define pr_warn(x)	printk("WARN: " x)
+#define pr_info(x)	printk("INFO: " x)
+#define pr_debug(x)	printk("DEBUG: " x)
+
 #endif /* end of include guard: PRINTK_H_X0OBSDIJ */
