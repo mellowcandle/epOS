@@ -79,58 +79,76 @@ void *memmove(void *s1, const void *s2, size_t n)
 
 }
 
-size_t strlen ( const char * str )
+size_t strlen(const char *str)
 {
 	size_t len = 0;
+
 	while (*str++)
+	{
 		len++;
+	}
 
 	return len;
 }
 
 int strcmp(const char *s1, const char *s2)
 {
-    for ( ; *s1 == *s2; s1++, s2++)
-	if (*s1 == '\0')
-	    return 0;
-    return ((*(unsigned char *)s1 < *(unsigned char *)s2) ? -1 : +1);
+	for (; *s1 == *s2; s1++, s2++)
+		if (*s1 == '\0')
+		{
+			return 0;
+		}
+
+	return ((*(unsigned char *)s1 < * (unsigned char *)s2) ? -1 : +1);
 }
 
 int strncmp(const char *s1, const char *s2, size_t n)
 {
-    for ( ; n > 0; s1++, s2++, --n)
+	for (; n > 0; s1++, s2++, --n)
 		if (*s1 != *s2)
-	    	return ((*(unsigned char *)s1 < *(unsigned char *)s2) ? -1 : +1);
+		{
+			return ((*(unsigned char *)s1 < * (unsigned char *)s2) ? -1 : +1);
+		}
 		else if (*s1 == '\0')
-	    	return 0;
-    return 0;
+		{
+			return 0;
+		}
+
+	return 0;
 }
 
 char *strcpy(char *restrict s1, const char *restrict s2)
 {
-    char *s = s1;
-    while ((*s++ = *s2++) != 0)
-	;
-    return (s1);
+	char *s = s1;
+
+	while ((*s++ = *s2++) != 0)
+		;
+
+	return (s1);
 }
 
-char * strncpy(char *restrict s1, const char *restrict s2, size_t n)
+char *strncpy(char *restrict s1, const char *restrict s2, size_t n)
 {
-    char *s = s1;
-    while (n > 0 && *s2 != '\0') {
-	*s++ = *s2++;
-	--n;
-    }
-    while (n > 0) {
-	*s++ = '\0';
-	--n;
-    }
-    return s1;
+	char *s = s1;
+
+	while (n > 0 && *s2 != '\0')
+	{
+		*s++ = *s2++;
+		--n;
+	}
+
+	while (n > 0)
+	{
+		*s++ = '\0';
+		--n;
+	}
+
+	return s1;
 }
 
-char * strcat(char *restrict s1, const char *restrict s2)
+char *strcat(char *restrict s1, const char *restrict s2)
 {
-    strcpy(&s1[strlen(s1)], s2);
-    return s1;
+	strcpy(&s1[strlen(s1)], s2);
+	return s1;
 }
 
