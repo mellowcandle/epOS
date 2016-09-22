@@ -95,11 +95,12 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 		total_memory -= PAGE_SIZE;
 
 		// Put it in PDT
-		printk("Physical writing to kernel PDT, index %u\r\n", FRAME_TO_PDE_INDEX(vaddr));
+		printk("Physical writing to kernel PDT, vaddr: 0x%x, index %u\r\n", vaddr, FRAME_TO_PDE_INDEX(vaddr));
 		kernel_pdt[FRAME_TO_PDE_INDEX(vaddr)] = page | 3;
 		// Invalidate cache
 		access_ptr = pde_mirror + (FRAME_TO_PDE_INDEX(vaddr) * 0x1000);
 		mem_tlb_flush((void *) PDT_MIRROR_BASE);
+		printk("Access_ptr = 0x%x\r\n", (uint32_t) access_ptr);
 		// Clear the PDE table
 		memset(access_ptr, 0, PAGE_SIZE);
 
@@ -127,7 +128,6 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 	{
 		mem_tlb_flush(access_ptr);
 	}
-
 	memset((void *)PHYSICAL_ALLOCATOR_BITMAP_BASE, 0, required_bytes);
 
 	FUNC_LEAVE();
