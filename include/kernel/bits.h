@@ -31,10 +31,10 @@
 #include <types.h>
 #include <boot/multiboot.h>
 
+#define BIT(_x) (1 << (_x))
 #define BIT_CHECK(a,b) ((a) & (1<<(b)))
 #define BIT_SET(a,b) ((a) |= (1<<(b)))
 #define BIT_CLEAR(a,b) ((a) &= ~(1<<(b)))
-
 static inline uint32_t divide_up(uint32_t value, uint32_t align)
 {
 	uint32_t ret;

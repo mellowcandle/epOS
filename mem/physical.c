@@ -128,6 +128,7 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 	{
 		mem_tlb_flush(access_ptr);
 	}
+
 	memset((void *)PHYSICAL_ALLOCATOR_BITMAP_BASE, 0, required_bytes);
 
 	FUNC_LEAVE();

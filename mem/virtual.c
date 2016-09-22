@@ -104,20 +104,31 @@ heap_t *get_kernel_heap()
 
 void dump_pdt()
 {
-	char * ptr;
-	for (int i = 0; i < 1024; i++)
+	char *ptr;
+	addr_t virtual_pos;
+	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++)
 	{
-		if (current_pdt[i] & 3) // exists
+		if (current_pdt[i] & BIT(1)) // exists
 		{
-			ptr = (uint32_t *) PDE_MIRROR_BASE + (i * 0x1000);
 			printk("PDE: %u value: 0x%x\r\n", i, current_pdt[i]);
-			for (int j = 0; j < 1024; j++)
+			if (current_pdt[i] & BIT(7))
 			{
-				if (* ((uint32_t *)ptr) & 3)
+				printk("Maps 4MB page from 0x%x to 0x%x\r\n", PDE_INDEX_TO_ADDR(i), PDE_INDEX_TO_ADDR(i+1));
+			}
+			else
+			{
+				ptr = (char *) PDE_MIRROR_BASE + (i * 0x1000);
+
+				for (int j = 0; j < 1024; j++)
 				{
-					printk("\tPTE: %u value: 0x%x\r\n", j, * (uint32_t*) ptr);
+					if (* ((uint32_t *)ptr) & BIT(1))
+					{
+						virtual_pos = PDE_INDEX_TO_ADDR(i) + (j * PAGE_SIZE);
+						printk("\tPTE: %u value: 0x%x maps 4K page from 0x%x to 0x%x\r\n", j, * (uint32_t *) ptr,
+								virtual_pos, virtual_pos + PAGE_SIZE);
+					}
+
 				}
-				ptr += PAGE_SIZE;
 			}
 
 		}
@@ -182,6 +193,9 @@ void mem_init(multiboot_info_t *mbi)
 	total_memory -= required_kernel_pages * PAGE_SIZE;
 
 
+	dump_pdt();
+	while(1);
+
 	mem_phys_init(physical_start, total_memory);
 
 	mem_heap_init(&kernel_heap, KERNEL_HEAP_VIR_START, KERNEL_HEAP_SIZE);
@@ -234,7 +248,7 @@ void page_fault_handler(registers_t regs)
 	printk("Page ownership %s\r\n", page_user ? "user" : "kernel");
 
 	irq_reg_dump(&regs);
-	dump_pdt();
+	//dump_pdt();
 	panic();
 }
 

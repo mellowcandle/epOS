@@ -48,6 +48,9 @@
 #define FRAME_TO_PTE_INDEX(_x) ((_x << 10) >> 22)
 #define VADDR_TO_PAGE_DIR(_x) ((_x & ~0xFFF) / 0x400000)
 
+
+#define PDE_INDEX_TO_ADDR(_x) ((_x) << 22)
+
 #define PDE_MIRROR_BASE 0xFFC00000
 #define PDT_MIRROR_BASE 0xFFFFF000
 
