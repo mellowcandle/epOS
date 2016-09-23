@@ -63,7 +63,7 @@ static char *itoa(int value, char *str, int base)
 	do
 	{
 		// Modulo is negative for negative value. This trick makes abs() unnecessary.
-		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+		*ptr++ = "ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[35 + value % base];
 		value /= base;
 	}
 	while (value);
@@ -104,7 +104,7 @@ static char *uitoa(unsigned int value, char *str, int base)
 	do
 	{
 		// Modulo is negative for negative value. This trick makes abs() unnecessary.
-		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+		*ptr++ = "ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[35 + value % base];
 		value /= base;
 	}
 	while (value);
@@ -145,7 +145,7 @@ static char *lluitoa(unsigned long long value, char *str, int base)
 	do
 	{
 		// Modulo is negative for negative value. This trick makes abs() unnecessary.
-		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+		*ptr++ = "ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[35 + value % base];
 		value /= base;
 	}
 	while (value);
