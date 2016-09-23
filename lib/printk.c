@@ -230,6 +230,7 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 
 			case 'x':
 			case 'X':
+			case 'p':
 				if (!ll)
 				{
 					buffer = uitoa(va_arg(args, int), buffer, 16);
@@ -261,6 +262,20 @@ void register_logger(log_func func)
 	logger = func;
 }
 
+int vprintk(const char *format, va_list arg)
+{
+	int done;
+
+	done = do_printk(buffer, format, arg);
+
+	if (logger)
+	{
+		logger(buffer);
+	}
+
+	return done;
+
+}
 
 int printk(const char *format, ...)
 {
