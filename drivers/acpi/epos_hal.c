@@ -1,15 +1,72 @@
 #include <acpi.h>
 #include <lib/kmalloc.h>
+//#define DEBUG
 #include <printk.h>
+//#undef DEBUG
 #include <mem/memory.h>
 #include <kernel/bits.h>
-
+#include <cpu.h>
 static heap_t acpi_heap;
 
+
+void acpi_init()
+{
+	ACPI_STATUS	rv;
+	int 	err_code;
+
+	printk("ACPI init\r\n");
+	rv = AcpiInitializeSubsystem();
+
+	if (ACPI_FAILURE(rv))
+	{
+		err_code = 1;
+		goto error;
+	}
+
+	rv = AcpiInitializeTables(NULL, 16, FALSE);
+
+	if (ACPI_FAILURE(rv))
+	{
+		err_code = 2;
+		goto error;
+	}
+
+	rv = AcpiLoadTables();
+
+	if (ACPI_FAILURE(rv))
+	{
+		err_code = 3;
+		goto error;
+	}
+
+	rv = AcpiEnableSubsystem(ACPI_FULL_INITIALIZATION);
+
+	if (ACPI_FAILURE(rv))
+	{
+		err_code = 4;
+		goto error;
+	}
+
+	return;
+
+error:
+	AcpiTerminate();
+	printk("ACPI Error: %u\r\n", err_code);
+
+}
+
+
+void shutdown()
+{
+	AcpiEnterSleepStatePrep(5);
+//	cli(); // disable interrupts
+	AcpiEnterSleepState(5);
+	panic(); // in case it didn't work!
+}
 ACPI_STATUS AcpiOsInitialize()
 {
-	mem_heap_init(&acpi_heap, 0xE0000000, 0x1000000);
 	FUNC_ENTER();
+	mem_heap_init(&acpi_heap, 0xE0000000, 0x1000000);
 	return 0;
 }
 
@@ -44,11 +101,7 @@ ACPI_STATUS AcpiOsTableOverride(ACPI_TABLE_HEADER *ExistingTable, ACPI_TABLE_HEA
 	*NewTable = NULL;
 	return 0;
 }
-ACPI_STATUS
-AcpiOsPhysicalTableOverride(
-    ACPI_TABLE_HEADER       *ExistingTable,
-    ACPI_PHYSICAL_ADDRESS   *NewAddress,
-    UINT32                  *NewTableLength)
+ACPI_STATUS AcpiOsPhysicalTableOverride(ACPI_TABLE_HEADER *ExistingTable, ACPI_PHYSICAL_ADDRESS *NewAddress, UINT32 *NewTableLength)
 {
 	FUNC_ENTER();
 	*NewAddress = 0;
@@ -58,25 +111,21 @@ AcpiOsPhysicalTableOverride(
 void *AcpiOsMapMemory(ACPI_PHYSICAL_ADDRESS PhysicalAddress, ACPI_SIZE Length)
 {
 	FUNC_ENTER();
-	char * ret_addr;
+	char *ret_addr;
 	uint32_t pages = divide_up(Length, PAGE_SIZE);
 	ACPI_PHYSICAL_ADDRESS aligned_addr = PAGE_ALIGN_DOWN(PhysicalAddress);
-
-	printk("Physical address: 0x%x, size: %u\r\n", PhysicalAddress,Length);
-	printk("Alligned address: 0x%x, page count: %u\r\n", aligned_addr, pages);
 
 	ret_addr = mem_heap_map(&acpi_heap, pages, aligned_addr);
 	assert(ret_addr);
 	ret_addr += (PhysicalAddress - aligned_addr);
 
-	return 0;
+	return ret_addr;
 
 }
 
 void AcpiOsUnmapMemory(void *where, ACPI_SIZE length)
 {
 	FUNC_ENTER();
-
 }
 
 ACPI_STATUS AcpiOsGetPhysicalAddress(
@@ -84,6 +133,7 @@ ACPI_STATUS AcpiOsGetPhysicalAddress(
     ACPI_PHYSICAL_ADDRESS   *PhysicalAddress)
 {
 	FUNC_ENTER();
+	*PhysicalAddress = 	virt_to_phys((addr_t) LogicalAddress);
 	return 0;
 }
 
@@ -114,12 +164,13 @@ BOOLEAN AcpiOsWritable(void *Memory, ACPI_SIZE Length)
 void AcpiOsVprintf(const char *Format, va_list Args)
 {
 	FUNC_ENTER();
+	vprintk(Format, Args);
 }
 
 ACPI_THREAD_ID AcpiOsGetThreadId()
 {
 	FUNC_ENTER();
-	return 0;
+	return 1;
 }
 
 ACPI_STATUS AcpiOsExecute(ACPI_EXECUTE_TYPE Type, ACPI_OSD_EXEC_CALLBACK Function, void *Context)
@@ -198,30 +249,66 @@ void AcpiOsWaitEventsComplete(void)
 	FUNC_ENTER();
 }
 void ACPI_INTERNAL_VAR_XFACE
-AcpiOsPrintf(
-    const char              *Format,
-    ...)
+AcpiOsPrintf(const char *Format, ...)
 {
+	va_list arg;
+	int done;
 	FUNC_ENTER();
+
+	va_start(arg, Format);
+	done = vprintk(Format, arg);
+	va_end(arg);
+	printk("\r");
+
 }
 
 
 ACPI_STATUS
-AcpiOsReadPort(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  *Value,
-    UINT32                  Width)
+AcpiOsReadPort(ACPI_IO_ADDRESS Address, UINT32 *Value, UINT32 Width)
 {
 	FUNC_ENTER();
+
+	switch (Width)
+	{
+	case 8:
+		*Value = inb(Address);
+		break;
+
+	case 16:
+		*Value = inw(Address);
+		break;
+
+	//	case 32:	*Value = ind(Address);	break;
+	default:
+		printk("Bad parameter\r\n");
+		return AE_BAD_PARAMETER;
+	}
+
+	return AE_OK;
 }
 
 ACPI_STATUS
-AcpiOsWritePort(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  Value,
-    UINT32                  Width)
+AcpiOsWritePort(ACPI_IO_ADDRESS Address, UINT32 Value, UINT32 Width)
 {
 	FUNC_ENTER();
+
+	switch (Width)
+	{
+	case 8:
+		outb(Address, Value);
+		break;
+
+	case 16:
+		outw(Address, Value);
+		break;
+
+	//	case 32:	outd(Address, Value);	break;
+	default:
+		printk("Bad parameter\r\n");
+		return AE_BAD_PARAMETER;
+	}
+
+	return AE_OK;
 }
 
 ACPI_STATUS
