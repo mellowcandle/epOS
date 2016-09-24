@@ -58,13 +58,13 @@
 
 #define PHYSICAL_ALLOCATOR_BITMAP_BASE 0xD0000000
 
-#define KERNEL_HEAP_VIR_START 0xE0000000
-#define KERNEL_HEAP_VIR_END 0xF0000000
+#define KERNEL_HEAP_VIR_START 0xD2000000
+#define KERNEL_HEAP_VIR_END 0xE0000000
 #define KERNEL_HEAP_SIZE (KERNEL_HEAP_VIR_END - KERNEL_HEAP_VIR_START)
 
-#define PAGE_ENTRY_PRESENT (1)
-#define PAGE_ENTRY_WRITEABLE (1 << 1)
-#define PAGE_ENTRY_USER (1 << 2)
+#define PAGE_ENTRY_PRESENT BIT(1)
+#define PAGE_ENTRY_WRITEABLE BIT(2)
+#define PAGE_ENTRY_USER BIT(3)
 
 
 typedef uintptr_t addr_t;
@@ -111,19 +111,20 @@ void mem_heap_init(heap_t *heap, addr_t vir_start, size_t size);
 void mem_heap_destroy(heap_t *heap);
 int mem_heap_lock(heap_t *heap);
 int mem_heap_unlock(heap_t *heap);
-void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages);
+void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages, bool hw);
 
 static inline void *mem_heap_alloc(heap_t *heap, size_t count)
 {
-	return _mem_heap_map_alloc(heap, count, 0);
+	return _mem_heap_map_alloc(heap, count, 0, false);
 }
 
 static inline void *mem_heap_map(heap_t *heap, size_t count, addr_t hw_pages)
 {
-	return _mem_heap_map_alloc(heap, count, hw_pages);
+	return _mem_heap_map_alloc(heap, count, hw_pages, true);
 }
 
 int mem_heap_free(heap_t *heap, void *addr , int count);
+addr_t virt_to_phys(void *addr);
 
 heap_t *get_kernel_heap();
 

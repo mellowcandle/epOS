@@ -72,6 +72,16 @@
 /* We can directly access the PDE entries as they we're already mapped to virtual space with the kernel */
 /* When accessing using mirror method, this gives us a virtual pointer to the PTE's. we can then set, clear and adjust them */
 
+addr_t virt_to_phys(void *addr)
+{
+	if (((addr_t) addr >= KERNEL_VIRTUAL_BASE) && ((addr_t) addr < PHYSICAL_ALLOCATOR_BITMAP_BASE))
+	{
+		return ((addr_t) addr - KERNEL_VIRTUAL_BASE);
+	}
+
+	printk("I don't know !!\r\n");
+	return 0;
+}
 
 
 static uint32_t *current_pdt = (uint32_t *) PDT_MIRROR_BASE;
@@ -106,14 +116,16 @@ void dump_pdt()
 {
 	char *ptr;
 	addr_t virtual_pos;
+
 	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++)
 	{
 		if (current_pdt[i] & BIT(1)) // exists
 		{
 			printk("PDE: %u value: 0x%x\r\n", i, current_pdt[i]);
+
 			if (current_pdt[i] & BIT(7))
 			{
-				printk("Maps 4MB page from 0x%x to 0x%x\r\n", PDE_INDEX_TO_ADDR(i), PDE_INDEX_TO_ADDR(i+1));
+				printk("Maps 4MB page from 0x%x to 0x%x\r\n", PDE_INDEX_TO_ADDR(i), PDE_INDEX_TO_ADDR(i + 1));
 			}
 			else
 			{
@@ -125,8 +137,10 @@ void dump_pdt()
 					{
 						virtual_pos = PDE_INDEX_TO_ADDR(i) + (j * PAGE_SIZE);
 						printk("\tPTE: %u value: 0x%x maps 4K page from 0x%x to 0x%x\r\n", j, * (uint32_t *) ptr,
-								virtual_pos, virtual_pos + PAGE_SIZE);
+						       virtual_pos, virtual_pos + PAGE_SIZE);
 					}
+
+					ptr += 4;
 
 				}
 			}
@@ -150,7 +164,7 @@ void mem_init(multiboot_info_t *mbi)
 
 	multiboot_memory_map_t *mmap = (multiboot_memory_map_t *)(mbi->mmap_addr + KERNEL_VIRTUAL_BASE);
 
-	while (mmap < mbi->mmap_addr + KERNEL_VIRTUAL_BASE +  mbi->mmap_length)
+	while ((uint32_t) mmap < (mbi->mmap_addr + KERNEL_VIRTUAL_BASE +  mbi->mmap_length))
 	{
 		mmap = (multiboot_memory_map_t *)((unsigned int)mmap + mmap->size + sizeof(unsigned int));
 
@@ -160,8 +174,8 @@ void mem_init(multiboot_info_t *mbi)
 			break;
 		}
 
-		printk("Memory region size: %u address: 0x%llx length: 0x%llx type: %u\r\n",
-		       mmap->size, mmap->addr, mmap->len, mmap->type);
+		printk("Memory region address: 0x%llx length: 0x%llx type: %u\r\n",
+		       mmap->addr, mmap->len, mmap->type);
 
 		// We only support one zone, we'll take the biggest.
 		//
@@ -183,7 +197,7 @@ void mem_init(multiboot_info_t *mbi)
 	}
 
 	kernel_size = ((uint32_t) &kernel_end - (uint32_t) &kernel_start);
-	required_kernel_pages = (kernel_size / PAGE_SIZE) + 1;
+	required_kernel_pages = (kernel_size / PAGE_SIZE) + 2;
 
 	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start, (uint32_t) &kernel_end);
 	printk("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
@@ -192,9 +206,6 @@ void mem_init(multiboot_info_t *mbi)
 	physical_start += required_kernel_pages * PAGE_SIZE;
 	total_memory -= required_kernel_pages * PAGE_SIZE;
 
-
-	dump_pdt();
-	while(1);
 
 	mem_phys_init(physical_start, total_memory);
 
@@ -248,7 +259,7 @@ void page_fault_handler(registers_t regs)
 	printk("Page ownership %s\r\n", page_user ? "user" : "kernel");
 
 	irq_reg_dump(&regs);
-	//dump_pdt();
+	dump_pdt();
 	panic();
 }
 
@@ -259,6 +270,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	char *access_ptr;
 	uint32_t *pte;
 
+	//printk("+mem_page_map: physical: 0x%x virtual: 0x%x\r\n", physical, virtual);
 	FUNC_ENTER();
 
 	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
@@ -266,10 +278,10 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	// Check if the PDT exists
 	if (!(current_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
 	{
-		printk("mem_map_page: PDT missing, creating and mapping\r\n");
+//		printk("mem_map_page: PDT missing, creating and mapping\r\n");
 		page = mem_get_page();
 
-		assert(page != 0);
+		mem_assert(page != 0);
 
 		// Put it in PDT
 		current_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | 3;
@@ -282,7 +294,8 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
-	assert(!(*pte & 3));
+//	printk("PTE: 0x%x\r\n",(uint32_t) pte);
+	mem_assert(!(*pte & 3));
 
 	*pte = physical | 3;
 
@@ -304,7 +317,7 @@ int mem_page_unmap(addr_t virtual)
 
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
-	assert(*pte & 3);
+	mem_assert(*pte & 3);
 
 	*pte = 0;
 
