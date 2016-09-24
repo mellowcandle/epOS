@@ -13,16 +13,16 @@
 * Bitmap Page frame allocator
 * Higer half kernel
 * Paging enabled
+* ACPICA
 
 ## In Progress
 
-* ACPICA porting (https://www.acpica.org/)
 * IOPIC
 
 ## Todo's
 
-* Integrate cppcheck to makefile
 * Add testing framework
+* printk: Handle width specifiers
 
 
 
