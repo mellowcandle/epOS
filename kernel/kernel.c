@@ -35,10 +35,7 @@
 #include <serial.h>
 #include <lib/list.h>
 #include <apic.h>
-
-
-void acpit_init();
-void shutdown();
+#include <acpi.h>
 
 void kmain(void)
 {
@@ -62,8 +59,9 @@ void kmain(void)
 	idt_init();
 	mem_init(mbi);
 	acpi_init();
+	//acpi_early_init();
 
-	//	enableAPIC();
+	enableAPIC();
 
 	printk("Bla Bla\r\n");
 

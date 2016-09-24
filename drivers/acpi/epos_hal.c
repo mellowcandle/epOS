@@ -1,72 +1,24 @@
 #include <acpi.h>
 #include <lib/kmalloc.h>
-//#define DEBUG
+#define DEBUG
 #include <printk.h>
-//#undef DEBUG
+#undef DEBUG
 #include <mem/memory.h>
 #include <kernel/bits.h>
 #include <cpu.h>
 static heap_t acpi_heap;
 
-
-void acpi_init()
-{
-	ACPI_STATUS	rv;
-	int 	err_code;
-
-	printk("ACPI init\r\n");
-	rv = AcpiInitializeSubsystem();
-
-	if (ACPI_FAILURE(rv))
-	{
-		err_code = 1;
-		goto error;
-	}
-
-	rv = AcpiInitializeTables(NULL, 16, FALSE);
-
-	if (ACPI_FAILURE(rv))
-	{
-		err_code = 2;
-		goto error;
-	}
-
-	rv = AcpiLoadTables();
-
-	if (ACPI_FAILURE(rv))
-	{
-		err_code = 3;
-		goto error;
-	}
-
-	rv = AcpiEnableSubsystem(ACPI_FULL_INITIALIZATION);
-
-	if (ACPI_FAILURE(rv))
-	{
-		err_code = 4;
-		goto error;
-	}
-
-	return;
-
-error:
-	AcpiTerminate();
-	printk("ACPI Error: %u\r\n", err_code);
-
-}
-
-
-void shutdown()
-{
-	AcpiEnterSleepStatePrep(5);
-//	cli(); // disable interrupts
-	AcpiEnterSleepState(5);
-	panic(); // in case it didn't work!
-}
 ACPI_STATUS AcpiOsInitialize()
 {
 	FUNC_ENTER();
-	mem_heap_init(&acpi_heap, 0xE0000000, 0x1000000);
+	static bool init_done = false;
+
+	if (!init_done)
+	{
+		mem_heap_init(&acpi_heap, 0xE0000000, 0x1000000);
+		init_done = true;
+	}
+
 	return 0;
 }
 

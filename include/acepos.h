@@ -184,6 +184,10 @@
 
 #endif
 
+void acpi_early_init();
+void acpi_init();
+addr_t acpi_get_local_apic_addr();
+void acpi_shutdown();
 
 
 #endif /* __ACLINUX_H__ */

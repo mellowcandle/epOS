@@ -30,6 +30,7 @@
 #include <cpu.h>
 #include <apic.h>
 #include <printk.h>
+#include <acpi.h>
 
 #define IA32_APIC_BASE_MSR 0x1B
 #define IA32_APIC_BASE_MSR_BSP 0x100 // Processor is a BSP
@@ -49,7 +50,6 @@
 #define PIC1_DATA       (PIC1 + 1)
 #define PIC2_COMMAND    PIC2
 #define PIC2_DATA       (PIC2 + 1)
-
 
 
 /** returns a 'true' value if the CPU supports APIC
@@ -100,15 +100,17 @@ static void disable_i8259()
 void enableAPIC()
 {
 
-	/* First thing first, disable the PIC */
+	addr_t apic_base;
+
+	 /* First thing first, disable the PIC */
 
 	disable_i8259();
 
-	addr_t apic_base = cpuGetAPICBase();
+	/* this usually maps to 0xFEE00000 */
+	apic_base = acpi_get_local_apic_addr();
+
 	/* Hardware enable the Local APIC if it wasn't enabled */
 	cpuSetAPICBase(apic_base);
-
-	/* this usually maps to 0xFEE00000 */
 
 	/* Idendity map the APIC base */
 	mem_page_map(apic_base, apic_base, 0);
