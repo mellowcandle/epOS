@@ -67,7 +67,6 @@
 #define PAGE_ENTRY_USER BIT(3)
 
 
-typedef uintptr_t addr_t;
 
 extern uint32_t pdt;
 

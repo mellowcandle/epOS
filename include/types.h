@@ -43,6 +43,9 @@ typedef uint32_t    size_t;
 
 typedef int             intptr_t;
 typedef unsigned int   uintptr_t;
+
+typedef uintptr_t addr_t;
+
 #define NULL   ( ( void * ) 0 )
 
 #define bool    _Bool
