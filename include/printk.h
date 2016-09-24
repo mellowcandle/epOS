@@ -45,6 +45,7 @@ __attribute__((format(printf, 1, 2)));  /* 1=format 2=params */
 #define FUNC_LEAVE()
 #endif
 
+#define pr_fatal(x)	printk("FATAL: " x)
 #define pr_error(x)	printk("ERROR: " x)
 #define pr_warn(x)	printk("WARN: " x)
 #define pr_info(x)	printk("INFO: " x)
