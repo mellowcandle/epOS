@@ -63,7 +63,7 @@ static char *itoa(int value, char *str, int base)
 	do
 	{
 		// Modulo is negative for negative value. This trick makes abs() unnecessary.
-		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+		*ptr++ = "ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[35 + value % base];
 		value /= base;
 	}
 	while (value);
@@ -104,7 +104,7 @@ static char *uitoa(unsigned int value, char *str, int base)
 	do
 	{
 		// Modulo is negative for negative value. This trick makes abs() unnecessary.
-		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+		*ptr++ = "ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[35 + value % base];
 		value /= base;
 	}
 	while (value);
@@ -145,7 +145,7 @@ static char *lluitoa(unsigned long long value, char *str, int base)
 	do
 	{
 		// Modulo is negative for negative value. This trick makes abs() unnecessary.
-		*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+		*ptr++ = "ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[35 + value % base];
 		value /= base;
 	}
 	while (value);
@@ -230,6 +230,7 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 
 			case 'x':
 			case 'X':
+			case 'p':
 				if (!ll)
 				{
 					buffer = uitoa(va_arg(args, int), buffer, 16);
@@ -261,6 +262,20 @@ void register_logger(log_func func)
 	logger = func;
 }
 
+int vprintk(const char *format, va_list arg)
+{
+	int done;
+
+	done = do_printk(buffer, format, arg);
+
+	if (logger)
+	{
+		logger(buffer);
+	}
+
+	return done;
+
+}
 
 int printk(const char *format, ...)
 {

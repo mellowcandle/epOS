@@ -36,6 +36,10 @@
 #include <lib/list.h>
 #include <apic.h>
 
+
+void acpit_init();
+void shutdown();
+
 void kmain(void)
 {
 	extern uint32_t magic;
@@ -57,8 +61,13 @@ void kmain(void)
 	gdt_init();
 	idt_init();
 	mem_init(mbi);
-	enableAPIC();
+	acpi_init();
+
+	//	enableAPIC();
+
 	printk("Bla Bla\r\n");
+
+//	shutdown();
 
 	while (1);
 }

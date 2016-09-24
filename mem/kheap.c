@@ -95,7 +95,7 @@ int mem_heap_unlock(heap_t *heap)
 	return 0;
 }
 
-void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages)
+void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages, bool hw)
 {
 	addr_t ret_address;
 	addr_t physical;
@@ -109,19 +109,20 @@ void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages)
 		panic();
 	}
 
-	if (hw_pages)
+	if (hw)
 	{
 		physical = hw_pages;
 	}
 	else
 	{
 		physical = mem_get_pages(count);
+
+		if (!physical)
+		{
+			goto error;
+		}
 	}
 
-	if (!physical)
-	{
-		goto error;
-	}
 
 	for (size_t i = 0; i < count; i++)
 	{

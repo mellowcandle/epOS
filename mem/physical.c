@@ -95,11 +95,12 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 		total_memory -= PAGE_SIZE;
 
 		// Put it in PDT
-		printk("Physical writing to kernel PDT, index %u\r\n", FRAME_TO_PDE_INDEX(vaddr));
+//		printk("Physical writing to kernel PDT, vaddr: 0x%x, index %u\r\n", vaddr, FRAME_TO_PDE_INDEX(vaddr));
 		kernel_pdt[FRAME_TO_PDE_INDEX(vaddr)] = page | 3;
 		// Invalidate cache
 		access_ptr = pde_mirror + (FRAME_TO_PDE_INDEX(vaddr) * 0x1000);
 		mem_tlb_flush((void *) PDT_MIRROR_BASE);
+//		printk("Access_ptr = 0x%x\r\n", (uint32_t) access_ptr);
 		// Clear the PDE table
 		memset(access_ptr, 0, PAGE_SIZE);
 
@@ -200,7 +201,7 @@ addr_t mem_get_pages(uint32_t count)
 	if (found)
 	{
 		addr = (page_start * PAGE_SIZE) + physmem.phys_start;
-		printk("mem_get_pages: found %u continous pages starting from 0x%x\r\n", count, addr);
+//		printk("mem_get_pages: found %u continous pages starting from 0x%x\r\n", count, addr);
 
 		for (uint32_t i = page_start; i <= page_end; i++)
 		{

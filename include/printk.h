@@ -33,11 +33,17 @@
 typedef void (* log_func)(const char *string);
 void register_logger(log_func func);
 
-int printk(const char *format, ...) 
-	__attribute__((format(printf, 1, 2)));  /* 1=format 2=params */
+int printk(const char *format, ...)
+__attribute__((format(printf, 1, 2)));  /* 1=format 2=params */
 
+
+#ifdef DEBUG
 #define FUNC_ENTER() printk("+ %s\r\n", __FUNCTION__)
 #define FUNC_LEAVE() printk("- %s\r\n", __FUNCTION__)
+#else
+#define FUNC_ENTER()
+#define FUNC_LEAVE()
+#endif
 
 #define pr_error(x)	printk("ERROR: " x)
 #define pr_warn(x)	printk("WARN: " x)

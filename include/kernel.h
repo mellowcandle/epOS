@@ -53,6 +53,15 @@
 		} \
 	} while (0)
 
+#define mem_assert(_x) \
+	do { \
+		if (!(_x)) { \
+			printk("!!! assert failed %s:%u : (%s) !!!\r\n", __FILE__, __LINE__, #_x); \
+			dump_pdt(); \
+			panic(); \
+		} \
+	} while (0)
+
 void panic(void);
 
 #endif /* end of include guard: KERNEL_H_M1BAK62D */
