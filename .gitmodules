@@ -1,3 +1,0 @@
-[submodule "external/acpica"]
-	path = external/acpica
-	url = git://github.com/acpica/acpica.git
