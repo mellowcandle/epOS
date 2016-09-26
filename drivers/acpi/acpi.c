@@ -46,25 +46,12 @@ void acpi_early_init()
 
 	if (ACPI_FAILURE(rv))
 	{
-		goto error;
-	}
-
-	while(1);
-
-	rv = AcpiLoadTables();
-
-	if (ACPI_FAILURE(rv))
-	{
-		goto error;
+		pr_fatal("ACPI table initalization failed\r\n");
+		panic();
 	}
 
 	acpi_tables_initalized = true;
-	return;
 
-error:
-	printk("Shit\r\n");
-	pr_fatal("ACPI table initalization failed\r\n");
-	panic();
 }
 
 void acpi_init()
@@ -81,13 +68,20 @@ void acpi_init()
 		err_code = 1;
 		goto error;
 	}
-	acpi_early_init();
+
+	rv = AcpiLoadTables();
+
+	if (ACPI_FAILURE(rv))
+	{
+		err_code = 2;
+		goto error;
+	}
 
 	rv = AcpiEnableSubsystem(ACPI_FULL_INITIALIZATION);
 
 	if (ACPI_FAILURE(rv))
 	{
-		err_code = 4;
+		err_code = 3;
 		goto error;
 	}
 

@@ -58,8 +58,7 @@ void kmain(void)
 	gdt_init();
 	idt_init();
 	mem_init(mbi);
-	acpi_init();
-	//acpi_early_init();
+	acpi_early_init();
 
 	enableAPIC();
 
