@@ -197,15 +197,15 @@ void mem_init(multiboot_info_t *mbi)
 	}
 
 	kernel_size = ((uint32_t) &kernel_end - (uint32_t) &kernel_start);
-	required_kernel_pages = (kernel_size / PAGE_SIZE) + 2;
+	required_kernel_pages = (kernel_size / PAGE_SIZE) + 1;
 
 	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start, (uint32_t) &kernel_end);
 	printk("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
 
 	physical_start = ((uint32_t) &kernel_start) - KERNEL_VIRTUAL_BASE;
 	physical_start += required_kernel_pages * PAGE_SIZE;
+	physical_start = PAGE_ALIGN_UP(physical_start);
 	total_memory -= required_kernel_pages * PAGE_SIZE;
-
 
 	mem_phys_init(physical_start, total_memory);
 
