@@ -29,7 +29,9 @@
 #include <mem/memory.h>
 #include <cpu.h>
 #include <apic.h>
+#define DEBUG
 #include <printk.h>
+#undef DEBUG
 #include <acpi.h>
 
 #define IA32_APIC_BASE_MSR 0x1B
@@ -93,18 +95,15 @@ static void writeAPICRegister(uint32_t reg, uint32_t value)
 }
 static void disable_i8259()
 {
+	FUNC_ENTER();
 	outb(0xff, PIC1_DATA);
 	outb(0xff, PIC2_DATA);
 }
 
 void enableAPIC()
 {
-
+	FUNC_ENTER();
 	addr_t apic_base;
-
-	 /* First thing first, disable the PIC */
-
-	disable_i8259();
 
 	/* this usually maps to 0xFEE00000 */
 	apic_base = acpi_get_local_apic_addr();
@@ -119,6 +118,9 @@ void enableAPIC()
 	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
 	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
 
+	 /* First thing first, disable the PIC */
+	if (acpi_8259_available())
+		disable_i8259();
 
 
 }

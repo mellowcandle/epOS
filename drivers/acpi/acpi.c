@@ -27,6 +27,7 @@
 
 #include <acpi.h>
 #include <mem/memory.h>
+#include <kernel/bits.h>
 
 #define DEBUG
 #include <printk.h>
@@ -135,6 +136,12 @@ addr_t acpi_get_local_apic_addr()
 	assert(table != NULL);
 
 	return table->Address;
+}
+
+bool acpi_8259_available()
+{
+	ACPI_TABLE_MADT * table = acpi_get_madt();
+	return (table->Flags & BIT(0));
 }
 
 void acpi_shutdown()
