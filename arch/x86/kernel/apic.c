@@ -56,14 +56,6 @@
 #define PIC2_COMMAND    PIC2
 #define PIC2_DATA       (PIC2 + 1)
 
-typedef struct
-{
-	list_t head;
-	uint8_t id;
-	addr_t p_addr;
-	void * v_addr;
-	addr_t global_irq_base;
-} iopic_t;
 
 typedef struct
 {
@@ -170,9 +162,10 @@ void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 	mem_page_map(tmp->p_addr, (addr_t) tmp->v_addr, 0);
 
 	pr_info("IOPIC Base mapping 0x%x -> 0x%x\r\n", tmp->p_addr, (addr_t) tmp->v_addr);
-
+	pr_info("IOPIC IRQ Base: %u\r\n", tmp->global_irq_base);
 	list_add(&tmp->head, &iopic_l);
 
+	iopic_test(tmp);
 }
 
 void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq,uint16_t flags)

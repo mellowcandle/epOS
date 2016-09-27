@@ -25,28 +25,41 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#ifndef APIC_H_W0QIETBW
-#define APIC_H_W0QIETBW
+#include <apic.h>
+#include <printk.h>
+// Register offsets from IOPIC BASE
 
-#include <lib/list.h>
+// Access registers:
 
-typedef struct
+#define IOPIC_IOREGSEL	0x00
+#define IOPIC_IOWIN		0x10
+
+
+#define REG_IOAPICID	0x00
+#define REG_IOAPICVER	0x01
+#define REG_IOAPICARB	0x02
+
+
+uint32_t iopic_readreg(iopic_t * iopic, addr_t reg)
 {
-	list_t head;
-	uint8_t id;
-	addr_t p_addr;
-	void * v_addr;
-	addr_t global_irq_base;
-} iopic_t;
+	uint32_t * rsel = iopic->v_addr + IOPIC_IOREGSEL;
+	uint32_t * rread = iopic->v_addr + IOPIC_IOWIN;
+	*rsel = reg;
+	return *rread;
+}
 
-void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags);
-void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base);
-void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq,uint16_t flags);
-void apic_configure_nmi_source(uint32_t global_irq, uint16_t flags);
-void apic_configure_lapic_nmi(uint8_t cpu_id, uint16_t flags, uint8_t lint);
-void apic_configure_lapic_override(uint64_t address);
+void iopic_writereg(iopic_t * iopic, addr_t reg, uint32_t val)
+{
+	uint32_t * rsel = iopic->v_addr + IOPIC_IOREGSEL;
+	uint32_t * rwrite = iopic->v_addr + IOPIC_IOWIN;
+	*rsel = reg;
+	*rwrite = val;
+}
 
-void iopic_test(iopic_t * iopic);
 
-#endif /* end of include guard: APIC_H_W0QIETBW */
-
+void iopic_test(iopic_t * iopic)
+{
+	uint32_t id = iopic_readreg(iopic, REG_IOAPICID);
+	uint32_t ver = iopic_readreg(iopic, REG_IOAPICVER);
+	pr_info("IOPIC ID = %x, Version = %x\r\n", id, ver);
+}
