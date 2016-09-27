@@ -33,6 +33,8 @@
 #include <printk.h>
 #undef DEBUG
 #include <acpi.h>
+#include <lib/list.h>
+#include <lib/kmalloc.h>
 
 #define IA32_APIC_BASE_MSR 0x1B
 #define IA32_APIC_BASE_MSR_BSP 0x100 // Processor is a BSP
@@ -53,6 +55,9 @@
 #define PIC2_COMMAND    PIC2
 #define PIC2_DATA       (PIC2 + 1)
 
+
+
+LIST(iopic_l);
 
 /** returns a 'true' value if the CPU supports APIC
  *  and if the local APIC hasn't been disabled in MSRs
@@ -118,12 +123,48 @@ void enableAPIC()
 	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
 	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
 
-	 /* First thing first, disable the PIC */
+	/* First thing first, disable the PIC */
 	if (acpi_8259_available())
+	{
 		disable_i8259();
+	}
 
+	acpi_configure_apic();
+}
+
+
+void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
+{
+
+	FUNC_ENTER();
+
+	iopic_t * tmp = kmalloc(sizeof(iopic_t));
+	assert(tmp);
+
+	tmp->id = id;
+	tmp->p_address = address;
+	tmp->global_irq_base = irq_base;
+
+	list_add(&tmp->head, &iopic_l);
 
 }
 
+void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq,uint16_t flags)
+{
+	FUNC_ENTER();
+}
+
+void apic_configure_nmi_source(uint32_t global_irq, uint16_t flags)
+{
+	FUNC_ENTER();
+}
+void apic_configure_lapic_nmi(uint8_t cpu_id, uint16_t flags, uint8_t lint)
+{
+	FUNC_ENTER();
+}
+void apic_configure_lapic_override(uint64_t address)
+{
+	FUNC_ENTER();
+}
 
 

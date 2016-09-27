@@ -28,7 +28,24 @@
 #ifndef APIC_H_W0QIETBW
 #define APIC_H_W0QIETBW
 
+#include <lib/list.h>
+
 void enableAPIC();
+
+typedef struct
+{
+	list_t head;
+	uint8_t id;
+	addr_t p_address;
+	void * v_address;
+	addr_t global_irq_base;
+} iopic_t;
+
+void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base);
+void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq,uint16_t flags);
+void apic_configure_nmi_source(uint32_t global_irq, uint16_t flags);
+void apic_configure_lapic_nmi(uint8_t cpu_id, uint16_t flags, uint8_t lint);
+void apic_configure_lapic_override(uint64_t address);
 
 #endif /* end of include guard: APIC_H_W0QIETBW */
 
