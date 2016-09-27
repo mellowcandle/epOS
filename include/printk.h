@@ -40,15 +40,17 @@ __attribute__((format(printf, 1, 2)));  /* 1=format 2=params */
 #ifdef DEBUG
 #define FUNC_ENTER() printk("+ %s\r\n", __FUNCTION__)
 #define FUNC_LEAVE() printk("- %s\r\n", __FUNCTION__)
+#define pr_debug(_format, _args...)	printk("DEBUG: " _format, ##_args)
+
 #else
 #define FUNC_ENTER()
 #define FUNC_LEAVE()
+#define pr_debug(_format, _args...)
 #endif
 
-#define pr_fatal(x)	printk("FATAL: " x)
-#define pr_error(x)	printk("ERROR: " x)
-#define pr_warn(x)	printk("WARN: " x)
-#define pr_info(x)	printk("INFO: " x)
-#define pr_debug(x)	printk("DEBUG: " x)
+#define pr_fatal(_format, _args...)	printk("FATAL: " _format, ##_args)
+#define pr_error(_format, _args...)	printk("ERROR: " _format, ##_args)
+#define pr_warn(_format, _args...)	printk("WARN: " _format, ##_args)
+#define pr_info(_format, _args...)	printk("INFO: " _format, ##_args)
 
 #endif /* end of include guard: PRINTK_H_X0OBSDIJ */
