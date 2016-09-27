@@ -62,8 +62,7 @@ void kmain(void)
 	VIDEO_clear_screen();
 
 	acpi_early_init();
-
-	enableAPIC();
+	acpi_configure_apic();
 
 	if (kbd_8042_avail())
 	{

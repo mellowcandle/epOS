@@ -26,6 +26,7 @@
 */
 
 #include <types.h>
+#include <kernel/bits.h>
 #include <mem/memory.h>
 #include <cpu.h>
 #include <apic.h>
@@ -55,9 +56,26 @@
 #define PIC2_COMMAND    PIC2
 #define PIC2_DATA       (PIC2 + 1)
 
+typedef struct
+{
+	list_t head;
+	uint8_t id;
+	addr_t p_addr;
+	void * v_addr;
+	addr_t global_irq_base;
+} iopic_t;
+
+typedef struct
+{
+	uint8_t id;
+	addr_t p_addr;
+	void * v_addr;
+} lapic_t;
 
 
+static lapic_t lapic;
 LIST(iopic_l);
+
 
 /** returns a 'true' value if the CPU supports APIC
  *  and if the local APIC hasn't been disabled in MSRs
@@ -105,33 +123,36 @@ static void disable_i8259()
 	outb(0xff, PIC2_DATA);
 }
 
-void enableAPIC()
+
+void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 {
 	FUNC_ENTER();
-	addr_t apic_base;
+
+	//TODO: do we need to keep the data we get ??
 
 	/* this usually maps to 0xFEE00000 */
-	apic_base = acpi_get_local_apic_addr();
+	lapic.p_addr = acpi_get_local_apic_addr();
 
 	/* Hardware enable the Local APIC if it wasn't enabled */
-	cpuSetAPICBase(apic_base);
+	cpuSetAPICBase(lapic.p_addr);
 
 	/* Idendity map the APIC base */
-	mem_page_map(apic_base, apic_base, 0);
 
-	printk("APIC Base was set to: 0x%x\r\n", apic_base);
-	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
-	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
+	lapic.v_addr = (void *) lapic.p_addr;
+	mem_page_map(lapic.p_addr, (addr_t) lapic.v_addr, 0);
+
+	pr_info("APIC Base mapping 0x%x -> 0x%x\r\n", lapic.p_addr, (addr_t) lapic.v_addr);
 
 	/* First thing first, disable the PIC */
-	if (acpi_8259_available())
+	if (flags && BIT(0))
 	{
+		pr_info("Disabling the i8259 IRQ chip\r\n");
 		disable_i8259();
 	}
 
-	acpi_configure_apic();
+	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
+	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
 }
-
 
 void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 {
@@ -142,8 +163,13 @@ void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 	assert(tmp);
 
 	tmp->id = id;
-	tmp->p_address = address;
+	tmp->p_addr = address;
+	tmp->v_addr = (void *) address; // Identity map
 	tmp->global_irq_base = irq_base;
+
+	mem_page_map(tmp->p_addr, (addr_t) tmp->v_addr, 0);
+
+	pr_info("IOPIC Base mapping 0x%x -> 0x%x\r\n", tmp->p_addr, (addr_t) tmp->v_addr);
 
 	list_add(&tmp->head, &iopic_l);
 

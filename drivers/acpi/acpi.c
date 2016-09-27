@@ -28,7 +28,7 @@
 #include <acpi.h>
 #include <mem/memory.h>
 #include <kernel/bits.h>
-
+#include <apic.h>
 #define DEBUG
 #include <printk.h>
 #undef DEBUG
@@ -190,6 +190,7 @@ void acpi_madt_foreach_subtable(acpi_subtable_handler handler)
 
 void acpi_madt_configure_apic_subtable(ACPI_SUBTABLE_HEADER *header)
 {
+	ACPI_MADT_LOCAL_APIC * apic;
 	ACPI_MADT_IO_APIC *ioapic;
 	ACPI_MADT_INTERRUPT_OVERRIDE *int_override;
 	ACPI_MADT_NMI_SOURCE *nmi_source;
@@ -199,8 +200,9 @@ void acpi_madt_configure_apic_subtable(ACPI_SUBTABLE_HEADER *header)
 	switch (header->Type)
 	{
 	case ACPI_MADT_TYPE_LOCAL_APIC:
-		// Already configured. do nothing
-	break;
+		apic = (ACPI_MADT_LOCAL_APIC *)header;
+		apic_configure_lapic(apic->Id, apic->ProcessorId, apic->LapicFlags);;
+		break;
 
 	case ACPI_MADT_TYPE_IO_APIC:
 		ioapic = (ACPI_MADT_IO_APIC *)header;
@@ -242,7 +244,7 @@ void acpi_configure_apic()
 
 void acpi_print_subtable_header(ACPI_SUBTABLE_HEADER *header)
 {
-	printk("ACPI subtable Type=%hhd Length=%hhd\r\n", header->Type, header->Length);
+	printk("ACPI subtable Type=%d Length=%d\r\n", header->Type, header->Length);
 }
 
 void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
@@ -289,7 +291,7 @@ void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
 
 	case ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE:
 		lapic_override = (ACPI_MADT_LOCAL_APIC_OVERRIDE *)header;
-		printk("LApic Override Address=0x%lx\r\n", lapic_override->Address);
+		printk("LApic Override Address=0x%llx\r\n", lapic_override->Address);
 		break;
 
 	default:
