@@ -35,18 +35,21 @@ typedef struct
 	list_t head;
 	uint8_t id;
 	addr_t p_addr;
-	void * v_addr;
-	addr_t global_irq_base;
-} iopic_t;
+	void *v_addr;
+	uint32_t global_irq_base;
+	uint8_t max_redirect;
+} ioapic_t;
 
 void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags);
 void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base);
-void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq,uint16_t flags);
+void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq, uint16_t flags);
 void apic_configure_nmi_source(uint32_t global_irq, uint16_t flags);
 void apic_configure_lapic_nmi(uint8_t cpu_id, uint16_t flags, uint8_t lint);
 void apic_configure_lapic_override(uint64_t address);
 
-void iopic_test(iopic_t * iopic);
+/* check communication with ioapic and reads max redirecton entry*/
+void ioapic_santize(ioapic_t *ioapic);
+
 
 #endif /* end of include guard: APIC_H_W0QIETBW */
 

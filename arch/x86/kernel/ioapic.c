@@ -27,39 +27,73 @@
 
 #include <apic.h>
 #include <printk.h>
-// Register offsets from IOPIC BASE
+#include <kernel/bits.h>
 
-// Access registers:
+// Access registers offsets
 
-#define IOPIC_IOREGSEL	0x00
-#define IOPIC_IOWIN		0x10
-
+#define IOAPIC_IOREGSEL	0x00
+#define IOAPIC_IOWIN		0x10
 
 #define REG_IOAPICID	0x00
 #define REG_IOAPICVER	0x01
 #define REG_IOAPICARB	0x02
+#define REG_IOREDTBL	0x10
 
-
-uint32_t iopic_readreg(iopic_t * iopic, addr_t reg)
+#define IOAPIC_VERSION 0x11
+/*
+typedef struct
 {
-	uint32_t * rsel = iopic->v_addr + IOPIC_IOREGSEL;
-	uint32_t * rread = iopic->v_addr + IOPIC_IOWIN;
+	union {
+		struct {
+			int INTVEC		: 8;
+			int DELMOD		: 3;
+			int DESTMOD		: 1;
+			int DELIVS		: 1;
+			int INTPOL		: 1;
+			int IRR			: 1;
+			int TRIGGER_MODE: 1;
+			int IRQ_MASK	: 1;
+			int				: 32;
+			int				: 6;
+			int DESTFIELD	: 8;
+		};
+		uint64_t reg;
+	};
+} ioapic_redirect_t;
+*/
+static uint32_t ioapic_readreg(ioapic_t *ioapic, addr_t reg)
+{
+	uint32_t *rsel = ioapic->v_addr + IOAPIC_IOREGSEL;
+	uint32_t *rread = ioapic->v_addr + IOAPIC_IOWIN;
 	*rsel = reg;
 	return *rread;
 }
 
-void iopic_writereg(iopic_t * iopic, addr_t reg, uint32_t val)
+static void ioapic_writereg(ioapic_t *ioapic, addr_t reg, uint32_t val)
 {
-	uint32_t * rsel = iopic->v_addr + IOPIC_IOREGSEL;
-	uint32_t * rwrite = iopic->v_addr + IOPIC_IOWIN;
+	uint32_t *rsel = ioapic->v_addr + IOAPIC_IOREGSEL;
+	uint32_t *rwrite = ioapic->v_addr + IOAPIC_IOWIN;
 	*rsel = reg;
 	*rwrite = val;
 }
 
-
-void iopic_test(iopic_t * iopic)
+void ioapic_santize(ioapic_t *ioapic)
 {
-	uint32_t id = iopic_readreg(iopic, REG_IOAPICID);
-	uint32_t ver = iopic_readreg(iopic, REG_IOAPICVER);
-	pr_info("IOPIC ID = %x, Version = %x\r\n", id, ver);
+	uint32_t id = ioapic_readreg(ioapic, REG_IOAPICID);
+	uint32_t ver = ioapic_readreg(ioapic, REG_IOAPICVER);
+
+	ioapic->max_redirect = BF_GET(ver, 16, 8);
+
+	if (BF_GET(ver, 0, 7) != IOAPIC_VERSION)
+	{
+		pr_fatal("IOAPIC version doesn't match.");
+		panic();
+	}
+
+	pr_info("IOAPIC ID = 0x%x, Version = 0x%x Max redirect = 0x%x\r\n",
+	        BF_GET(id, 24, 4), BF_GET(ver, 0, 7), ioapic->max_redirect);
+}
+
+void ioapic_apply_redirect(ioapic_t *ioapic)
+{
 }

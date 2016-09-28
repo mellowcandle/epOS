@@ -190,7 +190,7 @@ void acpi_madt_foreach_subtable(acpi_subtable_handler handler)
 
 void acpi_madt_configure_apic_subtable(ACPI_SUBTABLE_HEADER *header)
 {
-	ACPI_MADT_LOCAL_APIC * apic;
+	ACPI_MADT_LOCAL_APIC *apic;
 	ACPI_MADT_IO_APIC *ioapic;
 	ACPI_MADT_INTERRUPT_OVERRIDE *int_override;
 	ACPI_MADT_NMI_SOURCE *nmi_source;

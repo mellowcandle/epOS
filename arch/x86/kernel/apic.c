@@ -61,7 +61,7 @@ typedef struct
 {
 	uint8_t id;
 	addr_t p_addr;
-	void * v_addr;
+	void *v_addr;
 } lapic_t;
 
 
@@ -151,24 +151,24 @@ void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 
 	FUNC_ENTER();
 
-	iopic_t * tmp = kmalloc(sizeof(iopic_t));
-	assert(tmp);
+	ioapic_t *ioapic = kmalloc(sizeof(ioapic_t));
+	assert(ioapic);
 
-	tmp->id = id;
-	tmp->p_addr = address;
-	tmp->v_addr = (void *) address; // Identity map
-	tmp->global_irq_base = irq_base;
+	ioapic->id = id;
+	ioapic->p_addr = address;
+	ioapic->v_addr = (void *) address; // Identity map
+	ioapic->global_irq_base = irq_base;
 
-	mem_page_map(tmp->p_addr, (addr_t) tmp->v_addr, 0);
+	mem_page_map(ioapic->p_addr, (addr_t) ioapic->v_addr, 0);
 
-	pr_info("IOPIC Base mapping 0x%x -> 0x%x\r\n", tmp->p_addr, (addr_t) tmp->v_addr);
-	pr_info("IOPIC IRQ Base: %u\r\n", tmp->global_irq_base);
-	list_add(&tmp->head, &iopic_l);
+	pr_info("IOAPIC Base mapping 0x%x -> 0x%x\r\n", ioapic->p_addr, (addr_t) ioapic->v_addr);
+	pr_info("IOAPIC IRQ Base: %u\r\n", ioapic->global_irq_base);
+	list_add(&ioapic->head, &iopic_l);
 
-	iopic_test(tmp);
+	ioapic_santize(ioapic);
 }
 
-void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq,uint16_t flags)
+void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq, uint16_t flags)
 {
 	FUNC_ENTER();
 }
