@@ -29,12 +29,26 @@
 #define BITS_H_W0QIETBW
 
 #include <types.h>
-#include <boot/multiboot.h>
 
-#define BIT(_x) (1 << (_x))
-#define BIT_CHECK(a,b) ((a) & (1<<(b)))
-#define BIT_SET(a,b) ((a) |= (1<<(b)))
-#define BIT_CLEAR(a,b) ((a) &= ~(1<<(b)))
+#define BIT(_x)			(1 << (_x))
+#define BIT_CHECK(a,b)	((a) & (1<<(b)))
+#define BIT_SET(a,b)	((a) |= (1<<(b)))
+#define BIT_CLEAR(a,b)	((a) &= ~(1<<(b)))
+
+/* Some macros taken from: http://www.coranac.com/documents/working-with-bits-and-bitfields/ */
+
+#define BIT_MASK(len)			(BIT(len) - 1)
+#define BF_MASK(start, len)		(BIT_MASK(len) << (start))
+#define BF_PREP(x, start, len)  (((x)&BIT_MASK(len)) << (start))
+
+//Extract a bitfield of length \a len starting at bit \a start from \a y.
+#define BF_GET(y, start, len)   (((y) >> (start)) & BIT_MASK(len))
+
+//! Insert a new bitfield value \a x into \a y.
+#define BF_SET(y, x, start, len) \
+	(y = ((y) & BF_MASK(start, len)) | BF_PREP(x, start, len))
+
+
 static inline uint32_t divide_up(uint32_t value, uint32_t align)
 {
 	uint32_t ret;
