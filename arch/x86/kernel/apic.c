@@ -168,9 +168,10 @@ void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 	ioapic_santize(ioapic);
 }
 
-void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq, uint16_t flags)
+void apic_configure_int_override(uint8_t irq_src, uint32_t global_irq, uint16_t flags)
 {
 	FUNC_ENTER();
+	pr_info("APIC: IRQ override %u -> %u : 0x%x\r\n", irq_src, global_irq, flags);
 }
 
 void apic_configure_nmi_source(uint32_t global_irq, uint16_t flags)

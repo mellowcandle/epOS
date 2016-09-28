@@ -40,27 +40,32 @@
 #define REG_IOREDTBL	0x10
 
 #define IOAPIC_VERSION 0x11
-/*
-typedef struct
+
+typedef union
 {
-	union {
-		struct {
-			int INTVEC		: 8;
-			int DELMOD		: 3;
-			int DESTMOD		: 1;
-			int DELIVS		: 1;
-			int INTPOL		: 1;
-			int IRR			: 1;
-			int TRIGGER_MODE: 1;
-			int IRQ_MASK	: 1;
-			int				: 32;
-			int				: 6;
-			int DESTFIELD	: 8;
-		};
-		uint64_t reg;
+	struct
+	{
+		uint32_t INTVEC : 8,
+		         DELMOD		: 3,
+		         DESTMOD		: 1,
+		         DELIVS		: 1,
+		         INTPOL		: 1,
+		         IRR			: 1,
+		         TRIGGER_MODE: 1,
+		         IRQ_MASK	: 1,
+		         reserved_1	: 15;
+		uint32_t reserved_2	: 24,
+		         DESTFIELD	: 8;
+	}  __attribute__((packed));
+
+	struct
+	{
+		uint32_t hi;
+		uint32_t low;
 	};
 } ioapic_redirect_t;
-*/
+
+void ioapic_dump(ioapic_t *ioapic);
 static uint32_t ioapic_readreg(ioapic_t *ioapic, addr_t reg)
 {
 	uint32_t *rsel = ioapic->v_addr + IOAPIC_IOREGSEL;
@@ -92,8 +97,61 @@ void ioapic_santize(ioapic_t *ioapic)
 
 	pr_info("IOAPIC ID = 0x%x, Version = 0x%x Max redirect = 0x%x\r\n",
 	        BF_GET(id, 24, 4), BF_GET(ver, 0, 7), ioapic->max_redirect);
+
+	ioapic_dump(ioapic);
 }
 
+static void ioapic_read_redirect(ioapic_t *ioapic, ioapic_redirect_t *entry, uint8_t irq)
+{
+
+	entry->hi = ioapic_readreg(ioapic, REG_IOREDTBL + (irq * 2));
+	entry->low = ioapic_readreg(ioapic, REG_IOREDTBL + (irq * 2) + 1);
+}
+
+static void ioapic_write_redirect(ioapic_t *ioapic, ioapic_redirect_t *entry, uint8_t irq)
+{
+
+	ioapic_writereg(ioapic, REG_IOREDTBL + (irq * 2), entry->hi);
+	ioapic_writereg(ioapic, REG_IOREDTBL + (irq * 2) + 1, entry->low);
+}
+
+static void _ioapic_irq_mask_set(ioapic_t *ioapic, uint8_t irq, bool mask)
+{
+	ioapic_redirect_t entry;
+
+	if (irq >= ioapic->max_redirect)
+	{
+		pr_error("IOAPIC can't handle this irq, %u\r\n", irq);
+		return;
+	}
+
+	ioapic_read_redirect(ioapic, &entry, irq);
+	entry.IRQ_MASK = mask;
+	ioapic_write_redirect(ioapic, &entry, irq);
+
+}
+
+void ioapic_irq_mask(ioapic_t *ioapic, uint8_t irq)
+{
+	_ioapic_irq_mask_set(ioapic, irq, true);
+}
+void ioapic_irq_unmask(ioapic_t *ioapic, uint8_t irq)
+{
+	_ioapic_irq_mask_set(ioapic, irq, false);
+}
+
+void ioapic_dump(ioapic_t *ioapic)
+{
+	ioapic_redirect_t entry;
+
+	for (int i = 0; i < ioapic->max_redirect; i++)
+	{
+		ioapic_read_redirect(ioapic, &entry, i);
+		printk("IOAPIC Entry %u intvec: %x delmod: %x destmod: %u delivs: %u intpol: %u irr: %u trigger_mode: %u irq_mask: %u destfield: %x\r\n",
+		       i, entry.INTVEC, entry.DELMOD, entry.DESTMOD, entry.DELIVS, entry.INTPOL, entry.IRR, entry.TRIGGER_MODE, entry.IRQ_MASK, entry.DESTFIELD);
+	}
+
+}
 void ioapic_apply_redirect(ioapic_t *ioapic)
 {
 }

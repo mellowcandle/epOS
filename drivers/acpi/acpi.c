@@ -211,8 +211,8 @@ void acpi_madt_configure_apic_subtable(ACPI_SUBTABLE_HEADER *header)
 
 	case ACPI_MADT_TYPE_INTERRUPT_OVERRIDE:
 		int_override = (ACPI_MADT_INTERRUPT_OVERRIDE *)header;
-		apic_configure_int_override(int_override->Bus, int_override->SourceIrq,
-		                            int_override->GlobalIrq, int_override->IntiFlags);
+		apic_configure_int_override(int_override->SourceIrq, int_override->GlobalIrq,
+		                            int_override->IntiFlags);
 		break;
 
 	case ACPI_MADT_TYPE_NMI_SOURCE:

@@ -42,7 +42,7 @@ typedef struct
 
 void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags);
 void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base);
-void apic_configure_int_override(uint8_t bus, uint8_t irq_src, uint32_t global_irq, uint16_t flags);
+void apic_configure_int_override(uint8_t irq_src, uint32_t global_irq, uint16_t flags);
 void apic_configure_nmi_source(uint32_t global_irq, uint16_t flags);
 void apic_configure_lapic_nmi(uint8_t cpu_id, uint16_t flags, uint8_t lint);
 void apic_configure_lapic_override(uint64_t address);
