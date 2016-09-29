@@ -27,6 +27,9 @@
 
 #include <video/VIDEO_textmode.h>
 #include <cpu.h>
+#include <mem/memory.h>
+#include <printk.h>
+
 #define TAB_SIZE    8
 
 //prototypes
@@ -160,7 +163,8 @@ void VIDEO_print_string(const char *string)
 
 void VIDEO_init()
 {
-
+	mem_page_map(0xB8000, 0xB8000, 0);
+	register_logger(&VIDEO_print_string);
 }
 
 void VIDEO_clear_screen(void)
