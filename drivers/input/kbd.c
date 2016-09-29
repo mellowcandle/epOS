@@ -26,50 +26,37 @@
 */
 
 #include <types.h>
-#include <boot/multiboot.h>
-#include <video/VIDEO_textmode.h>
-#include <isr.h>
-#include <printk.h>
-#include <mem/memory.h>
 #include <cpu.h>
-#include <serial.h>
-#include <lib/list.h>
-#include <apic.h>
+#include <printk.h>
 #include <acpi.h>
-#include <kbd.h>
-void kmain(void)
-{
-	extern uint32_t magic;
-	extern void *mbd;
-	multiboot_info_t *mbi = mbd;
 
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
+/* Port addresses */
+#define KBD_8042_DATA_PORT	0x60
+#define KBD_8042_CMD_PORT	0x64
+
+/* Status register bits */
+#define STATUS_OUTPUT_BUF_STATUS	BIT(0)
+#define STATUS_INPUT_BUF_STATUS		BIT(1)
+#define STATUS_SYSTEM_FLAG			BIT(2)
+#define STATUS_CMD_DATA				BIT(3)
+#define STATUS_INHIBIT_SWITCH		BIT(4)
+#define STATUS_TRANSMIT_TIMEOUT		BIT(5)
+#define STATUS_RECIEVE_TIMEOUT		BIT(6)
+#define STATUS_PARITY_ERROR			BIT(7)
+
+
+ACPI_TABLE_FADT *acpi_get_fadt();
+
+bool kbd_8042_avail()
+{
+	ACPI_TABLE_FADT * fadt = acpi_get_fadt();
+
+	if (fadt->Header.Revision < 2)
 	{
-		/* Something went not according to specs. Print an error */
-		/* message and halt, but do *not* rely on the multiboot */
-		/* data structure. */
-		return;
+		pr_info("ACPI FADT version < 2 - Assuming 8042 availability\r\n");
+		return true;
 	}
 
-	init_serial();
-
-	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
-
-	gdt_init();
-	idt_init();
-	mem_init(mbi);
-	VIDEO_init();
-	VIDEO_clear_screen();
-
-	acpi_early_init();
-
-	enableAPIC();
-
-	if (kbd_8042_avail())
-		printk("8042 keyboard detected\r\n");
-	printk("Bla Bla\r\n");
-
-//	shutdown();
-
-	while (1);
+	return (fadt->BootFlags & ACPI_FADT_8042);
 }
+

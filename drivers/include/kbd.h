@@ -25,51 +25,12 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+#ifndef KBD_H_AXQBPYGZ
+#define KBD_H_AXQBPYGZ
+
 #include <types.h>
-#include <boot/multiboot.h>
-#include <video/VIDEO_textmode.h>
-#include <isr.h>
-#include <printk.h>
-#include <mem/memory.h>
-#include <cpu.h>
-#include <serial.h>
-#include <lib/list.h>
-#include <apic.h>
-#include <acpi.h>
-#include <kbd.h>
-void kmain(void)
-{
-	extern uint32_t magic;
-	extern void *mbd;
-	multiboot_info_t *mbi = mbd;
+bool kbd_8042_avail();
 
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
-	{
-		/* Something went not according to specs. Print an error */
-		/* message and halt, but do *not* rely on the multiboot */
-		/* data structure. */
-		return;
-	}
 
-	init_serial();
+#endif /* end of include guard: KBD_H_AXQBPYGZ */
 
-	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
-
-	gdt_init();
-	idt_init();
-	mem_init(mbi);
-	VIDEO_init();
-	VIDEO_clear_screen();
-
-	acpi_early_init();
-
-	enableAPIC();
-
-	if (kbd_8042_avail())
-		printk("8042 keyboard detected\r\n");
-	printk("Bla Bla\r\n");
-
-//	shutdown();
-
-	while (1);
-}
