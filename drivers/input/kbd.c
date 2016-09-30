@@ -48,6 +48,12 @@
 
 ACPI_TABLE_FADT *acpi_get_fadt();
 
+static int kbd_8042_self_test();
+static bool ps2_dual_channel = false;
+static int ps2_port_test(bool dual);
+void kbd_8042_enable(uint8_t port);
+void kbd_8042_disable(uint8_t port);
+
 static uint8_t kbd_8042_status()
 {
 	return inb(KBD_8042_CMD_PORT);
@@ -63,14 +69,26 @@ static void kbd_8042_write_cmd(uint8_t cmd)
 	outb(KBD_8042_CMD_PORT, cmd);
 }
 
+static void kbd_8042_write_data(uint8_t cmd)
+{
+	outb(KBD_8042_DATA_PORT, cmd);
+}
+
 static uint8_t kbd_8042_read_config()
 {
 	kbd_8042_write_cmd(0x20);
 	return kbd_8042_data();
 }
 
+static void kbd_8042_write_config(uint8_t config)
+{
+	kbd_8042_write_cmd(0x60);
+	kbd_8042_write_data(config);
+}
+
 void kbd_8042_init()
 {
+	uint8_t config;
 	/* First, disable the device */
 	kbd_8042_write_cmd(0xAD);
 	kbd_8042_write_cmd(0xA7);
@@ -81,15 +99,146 @@ void kbd_8042_init()
 		(void) kbd_8042_data();
 	}
 
+	config = kbd_8042_read_config();
+	pr_debug("KBD Initial Config was: %x\r\n", config);
+
+	if (BIT_CHECK(config, 5))
+	{
+		ps2_dual_channel = true;
+		pr_info("Detected dual channel PS2 controller\r\n");
+	}
+
+	/* Clean up the config */
+	BIT_CLEAR(config, 0); // Disable first PS/2 port interrupt
+	BIT_CLEAR(config, 1); // Disable second PS/2 port interrupt
+	BIT_CLEAR(config, 6); // Disable first PS/2 port translation
+
+	kbd_8042_write_config(config);
+	pr_debug("KBD Config set to: %x\r\n", config);
+
+	if (kbd_8042_self_test())
+	{
+		return;
+	}
+
+	if (ps2_port_test(ps2_dual_channel))
+	{
+		return;
+	}
+
+	kbd_8042_enable(1);
+}
+
+void kbd_8042_enable(uint8_t port)
+{
+	uint8_t config;
+	config = kbd_8042_read_config();
+
+	if (port == 1)
+	{
+		BIT_SET(config, 0);
+	}
+	else if (port == 2)
+	{
+		BIT_SET(config, 1);
+	}
+	else
+	{
+		pr_error("Unknown PS2 port\r\n");
+		return;
+	}
+
+	kbd_8042_write_config(config);
+
+	if (port == 1)
+	{
+		kbd_8042_write_cmd(0xAE);
+	}
+	else
+	{
+		kbd_8042_write_cmd(0xA8);
+	}
+
+}
+void kbd_8042_disable(uint8_t port)
+{
+	if (port == 1)
+	{
+		kbd_8042_write_cmd(0xAD);
+	}
+	else if (port == 2)
+	{
+		kbd_8042_write_cmd(0xA7);
+	}
+	else
+	{
+		pr_error("Unknown PS2 port\r\n");
+		return;
+	}
+
+}
+int kbd_8042_self_test()
+{
+	uint8_t data;
+	kbd_8042_write_cmd(0xAA);
+
+	while (!(kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
+		;
+
+	data = kbd_8042_data();
+
+	if (data != 0x55)
+	{
+		pr_error("8042 kbd self test failed\r\n");
+		return -1;
+	}
+
+	return 0;
+}
+int ps2_port_test(bool dual)
+{
+	uint8_t data;
+	kbd_8042_write_cmd(0xAB);
+
+	while (!(kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
+		;
+
+	data = kbd_8042_data();
+
+	if (data)
+	{
+		pr_error("PS2 port 1 test failed\r\n");
+		return -1;
+	}
+
+	if (!dual)
+	{
+		return 0;
+	}
+
+	kbd_8042_write_cmd(0xA9);
+
+	while (!(kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
+		;
+
+	data = kbd_8042_data();
+
+	if (data)
+	{
+		pr_error("PS2 port 2 test failed\r\n");
+		return -1;
+	}
+
+	return 0;
 }
 
 bool kbd_8042_avail()
 {
-	ACPI_TABLE_FADT * fadt = acpi_get_fadt();
+	ACPI_TABLE_FADT *fadt = acpi_get_fadt();
 
 	if (fadt->Header.Revision < 2)
 	{
-		pr_info("ACPI FADT version < 2 - Assuming 8042 availability\r\n");
+		pr_debug("ACPI FADT version < 2 - Assuming 8042 availability\r\n");
 		return true;
 	}
 
