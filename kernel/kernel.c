@@ -54,7 +54,7 @@ void kmain(void)
 	init_serial();
 
 	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
-
+	enable_irq();
 	gdt_init();
 	idt_init();
 	mem_init(mbi);
@@ -66,7 +66,10 @@ void kmain(void)
 	enableAPIC();
 
 	if (kbd_8042_avail())
-		printk("8042 keyboard detected\r\n");
+	{
+		pr_info("8042 keyboard detected\r\n");
+		kbd_8042_init();
+	}
 	printk("Bla Bla\r\n");
 
 //	shutdown();

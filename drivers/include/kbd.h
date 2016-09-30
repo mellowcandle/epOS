@@ -30,6 +30,7 @@
 
 #include <types.h>
 bool kbd_8042_avail();
+void kbd_8042_init();
 
 
 #endif /* end of include guard: KBD_H_AXQBPYGZ */
