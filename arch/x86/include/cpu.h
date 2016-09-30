@@ -173,4 +173,14 @@ static inline uint16_t inw(uint16_t port)
 	__asm volatile("inw %1, %0" : "=a"(ret) : "dN"(port));
 	return ret;
 }
+static inline void enable_irq()
+{
+	__asm volatile("sti");
+}
+
+static inline void disable_irq()
+{
+	__asm volatile("cli");
+}
+
 #endif /* CPU_H_ */
