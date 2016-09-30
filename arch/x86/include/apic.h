@@ -46,6 +46,7 @@ void apic_configure_int_override(uint8_t irq_src, uint32_t global_irq, uint16_t 
 void apic_configure_nmi_source(uint32_t global_irq, uint16_t flags);
 void apic_configure_lapic_nmi(uint8_t cpu_id, uint16_t flags, uint8_t lint);
 void apic_configure_lapic_override(uint64_t address);
+void apic_eoi();
 
 /* check communication with ioapic and reads max redirecton entry*/
 void ioapic_santize(ioapic_t *ioapic);

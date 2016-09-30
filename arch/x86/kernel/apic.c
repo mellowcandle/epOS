@@ -40,13 +40,16 @@
 #define IA32_APIC_BASE_MSR 0x1B
 #define IA32_APIC_BASE_MSR_BSP 0x100 // Processor is a BSP
 #define IA32_APIC_BASE_MSR_ENABLE 0x800
-#define APIC_SPURIOUS_INTERRUPT_VECTOR      0x0F
+#define APIC_SPURIOUS_INTERRUPT_VECTOR      0xF0
 
 /* APIC Timer definitions */
 #define APIC_DIVIDE_CONFIG_REGISTER			0x3E0
 #define APIC_INITIAL_COUNT_REGISTER			0x380
 #define APIC_LVT_TIMER_REGISTER				0x320
 #define APIC_CURRENT_COUNT_REGISTER			0x390
+
+
+#define APIC_EOI_REGISTER 0xB0
 
 /* I8259 definitions, only for disabling it */
 #define PIC1            0x20   /* IO base address for master PIC */
@@ -166,6 +169,11 @@ void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 	list_add(&ioapic->head, &iopic_l);
 
 	ioapic_santize(ioapic);
+}
+
+void apic_eoi()
+{
+	writeAPICRegister(APIC_EOI_REGISTER, 0);
 }
 
 void apic_configure_int_override(uint8_t irq_src, uint32_t global_irq, uint16_t flags)
