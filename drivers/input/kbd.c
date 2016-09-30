@@ -53,6 +53,7 @@ static bool ps2_dual_channel = false;
 static int ps2_port_test(bool dual);
 void kbd_8042_enable(uint8_t port);
 void kbd_8042_disable(uint8_t port);
+void kbd_8042_poll();
 
 static uint8_t kbd_8042_status()
 {
@@ -230,6 +231,21 @@ int ps2_port_test(bool dual)
 	}
 
 	return 0;
+}
+
+void kbd_8042_poll()
+{
+	uint8_t data;
+
+	while (1)
+	{
+
+		while (!(kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
+			;
+
+		data = kbd_8042_data();
+		printk("Data read from controller: 0x%x\r\n", data);
+	}
 }
 
 bool kbd_8042_avail()

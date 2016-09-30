@@ -82,25 +82,6 @@ static void ioapic_writereg(ioapic_t *ioapic, addr_t reg, uint32_t val)
 	*rwrite = val;
 }
 
-void ioapic_santize(ioapic_t *ioapic)
-{
-	uint32_t id = ioapic_readreg(ioapic, REG_IOAPICID);
-	uint32_t ver = ioapic_readreg(ioapic, REG_IOAPICVER);
-
-	ioapic->max_redirect = BF_GET(ver, 16, 8);
-
-	if (BF_GET(ver, 0, 7) != IOAPIC_VERSION)
-	{
-		pr_fatal("IOAPIC version doesn't match.");
-		panic();
-	}
-
-	pr_info("IOAPIC ID = 0x%x, Version = 0x%x Max redirect = 0x%x\r\n",
-	        BF_GET(id, 24, 4), BF_GET(ver, 0, 7), ioapic->max_redirect);
-
-	ioapic_dump(ioapic);
-}
-
 static void ioapic_read_redirect(ioapic_t *ioapic, ioapic_redirect_t *entry, uint8_t irq)
 {
 
@@ -138,6 +119,27 @@ void ioapic_irq_mask(ioapic_t *ioapic, uint8_t irq)
 void ioapic_irq_unmask(ioapic_t *ioapic, uint8_t irq)
 {
 	_ioapic_irq_mask_set(ioapic, irq, false);
+}
+
+void ioapic_santize(ioapic_t *ioapic)
+{
+	uint32_t id = ioapic_readreg(ioapic, REG_IOAPICID);
+	uint32_t ver = ioapic_readreg(ioapic, REG_IOAPICVER);
+
+	ioapic->max_redirect = BF_GET(ver, 16, 8);
+
+	if (BF_GET(ver, 0, 7) != IOAPIC_VERSION)
+	{
+		pr_fatal("IOAPIC version doesn't match.");
+		panic();
+	}
+
+	pr_info("IOAPIC ID = 0x%x, Version = 0x%x Max redirect = 0x%x\r\n",
+	        BF_GET(id, 24, 4), BF_GET(ver, 0, 7), ioapic->max_redirect);
+
+#ifdef DEBUG
+	ioapic_dump(ioapic);
+#endif
 }
 
 void ioapic_dump(ioapic_t *ioapic)

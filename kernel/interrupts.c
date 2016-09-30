@@ -29,7 +29,7 @@
 #include <printk.h>
 #include <cpu.h>
 #include <isr.h>
-
+#include <apic.h>
 
 isr_t interrupt_handlers[256];
 
@@ -54,8 +54,12 @@ void isr_handler(registers_t regs)
 // This gets called from our ASM interrupt handler stub.
 void irq_handler(registers_t regs)
 {
+	printk("Recieved interrupt number: %u\r\n", regs.int_no);
 	// Send an EOI (end of interrupt) signal to the PICs.
 	// If this interrupt involved the slave.
+
+#if 0
+
 	if (regs.int_no >= 40)
 	{
 		// Send reset signal to slave.
@@ -64,6 +68,8 @@ void irq_handler(registers_t regs)
 
 	// Send reset signal to master. (As well as slave, if necessary).
 	outb(0x20, 0x20);
+#endif
+	apic_eoi();
 
 	if (interrupt_handlers[regs.int_no] != 0)
 	{
