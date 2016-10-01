@@ -14,10 +14,11 @@
 * Higer half kernel
 * Paging enabled
 * ACPICA
+* APIC/IOAPIC
 
 ## In Progress
+* PS/2 Keyboard driver (8024)
 
-* IOPIC
 
 ## Todo's
 
