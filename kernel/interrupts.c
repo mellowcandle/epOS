@@ -25,6 +25,8 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+#define DEBUG
+
 #include <types.h>
 #include <printk.h>
 #include <cpu.h>
@@ -41,7 +43,7 @@ void register_interrupt_handler(uint8_t n, isr_t handler)
 // This gets called from our ASM interrupt handler stub.
 void isr_handler(registers_t regs)
 {
-	//VIDEO_print_string("recieved interrupt\n");
+	FUNC_ENTER();
 	printk("Recieved interrupt number: %u\r\n", regs.int_no);
 
 	if (interrupt_handlers[regs.int_no] != 0)
@@ -49,27 +51,14 @@ void isr_handler(registers_t regs)
 		isr_t handler = interrupt_handlers[regs.int_no];
 		handler(regs);
 	}
+
+	FUNC_LEAVE();
 }
 
 // This gets called from our ASM interrupt handler stub.
 void irq_handler(registers_t regs)
 {
-	printk("Recieved interrupt number: %u\r\n", regs.int_no);
-	// Send an EOI (end of interrupt) signal to the PICs.
-	// If this interrupt involved the slave.
-
-#if 0
-
-	if (regs.int_no >= 40)
-	{
-		// Send reset signal to slave.
-		outb(0xA0, 0x20);
-	}
-
-	// Send reset signal to master. (As well as slave, if necessary).
-	outb(0x20, 0x20);
-#endif
-	apic_eoi();
+	FUNC_ENTER();
 
 	if (interrupt_handlers[regs.int_no] != 0)
 	{
@@ -77,6 +66,10 @@ void irq_handler(registers_t regs)
 		handler(regs);
 	}
 
+	apic_eoi();
+	pr_debug("Recieved IRQ number: %u\r\n", regs.int_no);
+
+	FUNC_LEAVE();
 }
 
 void irq_reg_dump(registers_t *regs)
