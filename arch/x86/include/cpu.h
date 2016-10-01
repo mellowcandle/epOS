@@ -110,6 +110,7 @@ enum cpuid_requests
 void gdt_init();
 void idt_init();
 
+void cpu_init();
 
 
 /** issue a single request to CPUID. Fits 'intel features', for instance
