@@ -58,8 +58,8 @@ void kmain(void)
 	gdt_init();
 	idt_init();
 	mem_init(mbi);
-//	VIDEO_init();
-//	VIDEO_clear_screen();
+	VIDEO_init();
+	VIDEO_clear_screen();
 
 	acpi_early_init();
 	acpi_configure_apic();

@@ -40,8 +40,15 @@
 #define IA32_APIC_BASE_MSR 0x1B
 #define IA32_APIC_BASE_MSR_BSP 0x100 // Processor is a BSP
 #define IA32_APIC_BASE_MSR_ENABLE 0x800
-#define APIC_SPURIOUS_INTERRUPT_VECTOR      0xF0
 
+#define APIC_LOCAL_ID_REGISTER				0x20
+#define APIC_TASK_PRIORITY_REGISTER			0x80
+#define APIC_SPURIOUS_INTERRUPT_VECTOR      0xF0
+#define APIC_EOI_REGISTER					0xB0
+#define APIC_PERFORMANCE_MONITOR_COUNTER_REGISTER 0x340
+#define APIC_LVT_LINT0						0x350
+#define APIC_LVT_LINT1						0x360
+#define APIC_LVT_ERROR_REGISTER				0x370
 /* APIC Timer definitions */
 #define APIC_DIVIDE_CONFIG_REGISTER			0x3E0
 #define APIC_INITIAL_COUNT_REGISTER			0x380
@@ -49,7 +56,6 @@
 #define APIC_CURRENT_COUNT_REGISTER			0x390
 
 
-#define APIC_EOI_REGISTER 0xB0
 
 /* I8259 definitions, only for disabling it */
 #define PIC1            0x20   /* IO base address for master PIC */
@@ -104,12 +110,12 @@ uintptr_t cpuGetAPICBase()
 }
 static uint32_t readAPICRegister(uint32_t reg)
 {
-	return *((volatile uint32_t *)(cpuGetAPICBase() + reg * 16));
+	return *((volatile uint32_t *)(cpuGetAPICBase() + reg));
 }
 
 static void writeAPICRegister(uint32_t reg, uint32_t value)
 {
-	*((volatile uint32_t *)(cpuGetAPICBase() + reg * 16)) = value;
+	*((volatile uint32_t *)(cpuGetAPICBase() + reg)) = value;
 }
 static void disable_i8259()
 {
@@ -153,6 +159,23 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 		pr_info("Disabling the i8259 IRQ chip\r\n");
 		disable_i8259();
 	}
+
+	/* Inhibit soft init delivery */
+//	writeAPICRegister(APIC_TASK_PRIORITY_REGISTER, 0x20);
+	/* Disable timer interrupts */
+	writeAPICRegister(APIC_LVT_TIMER_REGISTER, 0x10000);
+
+	/* disable performance counter interrupts */
+	writeAPICRegister(APIC_PERFORMANCE_MONITOR_COUNTER_REGISTER, 0x10000);
+
+	/* enable normal external interrupts */
+	writeAPICRegister(APIC_LVT_LINT0, 0x08700);
+
+	/* enable normal NMI processing */
+	writeAPICRegister(APIC_LVT_LINT1, 0x400);
+
+	/* disable error interrupts */
+	writeAPICRegister(APIC_LVT_ERROR_REGISTER, 0x10000);
 
 	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
 	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);

@@ -92,14 +92,14 @@ static void kbd_8042_write_config(uint8_t config)
 
 void kbd_irq_handler(registers_t regs)
 {
-	//FUNC_ENTER();
+	FUNC_ENTER();
 
-	kbd_8042_data();
 
-//	while ((kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
-//	{
-//		pr_debug("read once\r\n");
-//	}
+	while ((kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
+	{
+		pr_debug("read once\r\n");
+		kbd_8042_data();
+	}
 }
 
 void kbd_8042_init()
