@@ -25,11 +25,14 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+#define DEBUG
+
 #include <types.h>
 #include <cpu.h>
 #include <kernel/bits.h>
 #include <printk.h>
 #include <acpi.h>
+#include <isr.h>
 
 /* Port addresses */
 #define KBD_8042_DATA_PORT	0x60
@@ -87,9 +90,22 @@ static void kbd_8042_write_config(uint8_t config)
 	kbd_8042_write_data(config);
 }
 
+void kbd_irq_handler(registers_t regs)
+{
+	//FUNC_ENTER();
+
+	kbd_8042_data();
+
+//	while ((kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
+//	{
+//		pr_debug("read once\r\n");
+//	}
+}
+
 void kbd_8042_init()
 {
 	uint8_t config;
+
 	/* First, disable the device */
 	kbd_8042_write_cmd(0xAD);
 	kbd_8042_write_cmd(0xA7);
@@ -127,7 +143,10 @@ void kbd_8042_init()
 		return;
 	}
 
+	register_interrupt_handler(33, &kbd_irq_handler);
+
 	kbd_8042_enable(1);
+//	kbd_8042_enable(2);
 }
 
 void kbd_8042_enable(uint8_t port)
