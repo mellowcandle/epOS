@@ -114,6 +114,8 @@ static void writeAPICRegister(uint32_t reg, uint32_t value)
 static void disable_i8259()
 {
 	FUNC_ENTER();
+	outb(0x20, PIC1_COMMAND);
+	outb(0x20, PIC2_COMMAND);
 	outb(0xff, PIC1_DATA);
 	outb(0xff, PIC2_DATA);
 }
@@ -122,6 +124,13 @@ static void disable_i8259()
 void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 {
 	FUNC_ENTER();
+
+	static int visited = 0;
+
+	if (visited)
+		return;
+
+	visited = 1;
 
 	//TODO: do we need to keep the data we get ??
 
