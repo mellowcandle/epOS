@@ -99,6 +99,7 @@ extern void irq12();
 extern void irq13();
 extern void irq14();
 extern void irq15();
+extern void irq_ditch();
 extern void idt_flush(uint32_t);
 
 static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);
@@ -112,6 +113,23 @@ void idt_init()
 	idt_ptr.base = (uint32_t) &idt_entries;
 
 	memset(&idt_entries, 0, sizeof(idt_entry_t) * 256);
+
+	// remap this deprecated crap (PIC) to 0x80-0x8F so it will be out of our way
+
+	outb(0x20, 0x11);
+	outb(0xA0, 0x11);
+	outb(0x21, 0x80);
+	outb(0xA1, 0x88);
+	outb(0x21, 0x04);
+	outb(0xA1, 0x02);
+	outb(0x21, 0x01);
+	outb(0xA1, 0x01);
+	outb(0x21, 0x0);
+	outb(0xA1, 0x0);
+
+	// disable it early.
+	outb(0xA1, 0xFF);
+	outb(0x21, 0xFF);
 
 	idt_set_gate(0, (uint32_t)isr0 , 0x08, 0x8E);
 	idt_set_gate(1, (uint32_t)isr1 , 0x08, 0x8E);
@@ -162,6 +180,25 @@ void idt_init()
 	idt_set_gate(45, (uint32_t)irq13, 0x08, 0x8E);
 	idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8E);
 	idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
+
+	// PIC stuff
+	idt_set_gate(0x80, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x81, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x82, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x83, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x84, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x85, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x86, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x87, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x88, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x89, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x8A, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x8B, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x8C, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x8D, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x8E, (uint32_t)irq_ditch, 0x08, 0x8E);
+	idt_set_gate(0x8F, (uint32_t)irq_ditch, 0x08, 0x8E);
+
 	idt_flush((uint32_t) &idt_ptr);
 }
 

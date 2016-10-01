@@ -83,7 +83,6 @@ IRQ  12,    44
 IRQ  13,    45
 IRQ  14,    46
 IRQ  15,    47
-
 ; In isr.c
 extern isr_handler
 
@@ -147,3 +146,7 @@ irq_common_stub:
     sti
     iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
+global irq_ditch
+irq_ditch:
+; Damn you PIC IRQ...
+	iret
