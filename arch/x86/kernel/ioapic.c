@@ -108,6 +108,7 @@ static void _ioapic_irq_mask_set(ioapic_t *ioapic, uint8_t irq, bool mask)
 
 	ioapic_read_redirect(ioapic, &entry, irq);
 	entry.IRQ_MASK = mask;
+	entry.INTVEC = 0x21;
 	ioapic_write_redirect(ioapic, &entry, irq);
 
 }
@@ -140,6 +141,7 @@ void ioapic_santize(ioapic_t *ioapic)
 #ifdef DEBUG
 	ioapic_dump(ioapic);
 #endif
+	ioapic_irq_unmask(ioapic, 1);
 }
 
 void ioapic_dump(ioapic_t *ioapic)
@@ -154,6 +156,7 @@ void ioapic_dump(ioapic_t *ioapic)
 	}
 
 }
+
 void ioapic_apply_redirect(ioapic_t *ioapic)
 {
 }
