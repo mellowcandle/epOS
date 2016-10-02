@@ -42,8 +42,8 @@
  *
  */
 
-#define OFFSET_OF(_type, _member) ((size_t) &((type *) 0)->member)
-#define CONTAINER_OF(_ptr, _type, _member) (_type *) ((char *) ptr - OFFSET_OF(_type, _member))
+#define OFFSET_OF(_type, _member) ((size_t) &((_type *) 0)->_member)
+#define CONTAINER_OF(_ptr, _type, _member) (_type *) ((char *) _ptr - OFFSET_OF(_type, _member))
 
 #define assert(_x) \
 	do { \
