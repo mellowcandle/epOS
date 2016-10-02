@@ -24,15 +24,14 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
+#define DEBUG
 
 #include <types.h>
 #include <kernel/bits.h>
 #include <mem/memory.h>
 #include <cpu.h>
 #include <apic.h>
-#define DEBUG
 #include <printk.h>
-#undef DEBUG
 #include <acpi.h>
 #include <lib/list.h>
 #include <lib/kmalloc.h>
@@ -75,9 +74,19 @@ typedef struct
 
 
 static lapic_t lapic;
-LIST(iopic_l);
+LIST(ioapic_l);
 
 
+
+ioapic_t *irq_to_ioapic(uint8_t irq)
+{
+	//TODO: implement it for real
+	//
+	ioapic_t *entry;
+	entry = list_first_entry(&ioapic_l, ioapic_t, head);
+
+	return entry;
+}
 /** returns a 'true' value if the CPU supports APIC
  *  and if the local APIC hasn't been disabled in MSRs
  *  note that this requires CPUID to be supported.
@@ -134,7 +143,9 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 	static int visited = 0;
 
 	if (visited)
+	{
 		return;
+	}
 
 	visited = 1;
 
@@ -175,7 +186,7 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 	writeAPICRegister(APIC_LVT_LINT1, 0x400);
 
 	/* disable error interrupts */
-	writeAPICRegister(APIC_LVT_ERROR_REGISTER, 0x10000);
+	/* writeAPICRegister(APIC_LVT_ERROR_REGISTER, 0x10000); */
 
 	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
 	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
@@ -198,7 +209,7 @@ void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 
 	pr_info("IOAPIC Base mapping 0x%x -> 0x%x\r\n", ioapic->p_addr, (addr_t) ioapic->v_addr);
 	pr_info("IOAPIC IRQ Base: %u\r\n", ioapic->global_irq_base);
-	list_add(&ioapic->head, &iopic_l);
+	list_add(&ioapic->head, &ioapic_l);
 
 	ioapic_santize(ioapic);
 }

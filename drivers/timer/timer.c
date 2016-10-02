@@ -57,5 +57,8 @@ void init_timer(uint32_t frequency)
 	// Send the frequency divisor.
 	outb(0x40, l);
 	outb(0x40, h);
+
+	ioapic_map_irq(0, IRQ0);
+	ioapic_irq_unmask(0);
 }
 

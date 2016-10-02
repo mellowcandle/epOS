@@ -108,17 +108,56 @@ static void _ioapic_irq_mask_set(ioapic_t *ioapic, uint8_t irq, bool mask)
 
 	ioapic_read_redirect(ioapic, &entry, irq);
 	entry.IRQ_MASK = mask;
-	entry.INTVEC = 0x21;
 	ioapic_write_redirect(ioapic, &entry, irq);
 
 }
 
-void ioapic_irq_mask(ioapic_t *ioapic, uint8_t irq)
+void ioapic_map_irq(uint8_t irq, uint8_t map)
 {
+
+	ioapic_t *ioapic = irq_to_ioapic(irq);
+
+	if (ioapic == NULL)
+	{
+		pr_error("Can't find matching entry in IOAPIC's for IRQ: %u\r\n", irq);
+		return;
+	}
+
+	ioapic_redirect_t entry;
+
+	if (irq >= ioapic->max_redirect)
+	{
+		pr_error("IOAPIC can't handle this irq, %u\r\n", irq);
+		return;
+	}
+
+	ioapic_read_redirect(ioapic, &entry, irq);
+	entry.INTVEC = map;
+	ioapic_write_redirect(ioapic, &entry, irq);
+
+}
+void ioapic_irq_mask(uint8_t irq)
+{
+	ioapic_t *ioapic = irq_to_ioapic(irq);
+
+	if (ioapic == NULL)
+	{
+		pr_error("Can't find matching entry in IOAPIC's for IRQ: %u\r\n", irq);
+		return;
+	}
+
 	_ioapic_irq_mask_set(ioapic, irq, true);
 }
-void ioapic_irq_unmask(ioapic_t *ioapic, uint8_t irq)
+void ioapic_irq_unmask(uint8_t irq)
 {
+	ioapic_t *ioapic = irq_to_ioapic(irq);
+
+	if (ioapic == NULL)
+	{
+		pr_error("Can't find matching entry in IOAPIC's for IRQ: %u\r\n", irq);
+		return;
+	}
+
 	_ioapic_irq_mask_set(ioapic, irq, false);
 }
 
@@ -141,7 +180,6 @@ void ioapic_santize(ioapic_t *ioapic)
 #ifdef DEBUG
 	ioapic_dump(ioapic);
 #endif
-	ioapic_irq_unmask(ioapic, 1);
 }
 
 void ioapic_dump(ioapic_t *ioapic)

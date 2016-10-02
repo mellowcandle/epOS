@@ -50,6 +50,10 @@ void apic_eoi();
 
 /* check communication with ioapic and reads max redirecton entry*/
 void ioapic_santize(ioapic_t *ioapic);
+void ioapic_map_irq(uint8_t irq, uint8_t map);
+void ioapic_irq_mask(uint8_t irq);
+void ioapic_irq_unmask(uint8_t irq);
+ioapic_t *irq_to_ioapic(uint8_t irq);
 
 
 #endif /* end of include guard: APIC_H_W0QIETBW */

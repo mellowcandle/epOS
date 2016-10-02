@@ -65,6 +65,8 @@ void kmain(void)
 	acpi_configure_apic();
 	enable_irq();
 
+	init_timer(1);
+
 
 	if (kbd_8042_avail())
 	{
