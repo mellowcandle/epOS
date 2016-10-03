@@ -1,6 +1,8 @@
-#!/bin/bash 
+#!/bin/bash
 
 DEBUG=0
+QEMU=0
+
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -10,7 +12,11 @@ case $key in
     DEBUG=1
     shift # past argument
     ;;
-    *)
+	-b|--bochs)
+	bochs -q
+	exit $?
+	;;
+	*)
             # unknown option
     ;;
 esac
