@@ -105,6 +105,11 @@ static inline addr_t mem_get_page()
 int mem_page_map(addr_t physical, addr_t virtual, int flags);
 int mem_page_unmap(addr_t virtual);
 
+static inline int mem_identity_map(addr_t addr, int flags)
+{
+	return mem_page_map(addr, addr, flags);
+}
+
 /* Heap Management */
 void mem_heap_init(heap_t *heap, addr_t vir_start, size_t size);
 void mem_heap_destroy(heap_t *heap);
