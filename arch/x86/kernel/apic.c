@@ -147,6 +147,8 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 {
 	FUNC_ENTER();
 
+
+	//TODO: remove the below section. this is currently implemented because of bochs
 	static int visited = 0;
 
 	if (visited)
@@ -155,6 +157,8 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 	}
 
 	visited = 1;
+
+	// End of section
 
 	//TODO: do we need to keep the data we get ??
 

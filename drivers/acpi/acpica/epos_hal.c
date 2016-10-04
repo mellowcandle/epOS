@@ -1,8 +1,9 @@
+
+//#define DEBUG
+
 #include <acpica/acpi.h>
 #include <lib/kmalloc.h>
-#define DEBUG
 #include <printk.h>
-#undef DEBUG
 #include <mem/memory.h>
 #include <kernel/bits.h>
 #include <cpu.h>

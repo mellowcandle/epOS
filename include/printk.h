@@ -29,6 +29,7 @@
 #define PRINTK_H_X0OBSDIJ
 
 #include <compiler.h>
+#include <lib/varargs.h>
 
 typedef void (* log_func)(const char *string);
 void register_logger(log_func func);
@@ -36,6 +37,7 @@ void register_logger(log_func func);
 int printk(const char *format, ...)
 __attribute__((format(printf, 1, 2)));  /* 1=format 2=params */
 
+int vprintk(const char *format, va_list arg);
 
 #ifdef DEBUG
 #define FUNC_ENTER() printk("+ %s\r\n", __FUNCTION__)

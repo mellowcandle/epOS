@@ -42,6 +42,7 @@ typedef struct
 	log_func func;
 } logger_t;
 
+
 static logger_t loggers[MAX_LOGGERS] = {{0, NULL}};
 static char *itoa(int value, char *str, int base)
 {

@@ -62,6 +62,7 @@ void ioapic_map_irq(uint8_t irq, uint8_t map);
 void ioapic_irq_mask(uint8_t irq);
 void ioapic_irq_unmask(uint8_t irq);
 ioapic_t *irq_to_ioapic(uint8_t irq);
+irq_override_t *apic_get_override(uint8_t irq_src);
 
 
 #endif /* end of include guard: APIC_H_W0QIETBW */
