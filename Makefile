@@ -95,7 +95,7 @@ style:
 	@find $(PROJDIRS) -name *.[ch] | xargs ${ASTYLE} ${ASTYLE_CONFIG}
 
 lines:
-	@cloc --exclude-dir=toolchain --exclude-lang=XML,D,Markdown,make,Python,DTD .
+	@cloc --exclude-dir=toolchain,drivers/acpi/acpica --exclude-lang=XML,D,Markdown,make,Python,DTD .
 
 prepare:
 	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
