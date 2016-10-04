@@ -27,7 +27,7 @@
 
 #include <isr.h>
 
-volatile uint32_t ticks= 0;
+volatile uint32_t ticks = 0;
 
 static void tick_callback(registers_t regs)
 {

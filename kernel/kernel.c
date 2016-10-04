@@ -37,6 +37,7 @@
 #include <apic.h>
 #include <acpica/acpi.h>
 #include <kbd.h>
+#include <mmodules.h>
 
 void kmain(void)
 {
@@ -74,6 +75,9 @@ void kmain(void)
 		pr_info("8042 keyboard detected\r\n");
 		kbd_8042_init();
 	}
+
+	/* Will run multiboot modules if exists */
+	mmodules_parse(mbi);
 
 	printk("Bla Bla\r\n");
 

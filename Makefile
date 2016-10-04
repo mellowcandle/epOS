@@ -23,7 +23,7 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: all clean dist testdrivers todolist cscope cscope_update multiboot style lines prepare
+.PHONY: all clean dist modules testdrivers todolist cscope cscope_update multiboot style lines prepare
 
 TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
@@ -67,8 +67,10 @@ multiboot: kernel.bin
 kernel.iso: multiboot
 	@rm -rf isodir
 	@mkdir -p isodir/boot/grub
+	@mkdir -p isodir/modules
 	@cp kernel.bin isodir/boot/kernel.bin
 	@cp make/grub.cfg isodir/boot/grub/grub.cfg
+	@cp modules/program isodir/modules
 	@grub-mkrescue -o kernel.iso isodir > /dev/null 2>&1
 
 clean:
@@ -96,6 +98,10 @@ style:
 
 lines:
 	@cloc --exclude-dir=toolchain,drivers/acpi/acpica --exclude-lang=XML,D,Markdown,make,Python,DTD .
+
+modules:
+	@echo "Building multiboot modules:"
+	@$(ASM) -f bin modules/program.s -o modules/program
 
 prepare:
 	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
