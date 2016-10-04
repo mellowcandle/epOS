@@ -40,6 +40,14 @@ typedef struct
 	uint8_t max_redirect;
 } ioapic_t;
 
+typedef struct
+{
+	uint8_t irq_src;
+	uint32_t global_irq;
+	uint16_t flags;
+	list_t head;
+} irq_override_t;
+
 void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags);
 void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base);
 void apic_configure_int_override(uint8_t irq_src, uint32_t global_irq, uint16_t flags);

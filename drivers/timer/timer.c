@@ -31,10 +31,12 @@
 
 volatile uint32_t tick = 0;
 
+#define PIT_IRQ 0
+
 static void timer_callback(registers_t regs)
 {
 	tick++;
-	printk("Tick\r\n");
+//	printk("Tick\r\n");
 }
 
 void init_timer(uint32_t frequency)
@@ -58,7 +60,7 @@ void init_timer(uint32_t frequency)
 	outb(0x40, l);
 	outb(0x40, h);
 
-	ioapic_map_irq(0, IRQ0);
-	ioapic_irq_unmask(0);
+	arch_map_irq(PIT_IRQ, IRQ0);
+	arch_irq_unmask(PIT_IRQ);
 }
 

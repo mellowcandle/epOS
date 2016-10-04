@@ -68,6 +68,8 @@ typedef union
 void ioapic_dump(ioapic_t *ioapic);
 static uint32_t ioapic_readreg(ioapic_t *ioapic, addr_t reg)
 {
+	FUNC_ENTER();
+
 	uint32_t *rsel = ioapic->v_addr + IOAPIC_IOREGSEL;
 	uint32_t *rread = ioapic->v_addr + IOAPIC_IOWIN;
 	*rsel = reg;
@@ -76,6 +78,8 @@ static uint32_t ioapic_readreg(ioapic_t *ioapic, addr_t reg)
 
 static void ioapic_writereg(ioapic_t *ioapic, addr_t reg, uint32_t val)
 {
+	FUNC_ENTER();
+
 	uint32_t *rsel = ioapic->v_addr + IOAPIC_IOREGSEL;
 	uint32_t *rwrite = ioapic->v_addr + IOAPIC_IOWIN;
 	*rsel = reg;
@@ -84,6 +88,7 @@ static void ioapic_writereg(ioapic_t *ioapic, addr_t reg, uint32_t val)
 
 static void ioapic_read_redirect(ioapic_t *ioapic, ioapic_redirect_t *entry, uint8_t irq)
 {
+	FUNC_ENTER();
 
 	entry->hi = ioapic_readreg(ioapic, REG_IOREDTBL + (irq * 2));
 	entry->low = ioapic_readreg(ioapic, REG_IOREDTBL + (irq * 2) + 1);
@@ -91,6 +96,7 @@ static void ioapic_read_redirect(ioapic_t *ioapic, ioapic_redirect_t *entry, uin
 
 static void ioapic_write_redirect(ioapic_t *ioapic, ioapic_redirect_t *entry, uint8_t irq)
 {
+	FUNC_ENTER();
 
 	ioapic_writereg(ioapic, REG_IOREDTBL + (irq * 2), entry->hi);
 	ioapic_writereg(ioapic, REG_IOREDTBL + (irq * 2) + 1, entry->low);
@@ -98,6 +104,8 @@ static void ioapic_write_redirect(ioapic_t *ioapic, ioapic_redirect_t *entry, ui
 
 static void _ioapic_irq_mask_set(ioapic_t *ioapic, uint8_t irq, bool mask)
 {
+
+	FUNC_ENTER();
 	ioapic_redirect_t entry;
 
 	if (irq >= ioapic->max_redirect)
@@ -115,7 +123,10 @@ static void _ioapic_irq_mask_set(ioapic_t *ioapic, uint8_t irq, bool mask)
 void ioapic_map_irq(uint8_t irq, uint8_t map)
 {
 
+	FUNC_ENTER();
 	ioapic_t *ioapic = irq_to_ioapic(irq);
+	ioapic_redirect_t entry;
+	irq_override_t *override = NULL;
 
 	if (ioapic == NULL)
 	{
@@ -123,7 +134,13 @@ void ioapic_map_irq(uint8_t irq, uint8_t map)
 		return;
 	}
 
-	ioapic_redirect_t entry;
+	override = apic_get_override(irq);
+
+	if (override)
+	{
+		pr_info("IOAPIC IRQ override detected: %u\r\n", irq);
+		irq = override->global_irq;
+	}
 
 	if (irq >= ioapic->max_redirect)
 	{
@@ -133,11 +150,16 @@ void ioapic_map_irq(uint8_t irq, uint8_t map)
 
 	ioapic_read_redirect(ioapic, &entry, irq);
 	entry.INTVEC = map;
+	if (override && override->flags)
+	{
+		//TODO: Apply configuration here
+	}
 	ioapic_write_redirect(ioapic, &entry, irq);
 
 }
 void ioapic_irq_mask(uint8_t irq)
 {
+	FUNC_ENTER();
 	ioapic_t *ioapic = irq_to_ioapic(irq);
 
 	if (ioapic == NULL)
@@ -150,6 +172,7 @@ void ioapic_irq_mask(uint8_t irq)
 }
 void ioapic_irq_unmask(uint8_t irq)
 {
+	FUNC_ENTER();
 	ioapic_t *ioapic = irq_to_ioapic(irq);
 
 	if (ioapic == NULL)
@@ -163,6 +186,7 @@ void ioapic_irq_unmask(uint8_t irq)
 
 void ioapic_santize(ioapic_t *ioapic)
 {
+	FUNC_ENTER();
 	uint32_t id = ioapic_readreg(ioapic, REG_IOAPICID);
 	uint32_t ver = ioapic_readreg(ioapic, REG_IOAPICVER);
 
@@ -195,6 +219,3 @@ void ioapic_dump(ioapic_t *ioapic)
 
 }
 
-void ioapic_apply_redirect(ioapic_t *ioapic)
-{
-}

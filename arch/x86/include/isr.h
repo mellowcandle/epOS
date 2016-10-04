@@ -29,7 +29,7 @@
 #define ISR_H_
 
 #include <types.h>
-
+#include <apic.h>
 typedef struct registers
 {
 	uint32_t ds;                  // Data segment selector
@@ -42,6 +42,10 @@ typedef void (*isr_t)(registers_t);
 
 void register_interrupt_handler(uint8_t n, isr_t handler);
 void irq_reg_dump(registers_t *regs);
+
+#define arch_map_irq(a,b) ioapic_map_irq(a,b)
+#define arch_irq_unmask(a) ioapic_irq_unmask(a)
+#define arch_irq_mask(a) ioapic_irq_mask(a)
 
 // A few defines to make life a little easier
 #define IRQ0 32

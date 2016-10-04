@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#define DEBUG
+//#define DEBUG
 
 #include <types.h>
 #include <printk.h>

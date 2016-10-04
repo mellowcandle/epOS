@@ -74,18 +74,22 @@ typedef struct
 
 
 static lapic_t lapic;
-LIST(ioapic_l);
 
+LIST(ioapic_l);
+LIST(irq_overrides_l);
 
 
 ioapic_t *irq_to_ioapic(uint8_t irq)
 {
-	//TODO: implement it for real
-	//
-	ioapic_t *entry;
-	entry = list_first_entry(&ioapic_l, ioapic_t, head);
 
-	return entry;
+	FUNC_ENTER();
+	ioapic_t *entry;
+
+	list_for_each_entry(entry, &ioapic_l, head)
+		if (BETWEEN(irq, entry->global_irq_base, entry->global_irq_base + entry->max_redirect))
+			return entry;
+
+	return NULL;
 }
 /** returns a 'true' value if the CPU supports APIC
  *  and if the local APIC hasn't been disabled in MSRs
@@ -222,7 +226,33 @@ void apic_eoi()
 void apic_configure_int_override(uint8_t irq_src, uint32_t global_irq, uint16_t flags)
 {
 	FUNC_ENTER();
+	irq_override_t * entry = kmalloc(sizeof(irq_override_t));
+	assert(entry);
+
+	entry->irq_src = irq_src;
+	entry->global_irq = global_irq;
+	entry->flags = flags;
+
+	list_add(&entry->head, &irq_overrides_l);
+
 	pr_info("APIC: IRQ override %u -> %u : 0x%x\r\n", irq_src, global_irq, flags);
+}
+
+irq_override_t * apic_get_override(uint8_t irq_src)
+{
+	FUNC_ENTER();
+	irq_override_t * pos;
+
+	list_for_each_entry(pos,&irq_overrides_l, head)
+	{
+		if (pos->irq_src == irq_src)
+		{
+			printk("a\r\n");
+			return pos;
+		}
+	}
+
+	return NULL;
 }
 
 void apic_configure_nmi_source(uint32_t global_irq, uint16_t flags)

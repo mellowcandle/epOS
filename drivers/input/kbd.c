@@ -144,8 +144,8 @@ void kbd_8042_init()
 	}
 
 	register_interrupt_handler(IRQ1, &kbd_irq_handler);
-	ioapic_map_irq(1, IRQ1);
-	ioapic_irq_unmask(1);
+	arch_map_irq(1, IRQ1);
+	arch_irq_unmask(1);
 
 
 	kbd_8042_enable(1);
