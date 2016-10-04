@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
+#include "acpica/acpi.h"
 
 
 /* TBD: This entire module is apparently obsolete and should be removed */

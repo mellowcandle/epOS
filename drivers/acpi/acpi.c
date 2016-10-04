@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <acpi.h>
+#include <acpica/acpi.h>
 #include <mem/memory.h>
 #include <kernel/bits.h>
 #include <apic.h>

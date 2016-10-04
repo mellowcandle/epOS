@@ -113,10 +113,10 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "accommon.h"
-#include "acopcode.h"
-#include "amlcode.h"
+#include "acpica/acpi.h"
+#include "acpica/accommon.h"
+#include "acpica/acopcode.h"
+#include "acpica/amlcode.h"
 
 
 #define _COMPONENT          ACPI_PARSER

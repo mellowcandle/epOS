@@ -29,21 +29,11 @@
 #include <cpu.h>
 #include <printk.h>
 
-volatile uint32_t tick = 0;
 
 #define PIT_IRQ 0
 
-static void timer_callback(registers_t regs)
+void pit_configure_periodic_timer(uint32_t frequency)
 {
-	tick++;
-	printk("Tick: %u\r\n", tick);
-}
-
-void init_timer(uint32_t frequency)
-{
-	// Firstly, register our timer callback.
-	register_interrupt_handler(IRQ0, &timer_callback);
-
 	// The value we send to the PIT is the value to divide it's input clock
 	// (1193180 Hz) by, to get our required frequency. Important to note is
 	// that the divisor must be small enough to fit into 16-bits.

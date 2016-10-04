@@ -113,9 +113,9 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "accommon.h"
-#include "acresrc.h"
+#include "acpica/acpi.h"
+#include "acpica/accommon.h"
+#include "acpica/acresrc.h"
 
 #define _COMPONENT          ACPI_RESOURCES
 ACPI_MODULE_NAME("rsaddr")

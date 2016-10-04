@@ -28,7 +28,7 @@
 // #define DEBUG
 
 #include <apic.h>
-#include <acpi.h>
+#include <acpica/acpi.h>
 #include <printk.h>
 #include <kernel/bits.h>
 

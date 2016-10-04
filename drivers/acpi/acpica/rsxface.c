@@ -115,10 +115,10 @@
 
 #define EXPORT_ACPI_INTERFACES
 
-#include "acpi.h"
-#include "accommon.h"
-#include "acresrc.h"
-#include "acnamesp.h"
+#include "acpica/acpi.h"
+#include "acpica/accommon.h"
+#include "acpica/acresrc.h"
+#include "acpica/acnamesp.h"
 
 #define _COMPONENT          ACPI_RESOURCES
 ACPI_MODULE_NAME("rsxface")

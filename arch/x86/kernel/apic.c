@@ -32,7 +32,7 @@
 #include <cpu.h>
 #include <apic.h>
 #include <printk.h>
-#include <acpi.h>
+#include <acpica/acpi.h>
 #include <lib/list.h>
 #include <lib/kmalloc.h>
 

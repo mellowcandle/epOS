@@ -1,4 +1,4 @@
-#include <acpi.h>
+#include <acpica/acpi.h>
 #include <lib/kmalloc.h>
 #define DEBUG
 #include <printk.h>

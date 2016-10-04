@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "accommon.h"
+#include "acpica/acpi.h"
+#include "acpica/accommon.h"
 
 #define _COMPONENT          ACPI_HARDWARE
 ACPI_MODULE_NAME("hwesleep")

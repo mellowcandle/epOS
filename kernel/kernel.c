@@ -35,36 +35,39 @@
 #include <serial.h>
 #include <lib/list.h>
 #include <apic.h>
-#include <acpi.h>
+#include <acpica/acpi.h>
 #include <kbd.h>
+
 void kmain(void)
 {
 	extern uint32_t magic;
 	extern void *mbd;
 	multiboot_info_t *mbi = mbd;
 
+
+	init_serial();
+	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
+
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
 	{
 		/* Something went not according to specs. Print an error */
 		/* message and halt, but do *not* rely on the multiboot */
 		/* data structure. */
-		return;
+		pr_fatal("Multiboot integrity check failed\r\n");
+		panic();
 	}
 
-	init_serial();
-
-	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
 	cpu_init();
 	mem_init(mbi);
-//	VIDEO_init();
-//	VIDEO_clear_screen();
+
+	VIDEO_init();
+	VIDEO_clear_screen();
 
 	acpi_early_init();
 	acpi_configure_apic();
 	enable_irq();
 
-	init_timer(60);
-
+	ticks_init();
 
 	if (kbd_8042_avail())
 	{
@@ -73,9 +76,6 @@ void kmain(void)
 	}
 
 	printk("Bla Bla\r\n");
-//	kbd_8042_poll();
-
-//	shutdown();
 
 	while (1);
 }

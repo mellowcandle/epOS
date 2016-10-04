@@ -35,7 +35,8 @@ magic_break: enabled=1
 port_e9_hack: enabled=1
 #text_snapshot_check: enabled=0
 private_colormap: enabled=0
-clock: sync=none, time0=local
+clock: sync=realtime, time0=local
+#clock: sync=none, time0=local
 # no cmosimage
 #ne2k: enabled=0
 #pnic: enabled=0

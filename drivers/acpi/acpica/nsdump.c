@@ -114,10 +114,10 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "accommon.h"
-#include "acnamesp.h"
-#include "acoutput.h"
+#include "acpica/acpi.h"
+#include "acpica/accommon.h"
+#include "acpica/acnamesp.h"
+#include "acpica/acoutput.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE

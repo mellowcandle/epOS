@@ -113,9 +113,9 @@
  *
  *****************************************************************************/
 
-#include "acpi.h"
-#include "accommon.h"
-#include "acdispat.h"
+#include "acpica/acpi.h"
+#include "acpica/accommon.h"
+#include "acpica/acdispat.h"
 
 
 #define _COMPONENT          ACPI_DISPATCHER

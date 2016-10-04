@@ -31,7 +31,7 @@
 #include <cpu.h>
 #include <kernel/bits.h>
 #include <printk.h>
-#include <acpi.h>
+#include <acpica/acpi.h>
 #include <isr.h>
 
 /* Port addresses */

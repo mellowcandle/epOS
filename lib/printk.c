@@ -28,13 +28,21 @@
 #include <printk.h>
 #include <lib/varargs.h>
 #include <lib/ctype.h>
+#include <lib/list.h>
+#include <lib/kmalloc.h>
 #include <video/VIDEO_textmode.h>
 #include <types.h>
+
+#define MAX_LOGGERS 5
 static char buffer[256] = {0};
 
+typedef struct
+{
+	bool enabled;
+	log_func func;
+} logger_t;
 
-static log_func logger = NULL;
-
+static logger_t loggers[MAX_LOGGERS] = {{0, NULL}};
 static char *itoa(int value, char *str, int base)
 {
 	char *ptr;
@@ -259,19 +267,34 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 
 void register_logger(log_func func)
 {
-	logger = func;
+	int i;
+
+	for (i = 0; i < MAX_LOGGERS; i++)
+		if (!loggers[i].enabled)
+		{
+			break;
+		}
+
+	if (i == MAX_LOGGERS)
+	{
+		pr_error("No place for additional logger\r\n");
+		return;
+	}
+
+	loggers[i].func = func;
+	loggers[i].enabled = true;
 }
 
 int vprintk(const char *format, va_list arg)
 {
 	int done;
-
 	done = do_printk(buffer, format, arg);
 
-	if (logger)
-	{
-		logger(buffer);
-	}
+	for (int i = 0; i < MAX_LOGGERS; i++)
+		if (loggers[i].enabled)
+		{
+			loggers[i].func(buffer);
+		}
 
 	return done;
 
@@ -285,10 +308,11 @@ int printk(const char *format, ...)
 	done = do_printk(buffer, format, arg);
 	va_end(arg);
 
-	if (logger)
-	{
-		logger(buffer);
-	}
+	for (int i = 0; i < MAX_LOGGERS; i++)
+		if (loggers[i].enabled)
+		{
+			loggers[i].func(buffer);
+		}
 
 	return done;
 }
