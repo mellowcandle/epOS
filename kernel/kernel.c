@@ -55,17 +55,15 @@ void kmain(void)
 
 	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
 	cpu_init();
-	gdt_init();
-	idt_init();
 	mem_init(mbi);
-	VIDEO_init();
-	VIDEO_clear_screen();
+//	VIDEO_init();
+//	VIDEO_clear_screen();
 
 	acpi_early_init();
 	acpi_configure_apic();
 	enable_irq();
 
-	init_timer(1);
+	init_timer(60);
 
 
 	if (kbd_8042_avail())

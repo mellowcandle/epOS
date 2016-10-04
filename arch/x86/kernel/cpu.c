@@ -18,6 +18,9 @@ static void double_fault(registers_t regs)
 
 void cpu_init()
 {
+	gdt_init();
+	idt_init();
+
 	register_interrupt_handler(8, &double_fault);
 	register_interrupt_handler(13, &gen_protection_fault);
 }
