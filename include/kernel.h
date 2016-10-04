@@ -33,7 +33,12 @@
 
 #define MAX(_x, _y) (((_x) > (_y)) ? (_x) : (_y))
 #define MIN(_x, _y) (((_x) < (_y)) ? (_x) : (_y))
-
+#define BETWEEN(a, b, c) \
+	({ __typeof__ (a) __a = (a); \
+	__typeof__ (b) __b = (b); \
+	__typeof__ (c) __c = (c); \
+	(__a >= __b && __a <= __c)|| \
+	(__a >= __c && __a <= __b);})
 /**
  * container_of - cast a member of a structure out to the containing structure
  * @ptr:	the pointer to the member.
