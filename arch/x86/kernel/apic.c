@@ -86,8 +86,11 @@ ioapic_t *irq_to_ioapic(uint8_t irq)
 	ioapic_t *entry;
 
 	list_for_each_entry(entry, &ioapic_l, head)
-		if (BETWEEN(irq, entry->global_irq_base, entry->global_irq_base + entry->max_redirect))
-			return entry;
+
+	if (BETWEEN(irq, entry->global_irq_base, entry->global_irq_base + entry->max_redirect))
+	{
+		return entry;
+	}
 
 	return NULL;
 }
@@ -226,7 +229,7 @@ void apic_eoi()
 void apic_configure_int_override(uint8_t irq_src, uint32_t global_irq, uint16_t flags)
 {
 	FUNC_ENTER();
-	irq_override_t * entry = kmalloc(sizeof(irq_override_t));
+	irq_override_t *entry = kmalloc(sizeof(irq_override_t));
 	assert(entry);
 
 	entry->irq_src = irq_src;
@@ -238,12 +241,12 @@ void apic_configure_int_override(uint8_t irq_src, uint32_t global_irq, uint16_t 
 	pr_info("APIC: IRQ override %u -> %u : 0x%x\r\n", irq_src, global_irq, flags);
 }
 
-irq_override_t * apic_get_override(uint8_t irq_src)
+irq_override_t *apic_get_override(uint8_t irq_src)
 {
 	FUNC_ENTER();
-	irq_override_t * pos;
+	irq_override_t *pos;
 
-	list_for_each_entry(pos,&irq_overrides_l, head)
+	list_for_each_entry(pos, &irq_overrides_l, head)
 	{
 		if (pos->irq_src == irq_src)
 		{

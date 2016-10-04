@@ -26,6 +26,7 @@
 */
 
 #include <apic.h>
+#include <acpi.h>
 #include <printk.h>
 #include <kernel/bits.h>
 
@@ -150,10 +151,47 @@ void ioapic_map_irq(uint8_t irq, uint8_t map)
 
 	ioapic_read_redirect(ioapic, &entry, irq);
 	entry.INTVEC = map;
+
 	if (override && override->flags)
 	{
-		//TODO: Apply configuration here
+		switch (override->flags & ACPI_MADT_POLARITY_MASK)
+		{
+		case ACPI_MADT_POLARITY_CONFORMS:
+			break;
+
+		case ACPI_MADT_POLARITY_ACTIVE_HIGH:
+			entry.INTPOL = 0;
+			break;
+
+		case ACPI_MADT_POLARITY_ACTIVE_LOW:
+			entry.INTPOL = 1;
+			break;
+
+		default:
+			pr_warn("Unknown ACPI_MADT POLARITY flag\r\n");
+			break;
+		}
+
+		switch (override->flags & ACPI_MADT_TRIGGER_MASK)
+		{
+		case ACPI_MADT_TRIGGER_CONFORMS:
+			break;
+
+		case ACPI_MADT_TRIGGER_EDGE:
+			entry.TRIGGER_MODE = 0;
+			break;
+
+		case ACPI_MADT_TRIGGER_LEVEL:
+			entry.TRIGGER_MODE = 1;
+			break;
+
+		default:
+			pr_warn("Unknown ACPI_MADT TRIGGER flag\r\n");
+		}
+
+
 	}
+
 	ioapic_write_redirect(ioapic, &entry, irq);
 
 }
