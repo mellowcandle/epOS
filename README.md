@@ -17,7 +17,7 @@
 * APIC/IOAPIC
 
 ## In Progress
-* PS/2 Keyboard driver (8024)
+* PS/2 Keyboard driver (8042)
 
 
 ## Todo's
