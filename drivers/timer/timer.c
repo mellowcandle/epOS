@@ -36,7 +36,7 @@ volatile uint32_t tick = 0;
 static void timer_callback(registers_t regs)
 {
 	tick++;
-//	printk("Tick\r\n");
+	printk("Tick: %u\r\n", tick);
 }
 
 void init_timer(uint32_t frequency)

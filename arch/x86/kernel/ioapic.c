@@ -25,6 +25,8 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+// #define DEBUG
+
 #include <apic.h>
 #include <acpi.h>
 #include <printk.h>
@@ -198,6 +200,7 @@ void ioapic_map_irq(uint8_t irq, uint8_t map)
 void ioapic_irq_mask(uint8_t irq)
 {
 	FUNC_ENTER();
+	irq_override_t *override = NULL;
 	ioapic_t *ioapic = irq_to_ioapic(irq);
 
 	if (ioapic == NULL)
@@ -206,17 +209,34 @@ void ioapic_irq_mask(uint8_t irq)
 		return;
 	}
 
+	override = apic_get_override(irq);
+
+	if (override)
+	{
+		pr_info("IOAPIC IRQ override detected: %u\r\n", irq);
+		irq = override->global_irq;
+	}
+
 	_ioapic_irq_mask_set(ioapic, irq, true);
 }
 void ioapic_irq_unmask(uint8_t irq)
 {
 	FUNC_ENTER();
+	irq_override_t *override = NULL;
 	ioapic_t *ioapic = irq_to_ioapic(irq);
 
 	if (ioapic == NULL)
 	{
 		pr_error("Can't find matching entry in IOAPIC's for IRQ: %u\r\n", irq);
 		return;
+	}
+
+	override = apic_get_override(irq);
+
+	if (override)
+	{
+		pr_info("IOAPIC IRQ override detected: %u\r\n", irq);
+		irq = override->global_irq;
 	}
 
 	_ioapic_irq_mask_set(ioapic, irq, false);
