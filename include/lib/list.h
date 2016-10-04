@@ -106,8 +106,32 @@ static inline bool list_is_empty(const list_t *list)
 #define list_last_entry(ptr, type, member) \
 	list_entry((ptr)->prev, type, member)
 
+/**
+ * list_next_entry - get the next element in list
+ * @pos:    the type * to cursor
+ * @member: the name of the list_head within the struct.
+ */
+#define list_next_entry(pos, member) \
+	list_entry((pos)->member.next, typeof(*(pos)), member)
 
+
+/**
+ * list_for_each    -   iterate over a list
+ * @pos:    the &struct list_head to use as a loop cursor.
+ * @head:   the head for your list.
+ */
 #define list_for_each(pos, head) \
 	for (pos = (head)->next; pos != (head); pos = pos->next)
+
+/**
+   * list_for_each_entry  -   iterate over list of given type
+   * @pos:    the type * to use as a loop cursor.
+   * @head:   the head for your list.
+   * @member: the name of the list_head within the struct.
+   */
+#define list_for_each_entry(pos, head, member)                          \
+	for (pos = list_first_entry(head, typeof(*pos), member);        \
+	&pos->member != (head);                                    \
+	pos = list_next_entry(pos, member))
 
 #endif /* end of include guard: LIST_H_39MCA0BP */
