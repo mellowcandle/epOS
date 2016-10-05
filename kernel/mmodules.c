@@ -31,11 +31,12 @@
 #include <types.h>
 #include <mem/memory.h>
 #include <kernel/bits.h>
-
+#include <elf.h>
 typedef void (*call_module_t)(void);
 
 static void mmodules_run(multiboot_module_t *module)
 {
+	FUNC_ENTER();
 	uint32_t pages_count;
 	uint32_t i;
 	call_module_t start_program;
@@ -58,11 +59,17 @@ static void mmodules_run(multiboot_module_t *module)
 	{
 		mem_page_unmap(module->mod_start + (i * PAGE_SIZE));
 	}
+	FUNC_LEAVE();
 }
 void mmodules_parse(multiboot_info_t *mbi)
 {
+	FUNC_ENTER();
 	uint32_t i;
 	multiboot_module_t *module;
+
+	if (!(mbi->flags & MULTIBOOT_INFO_MODS))
+		return;
+
 	pr_info("Detected %u multiboot modules, located at: 0x%x \r\n", mbi->mods_count, mbi->mods_addr);
 
 	// Identity map module description
@@ -79,5 +86,17 @@ void mmodules_parse(multiboot_info_t *mbi)
 }
 
 
+void ksymbol_init(multiboot_info_t *mbi)
+{
+
+	FUNC_ENTER();
+
+	multiboot_elf_section_header_table_t * elf_sec;
+
+	if (!(mbi->flags & MULTIBOOT_INFO_ELF_SHDR))
+		return;
+
+	elf_sec = &mbi->u.elf_sec;
+}
 
 

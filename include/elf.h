@@ -25,61 +25,49 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+#ifndef ELF_H_3IBXPVEH
+#define ELF_H_3IBXPVEH
+
 #include <types.h>
-#include <boot/multiboot.h>
-#include <video/VIDEO_textmode.h>
-#include <isr.h>
-#include <printk.h>
-#include <mem/memory.h>
-#include <cpu.h>
-#include <serial.h>
-#include <lib/list.h>
-#include <apic.h>
-#include <acpica/acpi.h>
-#include <kbd.h>
-#include <mmodules.h>
 
-void kmain(void)
+typedef struct
 {
-	extern uint32_t magic;
-	extern void *mbd;
-	multiboot_info_t *mbi = mbd;
+	uint32_t name;
+	uint32_t type;
+	uint32_t flags;
+	uint32_t addr;
+	uint32_t offset;
+	uint32_t size;
+	uint32_t link;
+	uint32_t info;
+	uint32_t addralign;
+	uint32_t entsize;
+} __attribute__((packed)) elf_section_header_t;
 
+#define ELF32_ST_TYPE(i) ((i)&0xf)
 
-	init_serial();
-	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
+typedef struct
+{
+  uint32_t name;
+  uint32_t value;
+  uint32_t size;
+  uint8_t  info;
+  uint8_t  other;
+  uint16_t shndx;
+} __attribute__((packed)) elf_symbol_t;
 
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
-	{
-		/* Something went not according to specs. Print an error */
-		/* message and halt, but do *not* rely on the multiboot */
-		/* data structure. */
-		pr_fatal("Multiboot integrity check failed\r\n");
-		panic();
-	}
-	cpu_init();
-	mem_init(mbi);
+typedef struct
+{
+  elf_symbol_t *symtab;
+  uint32_t      symtabsz;
+  const char   *strtab;
+  uint32_t      strtabsz;
+} elf_t;
 
-	ksymbol_init(mbi);
+// Takes a multiboot structure and returns an elf structure containing the symbol information.
+//elf_t elf_from_multiboot (multiboot_t *mb);
 
-	VIDEO_init();
-	VIDEO_clear_screen();
+// Looks up a symbol by address.
+const char *elf_lookup_symbol (uint32_t addr, elf_t *elf);
 
-	acpi_early_init();
-	acpi_configure_apic();
-	enable_irq();
-
-	ticks_init();
-
-	if (kbd_8042_avail())
-	{
-		pr_info("8042 keyboard detected\r\n");
-		kbd_8042_init();
-	}
-
-	mmodules_parse(mbi);
-
-	printk("Bla Bla\r\n");
-
-	while (1);
-}
+#endif /* end of include guard: ELF_H_3IBXPVEH */
