@@ -25,26 +25,12 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <isr.h>
-#include <i8254.h>
-volatile uint32_t ticks = 0;
+#ifndef I8254_H_OVDGJZZQ
+#define I8254_H_OVDGJZZQ
 
-static void tick_callback(registers_t regs)
-{
-	ticks++;
-}
+#include <types.h>
 
-/* Configure the HW to generate an timer interrupt every 1 ms to tick_callback */
-void ticks_init()
-{
-	register_interrupt_handler(IRQ0, &tick_callback);
-	pit_configure_periodic_timer(1000); // 1000Hz = 1ms.
-}
+void pit_configure_periodic_timer(uint32_t frequency);
 
-void sleep_ms(uint32_t delay)
-{
-	uint32_t future = ticks + delay;
 
-	while (future <= ticks)
-		;
-}
+#endif /* end of include guard: I8254_H_OVDGJZZQ */

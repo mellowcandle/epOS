@@ -25,6 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
+#include <i8254.h>
 #include <isr.h>
 #include <cpu.h>
 #include <printk.h>
