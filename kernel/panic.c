@@ -27,11 +27,27 @@
 
 #include <kernel.h>
 #include <printk.h>
+#include <types.h>
 
+void print_stack_trace();
 void panic()
 {
 	printk("Kernel panic !\r\n");
 
+	print_stack_trace();
 	while (1)
 		;
+}
+
+void print_stack_trace()
+{
+	uint32_t *ebp, *eip;
+
+	__asm volatile ("mov %%ebp, %0" : "=r" (ebp));
+	while (ebp)
+	{
+		eip = ebp+1;
+		printk("[0x%x]\r\n", *eip);
+		ebp = (uint32_t*) *ebp;
+	}
 }
