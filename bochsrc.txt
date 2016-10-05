@@ -27,7 +27,8 @@ com4: enabled=0
 pci: enabled=1, chipset=i440fx, slot1=pcivga
 #, slot2=ne2k
 vga: extension=vbe, update_freq=50
-cpu: count=1:2:1, ips=4000000, quantum=5, reset_on_triple_fault=0, ignore_bad_msrs=1
+#cpu: count=1:2:1, ips=4000000, quantum=5, reset_on_triple_fault=0, ignore_bad_msrs=1
+cpu: count=1, ips=4000000, quantum=5, reset_on_triple_fault=0, ignore_bad_msrs=1
 #cpuid: cpuid_limit_winnt=0, mmx=1, sse=sse2, xapic=1, sep=1, aes=0, xsave=0, movbe=0, 1g_pages=0
 print_timestamps: enabled=0
 debugger_log: bochsdbg.txt
@@ -47,8 +48,8 @@ logprefix: %t%e%d
 panic: action=ask
 error: action=report
 info: action=report
-debug: action=ignore, keyboard=report, ioapic=report, pit=report
-#debug: action=report
+#debug: action=ignore, keyboard=report, ioapic=report, pit=report
+debug: action=report
 #pass: action=fatal
 keyboard: type=mf,serial_delay=250,paste_delay=10000
 user_shortcut: keys=none
