@@ -154,7 +154,7 @@ idt_flush:
 section .bootstack
 align 32
 bootstack:
-	resb STACKSIZE
+	times (STACKSIZE) db 0                 ; Pages before kernel space.
 
 section .bss
 align 32

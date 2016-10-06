@@ -86,7 +86,7 @@ ACPI_STATUS AcpiOsGetPhysicalAddress(
     ACPI_PHYSICAL_ADDRESS   *PhysicalAddress)
 {
 	FUNC_ENTER();
-	*PhysicalAddress = 	virt_to_phys((addr_t) LogicalAddress);
+	*PhysicalAddress = 	virt_to_phys(LogicalAddress);
 	return 0;
 }
 
@@ -129,6 +129,7 @@ ACPI_THREAD_ID AcpiOsGetThreadId()
 ACPI_STATUS AcpiOsExecute(ACPI_EXECUTE_TYPE Type, ACPI_OSD_EXEC_CALLBACK Function, void *Context)
 {
 	FUNC_ENTER();
+	return 0;
 }
 
 void AcpiOsSleep(UINT64 Milliseconds)
@@ -205,14 +206,12 @@ void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf(const char *Format, ...)
 {
 	va_list arg;
-	int done;
 	FUNC_ENTER();
 
 	va_start(arg, Format);
-	done = vprintk(Format, arg);
+	vprintk(Format, arg);
 	va_end(arg);
 	printk("\r");
-
 }
 
 
@@ -271,32 +270,38 @@ AcpiOsReadMemory(
     UINT32                  Width)
 {
 	FUNC_ENTER();
+	return 0;
 }
 
 ACPI_STATUS AcpiOsWriteMemory(ACPI_PHYSICAL_ADDRESS   Address,    UINT64                  Value,    UINT32                  Width)
 {
 	FUNC_ENTER();
+	return 0;
 }
 
 
 ACPI_STATUS AcpiOsReadPciConfiguration(ACPI_PCI_ID             *PciId,    UINT32                  Reg,    UINT64                  *Value,    UINT32                  Width)
 {
 	FUNC_ENTER();
+	return 0;
 }
 
 ACPI_STATUS AcpiOsWritePciConfiguration(ACPI_PCI_ID             *PciId,    UINT32                  Reg,    UINT64                  Value,    UINT32                  Width)
 {
 	FUNC_ENTER();
+	return 0;
 }
 
 
 UINT64 AcpiOsGetTimer(void)
 {
 	FUNC_ENTER();
+	return 0;
 }
 
 ACPI_STATUS AcpiOsSignal(UINT32                  Function,    void                    *Info)
 {
 	FUNC_ENTER();
+	return 0;
 }
 
