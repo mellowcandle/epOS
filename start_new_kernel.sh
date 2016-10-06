@@ -16,6 +16,10 @@ case $key in
 	bochs -q
 	exit $?
 	;;
+	-s|--simics)
+	simics/simics simics/targets/x58-ich10/x58-ich10-dvdboot.simics
+	exit $?
+	;;
 	*)
             # unknown option
     ;;
