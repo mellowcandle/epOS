@@ -254,7 +254,6 @@ irq_override_t *apic_get_override(uint8_t irq_src)
 	{
 		if (pos->irq_src == irq_src)
 		{
-			printk("a\r\n");
 			return pos;
 		}
 	}

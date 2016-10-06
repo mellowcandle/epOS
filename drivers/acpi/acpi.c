@@ -24,14 +24,13 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
+//#define DEBUG
 
 #include <acpica/acpi.h>
 #include <mem/memory.h>
 #include <kernel/bits.h>
 #include <apic.h>
-#define DEBUG
 #include <printk.h>
-#undef DEBUG
 static bool acpi_initalized = false;
 static bool acpi_tables_initalized = false;
 
@@ -244,7 +243,7 @@ void acpi_configure_apic()
 
 void acpi_print_subtable_header(ACPI_SUBTABLE_HEADER *header)
 {
-	printk("ACPI subtable Type=%d Length=%d\r\n", header->Type, header->Length);
+	pr_debug("ACPI subtable Type=%d Length=%d\r\n", header->Type, header->Length);
 }
 
 void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
@@ -260,33 +259,33 @@ void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
 	{
 	case ACPI_MADT_TYPE_LOCAL_APIC:
 		lapic = (ACPI_MADT_LOCAL_APIC *)header;
-		printk("LOCAL APIC Id=%d ProcessorId=%d LApicFlags=0x%x\r\n",
-		       lapic->Id, lapic->ProcessorId, lapic->LapicFlags);
+		pr_info("LOCAL APIC Id=%d ProcessorId=%d LApicFlags=0x%x\r\n",
+		        lapic->Id, lapic->ProcessorId, lapic->LapicFlags);
 		break;
 
 	case ACPI_MADT_TYPE_IO_APIC:
 		ioapic = (ACPI_MADT_IO_APIC *)header;
-		printk("I/O APIC Id=%d Address=0x%x GlobalIrqBase=0x%x\r\n",
-		       ioapic->Id, ioapic->Address, ioapic->GlobalIrqBase);
+		pr_info("I/O APIC Id=%d Address=0x%x GlobalIrqBase=0x%x\r\n",
+		        ioapic->Id, ioapic->Address, ioapic->GlobalIrqBase);
 		break;
 
 	case ACPI_MADT_TYPE_INTERRUPT_OVERRIDE:
 		int_override = (ACPI_MADT_INTERRUPT_OVERRIDE *)header;
-		printk("Interrupt Override Bus=%d SourceIrq=0x%x GlobalIrq=0x%x IntiFlags=0x%x\r\n",
-		       int_override->Bus, int_override->SourceIrq,
-		       int_override->GlobalIrq, int_override->IntiFlags);
+		pr_info("Interrupt Override Bus=%d SourceIrq=0x%x GlobalIrq=0x%x IntiFlags=0x%x\r\n",
+		        int_override->Bus, int_override->SourceIrq,
+		        int_override->GlobalIrq, int_override->IntiFlags);
 		break;
 
 	case ACPI_MADT_TYPE_NMI_SOURCE:
 		nmi_source = (ACPI_MADT_NMI_SOURCE *)header;
-		printk("NMI Source IntiFlags=0x%x GlobalIrq=0x%x\r\n",
-		       nmi_source->IntiFlags, nmi_source->GlobalIrq);
+		pr_info("NMI Source IntiFlags=0x%x GlobalIrq=0x%x\r\n",
+		        nmi_source->IntiFlags, nmi_source->GlobalIrq);
 		break;
 
 	case ACPI_MADT_TYPE_LOCAL_APIC_NMI:
 		lapic_nmi = (ACPI_MADT_LOCAL_APIC_NMI *)header;
-		printk("LApic NMI ProcessorId=%d IntiFlags=0x%x Lint=%d\r\n",
-		       lapic_nmi->ProcessorId, lapic_nmi->IntiFlags, lapic_nmi->Lint);
+		pr_info("LApic NMI ProcessorId=%d IntiFlags=0x%x Lint=%d\r\n",
+		        lapic_nmi->ProcessorId, lapic_nmi->IntiFlags, lapic_nmi->Lint);
 		break;
 
 	case ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE:
@@ -295,13 +294,13 @@ void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
 		break;
 
 	default:
-		printk("Subtable type was unhandled\r\n");
+		pr_error("Subtable type was unhandled\r\n");
 	}
 }
 
 void acpi_madt_print_subtables()
 {
-	printk("ACPI MADT: Length=%d\r\n", acpi_get_madt()->Header.Length);
+	pr_debug("ACPI MADT: Length=%d\r\n", acpi_get_madt()->Header.Length);
 	acpi_madt_foreach_subtable(acpi_madt_print_subtable);
 }
 

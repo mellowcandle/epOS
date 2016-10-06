@@ -141,7 +141,7 @@ void ioapic_map_irq(uint8_t irq, uint8_t map)
 
 	if (override)
 	{
-		pr_info("IOAPIC IRQ override detected: %u\r\n", irq);
+		pr_debug("IOAPIC IRQ override detected: %u\r\n", irq);
 		irq = override->global_irq;
 	}
 
@@ -252,8 +252,7 @@ void ioapic_santize(ioapic_t *ioapic)
 
 	if (BF_GET(ver, 0, 7) != IOAPIC_VERSION)
 	{
-		pr_fatal("IOAPIC version doesn't match.");
-		panic();
+		pr_warn("IOAPIC version doesn't match: %x\r\n", BF_GET(ver, 0, 7));
 	}
 
 	pr_info("IOAPIC ID = 0x%x, Version = 0x%x Max redirect = 0x%x\r\n",
