@@ -35,6 +35,7 @@
  * 0xE0000000........... Unused (for future use)
  *
  */
+#define DEBUG
 
 #include <mem/memory.h>
 #include <printk.h>
@@ -79,7 +80,7 @@ addr_t virt_to_phys(void *addr)
 		return ((addr_t) addr - KERNEL_VIRTUAL_BASE);
 	}
 
-	printk("I don't know !!\r\n");
+	pr_warn("I don't know !!\r\n");
 	return 0;
 }
 
@@ -114,6 +115,7 @@ heap_t *get_kernel_heap()
 
 void dump_pdt()
 {
+#ifdef DEBUG
 	char *ptr;
 	addr_t virtual_pos;
 
@@ -148,6 +150,7 @@ void dump_pdt()
 		}
 	}
 
+#endif
 }
 
 void mem_init(multiboot_info_t *mbi)
@@ -160,7 +163,7 @@ void mem_init(multiboot_info_t *mbi)
 	FUNC_ENTER();
 	register_interrupt_handler(14, page_fault_handler);
 
-	printk("Memory init:\r\ndetecting physical memory.\r\n");
+	pr_info("Memory init:\r\ndetecting physical memory.\r\n");
 
 	multiboot_memory_map_t *mmap = (multiboot_memory_map_t *)(mbi->mmap_addr + KERNEL_VIRTUAL_BASE);
 
@@ -174,8 +177,8 @@ void mem_init(multiboot_info_t *mbi)
 			break;
 		}
 
-		printk("Memory region address: 0x%llx length: 0x%llx type: %u\r\n",
-		       mmap->addr, mmap->len, mmap->type);
+		pr_debug("Memory region address: 0x%llx length: 0x%llx type: %u\r\n",
+		         mmap->addr, mmap->len, mmap->type);
 
 		// We only support one zone, we'll take the biggest.
 		//
@@ -192,15 +195,15 @@ void mem_init(multiboot_info_t *mbi)
 
 	if (total_memory == 0)
 	{
-		printk("No physical memory!\r\n");
+		pr_fatal("No physical memory!\r\n");
 		panic();
 	}
 
 	kernel_size = ((uint32_t) &kernel_end - (uint32_t) &kernel_start);
 	required_kernel_pages = (kernel_size / PAGE_SIZE) + 1;
 
-	printk("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start, (uint32_t) &kernel_end);
-	printk("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
+	pr_debug("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start, (uint32_t) &kernel_end);
+	pr_debug("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
 
 	physical_start = ((uint32_t) &kernel_start) - KERNEL_VIRTUAL_BASE;
 	physical_start += required_kernel_pages * PAGE_SIZE;
@@ -270,7 +273,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	char *access_ptr;
 	uint32_t *pte;
 
-	//printk("+mem_page_map: physical: 0x%x virtual: 0x%x\r\n", physical, virtual);
+	assert(IS_PAGE_ALIGNED(physical));
 	FUNC_ENTER();
 
 	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
@@ -278,7 +281,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	// Check if the PDT exists
 	if (!(current_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
 	{
-//		printk("mem_map_page: PDT missing, creating and mapping\r\n");
+		pr_debug("mem_map_page: PDT missing, creating and mapping\r\n");
 		page = mem_get_page();
 
 		mem_assert(page != 0);
@@ -294,7 +297,6 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
-//	printk("PTE: 0x%x\r\n",(uint32_t) pte);
 	mem_assert(!(*pte & 3));
 
 	*pte = physical | 3;
@@ -306,7 +308,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 }
 
 
-int mem_page_unmap(addr_t virtual)
+void mem_page_unmap(addr_t virtual)
 {
 	char *access_ptr;
 	uint32_t *pte;
@@ -324,7 +326,6 @@ int mem_page_unmap(addr_t virtual)
 	mem_tlb_flush((void *) virtual);
 
 	FUNC_LEAVE();
-	return 0;
 }
 
 

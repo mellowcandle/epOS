@@ -103,11 +103,29 @@ static inline addr_t mem_get_page()
 }
 
 int mem_page_map(addr_t physical, addr_t virtual, int flags);
-int mem_page_unmap(addr_t virtual);
+void mem_page_unmap(addr_t virtual);
+
+static inline void mem_page_unmap_multiple(addr_t virtual, int count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		mem_page_unmap(virtual + (i * PAGE_SIZE));
+	}
+}
 
 static inline int mem_identity_map(addr_t addr, int flags)
 {
 	return mem_page_map(addr, addr, flags);
+}
+
+static inline int mem_identity_map_multiple(addr_t addr, int flags, int count)
+{
+	for (int i = 0 ; i < count; i++)
+	{
+		mem_page_map(addr + (i * PAGE_SIZE), addr + (i * PAGE_SIZE), flags);
+	}
+
+	return 0;
 }
 
 /* Heap Management */
