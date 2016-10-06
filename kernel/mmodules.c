@@ -143,7 +143,7 @@ int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf_t *elf
 	return 0;
 }
 
-const char *elf_lookup_symbol(uint32_t addr, elf_t *elf)
+const char *elf_lookup_symbol(uint32_t addr, elf_t *elf, int *offset)
 {
 	FUNC_ENTER();
 	unsigned int i;
@@ -159,9 +159,11 @@ const char *elf_lookup_symbol(uint32_t addr, elf_t *elf)
 		        (addr < (elf->symtab[i].value + elf->symtab[i].size)))
 		{
 			const char *name = (const char *)((uint32_t)elf->strtab + elf->symtab[i].name);
+			*offset = addr - elf->symtab[i].value;
 			return name;
 		}
 	}
 
+	*offset = -1; //invalid
 	return "??????";
 }
