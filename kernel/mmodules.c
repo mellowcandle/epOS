@@ -32,7 +32,12 @@
 #include <mem/memory.h>
 #include <kernel/bits.h>
 #include <elf.h>
+#include <lib/string.h>
+
 typedef void (*call_module_t)(void);
+int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf_t *elf);
+
+elf_t kernel_elf;
 
 static void mmodules_run(multiboot_module_t *module)
 {
@@ -59,6 +64,7 @@ static void mmodules_run(multiboot_module_t *module)
 	{
 		mem_page_unmap(module->mod_start + (i * PAGE_SIZE));
 	}
+
 	FUNC_LEAVE();
 }
 void mmodules_parse(multiboot_info_t *mbi)
@@ -68,7 +74,9 @@ void mmodules_parse(multiboot_info_t *mbi)
 	multiboot_module_t *module;
 
 	if (!(mbi->flags & MULTIBOOT_INFO_MODS))
+	{
 		return;
+	}
 
 	pr_info("Detected %u multiboot modules, located at: 0x%x \r\n", mbi->mods_count, mbi->mods_addr);
 
@@ -91,12 +99,68 @@ void ksymbol_init(multiboot_info_t *mbi)
 
 	FUNC_ENTER();
 
-	multiboot_elf_section_header_table_t * elf_sec;
+	multiboot_elf_section_header_table_t *elf_sec;
 
 	if (!(mbi->flags & MULTIBOOT_INFO_ELF_SHDR))
+	{
 		return;
+	}
 
 	elf_sec = &mbi->u.elf_sec;
+
+	pr_debug("multiboot header: sections %u size %u addr: 0x%x shndx %u\r\n",
+	         elf_sec->num, elf_sec->size, elf_sec->addr, elf_sec->shndx);
+
+	mem_identity_map(elf_sec->addr, 0);
+	elf_from_multiboot(elf_sec, &kernel_elf);
 }
 
 
+int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf_t *elf)
+{
+	unsigned int i;
+	elf_section_header_t *sh = (elf_section_header_t *)elf_sec->addr;
+
+	uint32_t shstrtab = sh[elf_sec->shndx].addr;
+	mem_identity_map(shstrtab, 0);
+
+	for (i = 0; i < elf_sec->num; i++)
+	{
+		const char *name = (const char *)(shstrtab + sh[i].name);
+
+		if (!strcmp(name, ".strtab"))
+		{
+			elf->strtab = (const char *)sh[i].addr;
+			mem_identity_map((addr_t) elf->strtab, 0);
+			elf->strtabsz = sh[i].size;
+		}
+
+		if (!strcmp(name, ".symtab"))
+		{
+			elf->symtab = (elf_symbol_t *)sh[i].addr;
+			mem_identity_map((addr_t) elf->symtab, 0);
+			elf->symtabsz = sh[i].size;
+		}
+	}
+	return 0;
+}
+
+const char *elf_lookup_symbol(uint32_t addr, elf_t *elf)
+{
+	unsigned int i;
+
+	for (i = 0; i < (elf->symtabsz / sizeof(elf_symbol_t)); i++)
+	{
+		if (ELF32_ST_TYPE(elf->symtab[i].info) != 0x2)
+		{
+			continue;
+		}
+
+		if ((addr >= elf->symtab[i].value) &&
+		        (addr < (elf->symtab[i].value + elf->symtab[i].size)))
+		{
+			const char *name = (const char *)((uint32_t)elf->strtab + elf->symtab[i].name);
+			return name;
+		}
+	}
+}

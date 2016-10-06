@@ -53,5 +53,8 @@ void pit_configure_periodic_timer(uint32_t frequency)
 
 	arch_map_irq(PIT_IRQ, IRQ0);
 	arch_irq_unmask(PIT_IRQ);
+
+	panic();
+
 }
 

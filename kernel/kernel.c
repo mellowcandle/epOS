@@ -57,6 +57,8 @@ void kmain(void)
 		pr_fatal("Multiboot integrity check failed\r\n");
 		panic();
 	}
+
+	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
 	cpu_init();
 	mem_init(mbi);
 
