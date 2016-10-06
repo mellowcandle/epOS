@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#define DEBUG
+//#define DEBUG
 
 #include <types.h>
 #include <cpu.h>
@@ -147,6 +147,7 @@ void kbd_8042_init()
 	arch_map_irq(1, IRQ1);
 	arch_irq_unmask(1);
 
+	print_stack_trace();
 
 	kbd_8042_enable(1);
 //	kbd_8042_enable(2);
