@@ -24,7 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-#define DEBUG
+//#define DEBUG
 
 #include <mmodules.h>
 #include <printk.h>
@@ -43,30 +43,24 @@ static void mmodules_run(multiboot_module_t *module)
 {
 	FUNC_ENTER();
 	uint32_t pages_count;
-	uint32_t i;
 	call_module_t start_program;
 
 	pr_info("Module: 0x%x - 0x%x params: %s\r\n", module->mod_start, module->mod_end, (char *) module->cmdline);
 	pages_count = module->mod_end - module->mod_start;
 	pages_count = divide_up(pages_count, PAGE_SIZE);
 
-	for (i = 0; i < pages_count; i++)
-	{
-		mem_identity_map(module->mod_start + (i * PAGE_SIZE), 0);
-	}
+	mem_identity_map_multiple(module->mod_start, 0, pages_count);
 
 	/* Run the module here */
 	start_program = (call_module_t) module->mod_start;
 	pr_debug("moduel start address: %x\r\n", (int) start_program);
 	start_program();
 
-	for (i = 0; i < pages_count; i++)
-	{
-		mem_page_unmap(module->mod_start + (i * PAGE_SIZE));
-	}
+	mem_page_unmap_multiple(module->mod_start, pages_count);
 
 	FUNC_LEAVE();
 }
+
 void mmodules_parse(multiboot_info_t *mbi)
 {
 	FUNC_ENTER();
@@ -111,18 +105,19 @@ void ksymbol_init(multiboot_info_t *mbi)
 	pr_debug("multiboot header: sections %u size %u addr: 0x%x shndx %u\r\n",
 	         elf_sec->num, elf_sec->size, elf_sec->addr, elf_sec->shndx);
 
-	mem_identity_map(elf_sec->addr, 0);
+	mem_identity_map_multiple(PAGE_ALIGN_DOWN(elf_sec->addr), 0, divide_up(elf_sec->size, PAGE_SIZE));
 	elf_from_multiboot(elf_sec, &kernel_elf);
 }
 
 
 int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf_t *elf)
 {
+	FUNC_ENTER();
 	unsigned int i;
 	elf_section_header_t *sh = (elf_section_header_t *)elf_sec->addr;
-
 	uint32_t shstrtab = sh[elf_sec->shndx].addr;
-	mem_identity_map(shstrtab, 0);
+
+	mem_identity_map(PAGE_ALIGN_DOWN(shstrtab), 0);
 
 	for (i = 0; i < elf_sec->num; i++)
 	{
@@ -131,22 +126,26 @@ int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf_t *elf
 		if (!strcmp(name, ".strtab"))
 		{
 			elf->strtab = (const char *)sh[i].addr;
-			mem_identity_map((addr_t) elf->strtab, 0);
 			elf->strtabsz = sh[i].size;
+			pr_debug("Identity maping: 0x%x pages: %u\r\n", (addr_t) elf->strtab, divide_up(elf->strtabsz, PAGE_SIZE));
+			mem_identity_map_multiple(PAGE_ALIGN_DOWN((addr_t)elf->strtab), 0, divide_up(elf->strtabsz, PAGE_SIZE));
 		}
 
 		if (!strcmp(name, ".symtab"))
 		{
 			elf->symtab = (elf_symbol_t *)sh[i].addr;
-			mem_identity_map((addr_t) elf->symtab, 0);
 			elf->symtabsz = sh[i].size;
+			pr_debug("Identity maping: 0x%x pages: %u\r\n", (addr_t) elf->symtab, divide_up(elf->symtabsz, PAGE_SIZE));
+			mem_identity_map_multiple(PAGE_ALIGN_DOWN((addr_t)elf->symtab), 0, divide_up(elf->symtabsz, PAGE_SIZE));
 		}
 	}
+
 	return 0;
 }
 
 const char *elf_lookup_symbol(uint32_t addr, elf_t *elf)
 {
+	FUNC_ENTER();
 	unsigned int i;
 
 	for (i = 0; i < (elf->symtabsz / sizeof(elf_symbol_t)); i++)
@@ -163,4 +162,6 @@ const char *elf_lookup_symbol(uint32_t addr, elf_t *elf)
 			return name;
 		}
 	}
+
+	return "??????";
 }

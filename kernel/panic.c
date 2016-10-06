@@ -37,7 +37,7 @@ void panic()
 {
 	printk("Kernel panic !\r\n");
 
-	print_stack_trace();
+//	print_stack_trace();
 
 	while (1)
 		;
@@ -45,14 +45,13 @@ void panic()
 void print_stack_trace()
 {
 	uint32_t *ebp, *eip;
-
+	printk("Backtrace:\r\n");
 	__asm volatile("mov %%ebp, %0" : "=r"(ebp));
 
 	while (ebp)
 	{
 		eip = ebp + 1;
-		printk ("[0x%x] %s\n", *eip, elf_lookup_symbol (*eip, &kernel_elf));
-
+		printk("--> [0x%x] %s\r\n", *eip, elf_lookup_symbol(*eip, &kernel_elf));
 		ebp = (uint32_t *) *ebp;
 	}
 }
