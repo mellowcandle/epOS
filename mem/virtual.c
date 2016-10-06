@@ -273,10 +273,12 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	char *access_ptr;
 	uint32_t *pte;
 
+	pr_debug("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
+
 	assert(IS_PAGE_ALIGNED(physical));
-	FUNC_ENTER();
 
 	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
+
 
 	// Check if the PDT exists
 	if (!(current_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
@@ -297,7 +299,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
-	mem_assert(!(*pte & 3));
+//	mem_assert(!(*pte & 3) && (*p);
 
 	*pte = physical | 3;
 
