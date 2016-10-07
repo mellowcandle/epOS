@@ -30,6 +30,11 @@
 #define KERNEL_H_M1BAK62D
 
 #include <compiler.h>
+#include <types.h>
+
+/* Forward declerations */
+struct multiboot_info;
+typedef struct multiboot_info multiboot_info_t;
 
 #define MAX(_x, _y) (((_x) > (_y)) ? (_x) : (_y))
 #define MIN(_x, _y) (((_x) < (_y)) ? (_x) : (_y))
@@ -67,7 +72,15 @@
 		} \
 	} while (0)
 
+/* panic.c */
 void panic(void);
+
+/* elf.c */
+void ksymbol_init(multiboot_info_t *mbi);
+
+/* ticks.c */
+void ticks_init();
+void sleep_ms(uint32_t delay);
 
 #endif /* end of include guard: KERNEL_H_M1BAK62D */
 

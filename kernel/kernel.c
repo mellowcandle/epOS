@@ -68,7 +68,6 @@ void kmain(void)
 	VIDEO_clear_screen();
 
 	acpi_early_init();
-	acpi_configure_apic();
 	enable_irq();
 
 	ticks_init();

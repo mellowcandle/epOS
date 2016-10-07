@@ -36,7 +36,8 @@ static bool acpi_tables_initalized = false;
 
 typedef void (*acpi_subtable_handler)(ACPI_SUBTABLE_HEADER *subtable_header);
 
-void acpi_madt_print_subtables();
+static void acpi_madt_print_subtables();
+static void _acpi_configure_apic();
 
 void acpi_early_init()
 {
@@ -57,6 +58,8 @@ void acpi_early_init()
 	acpi_tables_initalized = true;
 
 	acpi_madt_print_subtables();
+
+	_acpi_configure_apic();
 }
 
 void acpi_init()
@@ -236,17 +239,17 @@ void acpi_madt_configure_apic_subtable(ACPI_SUBTABLE_HEADER *header)
 	}
 }
 
-void acpi_configure_apic()
+static void _acpi_configure_apic()
 {
 	acpi_madt_foreach_subtable(acpi_madt_configure_apic_subtable);
 }
 
-void acpi_print_subtable_header(ACPI_SUBTABLE_HEADER *header)
+static void acpi_print_subtable_header(ACPI_SUBTABLE_HEADER *header)
 {
 	pr_debug("ACPI subtable Type=%d Length=%d\r\n", header->Type, header->Length);
 }
 
-void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
+static void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
 {
 	ACPI_MADT_LOCAL_APIC *lapic;
 	ACPI_MADT_IO_APIC *ioapic;
@@ -298,7 +301,7 @@ void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
 	}
 }
 
-void acpi_madt_print_subtables()
+static void acpi_madt_print_subtables()
 {
 	pr_debug("ACPI MADT: Length=%d\r\n", acpi_get_madt()->Header.Length);
 	acpi_madt_foreach_subtable(acpi_madt_print_subtable);
