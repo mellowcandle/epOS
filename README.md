@@ -15,16 +15,14 @@
 * Paging enabled
 * ACPICA
 * APIC/IOAPIC
+* PIT timer
 
 ## In Progress
 * PS/2 Keyboard driver (8042)
-
+* Ring 3 task execution
 
 ## Todo's
 
 * Add testing framework
 * printk: Handle width specifiers
-
-
-
 

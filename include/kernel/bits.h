@@ -48,6 +48,16 @@
 #define BF_SET(y, x, start, len) \
 	(y = ((y) & BF_MASK(start, len)) | BF_PREP(x, start, len))
 
+/*
+ *  Determine whether some value is a power of two, where zero is
+ * *not* considered a power of two.
+ */
+
+static inline __attribute__((const))
+bool is_power_of_2(unsigned long n)
+{
+	return (n != 0 && ((n & (n - 1)) == 0));
+}
 
 static inline uint32_t divide_up(uint32_t value, uint32_t align)
 {
