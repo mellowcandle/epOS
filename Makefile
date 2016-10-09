@@ -29,7 +29,7 @@ TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
 LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 ASM	= nasm
-WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
+WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts
 
 ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
@@ -52,7 +52,7 @@ DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
 %.d: %.c
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
-all: kernel.iso
+all: kernel.iso cscope
 
 kernel.bin: $(OBJFILES)
 	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T make/linker.ld -Wl,-Map=kernel.map -ffreestanding -nostdlib -o $@ $^ -lgcc
