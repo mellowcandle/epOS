@@ -28,7 +28,7 @@
 
 #include <acpica/acpi.h>
 #include <mem/memory.h>
-#include <kernel/bits.h>
+#include <bits.h>
 #include <apic.h>
 #include <printk.h>
 static bool acpi_initalized = false;
@@ -242,11 +242,6 @@ void acpi_madt_configure_apic_subtable(ACPI_SUBTABLE_HEADER *header)
 static void _acpi_configure_apic()
 {
 	acpi_madt_foreach_subtable(acpi_madt_configure_apic_subtable);
-}
-
-static void acpi_print_subtable_header(ACPI_SUBTABLE_HEADER *header)
-{
-	pr_debug("ACPI subtable Type=%d Length=%d\r\n", header->Type, header->Length);
 }
 
 static void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)

@@ -27,7 +27,7 @@
 //#define DEBUG
 
 #include <types.h>
-#include <kernel/bits.h>
+#include <bits.h>
 #include <mem/memory.h>
 #include <cpu.h>
 #include <apic.h>

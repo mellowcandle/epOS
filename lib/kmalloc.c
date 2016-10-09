@@ -1,5 +1,5 @@
 #include <lib/kmalloc.h>
-#include <pr_debug.h>
+#include <printk.h>
 
 /**  Durand's Ridiculously Amazing Super Duper Memory functions.  */
 

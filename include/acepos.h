@@ -127,11 +127,7 @@
 #include <lib/string.h>
 #include <kernel.h>
 #include <lib/ctype.h>
-//#include <linux/sched.h>
-//#include <linux/atomic.h>
-//#include <linux/math64.h>
-//#include <linux/slab.h>
-//#include <linux/spinlock_types.h>
+#include <bits.h>
 
 
 #define ACPI_MACHINE_WIDTH          32

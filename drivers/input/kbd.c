@@ -29,7 +29,7 @@
 
 #include <types.h>
 #include <cpu.h>
-#include <kernel/bits.h>
+#include <bits.h>
 #include <printk.h>
 #include <acpica/acpi.h>
 #include <isr.h>

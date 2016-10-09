@@ -41,7 +41,7 @@
 #include <types.h>
 #include <lib/string.h>
 #include <kernel.h>
-#include <kernel/bits.h>
+#include <bits.h>
 
 
 extern uint32_t kernel_start;

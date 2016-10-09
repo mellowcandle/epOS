@@ -30,7 +30,7 @@
 #include <apic.h>
 #include <acpica/acpi.h>
 #include <printk.h>
-#include <kernel/bits.h>
+#include <bits.h>
 
 // Access registers offsets
 

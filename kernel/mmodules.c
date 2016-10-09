@@ -30,7 +30,7 @@
 #include <printk.h>
 #include <types.h>
 #include <mem/memory.h>
-#include <kernel/bits.h>
+#include <bits.h>
 #include <elf.h>
 #include <lib/string.h>
 

@@ -44,7 +44,7 @@
 #include <lib/kmalloc.h>
 #include <lib/string.h>
 #include <kernel.h>
-#include <kernel/bits.h>
+#include <bits.h>
 
 /* Page directory table                       Page table                                   Physical memory    */
 

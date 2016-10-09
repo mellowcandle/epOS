@@ -5,7 +5,7 @@
 #include <lib/kmalloc.h>
 #include <printk.h>
 #include <mem/memory.h>
-#include <kernel/bits.h>
+#include <bits.h>
 #include <cpu.h>
 static heap_t acpi_heap;
 

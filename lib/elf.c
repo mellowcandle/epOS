@@ -29,7 +29,7 @@
 #include <mem/memory.h>
 #include <printk.h>
 #include <lib/string.h>
-#include <kernel/bits.h>
+#include <bits.h>
 
 
 elf_t kernel_elf;
