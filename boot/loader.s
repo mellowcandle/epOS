@@ -148,6 +148,12 @@ idt_flush:
    lidt [eax]        ; Load the IDT pointer.
    ret
 
+global tss_flush
+tss_flush:
+
+	mov ax, 0x2B
+	ltr ax
+    ret
 
 ; Stack reserved space
 

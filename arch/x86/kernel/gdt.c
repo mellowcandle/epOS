@@ -27,9 +27,12 @@
 
 #include <cpu.h>
 #include <types.h>
+#include <tss.h>
+#include <lib/string.h>
+#include <mem/memory.h>
 
 extern void gdt_flush();
-
+extern void tss_flush();
 /* Defines a GDT entry. We say packed, because it prevents the
 *  compiler from doing things that it thinks is best: Prevent
 *  compiler "optimization" by packing */
@@ -43,6 +46,26 @@ struct gdt_entry
 	unsigned char base_high;
 } __attribute__((packed));
 
+
+/* Defines a GDT entry. We say packed, because it prevents the
+*  compiler from doing things that it thinks is best: Prevent
+*  compiler "optimization" by packing */
+struct tss_segment_entry
+{
+	uint16_t limit_low;
+	uint16_t base_low;
+	uint8_t base_middle;
+	uint8_t type : 4;
+	uint8_t reserved : 1;
+	uint8_t dpl : 2;
+	uint8_t present :1;
+	uint8_t limit :4;
+	uint8_t avl :1;
+	uint8_t reserved2 :2;
+	uint8_t granularity :1;
+	unsigned char base_high;
+
+} __attribute__((packed));
 /* Special pointer which includes the limit: The max bytes
 *  taken up by the GDT, minus 1. Again, this NEEDS to be packed */
 struct gdt_ptr
@@ -52,9 +75,9 @@ struct gdt_ptr
 } __attribute__((packed));
 
 /* Our GDT, with 3 entries, and finally our special GDT pointer */
-struct gdt_entry gdt[5];
+struct gdt_entry gdt[6];
 struct gdt_ptr gp;
-
+struct tss_entry __attribute__((aligned(PAGE_SIZE))) tss;
 
 /* Setup a descriptor in the Global Descriptor Table */
 static void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)
@@ -71,6 +94,21 @@ static void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsig
 	/* Finally, set up the granularity and access flags */
 	gdt[num].granularity |= (gran & 0xF0);
 	gdt[num].access = access;
+}
+
+static void gdt_set_tss(int num, addr_t base, uint32_t limit, bool busy)
+{
+	struct tss_segment_entry * entry;
+	entry = (struct tss_segment_entry *) &gdt[num];
+	memset(entry, 0,sizeof(*entry));
+
+	entry->base_low = (base & 0xFFFF);
+	entry->base_middle = (base >> 16) & 0xFF;
+	entry->base_high = (base >> 24) & 0xFF;
+	entry->limit_low = (limit & 0xFFFF);
+	entry->type = busy ? TSS_TYPE_BUSY : TSS_TYPE_INACTIVE;
+	entry->present = 1;
+
 }
 
 /* Should be called by main. This will setup the special GDT
@@ -110,6 +148,16 @@ void gdt_init()
 	*  same as our code segment, but the descriptor type in
 	*  this entry's access byte says it's a Data Segment */
 	gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);
+
+	/* Our TSS segment */
+	gdt_set_tss(5,(addr_t) &tss, sizeof(tss), false);
 	/* Flush out the old GDT and install the new changes! */
 	gdt_flush();
+
+    tss.ss0 = 0x10;
+    tss.esp0 = 0;
+    tss.cs = 0x8 | 0x3;
+    tss.ss = tss.ds = tss.es = tss.fs = tss.gs = (0x10 | 0x3);
+
+	tss_flush();
 }
