@@ -317,3 +317,18 @@ int printk(const char *format, ...)
 
 	return done;
 }
+
+void hex_dump(void *ptr, uint32_t len)
+{
+	for (uint32_t i = 0; i < len; i++)
+	{
+		printk("%x ", ((char *)ptr)[i]);
+
+		if (i % 16 == 0)
+		{
+			printk("\r\n");
+		}
+	}
+
+	printk("\r\n");
+}

@@ -30,7 +30,7 @@
 
 #include <compiler.h>
 #include <lib/varargs.h>
-
+#include <types.h>
 typedef void (* log_func)(const char *string);
 void register_logger(log_func func);
 
@@ -38,6 +38,7 @@ int printk(const char *format, ...)
 __attribute__((format(printf, 1, 2)));  /* 1=format 2=params */
 
 int vprintk(const char *format, va_list arg);
+void hex_dump(void *ptr, uint32_t len);
 
 #ifdef DEBUG
 #define FUNC_ENTER() printk("+ %s\r\n", __FUNCTION__)
