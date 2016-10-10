@@ -103,6 +103,8 @@ static inline addr_t mem_get_page()
 }
 
 int mem_page_map(addr_t physical, addr_t virtual, int flags);
+void *mem_page_map_kernel(addr_t physical, int count, int flags);
+
 void mem_page_unmap(addr_t virtual);
 
 static inline void mem_page_unmap_multiple(addr_t virtual, int count)
@@ -126,6 +128,11 @@ static inline int mem_identity_map_multiple(addr_t addr, int flags, int count)
 	}
 
 	return 0;
+}
+
+static inline void *mem_page_map_kernel_single(addr_t physical, int flags)
+{
+	return mem_page_map_kernel(physical, 1, flags);
 }
 
 /* Heap Management */

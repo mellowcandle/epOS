@@ -93,6 +93,7 @@ extern uint32_t kernel_end, kernel_start;
 void page_fault_handler(registers_t regs);
 void mem_heap_init();
 void mem_phys_init(addr_t phy_start, uint32_t total_pages);
+static addr_t mem_find_kernel_place(int request);
 
 static heap_t kernel_heap;
 
@@ -151,6 +152,88 @@ void dump_pdt()
 	}
 
 #endif
+}
+void *mem_page_map_kernel(addr_t physical, int count, int flags)
+{
+	addr_t addr = mem_find_kernel_place(count);
+
+	if (addr)
+	{
+		for (int i = 0 ; i < count; i++)
+		{
+			mem_page_map(physical + (i * PAGE_SIZE), addr + (i * PAGE_SIZE), flags);
+		}
+
+		return (void *) addr;
+	}
+
+	pr_error("No more virtual kernel space to satisfy request\r\n");
+	return NULL;
+}
+
+static addr_t mem_find_kernel_place(int request)
+{
+	char *ptr;
+	int count = 0;
+	uint32_t i;
+	uint32_t j;
+	bool begin = false;
+
+	for (i = FRAME_TO_PDE_INDEX(KERNEL_VIRTUAL_BASE); i < PAGE_DIRECTORY_SIZE; i++)
+	{
+		if (current_pdt[i] & BIT(1)) // exists
+		{
+			if (current_pdt[i] & BIT(7))
+			{
+				if (begin)
+				{
+					begin = false;
+					count = 0;
+				}
+
+				continue;
+			}
+			else
+			{
+				ptr = (char *) PDE_MIRROR_BASE + (i * 0x1000);
+
+				for (j = 0; j < 1024; j++)
+				{
+					if (* ((uint32_t *)ptr) & BIT(1))
+					{
+						if (begin)
+						{
+							begin = false;
+							count = 0;
+						}
+
+						continue;
+					}
+					else
+					{
+						begin = true;
+						count++;
+					}
+				}
+
+			}
+		}
+		else
+		{
+			// PDE is not maped in, this means we have 1024 empty entries in here.
+			count += 1024;
+		}
+
+		if (count >= request)
+		{
+			pr_debug("Done, I've done it !!\r\n");
+			return (PDE_INDEX_TO_ADDR(i) + (j * PAGE_SIZE));
+		}
+
+	}
+
+	return 0;
+
 }
 
 void mem_init(multiboot_info_t *mbi)
@@ -315,6 +398,7 @@ void mem_page_unmap(addr_t virtual)
 	char *access_ptr;
 	uint32_t *pte;
 
+	//TODO: unmap page directory if necessary
 	FUNC_ENTER();
 
 	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
