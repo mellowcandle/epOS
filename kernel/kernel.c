@@ -62,7 +62,7 @@ void kmain(void)
 	cpu_init();
 	mem_init(mbi);
 
-	ksymbol_init(mbi);
+//	ksymbol_init(mbi);
 
 	VIDEO_init();
 	VIDEO_clear_screen();
@@ -78,7 +78,13 @@ void kmain(void)
 		kbd_8042_init();
 	}
 
-	mmodules_parse(mbi);
+//	mmodules_parse(mbi);
+
+	for (int i = 0 ; i < 1000; i++)
+	{
+		printk("Trying to allocate %u pages\r\n", i);
+		mem_page_map_kernel(0x1000, i, 0);
+	}
 
 	printk("Bla Bla\r\n");
 

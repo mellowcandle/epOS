@@ -37,7 +37,7 @@ void panic()
 {
 	printk("Kernel panic !\r\n");
 
-	print_stack_trace();
+//	print_stack_trace();
 
 	while (1)
 		;

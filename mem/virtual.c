@@ -168,6 +168,7 @@ void *mem_page_map_kernel(addr_t physical, int count, int flags)
 	}
 
 	pr_error("No more virtual kernel space to satisfy request\r\n");
+	panic();
 	return NULL;
 }
 
@@ -382,7 +383,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
-//	mem_assert(!(*pte & 3) && (*p);
+	mem_assert(!(*pte & 3));
 
 	*pte = physical | 3;
 
