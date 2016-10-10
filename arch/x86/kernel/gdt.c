@@ -52,25 +52,6 @@ struct gdt_entry
 } __attribute__((packed));
 
 
-/* Defines a GDT entry. We say packed, because it prevents the
-*  compiler from doing things that it thinks is best: Prevent
-*  compiler "optimization" by packing */
-struct tss_segment_entry
-{
-	uint16_t limit_low;
-	uint16_t base_low;
-	uint8_t base_middle;
-	uint8_t type : 4;
-	uint8_t reserved : 1;
-	uint8_t dpl : 2;
-	uint8_t present : 1;
-	uint8_t limit : 4;
-	uint8_t avl : 1;
-	uint8_t reserved2 : 2;
-	uint8_t granularity : 1;
-	unsigned char base_high;
-
-} __attribute__((packed));
 /* Special pointer which includes the limit: The max bytes
 *  taken up by the GDT, minus 1. Again, this NEEDS to be packed */
 struct gdt_ptr
@@ -80,8 +61,8 @@ struct gdt_ptr
 } __attribute__((packed));
 
 /* Our GDT, with 3 entries, and finally our special GDT pointer */
-#define GDT_LENGTH 6
-struct gdt_entry gdt[GDT_LENGTH];
+#define GDT_ENTRIES 6
+struct gdt_entry gdt[GDT_ENTRIES];
 struct gdt_ptr gp;
 struct tss_entry __attribute__((aligned(PAGE_SIZE))) tss;
 
@@ -102,18 +83,20 @@ static void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsig
 	gdt[num].access = access;
 }
 
-static void gdt_set_tss(int num, addr_t base, uint32_t limit, bool busy)
+static void gdt_set_tss(int num, addr_t base)
 {
-	struct tss_segment_entry *entry;
-	entry = (struct tss_segment_entry *) &gdt[num];
-	memset(entry, 0, sizeof(*entry));
+	/* Setup the descriptor base address */
+	gdt[num].base_low = (base & 0xFFFF);
+	gdt[num].base_middle = (base >> 16) & 0xFF;
+	gdt[num].base_high = (base >> 24) & 0xFF;
 
-	entry->base_low = (base & 0xFFFF);
-	entry->base_middle = (base >> 16) & 0xFF;
-	entry->base_high = (base >> 24) & 0xFF;
-	entry->limit_low = (limit & 0xFFFF);
-	entry->type = busy ? TSS_TYPE_BUSY : TSS_TYPE_INACTIVE;
-	entry->present = 1;
+	/* Setup the descriptor limits */
+	gdt[num].limit_low = sizeof(tss) - 1;
+
+	/* Finally, set up the granularity and access flags */
+	gdt[num].granularity = 0;
+
+	gdt[num].access = (0x01 << 7) | (0x01 << 3) | (0x01);
 }
 
 /* Should be called by main. This will setup the special GDT
@@ -124,7 +107,7 @@ static void gdt_set_tss(int num, addr_t base, uint32_t limit, bool busy)
 void gdt_init()
 {
 	/* Setup the GDT pointer and limit */
-	gp.limit = (sizeof(struct gdt_entry) * GDT_LENGTH) - 1;
+	gp.limit = (sizeof(struct gdt_entry) * GDT_ENTRIES) - 1;
 	gp.base = (uint32_t) &gdt;
 
 	/* Our NULL descriptor */
@@ -155,7 +138,7 @@ void gdt_init()
 	gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);
 
 	/* Our TSS segment */
-	gdt_set_tss(5, (addr_t) &tss, sizeof(tss), false);
+	gdt_set_tss(5, (addr_t) &tss);
 	/* Flush out the old GDT and install the new changes! */
 	gdt_flush();
 
@@ -163,17 +146,8 @@ void gdt_init()
 	tss.esp0 = 0;
 	tss.cs = 0x8 | 0x3;
 	tss.ss = tss.ds = tss.es = tss.fs = tss.gs = (0x10 | 0x3);
-#ifdef DEBUG
-	dump_gdt_table();
-#endif
+
 	tss_flush();
 }
-#ifdef DEBUG
-void dump_gdt_table()
-{
-	for (int i = 0; i < GDT_LENGTH; i++)
-	{
-		hex_dump(&gdt[i], sizeof(struct gdt_entry));
-	}
-}
-#endif
+
+
