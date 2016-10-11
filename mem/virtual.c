@@ -73,6 +73,27 @@
 /* We can directly access the PDE entries as they we're already mapped to virtual space with the kernel */
 /* When accessing using mirror method, this gives us a virtual pointer to the PTE's. we can then set, clear and adjust them */
 
+/* PDT & PDE definitions */
+
+
+#define PDT_PRESENT			BIT(0)
+#define PDT_ALLOW_WRITE		BIT(1)
+#define PDT_USER_PAGE		BIT(2)
+#define PDT_PWD				BIT(3)
+#define PDT_PCD				BIT(4)
+#define PDT_ACCESSED		BIT(5)
+#define PDT_HUGE_PAGE		BIT(7)
+
+#define PTE_PRESENT			BIT(0)
+#define PTE_ALLOW_WRITE		BIT(1)
+#define PTE_USER_PAGE		BIT(2)
+#define PTE_PWT				BIT(3)
+#define PTE_PCD				BIT(4)
+#define PTE_ACCESSED		BIT(5)
+#define PTE_DIRTY			BIT(6)
+#define PTE_PAT				BIT(7)
+#define PTE_GLOBAL			BIT(7)
+
 addr_t virt_to_phys(void *addr)
 {
 	if (((addr_t) addr >= KERNEL_VIRTUAL_BASE) && ((addr_t) addr < PHYSICAL_ALLOCATOR_BITMAP_BASE))
@@ -114,6 +135,32 @@ heap_t *get_kernel_heap()
 	return &kernel_heap;
 }
 
+
+void *mem_calloc_pdt()
+{
+	addr_t p_addr = mem_get_page();
+	void *v_addr;
+
+	if (!p_addr)
+	{
+		pr_error("No more physical space\r\n");
+		return NULL;
+	}
+
+	v_addr = mem_page_map_kernel(p_addr, 1, 0);
+
+	if (!v_addr)
+	{
+		pr_error("No more virtual space\r\n");
+		mem_free_page(p_addr);
+		return NULL;
+	}
+
+	memset(v_addr, 0, PAGE_SIZE);
+
+	return v_addr;
+}
+
 void dump_pdt()
 {
 	char *ptr;
@@ -121,11 +168,11 @@ void dump_pdt()
 
 	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++)
 	{
-		if (current_pdt[i] & BIT(1)) // exists
+		if (current_pdt[i] & PDT_PRESENT) // exists
 		{
 			printk("PDE: %u value: 0x%x\r\n", i, current_pdt[i]);
 
-			if (current_pdt[i] & BIT(7))
+			if (current_pdt[i] & PDT_HUGE_PAGE)
 			{
 				printk("Maps 4MB page from 0x%x to 0x%x\r\n", PDE_INDEX_TO_ADDR(i), PDE_INDEX_TO_ADDR(i + 1));
 			}
@@ -135,7 +182,7 @@ void dump_pdt()
 
 				for (int j = 0; j < PAGE_TABLE_SIZE; j++)
 				{
-					if (* ((uint32_t *)ptr) & BIT(1))
+					if (* ((uint32_t *)ptr) & PTE_PRESENT)
 					{
 						virtual_pos = PDE_INDEX_TO_ADDR(i) + (j * PAGE_SIZE);
 						printk("\tPTE: %u value: 0x%x maps 4K page from 0x%x to 0x%x\r\n", j, * (uint32_t *) ptr,
@@ -187,9 +234,9 @@ static addr_t mem_find_kernel_place(int count)
 
 	for (uint32_t i = FRAME_TO_PDE_INDEX(KERNEL_VIRTUAL_BASE); i < PAGE_DIRECTORY_SIZE; i++)
 	{
-		if (current_pdt[i] & BIT(1)) // exists
+		if (current_pdt[i] & PDT_PRESENT) // exists
 		{
-			if (current_pdt[i] & BIT(7))
+			if (current_pdt[i] & PDT_HUGE_PAGE)
 			{
 				if (begin)
 				{
@@ -205,7 +252,7 @@ static addr_t mem_find_kernel_place(int count)
 
 				for (uint32_t j = 0; j < PAGE_TABLE_SIZE; j++, ptr += 4)
 				{
-					if (* ((uint32_t *)ptr) & BIT(1))
+					if (* ((uint32_t *)ptr) & PTE_PRESENT)
 					{
 						if (begin)
 						{
@@ -323,6 +370,8 @@ void mem_init(multiboot_info_t *mbi)
 	FUNC_LEAVE();
 }
 
+
+
 void page_fault_handler(registers_t regs)
 {
 
@@ -387,7 +436,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 
 
 	// Check if the PDT exists
-	if (!(current_pdt[FRAME_TO_PDE_INDEX(virtual)] & 3))
+	if (!(current_pdt[FRAME_TO_PDE_INDEX(virtual)] & PDT_PRESENT))
 	{
 		pr_debug("mem_map_page: PDT missing, creating and mapping\r\n");
 		page = mem_get_page();
@@ -395,7 +444,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 		mem_assert(page != 0);
 
 		// Put it in PDT
-		current_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | 3;
+		current_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | PDT_PRESENT | PDT_ALLOW_WRITE;
 		// Invalidate cache
 		mem_tlb_flush(access_ptr);
 		// Clear the PDE table
@@ -406,7 +455,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
 //	mem_assert(!(*pte & 3));
-	if (*pte & 3)
+	if (*pte & PTE_PRESENT)
 	{
 		printk("assert failed: ");
 		pr_error("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
@@ -415,7 +464,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 		while (1);
 	}
 
-	*pte = physical | 3;
+	*pte = physical | PTE_PRESENT | PTE_ALLOW_WRITE;
 
 	mem_tlb_flush((void *) virtual);
 
@@ -436,7 +485,7 @@ void mem_page_unmap(addr_t virtual)
 
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
-	mem_assert(*pte & 3);
+	mem_assert(*pte & PTE_PRESENT);
 
 	*pte = 0;
 
