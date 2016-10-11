@@ -35,7 +35,7 @@
  * 0xE0000000........... Unused (for future use)
  *
  */
-#define DEBUG
+//#define DEBUG
 
 #include <mem/memory.h>
 #include <printk.h>
@@ -116,7 +116,6 @@ heap_t *get_kernel_heap()
 
 void dump_pdt()
 {
-#ifdef DEBUG
 	char *ptr;
 	addr_t virtual_pos;
 
@@ -134,7 +133,7 @@ void dump_pdt()
 			{
 				ptr = (char *) PDE_MIRROR_BASE + (i * 0x1000);
 
-				for (int j = 0; j < 1024; j++)
+				for (int j = 0; j < PAGE_TABLE_SIZE; j++)
 				{
 					if (* ((uint32_t *)ptr) & BIT(1))
 					{
@@ -150,8 +149,6 @@ void dump_pdt()
 
 		}
 	}
-
-#endif
 }
 void *mem_page_map_kernel(addr_t physical, int count, int flags)
 {
@@ -168,19 +165,27 @@ void *mem_page_map_kernel(addr_t physical, int count, int flags)
 	}
 
 	pr_error("No more virtual kernel space to satisfy request\r\n");
+
+	while (1);
+
 	panic();
 	return NULL;
 }
 
-static addr_t mem_find_kernel_place(int request)
+static addr_t mem_find_kernel_place(int count)
 {
 	char *ptr;
-	int count = 0;
-	uint32_t i;
-	uint32_t j;
+	addr_t addr;
+	int n = 0;
 	bool begin = false;
+	uint32_t start_i, start_j;
 
-	for (i = FRAME_TO_PDE_INDEX(KERNEL_VIRTUAL_BASE); i < PAGE_DIRECTORY_SIZE; i++)
+	/*  Algorithm:
+	 *  This is pretty easy. we search the PDE & PDT for the first matching "request" pages.
+	 *  When we find the first empty page, we mark the pos in start_i and start_j and set begin to true.
+	 *  If we manage to count N consecutive pages we return the address sucessfuly */
+
+	for (uint32_t i = FRAME_TO_PDE_INDEX(KERNEL_VIRTUAL_BASE); i < PAGE_DIRECTORY_SIZE; i++)
 	{
 		if (current_pdt[i] & BIT(1)) // exists
 		{
@@ -189,7 +194,7 @@ static addr_t mem_find_kernel_place(int request)
 				if (begin)
 				{
 					begin = false;
-					count = 0;
+					n = 0;
 				}
 
 				continue;
@@ -198,22 +203,31 @@ static addr_t mem_find_kernel_place(int request)
 			{
 				ptr = (char *) PDE_MIRROR_BASE + (i * 0x1000);
 
-				for (j = 0; j < 1024; j++)
+				for (uint32_t j = 0; j < PAGE_TABLE_SIZE; j++, ptr += 4)
 				{
 					if (* ((uint32_t *)ptr) & BIT(1))
 					{
 						if (begin)
 						{
 							begin = false;
-							count = 0;
+							n = 0;
 						}
 
 						continue;
 					}
 					else
 					{
-						begin = true;
-						count++;
+						if (!begin)
+						{
+							start_i = i;
+							start_j = j;
+							begin = true;
+						}
+
+						if (++n >= count)
+						{
+							break;
+						}
 					}
 				}
 
@@ -222,13 +236,21 @@ static addr_t mem_find_kernel_place(int request)
 		else
 		{
 			// PDE is not maped in, this means we have 1024 empty entries in here.
-			count += 1024;
+			if (!begin)
+			{
+				start_i = i;
+				begin = true;
+				start_j = 0;
+			}
+
+			n += 1024;
 		}
 
-		if (count >= request)
+		if (n >= count)
 		{
-			pr_debug("Done, I've done it !!\r\n");
-			return (PDE_INDEX_TO_ADDR(i) + (j * PAGE_SIZE));
+			addr = PDE_INDEX_TO_ADDR(start_i) + (start_j * PAGE_SIZE);
+			pr_debug("Found place for %u pages starting from 0x%x!\r\n", count, addr);
+			return addr;
 		}
 
 	}
@@ -383,7 +405,15 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
-	mem_assert(!(*pte & 3));
+//	mem_assert(!(*pte & 3));
+	if (*pte & 3)
+	{
+		printk("assert failed: ");
+		pr_error("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
+
+//		dump_pdt();
+		while (1);
+	}
 
 	*pte = physical | 3;
 

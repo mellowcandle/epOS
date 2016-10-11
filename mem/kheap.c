@@ -105,7 +105,7 @@ void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages, bool hw)
 
 	if (heap->total_pages - heap->used_pages < count)
 	{
-		printk("not enough physical pages\r\n");
+		pr_fatal("not enough physical pages\r\n");
 		panic();
 	}
 
@@ -137,7 +137,7 @@ void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages, bool hw)
 	return (void *) ret_address;
 
 error:
-	printk("Can't allocate HEAP\r\n");
+	pr_fatal("Can't allocate HEAP\r\n");
 	panic();
 
 	return NULL;

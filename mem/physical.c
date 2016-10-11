@@ -78,10 +78,10 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 
 	physmem.phys_start = physmem.phys_bitmap = phy_start;
 	physmem.bitmap = (uint32_t *) PHYSICAL_ALLOCATOR_BITMAP_BASE;
-	printk("Physical memory zone set to: 0x%x size: 0x%x\r\n", physmem.phys_start, total_memory);
-	printk("Number of pages: %u Required Bytes: %u\r\n", physmem.total_pages, required_bytes);
+	pr_info("Physical memory zone set to: 0x%x size: 0x%x\r\n", physmem.phys_start, total_memory);
+	pr_info("Number of pages: %u Required Bytes: %u\r\n", physmem.total_pages, required_bytes);
 
-	printk("Required PTE: %u, Required PDE: %u\r\n", pte_count, pde_count);
+	pr_info("Required PTE: %u, Required PDE: %u\r\n", pte_count, pde_count);
 
 
 	/* We're placing our physical manager just after the kernel */
@@ -143,7 +143,7 @@ void mem_free_pages(addr_t addr, uint32_t count)
 
 	if (!IS_PAGE_ALIGNED(addr))
 	{
-		printk("mem_free_pages: addr: 0x%x is not page aligned\r\n", addr);
+		pr_error("mem_free_pages: addr: 0x%x is not page aligned\r\n", addr);
 		panic();
 	}
 
@@ -213,7 +213,7 @@ addr_t mem_get_pages(uint32_t count)
 	}
 	else
 	{
-		printk("mem_get_pages: could not find %u continous free pages\r\n", count);
+		pr_error("mem_get_pages: could not find %u continous free pages\r\n", count);
 	}
 
 	FUNC_LEAVE();
