@@ -29,7 +29,7 @@
 #include <cpu.h>
 #include <mem/memory.h>
 #include <printk.h>
-
+#include <kernel.h>
 #define TAB_SIZE    8
 
 //prototypes
@@ -38,7 +38,10 @@ static void move_cursor(void);
 // Globals
 
 // The VGA framebuffer starts at 0xB8000.
-uint16_t *video_memory = (uint16_t *)0xB8000;
+
+#define FRAME_BUFFER_ADDR 0xB8000
+
+uint16_t *video_memory = NULL;
 // Stores the cursor position.
 uint8_t cursor_x = 0;
 uint8_t cursor_y = 0;
@@ -163,7 +166,8 @@ void VIDEO_print_string(const char *string)
 
 void VIDEO_init()
 {
-	mem_page_map(0xB8000, 0xB8000, 0);
+	video_memory = mem_page_map_kernel(FRAME_BUFFER_ADDR, 1, 0);
+	assert(video_memory);
 	register_logger(&VIDEO_print_string);
 }
 
