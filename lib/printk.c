@@ -31,6 +31,7 @@
 #include <lib/list.h>
 #include <lib/kmalloc.h>
 #include <types.h>
+#include <bits.h>
 
 #define MAX_LOGGERS 5
 static char buffer[256] = {0};
@@ -172,13 +173,39 @@ static char *lluitoa(unsigned long long value, char *str, int base)
 
 	return end;
 }
-// very simple printf, only supports basic stuff
+
+#define LEFT_JUSTIFY BIT(0)
+#define PLUS_MANDATORY BIT(1)
+#define SPACE_SIGN BIT(2)
+#define PRECEEDED_WITH BIT(3)
+#define LEFT_PAD_ZEROS BIT(4)
+
+#define LENGTH_HH 1 //char
+#define LENGTH_H 2 //short int
+#define LENGTH_L 3 // long int
+#define LENGTH_LL 4 // long long int
+
+static int skip_atoi(const char **string)
+{
+	int i = 0;
+
+	while (isdigit(**string))
+	{
+		i = i * 10 + *((*string)++) - '0';
+	}
+
+	return i;
+}
+
 static int do_printk(char *buffer, const char *fmt, va_list args)
 {
 	char *ptr;
 	int len = 0;
 
-	bool ll = false;
+	uint32_t flags = 0;
+	int field_width;
+	int field_precision;
+	int length_spec;
 	char c;
 
 	while (*fmt)
@@ -191,10 +218,108 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 		{
 			fmt++;
 
-			if ((*fmt == 'l') && (*(fmt + 1) == 'l'))
+			while (1)
 			{
-				ll = true;
-				fmt += 2;
+				/* Check for flags */
+				switch (*fmt)
+				{
+
+				case '-':
+					flags |= LEFT_JUSTIFY;
+					break;
+
+				case '+':
+					flags |= PLUS_MANDATORY;
+					break;
+
+				case ' ':
+					flags |= SPACE_SIGN;
+					break;
+
+				case '#':
+					flags |= PRECEEDED_WITH;
+					break;
+
+				case '0':
+					flags |= LEFT_PAD_ZEROS;
+					break;
+
+				default:
+					goto width;
+				}
+
+				fmt++;
+			}
+
+			/* Width flags */
+width:
+
+			field_width = 0;
+
+			if (*fmt == '*')
+			{
+				field_width = va_arg(args, int);
+				fmt++;
+			}
+			else if (isdigit(*fmt))
+			{
+				field_width = skip_atoi(&fmt);
+			}
+
+			/* Precision flags */
+			field_precision = 0;
+
+			if (*fmt == '.')
+			{
+				fmt++;
+
+				if (*fmt == '*')
+				{
+					field_precision = va_arg(args, int);
+					fmt++;
+				}
+				else if (isdigit(*fmt))
+				{
+					field_precision = skip_atoi(&fmt);
+				}
+			}
+
+
+			/* Length specs */
+
+			switch (*fmt)
+			{
+			case 'h':
+				fmt++;
+
+				if (*fmt == 'h')
+				{
+					length_spec = LENGTH_HH;
+				}
+				else
+				{
+					length_spec = LENGTH_H;
+				}
+
+				break;
+
+			case 'l':
+				fmt++;
+
+				if (*fmt == 'l')
+				{
+					length_spec = LENGTH_LL;
+				}
+				else
+				{
+					length_spec = LENGTH_L;
+				}
+
+				break;
+
+			default:
+				length_spec = LENGTH_L;
+				break;
 			}
 
 			switch (*fmt)
@@ -205,13 +330,13 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 				break;
 
 			case 'u':
-				if (!ll)
+				if (length_spec == LENGTH_LL)
 				{
-					buffer = uitoa(va_arg(args, int), buffer, 10);
+					buffer = lluitoa(va_arg(args, long long), buffer, 10);
 				}
 				else
 				{
-					buffer = lluitoa(va_arg(args, long long), buffer, 10);
+					buffer = uitoa(va_arg(args, int), buffer, 10);
 				}
 
 				break;
@@ -239,13 +364,13 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 			case 'x':
 			case 'X':
 			case 'p':
-				if (!ll)
+				if (length_spec == LENGTH_LL)
 				{
-					buffer = uitoa(va_arg(args, int), buffer, 16);
+					buffer = lluitoa(va_arg(args, long long), buffer, 16);
 				}
 				else
 				{
-					buffer = lluitoa(va_arg(args, long long), buffer, 16);
+					buffer = uitoa(va_arg(args, int), buffer, 16);
 				}
 
 				break;
@@ -256,7 +381,6 @@ static int do_printk(char *buffer, const char *fmt, va_list args)
 
 			fmt++;
 			len++;
-			ll = false;
 		}
 	}
 
