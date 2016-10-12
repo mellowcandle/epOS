@@ -94,19 +94,34 @@
 #define PTE_PAT				BIT(7)
 #define PTE_GLOBAL			BIT(7)
 
+static uint32_t *current_pdt = (uint32_t *) PDT_MIRROR_BASE;
+
 addr_t virt_to_phys(void *addr)
 {
-	if (((addr_t) addr >= KERNEL_VIRTUAL_BASE) && ((addr_t) addr < PHYSICAL_ALLOCATOR_BITMAP_BASE))
+	uint32_t *pte;
+	uint32_t pde_idx = FRAME_TO_PDE_INDEX((addr_t) addr);
+	uint32_t pte_idx = FRAME_TO_PTE_INDEX((addr_t) addr);
+
+	assert(IS_PAGE_ALIGNED(addr));
+
+	if (current_pdt[pde_idx] & PDT_PRESENT)
 	{
-		return ((addr_t) addr - KERNEL_VIRTUAL_BASE);
+		if (current_pdt[pde_idx] & PDT_HUGE_PAGE)
+		{
+			return (current_pdt[pde_idx] & PAGE_MASK) + ((addr_t)addr & HUGE_PAGE_MASK);
+		}
+		else
+		{
+			pte = (uint32_t *)(PDE_MIRROR_BASE + (pde_idx * 0x1000));
+			pte += pte_idx; // int pointer aritmethics here.
+			return (*pte & PAGE_MASK);
+		}
 	}
 
-	pr_warn("I don't know !!\r\n");
 	return 0;
 }
 
 
-static uint32_t *current_pdt = (uint32_t *) PDT_MIRROR_BASE;
 
 // These are defined in the linker script, with these we calculate the size of the kernel on runtime.
 extern uint32_t kernel_end, kernel_start;
@@ -116,25 +131,13 @@ void mem_heap_init();
 void mem_phys_init(addr_t phy_start, uint32_t total_pages);
 static addr_t mem_find_kernel_place(int request);
 
-static heap_t kernel_heap;
 
-#if 0
 void mem_switch_page_directory(addr_t new_dir)
 {
 	void *m = 0;
 	__asm volatile("mov %0, %%cr3":: "r"(new_dir));
 	__asm volatile("invlpg (%0)" : : "b"(m) : "memory") ;
-//	uint32_t cr0;
-//	asm volatile("mov %%cr0, %0": "=r"(cr0));
-//	cr0 |= 0x80000000; // Enable paging!
-//	asm volatile("mov %0, %%cr0":: "r"(cr0));
 }
-#endif
-heap_t *get_kernel_heap()
-{
-	return &kernel_heap;
-}
-
 
 void *mem_calloc_pdt()
 {
@@ -313,6 +316,7 @@ void mem_init(multiboot_info_t *mbi)
 	uint32_t kernel_size;
 	uint32_t required_kernel_pages;
 
+	extern heap_t kernel_heap;
 	FUNC_ENTER();
 	register_interrupt_handler(14, page_fault_handler);
 
@@ -365,7 +369,7 @@ void mem_init(multiboot_info_t *mbi)
 
 	mem_phys_init(physical_start, total_memory);
 
-	mem_heap_init(&kernel_heap, KERNEL_HEAP_VIR_START, KERNEL_HEAP_SIZE);
+	mem_heap_init(get_kernel_heap(), KERNEL_HEAP_VIR_START, KERNEL_HEAP_SIZE);
 
 	FUNC_LEAVE();
 }

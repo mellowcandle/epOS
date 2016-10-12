@@ -44,6 +44,12 @@
 #include <lib/string.h>
 
 void test_heap();
+static heap_t kernel_heap;
+
+heap_t *get_kernel_heap()
+{
+	return &kernel_heap;
+}
 
 void mem_heap_init(heap_t *heap, addr_t vir_start, size_t size)
 {

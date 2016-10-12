@@ -35,6 +35,9 @@
 #define PAGE_SIZE 4096
 #define PAGE_MASK (~(PAGE_SIZE-1))
 
+#define HUGE_PAGE_SIZE (PAGE_SIZE * 1024)
+#define HUGE_PAGE_MASK (~(HUGE_PAGE_SIZE-1))
+
 #define PAGE_DIRECTORY_SIZE 1024
 #define PAGE_TABLE_SIZE 1024
 
@@ -47,7 +50,6 @@
 #define FRAME_TO_PDE_INDEX(_x) (_x >> 22)
 #define FRAME_TO_PTE_INDEX(_x) ((_x << 10) >> 22)
 #define VADDR_TO_PAGE_DIR(_x) ((_x & ~0xFFF) / 0x400000)
-
 
 #define PDE_INDEX_TO_ADDR(_x) ((_x) << 22)
 
