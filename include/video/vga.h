@@ -24,14 +24,14 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-
-#ifndef VIDEO_TEXTMODE_H_LSC3MFDI
-#define VIDEO_TEXTMODE_H_LSC3MFDI
+#ifndef VGA_H_GT47VNEL
+#define VGA_H_GT47VNEL
 
 #include "types.h"
 
-void VIDEO_clear_screen(void);
-void VIDEO_print_string(const char *string);
-void VIDEO_print_char(uint8_t c);
+void vga_clear_screen(void);
+void vga_print_string(const char *string);
+void vga_print_char(uint8_t c);
 
-#endif /* end of include guard: VIDEO_TEXTMODE_H_LSC3MFDI */
+#endif /* end of include guard: VGA_H_GT47VNEL */
+

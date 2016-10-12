@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <video/VIDEO_textmode.h>
+#include <video/vga.h>
 #include <cpu.h>
 #include <mem/memory.h>
 #include <printk.h>
@@ -91,7 +91,7 @@ static void scroll()
 
 
 // Writes a single character out to the screen.
-void VIDEO_print_char(uint8_t c)
+void vga_print_char(uint8_t c)
 {
 	// The background colour is black (0), the foreground is white (15).
 	uint8_t backColour = 0;
@@ -155,23 +155,23 @@ void VIDEO_print_char(uint8_t c)
 
 }
 
-void VIDEO_print_string(const char *string)
+void vga_print_string(const char *string)
 {
 	while (*string)
 	{
-		VIDEO_print_char(*string);
+		vga_print_char(*string);
 		string++;
 	}
 }
 
-void VIDEO_init()
+void vga_init()
 {
 	video_memory = mem_page_map_kernel(FRAME_BUFFER_ADDR, 1, 0);
 	assert(video_memory);
-	register_logger(&VIDEO_print_string);
+	register_logger(&vga_print_string);
 }
 
-void VIDEO_clear_screen(void)
+void vga_clear_screen(void)
 {
 	// Make an attribute byte for the default colours
 	uint8_t attributeByte = (0 /*black*/ << 4) | (15 /*white*/ & 0x0F);

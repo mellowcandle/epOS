@@ -30,7 +30,6 @@
 #include <lib/ctype.h>
 #include <lib/list.h>
 #include <lib/kmalloc.h>
-#include <video/VIDEO_textmode.h>
 #include <types.h>
 
 #define MAX_LOGGERS 5

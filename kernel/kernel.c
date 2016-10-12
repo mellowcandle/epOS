@@ -27,7 +27,7 @@
 
 #include <types.h>
 #include <boot/multiboot.h>
-#include <video/VIDEO_textmode.h>
+#include <video/vga.h>
 #include <isr.h>
 #include <printk.h>
 #include <mem/memory.h>
@@ -64,8 +64,8 @@ void kmain(void)
 
 //	ksymbol_init(mbi);
 
-	VIDEO_init();
-	VIDEO_clear_screen();
+	vga_init();
+	vga_clear_screen();
 
 	acpi_early_init();
 	enable_irq();
