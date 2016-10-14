@@ -46,7 +46,7 @@
 
 //! Insert a new bitfield value \a x into \a y.
 #define BF_SET(y, x, start, len) \
-	(y = ((y) & BF_MASK(start, len)) | BF_PREP(x, start, len))
+	(y = ((y) & ~BF_MASK(start, len)) | BF_PREP(x, start, len))
 
 /*
  *  Determine whether some value is a power of two, where zero is
