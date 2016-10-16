@@ -37,6 +37,9 @@ void register_logger(log_func func);
 int printk(const char *format, ...)
 __attribute__((format(printf, 1, 2)));  /* 1=format 2=params */
 
+int sprintk(char *buf, const char *format, ...)
+__attribute__((format(printf, 2, 3)));  /* 2=format 3=params */
+
 int vprintk(const char *format, va_list arg);
 void hex_dump(void *ptr, uint32_t len);
 

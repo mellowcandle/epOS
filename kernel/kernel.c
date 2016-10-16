@@ -39,6 +39,7 @@
 #include <kbd.h>
 #include <mmodules.h>
 
+int test_printk(void);
 void kmain(void)
 {
 	extern uint32_t magic;
@@ -58,7 +59,8 @@ void kmain(void)
 		panic();
 	}
 
-	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
+	test_printk();
+
 	cpu_init();
 	mem_init(mbi);
 
@@ -80,12 +82,15 @@ void kmain(void)
 
 //	mmodules_parse(mbi);
 
+#if 0
+
 	for (int i = 0 ; i < 1000; i++)
 	{
 		printk("Trying to allocate %u pages\r\n", i);
 		mem_page_map_kernel(0x1000, i, 0);
 	}
 
+#endif
 	printk("Bla Bla\r\n");
 
 	while (1);
