@@ -70,6 +70,7 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 	char *ptr;
 	char *low;
 	char *end;
+	int len;
 	char sign = 0;
 	char fill_char;
 	unsigned long long original = value;
@@ -150,6 +151,12 @@ negative:
 	// Remember where the numbers start.
 	low = ptr;
 
+
+	if ((value == 0) && (precision == 0))
+	{
+		goto skip_div;
+	}
+
 	// The actual conversion.
 	do
 	{
@@ -159,20 +166,19 @@ negative:
 	}
 	while (value);
 
-	if (precision > 0)
-	{
-		int len = ptr - low;
+skip_div:
+	len = ptr - low;
 
-		if (precision > len)
-		{
-			precision -= len;
-		}
+	if (precision > len)
+	{
+		precision -= len;
 
 		while (precision--)
 		{
 			*ptr++ = '0';
 		}
 	}
+
 
 	if (original && (flags & PRECEEDED_WITH) && (fill_char != '0'))
 	{
