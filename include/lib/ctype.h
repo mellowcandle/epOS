@@ -43,7 +43,7 @@ extern char _ctmp;
 #define isalnum(c) ((_ctype+1)[c]&(_U|_L|_D))
 #define isalpha(c) ((_ctype+1)[c]&(_U|_L))
 #define iscntrl(c) ((_ctype+1)[c]&(_C))
-#define isdigit(c) ((_ctype+1)[c]&(_D))
+#define isdigit(c) ((_ctype+1)[(uint8_t) c]&(_D))
 #define isgraph(c) ((_ctype+1)[c]&(_P|_U|_L|_D))
 #define islower(c) ((_ctype+1)[c]&(_L))
 #define isprint(c) ((_ctype+1)[c]&(_P|_U|_L|_D|_SP))

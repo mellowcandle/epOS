@@ -91,6 +91,15 @@ void kmain(void)
 	}
 
 #endif
+	void *ramon = mem_page_map_kernel(0x1000, 1, 0);
+	uint8_t inc = 128;
+
+	for (int i = 0; i < PAGE_SIZE; i++)
+	{
+		((char *)ramon)[i] = inc++;
+	}
+
+	hex_dump(ramon, PAGE_SIZE);
 	printk("Bla Bla\r\n");
 
 	while (1);

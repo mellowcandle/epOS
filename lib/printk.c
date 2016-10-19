@@ -88,12 +88,13 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 	fill_char = ((flags & LEFT_PAD_ZEROS) && !(flags & LEFT_JUSTIFY)) ?  '0' : ' ';
 
 	// Set '-', '+' or + ' ' according to flags and sign
-	if (flags & SIGNED)
-	{
 
-		switch (GET_LENGTH(flags))
+	switch (GET_LENGTH(flags))
+	{
+	case LENGTH_HH:
+	{
+		if (flags & SIGNED)
 		{
-		case LENGTH_HH:
 			if ((signed char)value < 0)
 			{
 				sign = '-';
@@ -101,50 +102,77 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 				goto negative;
 			}
 
-			break;
+		}
+		else
+		{
+			value &= 0xFF;
+			goto negative;
+		}
+	}
 
-		case LENGTH_H:
+	break;
+
+	case LENGTH_H:
+		if (flags & SIGNED)
+		{
 			if ((signed short)value < 0)
 			{
 				sign = '-';
 				value = - (signed short) value;
 				goto negative;
 			}
+		}
+		else
+		{
+			value &= 0xFFFF;
+			goto negative;
+		}
 
-			break;
+		break;
 
-		case LENGTH_L:
-			if ((signed long)value < 0)
+	case LENGTH_L:
+		if (flags & SIGNED)
+		{
+			if ((signed int)value < 0)
 			{
 				sign = '-';
-				value = - (signed long) value;
+				value = - (signed int) value;
 				goto negative;
 			}
+		}
+		else
+		{
+			value &= 0xFFFFFFFF;
+			goto negative;
+		}
 
-			break;
+		break;
 
-		case LENGTH_LL:
+
+	case LENGTH_LL:
+		if (flags & SIGNED)
+		{
 			if ((signed long long)value < 0)
 			{
 				sign = '-';
 				value = - (signed long long) value;
 				goto negative;
 			}
-
-			break;
-
-		default:
-			break;
 		}
 
-		if (flags & PLUS_MANDATORY)
-		{
-			sign = '+';
-		}
-		else if (flags & SPACE_SIGN)
-		{
-			sign = ' ';
-		}
+		break;
+
+	default:
+		break;
+	}
+
+	if (flags & PLUS_MANDATORY)
+	{
+		sign = '+';
+	}
+	else if (flags & SPACE_SIGN)
+	{
+		sign = ' ';
 	}
 
 negative:
@@ -399,6 +427,7 @@ width:
 				if (*fmt == 'h')
 				{
 					SET_LENGTH(flags, LENGTH_HH);
+					fmt++;
 				}
 				else
 				{
@@ -413,6 +442,7 @@ width:
 				if (*fmt == 'l')
 				{
 					SET_LENGTH(flags, LENGTH_LL);
+					fmt++;
 				}
 				else
 				{
@@ -459,7 +489,7 @@ width:
 			{
 			case 'd':
 			case 'i':
-				if (flags & LENGTH_LL)
+				if (GET_LENGTH(flags) == LENGTH_LL)
 				{
 					buffer = itoa(va_arg(args, long long), buffer, base, field_width,
 					              field_precision, flags | SIGNED);
@@ -478,7 +508,7 @@ width:
 			case 'X':
 			case 'p':
 			case 'b':
-				if (flags & LENGTH_LL)
+				if (GET_LENGTH(flags) == LENGTH_LL)
 				{
 					buffer = itoa(va_arg(args, unsigned long long), buffer, base, field_width,
 					              field_precision, flags);
@@ -637,16 +667,21 @@ int sprintk(char *buf, const char *format, ...)
 	va_end(arg);
 	return done;
 }
+
+
+
+
 void hex_dump(void *ptr, uint32_t len)
 {
 	for (uint32_t i = 0; i < len; i++)
 	{
-		printk("%x ", ((char *)ptr)[i]);
-
-		if (i % 16 == 0)
+		if ((i % 16 == 0) && (i != 0))
 		{
 			printk("\r\n");
 		}
+
+		printk("0x%.2hhX ", ((char *)ptr)[i]);
+
 	}
 
 	printk("\r\n");
