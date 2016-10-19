@@ -35,7 +35,7 @@ ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
-CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
+CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding -fstack-protector-strong $(WARNINGS)
 
 PROJDIRS := include kernel lib boot drivers mem arch
 
