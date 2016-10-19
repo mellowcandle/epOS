@@ -39,7 +39,6 @@
 #include <kbd.h>
 #include <mmodules.h>
 
-int test_printk(void);
 void kmain(void)
 {
 	extern uint32_t magic;
@@ -58,8 +57,6 @@ void kmain(void)
 		pr_fatal("Multiboot integrity check failed\r\n");
 		panic();
 	}
-
-	test_printk();
 
 	cpu_init();
 	mem_init(mbi);
@@ -91,15 +88,6 @@ void kmain(void)
 	}
 
 #endif
-	void *ramon = mem_page_map_kernel(0x1000, 1, 0);
-	uint8_t inc = 128;
-
-	for (int i = 0; i < PAGE_SIZE; i++)
-	{
-		((char *)ramon)[i] = inc++;
-	}
-
-	hex_dump(ramon, PAGE_SIZE);
 	printk("Bla Bla\r\n");
 
 	while (1);
