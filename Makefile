@@ -74,7 +74,7 @@ kernel.iso: multiboot
 	@grub-mkrescue -o kernel.iso isodir > /dev/null 2>&1
 
 clean:
-	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.img
+	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.img kernel.map
 
 .c.o:
 	@echo "(CC) $@"
