@@ -34,6 +34,7 @@
 #define BIT_CHECK(a,b)	((a) & (1<<(b)))
 #define BIT_SET(a,b)	((a) |= (1<<(b)))
 #define BIT_CLEAR(a,b)	((a) &= ~(1<<(b)))
+#define BIT_TOGGLE(a,b) ((a) ^= (1<<(b)))
 
 /* Some macros taken from: http://www.coranac.com/documents/working-with-bits-and-bitfields/ */
 
