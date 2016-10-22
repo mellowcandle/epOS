@@ -166,7 +166,7 @@ void vga_print_string(const char *string)
 
 void vga_init()
 {
-	video_memory = mem_page_map_kernel(FRAME_BUFFER_ADDR, 1, 0);
+	video_memory = mem_page_map_kernel(FRAME_BUFFER_ADDR, 1, READ_WRITE_KERNEL);
 	assert(video_memory);
 	register_logger(&vga_print_string);
 }

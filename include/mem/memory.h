@@ -31,6 +31,7 @@
 
 #include <types.h>
 #include <boot/multiboot.h>
+#include <bits.h>
 
 #define PAGE_SIZE 4096
 #define PAGE_MASK (~(PAGE_SIZE-1))
@@ -64,10 +65,28 @@
 #define KERNEL_HEAP_VIR_END 0xE0000000
 #define KERNEL_HEAP_SIZE (KERNEL_HEAP_VIR_END - KERNEL_HEAP_VIR_START)
 
-#define PAGE_ENTRY_PRESENT BIT(1)
-#define PAGE_ENTRY_WRITEABLE BIT(2)
-#define PAGE_ENTRY_USER BIT(3)
+#define PDT_PRESENT			BIT(0)
+#define PDT_ALLOW_WRITE		BIT(1)
+#define PDT_USER_PAGE		BIT(2)
+#define PDT_PWD				BIT(3)
+#define PDT_PCD				BIT(4)
+#define PDT_ACCESSED		BIT(5)
+#define PDT_HUGE_PAGE		BIT(7)
 
+#define PTE_PRESENT			BIT(0)
+#define PTE_ALLOW_WRITE		BIT(1)
+#define PTE_USER_PAGE		BIT(2)
+#define PTE_PWT				BIT(3)
+#define PTE_PCD				BIT(4)
+#define PTE_ACCESSED		BIT(5)
+#define PTE_DIRTY			BIT(6)
+#define PTE_PAT				BIT(7)
+#define PTE_GLOBAL			BIT(7)
+
+#define READ_ONLY_USER (PTE_USER_PAGE  | PTE_PRESENT)
+#define READ_WRITE_USER (PTE_USER_PAGE | PTE_ALLOW_WRITE | PTE_PRESENT)
+#define READ_ONLY_KERNEL (PTE_PRESENT)
+#define READ_WRITE_KERNEL (PTE_ALLOW_WRITE | PTE_PRESENT)
 
 
 extern uint32_t pdt;

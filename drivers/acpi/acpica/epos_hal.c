@@ -79,6 +79,8 @@ void *AcpiOsMapMemory(ACPI_PHYSICAL_ADDRESS PhysicalAddress, ACPI_SIZE Length)
 void AcpiOsUnmapMemory(void *where, ACPI_SIZE length)
 {
 	FUNC_ENTER();
+	uint32_t pages = divide_up(length, PAGE_SIZE);
+	mem_heap_free(&acpi_heap, (void *)((uint32_t)where & PAGE_MASK) , pages);
 }
 
 ACPI_STATUS AcpiOsGetPhysicalAddress(

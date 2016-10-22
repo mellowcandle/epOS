@@ -76,23 +76,6 @@
 /* PDT & PDE definitions */
 
 
-#define PDT_PRESENT			BIT(0)
-#define PDT_ALLOW_WRITE		BIT(1)
-#define PDT_USER_PAGE		BIT(2)
-#define PDT_PWD				BIT(3)
-#define PDT_PCD				BIT(4)
-#define PDT_ACCESSED		BIT(5)
-#define PDT_HUGE_PAGE		BIT(7)
-
-#define PTE_PRESENT			BIT(0)
-#define PTE_ALLOW_WRITE		BIT(1)
-#define PTE_USER_PAGE		BIT(2)
-#define PTE_PWT				BIT(3)
-#define PTE_PCD				BIT(4)
-#define PTE_ACCESSED		BIT(5)
-#define PTE_DIRTY			BIT(6)
-#define PTE_PAT				BIT(7)
-#define PTE_GLOBAL			BIT(7)
 
 static uint32_t *current_pdt = (uint32_t *) PDT_MIRROR_BASE;
 
@@ -150,7 +133,7 @@ void *mem_calloc_pdt()
 		return NULL;
 	}
 
-	v_addr = mem_page_map_kernel(p_addr, 1, 0);
+	v_addr = mem_page_map_kernel(p_addr, 1, READ_WRITE_USER);
 
 	if (!v_addr)
 	{
@@ -468,7 +451,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 		while (1);
 	}
 
-	*pte = physical | PTE_PRESENT | PTE_ALLOW_WRITE;
+	*pte = physical | flags;
 
 	mem_tlb_flush((void *) virtual);
 

@@ -84,7 +84,7 @@ void kmain(void)
 	for (int i = 0 ; i < 1000; i++)
 	{
 		printk("Trying to allocate %u pages\r\n", i);
-		mem_page_map_kernel(0x1000, i, 0);
+		mem_page_map_kernel(0x1000, i, READ_WRITE_KERNEL);
 	}
 
 #endif
