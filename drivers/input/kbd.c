@@ -48,15 +48,56 @@
 #define STATUS_RECIEVE_TIMEOUT		BIT(6)
 #define STATUS_PARITY_ERROR			BIT(7)
 
+/* Keyboard state keys */
+#define CAPS_LOCK_BIT 0
+#define SCROLL_LOCK_BIT 1
+#define NUM_LOCK_BIT 2
+
+#define KBD_STATE_CAPS_LOCK		BIT(CAPS_LOCK_BIT)
+#define KBD_STATE_SCROLL_LOCK	BIT(SCROLL_LOCK_BIT)
+#define KBD_STATE_NUM_LOCK		BIT(NUM_LOCK_BIT)
+#define KBD_STATE_LEFT_CTRL		BIT(3)
+#define KBD_STATE_RIGHT_CTRL	BIT(4)
+#define KBD_STATE_LEFT_ALT		BIT(5)
+#define KBD_STATE_RIGHT_ALT		BIT(6)
+#define KBD_STATE_LEFT_SHIFT	BIT(7)
+#define KBD_STATE_RIGHT_SHIFT	BIT(8)
+
 
 ACPI_TABLE_FADT *acpi_get_fadt();
+
+static uint8_t kbd_scan_table[128] =
+{
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x00 - 0x0F
+	0, 0, 0, 0, 0, 'q', '1', 0, 0, 0, 'z', 's', 'a', 'w', '2', 0, // 0x10 - 0x1F
+	0, 'c', 'x', 'd', 'e', '4', '3', 0, 0, ' ', 'v', 'f', 't', 'r', '5', 0, // 0x20 - 0x2F
+	0, 'n', 'b', 'h', 'g', 'y', '6', 0, 0, 0, 'm', 'j', 'u', '7', '8', 0,
+	0, ',', 'k', 'i', 'o', '0', '9', 0, 0, '.', '/', 'l', ';', 'p', '-', 0,
+	0, 0, '\'', 0, '[', '=', 0, 0, 0, 0, 0, ']', 0, '\\', 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+static uint8_t kbd_scan_table_shift[128] =
+{
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x00 - 0x0F
+	0, 0, 0, 0, 0, 'q', '!', 0, 0, 0, 'z', 's', 'a', 'w', '@', 0, // 0x10 - 0x1F
+	0, 'c', 'x', 'd', 'e', '$', '#', 0, 0, ' ', 'v', 'f', 't', 'r', '%', 0, // 0x20 - 0x2F
+	0, 'n', 'b', 'h', 'g', 'y', '^', 0, 0, 0, 'm', 'j', 'u', '&', '*', 0,
+	0, '<', 'k', 'i', 'o', ')', '(', 0, 0, '>', '?', 'l', ':', 'p', '_', 0,
+	0, 0, '"', 0, '{', '+', 0, 0, 0, 0, 0, '}', 0, '|', 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
 
 static int kbd_8042_self_test();
 static bool ps2_dual_channel = false;
 static int ps2_port_test(bool dual);
+static int kbd_state = 0;
+
 void kbd_8042_enable(uint8_t port);
 void kbd_8042_disable(uint8_t port);
 void kbd_8042_poll();
+void kbd_state_machine(uint8_t scan_code);
 
 static uint8_t kbd_8042_status()
 {
@@ -92,13 +133,140 @@ static void kbd_8042_write_config(uint8_t config)
 
 void kbd_irq_handler(registers_t regs)
 {
-	FUNC_ENTER();
-
 
 	while ((kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
 	{
-		pr_debug("read once\r\n");
-		kbd_8042_data();
+		kbd_state_machine(kbd_8042_data());
+	}
+}
+
+#define STATE_IDLE 0
+#define STATE_PRE_RELEASE BIT(1)
+#define STATE_PRE_RIGHT BIT(2)
+
+void kbd_state_machine(uint8_t scan_code)
+{
+	static int kbd_statemachine = STATE_IDLE;
+	const uint8_t *scan_table;
+
+	switch (scan_code)
+	{
+	case 0xF0:
+		kbd_statemachine |= STATE_PRE_RELEASE;
+		break;
+
+	case 0xE0:
+		kbd_statemachine |= STATE_PRE_RIGHT;
+		break;
+
+	case 0x11: // alt
+		if (kbd_statemachine & STATE_PRE_RELEASE)
+		{
+			kbd_state &= (kbd_statemachine & STATE_PRE_RIGHT) ? ~KBD_STATE_LEFT_ALT : ~KBD_STATE_RIGHT_ALT;
+
+		}
+		else
+		{
+			kbd_state |= (kbd_statemachine & STATE_PRE_RIGHT) ? KBD_STATE_LEFT_ALT : KBD_STATE_RIGHT_ALT;
+		}
+
+		kbd_statemachine = STATE_IDLE;
+		break;
+
+	case 0x12: // left shift
+
+		if (kbd_statemachine & STATE_PRE_RELEASE)
+		{
+			kbd_state &=  ~KBD_STATE_LEFT_SHIFT;
+		}
+		else
+		{
+			kbd_state |= KBD_STATE_LEFT_SHIFT;
+		}
+
+		kbd_statemachine = STATE_IDLE;
+		break;
+
+	case 0x59: //right shift
+		if (kbd_statemachine & STATE_PRE_RELEASE)
+		{
+			kbd_state &=  ~KBD_STATE_RIGHT_SHIFT;
+		}
+		else
+		{
+			kbd_state |= KBD_STATE_RIGHT_SHIFT;
+		}
+
+		kbd_statemachine = STATE_IDLE;
+		break;
+
+	case 0x14: // control
+
+		if (kbd_statemachine & STATE_PRE_RELEASE)
+		{
+			kbd_state &= (kbd_statemachine & STATE_PRE_RIGHT) ? ~KBD_STATE_LEFT_CTRL : ~KBD_STATE_RIGHT_CTRL;
+		}
+		else
+		{
+			kbd_state |= (kbd_statemachine & STATE_PRE_RIGHT) ? KBD_STATE_LEFT_CTRL : KBD_STATE_RIGHT_CTRL;
+		}
+
+		kbd_statemachine = STATE_IDLE;
+		break;
+
+	case 0x58: // Caps lock
+
+		if (!(kbd_statemachine & STATE_PRE_RELEASE))
+		{
+			BIT_TOGGLE(kbd_state, CAPS_LOCK_BIT);
+		}
+
+		kbd_statemachine = STATE_IDLE;
+		break;
+
+	case 0x77: // Numlock
+
+		if (!(kbd_statemachine & STATE_PRE_RELEASE))
+		{
+			BIT_TOGGLE(kbd_state, NUM_LOCK_BIT);
+		}
+
+		kbd_statemachine = STATE_IDLE;
+		break;
+
+	case 0x7e: // Scroll lock
+
+		if (!(kbd_statemachine & STATE_PRE_RELEASE))
+		{
+			BIT_TOGGLE(kbd_state, SCROLL_LOCK_BIT);
+		}
+
+		kbd_statemachine = STATE_IDLE;
+		break;
+
+	default:
+
+		if (kbd_state & (KBD_STATE_LEFT_SHIFT | KBD_STATE_RIGHT_SHIFT))
+		{
+			scan_table = kbd_scan_table_shift;
+		}
+		else
+		{
+			scan_table = kbd_scan_table;
+		}
+
+		if (kbd_statemachine == STATE_PRE_RELEASE)
+		{
+			pr_debug("scan code %hhx  key: %c released\r\n", scan_code, (char) scan_table[scan_code]);
+		}
+		else
+		{
+			pr_debug("scan code %hhx key %c pressed\r\n", scan_code, scan_table[scan_code]);
+		}
+
+		kbd_statemachine = STATE_IDLE;
+
+		break;
 	}
 }
 
