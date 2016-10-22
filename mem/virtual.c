@@ -41,7 +41,7 @@
 #include <printk.h>
 #include <types.h>
 #include <isr.h>
-#include <lib/kmalloc.h>
+#include <kmalloc.h>
 #include <lib/string.h>
 #include <kernel.h>
 #include <bits.h>

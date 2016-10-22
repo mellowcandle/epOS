@@ -40,7 +40,7 @@
 #include <types.h>
 #include <mem/memory.h>
 #include <printk.h>
-#include <lib/kmalloc.h>
+#include <kmalloc.h>
 #include <lib/string.h>
 
 void test_heap();

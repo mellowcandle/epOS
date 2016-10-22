@@ -26,7 +26,7 @@
 */
 
 #include <lib/circular.h>
-#include <lib/kmalloc.h>
+#include <kmalloc.h>
 #include <kernel.h>
 #include <printk.h>
 #include <bits.h>

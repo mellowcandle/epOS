@@ -29,7 +29,7 @@
 #include <lib/varargs.h>
 #include <lib/ctype.h>
 #include <lib/list.h>
-#include <lib/kmalloc.h>
+#include <kmalloc.h>
 #include <types.h>
 #include <bits.h>
 #include <lib/string.h>

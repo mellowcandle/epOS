@@ -2,7 +2,7 @@
 //#define DEBUG
 
 #include <acpica/acpi.h>
-#include <lib/kmalloc.h>
+#include <kmalloc.h>
 #include <printk.h>
 #include <mem/memory.h>
 #include <bits.h>
