@@ -10,4 +10,6 @@ void __stack_chk_fail(void)
 {
 	pr_fatal("Stack smashing detected\r\n");
 	panic();
+
+	while (1);
 }
