@@ -177,6 +177,8 @@ int mem_heap_free(heap_t *heap, void *addr , int count);
 addr_t virt_to_phys(void *addr);
 
 heap_t *get_kernel_heap();
+void *mem_calloc_pdt(addr_t *p_addr);
+int clone_pdt(void *source, void *dest);
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
 
