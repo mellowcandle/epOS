@@ -42,6 +42,9 @@
 #define PAGE_DIRECTORY_SIZE 1024
 #define PAGE_TABLE_SIZE 1024
 
+#define PTE_ADDR_MASK BF_MASK(12,20)
+#define PDE_ADDR_MASK BF_MASK(22,10)
+
 #define IS_PAGE_ALIGNED(POINTER) \
 	    (((uintptr_t)(const void *)(POINTER)) % (PAGE_SIZE) == 0)
 
@@ -178,7 +181,7 @@ addr_t virt_to_phys(void *addr);
 
 heap_t *get_kernel_heap();
 void *mem_calloc_pdt(addr_t *p_addr);
-int clone_pdt(void *source, void *dest);
+int clone_pdt(void *v_source, void *v_dest, addr_t p_dest);
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
 

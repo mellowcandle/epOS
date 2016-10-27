@@ -31,13 +31,23 @@
 #include <kmalloc.h>
 #include <process.h>
 
-static uint32_t pid_counter = 0;
+static uint32_t pid_counter = 1;
+extern uint32_t *current_pdt;
+void mem_switch_page_directory(addr_t new_dir);
 
 uint32_t get_next_pid()
 {
 	return ++pid_counter;
 }
 
+task_t init_task =
+{
+	1,
+	1,
+	0,
+	(void *) PDT_MIRROR_BASE,
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+};
 
 task_t *clone(task_t *parent)
 {
@@ -50,6 +60,7 @@ task_t *clone(task_t *parent)
 	}
 
 	new->parent_pid = parent->pid;
+	new->pid = get_next_pid();
 	new->regs = parent->regs;
 	new->pdt_virt_addr = mem_calloc_pdt(&new->pdt_phy_addr);
 
@@ -59,6 +70,12 @@ task_t *clone(task_t *parent)
 		goto fail;
 	}
 
+	if (clone_pdt(current_pdt, new->pdt_virt_addr, new->pdt_phy_addr))
+	{
+		pr_error("Failed cloning process\r\n");
+	}
+
+	mem_switch_page_directory(new->pdt_phy_addr);
 	return new;
 fail:
 	kfree(new);
