@@ -4,7 +4,6 @@
 	Anyone is free to copy, modify, publish, use, compile, sell, or
 	distribute this software, either in source code form or as a compiled
 	binary, for any purpose, commercial or non-commercial, and by any
-	means.
 
 	In jurisdictions that recognize copyright laws, the author or authors
 	of this software dedicate any and all copyright interest in the
@@ -35,9 +34,10 @@
  * 0xE0000000........... Unused (for future use)
  *
  */
-//#define DEBUG
+#define DEBUG
 
 #include <mem/memory.h>
+#include <cpu.h>
 #include <printk.h>
 #include <types.h>
 #include <isr.h>
@@ -77,7 +77,7 @@
 
 
 
-static uint32_t *current_pdt = (uint32_t *) PDT_MIRROR_BASE;
+uint32_t *current_pdt = (uint32_t *) PDT_MIRROR_BASE;
 
 addr_t virt_to_phys(void *addr)
 {
@@ -108,6 +108,7 @@ addr_t virt_to_phys(void *addr)
 
 // These are defined in the linker script, with these we calculate the size of the kernel on runtime.
 extern uint32_t kernel_end, kernel_start;
+void dump_pdt();
 
 void page_fault_handler(registers_t regs);
 void mem_heap_init();
@@ -117,35 +118,20 @@ static addr_t mem_find_kernel_place(int request);
 
 void mem_switch_page_directory(addr_t new_dir)
 {
-	void *m = 0;
+	FUNC_ENTER();
+
+//	dump_pdt();
+	pr_debug("setting page directory to: 0x%X\r\n", new_dir);
+	//	void *m = 0;
+	disable_irq();
 	__asm volatile("mov %0, %%cr3":: "r"(new_dir));
-	__asm volatile("invlpg (%0)" : : "b"(m) : "memory") ;
+
+	while (1);
+
+	FUNC_LEAVE();
+
 }
 
-void *mem_calloc_pdt(addr_t *p_addr)
-{
-	*p_addr = mem_get_page();
-	void *v_addr;
-
-	if (!p_addr)
-	{
-		pr_error("No more physical space\r\n");
-		return NULL;
-	}
-
-	v_addr = mem_page_map_kernel(*p_addr, 1, READ_WRITE_USER);
-
-	if (!v_addr)
-	{
-		pr_error("No more virtual space\r\n");
-		mem_free_page(*p_addr);
-		return NULL;
-	}
-
-	memset(v_addr, 0, PAGE_SIZE);
-
-	return v_addr;
-}
 
 void dump_pdt()
 {
@@ -299,7 +285,6 @@ void mem_init(multiboot_info_t *mbi)
 	uint32_t kernel_size;
 	uint32_t required_kernel_pages;
 
-	extern heap_t kernel_heap;
 	FUNC_ENTER();
 	register_interrupt_handler(14, page_fault_handler);
 
@@ -404,7 +389,7 @@ void page_fault_handler(registers_t regs)
 	printk("Page ownership %s\r\n", page_user ? "user" : "kernel");
 
 	irq_reg_dump(&regs);
-	dump_pdt();
+	//dump_pdt();
 	panic();
 }
 
@@ -441,14 +426,18 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
 
-//	mem_assert(!(*pte & 3));
 	if (*pte & PTE_PRESENT)
 	{
-		printk("assert failed: ");
-		pr_error("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
+		if ((*pte & PTE_ADDR_MASK) != physical)
+		{
+			pr_fatal("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
 
-//		dump_pdt();
-		while (1);
+			while (1);
+		}
+		else
+		{
+			pr_warn("Identical mapping detected\r\n");
+		}
 	}
 
 	*pte = physical | flags;
@@ -487,8 +476,12 @@ static int clone_pt(void *source, void *dest)
 	uint32_t *src_pte = source;
 	uint32_t *dest_pte = dest;
 	addr_t phy_page;
-	void *virt_page;
+	uint32_t flags;
+	void *dest_virt_page;
+	void *src_virt_page;
 	assert((source) && (dest));
+
+	FUNC_ENTER();
 
 	for (i = 0; i < PAGE_TABLE_SIZE; i++)
 	{
@@ -499,69 +492,104 @@ static int clone_pt(void *source, void *dest)
 		}
 		else
 		{
-			if (!(src_pte[i] & PDT_USER_PAGE))
+			/* User page, copy that */
+			phy_page = mem_get_page();
+
+			if (!phy_page)
 			{
-				/* Kernel page, link top it */
-				//TODO: take only the address
-				dest_pte[i] = src_pte[i];
+				pr_error("Can't allocate page\r\n");
+				return -1;
 			}
-			else
+
+			dest_virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL);
+
+			if (!dest_virt_page)
 			{
-				/* User page, copy that */
-				phy_page = mem_get_page();
-
-				if (!phy_page)
-				{
-					pr_error("Can't allocate page\r\n");
-					return -1;
-				}
-
-				virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL);
-
-				if (!virt_page)
-				{
-					pr_error("Can't allocate page\r\n");
-					return -1;
-				}
-
-				memset(virt_page, 0, PAGE_SIZE);
-
-				/* Place it in the PDT */
-				dest_pte[i] = phy_page | PTE_USER_PAGE | PTE_ALLOW_WRITE | PTE_PRESENT;
+				pr_error("Can't allocate page\r\n");
+				mem_free_page(phy_page);
+				return -1;
 			}
+
+			src_virt_page = mem_page_map_kernel(src_pte[i] & PAGE_MASK, 1, READ_WRITE_KERNEL);
+
+			if (!src_virt_page)
+			{
+				pr_error("Can't allocate page\r\n");
+				mem_page_unmap((addr_t)dest_virt_page);
+				mem_free_page(phy_page);
+				return -1;
+			}
+
+			pr_debug("Before memcpy\r\n");
+			memcpy(dest_virt_page, src_virt_page, PAGE_SIZE);
+
+			/* Place it in the PDT */
+			flags = PTE_PRESENT;
+
+			if (src_pte[i] & PTE_USER_PAGE)
+			{
+				flags |= PTE_USER_PAGE;
+			}
+
+			if (src_pte[i] & PTE_ALLOW_WRITE)
+			{
+				flags |= PTE_ALLOW_WRITE;
+			}
+
+			dest_pte[i] = phy_page | flags;
+
+			// Unmap the temporary pages
+			mem_page_unmap((addr_t)dest_virt_page);
+			mem_page_unmap((addr_t)src_virt_page);
 		}
 	}
 
+	FUNC_LEAVE();
 	return 0;
 
 }
-int clone_pdt(void *source, void *dest)
+int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 {
 	int i;
 	int ret;
-	uint32_t *src_pdt = source;
-	uint32_t *dest_pdt = dest;
+	uint32_t *src_pdt = v_source;
+	uint32_t *dest_pdt = v_dest;
 	addr_t phy_page;
 	void *dest_virt_page;
 	void *src_virt_page;
-	assert((source) && (dest));
+	uint32_t flags;
+	FUNC_ENTER();
 
-	for (i = 0; i < PAGE_DIRECTORY_SIZE; i++)
+	assert((v_source) && (v_dest));
+
+
+	for (i = 0; i < PAGE_DIRECTORY_SIZE - 1; i++)
 	{
 		/* Skip if nothing there */
+
+		dest_pdt[i] = src_pdt[i];
+#if 0
+		pr_debug("i=%u src_pdt = %x\r\n", i, src_pdt[i]);
+
 		if (!(src_pdt[i] & PDT_PRESENT))
 		{
 			continue;
 		}
 		else
 		{
-			if (!(src_pdt[i] & PDT_USER_PAGE))
+			if (!(src_pdt[i] & PDT_HUGE_PAGE))
 			{
-				/* Kernel page, link to it. */
-				//TODO: take only the address
-				dest_pdt[i] = src_pdt[i];
+				//Huge pages are for kernel, we allow write on these
+				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE | PDT_HUGE_PAGE;
+				pr_debug("Huge page !!\r\n");
 			}
 			else
+			{
+				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE;
+				pr_debug("Regular page !!\r\n");
+			}
+
+#if 0
 			{
 				/* User page, copy that */
 				phy_page = mem_get_page();
@@ -572,41 +600,92 @@ int clone_pdt(void *source, void *dest)
 					return -1;
 				}
 
-				src_virt_page = mem_page_map_kernel(src_pdt[i] , 1, READ_ONLY_KERNEL);
+				//Temporary map
+				src_virt_page = mem_page_map_kernel(src_pdt[i] & PAGE_MASK , 1, READ_ONLY_KERNEL);
 
 				if (!src_virt_page)
 				{
 					pr_error("Can't allocate page\r\n");
+					mem_free_page(phy_page);
 					return -1;
 				}
 
+				//Temporary map
 				dest_virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL);
 
 				if (!dest_virt_page)
 				{
 					pr_error("Can't allocate page\r\n");
+					mem_page_unmap((addr_t)src_virt_page);
+					mem_free_page(phy_page);
 					return -1;
 				}
 
 				memset(dest_virt_page, 0, PAGE_SIZE);
 
 				/* Place it in the PDT */
-				dest_pdt[i] = phy_page | PDT_USER_PAGE | PDT_ALLOW_WRITE | PDT_PRESENT;
+				flags = PDT_PRESENT;
+
+				if (src_pdt[i] & PDT_USER_PAGE)
+				{
+					flags |= PDT_USER_PAGE;
+				}
+
+				if (src_pdt[i] & PDT_ALLOW_WRITE)
+				{
+					flags |= PDT_ALLOW_WRITE;
+				}
+
+				dest_pdt[i] = phy_page | flags;
 
 				ret = clone_pt(src_virt_page, dest_virt_page);
 
+
+				// Unmap all the temp stuff
 				mem_page_unmap((addr_t)src_virt_page);
 				mem_page_unmap((addr_t)dest_virt_page);
 
 				if (ret)
 				{
 					pr_error("page table clone failed\r\n");
+					mem_free_page(phy_page);
 					return -1;
 				}
 			}
+#endif
 		}
+
+#endif
 	}
 
+	dest_pdt[1023] = p_dest | READ_WRITE_KERNEL | PDT_PRESENT;
+
 	return 0;
+}
+
+void *mem_calloc_pdt(addr_t *p_addr)
+{
+
+	*p_addr = mem_get_page();
+	void *v_addr;
+
+	if (!p_addr)
+	{
+		pr_error("No more physical space\r\n");
+		return NULL;
+	}
+
+	v_addr = mem_page_map_kernel(*p_addr, 1, READ_WRITE_USER);
+
+	if (!v_addr)
+	{
+		pr_error("No more virtual space\r\n");
+		mem_free_page(*p_addr);
+		return NULL;
+	}
+
+	memset(v_addr, 0, PAGE_SIZE);
+	pr_debug("New PDT: physical: 0x%X, virtual: 0x%X\r\n", *p_addr, v_addr);
+	return v_addr;
 }
 

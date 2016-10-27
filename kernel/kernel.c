@@ -38,7 +38,7 @@
 #include <acpica/acpi.h>
 #include <kbd.h>
 #include <mmodules.h>
-
+#include <process.h>
 void kmain(void)
 {
 	extern uint32_t magic;
@@ -61,7 +61,7 @@ void kmain(void)
 	cpu_init();
 	mem_init(mbi);
 
-//	ksymbol_init(mbi);
+	ksymbol_init(mbi);
 
 	vga_init();
 	vga_clear_screen();
@@ -88,7 +88,14 @@ void kmain(void)
 	}
 
 #endif
-	printk("Bla Bla\r\n");
+
+
+	extern task_t init_task;
+
+	task_t *new_task = clone(&init_task);
 
 	while (1);
+
+	printk("Bla Bla\r\n");
+
 }

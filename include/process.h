@@ -58,5 +58,6 @@ typedef struct
 
 } task_t;
 
+task_t *clone(task_t *parent);
 
 #endif /* end of include guard: PROCESS_H_98R63AWS */

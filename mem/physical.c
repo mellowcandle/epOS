@@ -25,7 +25,7 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-
+#define DEBUG
 /*
  * Memory map:
  *
@@ -201,7 +201,7 @@ addr_t mem_get_pages(uint32_t count)
 	if (found)
 	{
 		addr = (page_start * PAGE_SIZE) + physmem.phys_start;
-//		printk("mem_get_pages: found %u continous pages starting from 0x%x\r\n", count, addr);
+		pr_debug("mem_get_pages: found %u continous pages starting from 0x%x\r\n", count, addr);
 
 		for (uint32_t i = page_start; i <= page_end; i++)
 		{
