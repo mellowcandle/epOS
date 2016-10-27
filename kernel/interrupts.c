@@ -43,8 +43,7 @@ void register_interrupt_handler(uint8_t n, isr_t handler)
 // This gets called from our ASM interrupt handler stub.
 void isr_handler(registers_t regs)
 {
-	FUNC_ENTER();
-	printk("Recieved interrupt number: %u\r\n", regs.int_no);
+	pr_debug("Recieved interrupt number: %u\r\n", regs.int_no);
 
 	if (interrupt_handlers[regs.int_no] != 0)
 	{
@@ -52,14 +51,11 @@ void isr_handler(registers_t regs)
 		handler(regs);
 	}
 
-	FUNC_LEAVE();
 }
 
 // This gets called from our ASM interrupt handler stub.
 void irq_handler(registers_t regs)
 {
-	FUNC_ENTER();
-
 	if (interrupt_handlers[regs.int_no] != 0)
 	{
 		isr_t handler = interrupt_handlers[regs.int_no];
@@ -68,19 +64,17 @@ void irq_handler(registers_t regs)
 
 	apic_eoi();
 	pr_debug("Recieved IRQ number: %u\r\n", regs.int_no);
-
-	FUNC_LEAVE();
 }
 
 void irq_reg_dump(registers_t *regs)
 {
-	printk("\r\n**************************************************\r\n");
-	printk("EIP: 0x%x CS: 0x%x EFLAGS: 0x%x\r\n",
+	printk("\r\n**************************************************************************************\r\n");
+	printk("EIP: 0x%.8x CS:  0x%.8x EFLAGS: 0x%.8x\r\n",
 	       regs->eip, regs->cs, regs->eflags);
-	printk("DS: 0x%x EDI: 0x%x ESI: 0x%x EBP: 0x%x EBX: 0x%x\r\n",
+	printk("DS:  0x%.8x EDI: 0x%.8x ESI:    0x%.8x EBP:     0x%.8x EBX: 0x%.8x\r\n",
 	       regs->ds, regs->edi, regs->esi, regs->ebp, regs->ebx);
-	printk("EDX: 0x%x ECX: 0x%x EAX: 0x%x USERESP: 0x%x SS: 0x%x\r\n",
+	printk("EDX: 0x%.8x ECX: 0x%.8x EAX:    0x%.8x USERESP: 0x%.8x SS:  0x%x\r\n",
 	       regs->edx, regs->ecx, regs->eax, regs->useresp, regs->ss);
-	printk("\r\n**************************************************\r\n");
+	printk("\r\n**************************************************************************************\r\n");
 }
 
