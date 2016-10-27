@@ -24,6 +24,8 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
+//#define DEBUG
+
 #include <elf.h>
 #include <boot/multiboot.h>
 #include <mem/memory.h>
@@ -41,7 +43,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 	elf_section_header_t *sh = (elf_section_header_t *)elf_sec->addr;
 	uint32_t shstrtab = sh[elf_sec->shndx].addr;
 
-	mem_identity_map(PAGE_ALIGN_DOWN(shstrtab), 0);
+	mem_identity_map(PAGE_ALIGN_DOWN(shstrtab), READ_WRITE_KERNEL);
 
 	for (i = 0; i < elf_sec->num; i++)
 	{
@@ -52,7 +54,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 			elf->strtab = (const char *)sh[i].addr;
 			elf->strtabsz = sh[i].size;
 			pr_debug("Identity maping: 0x%x pages: %u\r\n", (addr_t) elf->strtab, divide_up(elf->strtabsz, PAGE_SIZE));
-			mem_identity_map_multiple(PAGE_ALIGN_DOWN((addr_t)elf->strtab), 0, divide_up(elf->strtabsz, PAGE_SIZE));
+			mem_identity_map_multiple(PAGE_ALIGN_DOWN((addr_t)elf->strtab), READ_WRITE_KERNEL, divide_up(elf->strtabsz, PAGE_SIZE));
 		}
 
 		if (!strcmp(name, ".symtab"))
@@ -60,7 +62,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 			elf->symtab = (elf_symbol_t *)sh[i].addr;
 			elf->symtabsz = sh[i].size;
 			pr_debug("Identity maping: 0x%x pages: %u\r\n", (addr_t) elf->symtab, divide_up(elf->symtabsz, PAGE_SIZE));
-			mem_identity_map_multiple(PAGE_ALIGN_DOWN((addr_t)elf->symtab), 0, divide_up(elf->symtabsz, PAGE_SIZE));
+			mem_identity_map_multiple(PAGE_ALIGN_DOWN((addr_t)elf->symtab), READ_WRITE_KERNEL, divide_up(elf->symtabsz, PAGE_SIZE));
 		}
 	}
 
@@ -109,7 +111,7 @@ void ksymbol_init(multiboot_info_t *mbi)
 	pr_debug("multiboot header: sections %u size %u addr: 0x%x shndx %u\r\n",
 	         elf_sec->num, elf_sec->size, elf_sec->addr, elf_sec->shndx);
 
-	mem_identity_map_multiple(PAGE_ALIGN_DOWN(elf_sec->addr), 0, divide_up(elf_sec->size, PAGE_SIZE));
+	mem_identity_map_multiple(PAGE_ALIGN_DOWN(elf_sec->addr), READ_WRITE_KERNEL, divide_up(elf_sec->size, PAGE_SIZE));
 	elf_from_multiboot(elf_sec, &kernel_elf);
 }
 
