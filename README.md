@@ -1,8 +1,6 @@
 # epOS, an eduational Intel 8086 32bit Operating system by Ramon Fried (2013-2016)
 
-[![Build Status](https://travis-ci.org/mellowcandle/epOS.svg?branch=master)](https://travis-ci.org/mellowcandle/epOS)
-
-<a href="https://scan.coverity.com/projects/mellowcandle-epos">
+[![Build Status](https://travis-ci.org/mellowcandle/epOS.svg?branch=master)](https://travis-ci.org/mellowcandle/epOS) <a href="https://scan.coverity.com/projects/mellowcandle-epos">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/10219/badge.svg"/>
 </a>
@@ -15,14 +13,15 @@
 * Paging enabled
 * ACPICA
 * APIC/IOAPIC
-* PIT timer
+* APIC timer
+* Complete vsprintf implementation (no floats :))
 
 ## In Progress
 * PS/2 Keyboard driver (8042)
+* Scheduler
 * Ring 3 task execution
 
 ## Todo's
 
 * Add testing framework
-* printk: Handle width specifiers
 
