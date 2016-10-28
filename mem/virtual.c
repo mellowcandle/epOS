@@ -34,7 +34,7 @@
  * 0xE0000000........... Unused (for future use)
  *
  */
-#define DEBUG
+//#define DEBUG
 
 #include <mem/memory.h>
 #include <cpu.h>
@@ -126,7 +126,6 @@ void mem_switch_page_directory(addr_t new_dir)
 	disable_irq();
 	__asm volatile("mov %0, %%cr3":: "r"(new_dir));
 
-	while (1);
 
 	FUNC_LEAVE();
 
@@ -567,8 +566,6 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 	{
 		/* Skip if nothing there */
 
-		dest_pdt[i] = src_pdt[i];
-#if 0
 		pr_debug("i=%u src_pdt = %x\r\n", i, src_pdt[i]);
 
 		if (!(src_pdt[i] & PDT_PRESENT))
@@ -577,19 +574,13 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 		}
 		else
 		{
-			if (!(src_pdt[i] & PDT_HUGE_PAGE))
+			if ((src_pdt[i] & PDT_HUGE_PAGE))
 			{
 				//Huge pages are for kernel, we allow write on these
 				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE | PDT_HUGE_PAGE;
 				pr_debug("Huge page !!\r\n");
 			}
 			else
-			{
-				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE;
-				pr_debug("Regular page !!\r\n");
-			}
-
-#if 0
 			{
 				/* User page, copy that */
 				phy_page = mem_get_page();
@@ -652,10 +643,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 					return -1;
 				}
 			}
-#endif
 		}
-
-#endif
 	}
 
 	dest_pdt[1023] = p_dest | READ_WRITE_KERNEL | PDT_PRESENT;

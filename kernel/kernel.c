@@ -94,8 +94,9 @@ void kmain(void)
 
 	task_t *new_task = clone(&init_task);
 
-	while (1);
 
 	printk("Bla Bla\r\n");
+
+	while (1);
 
 }
