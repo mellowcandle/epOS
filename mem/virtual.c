@@ -196,7 +196,8 @@ static addr_t mem_find_kernel_place(int count)
 	addr_t addr;
 	int n = 0;
 	bool begin = false;
-	uint32_t start_i, start_j;
+	uint32_t start_i = 0;
+	uint32_t start_j = 0;
 
 	/*  Algorithm:
 	 *  This is pretty easy. we search the PDE & PDT for the first matching "request" pages.
@@ -311,7 +312,6 @@ void mem_init(multiboot_info_t *mbi)
 			if (mmap->len > total_memory)
 			{
 				total_memory = mmap->len;
-				physical_start = mmap->addr;
 			}
 		}
 
@@ -654,10 +654,16 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 void *mem_calloc_pdt(addr_t *p_addr)
 {
 
+	if (!p_addr)
+	{
+		pr_error("NULL ptr\r\n");
+		return NULL;
+	}
+
 	*p_addr = mem_get_page();
 	void *v_addr;
 
-	if (!p_addr)
+	if (!*p_addr)
 	{
 		pr_error("No more physical space\r\n");
 		return NULL;
