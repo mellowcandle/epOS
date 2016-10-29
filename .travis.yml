@@ -29,6 +29,6 @@ addons:
       name: "mellowcandle/epOS"
       description: "Build submitted via Travis CI"
     notification_email: ramon.fried@gmail.com
-    build_command_prepend: "make clean"
-    build_command:   "make -j 4"
+    build_command_prepend: "make clean; make prepare"
+    build_command:   "make -j 4 kernel.bin"
     branch_pattern: coverity_scan
