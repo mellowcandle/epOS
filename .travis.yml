@@ -23,6 +23,6 @@ addons:
       name: mellowcandle/epOS
       description: Build submitted via Travis CI
     notification_email: ramon.fried@gmail.com
-    build_command_prepend: make clean; make prepare
+    build_command_prepend: cov-configure --template --comptype gcc --compiler i686-elf-gcc; make clean; make prepare
     build_command: make -j 4 kernel.bin
     branch_pattern: coverity_scan
