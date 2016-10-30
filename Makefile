@@ -39,7 +39,7 @@ ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
-all: kernel.iso cscope
+all: kernel.iso libc cscope
 
 prepare:
 	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
@@ -69,13 +69,13 @@ lines:
 	@cloc --exclude-dir=toolchain,kernel/drivers/acpi/acpica --exclude-lang=XML,D,Markdown,make,Python,DTD .
 
 multiboot:
-	@$(MAKE) -C kernel
+	@$(MAKE) --no-print-directory -C kernel
 
 libc:
-	@$(MAKE) -C libc
+	@$(MAKE) --no-print-directory -C libc
 
 clean:
-	@$(MAKE) -C kernel clean
-	@$(MAKE) -C libc clean
+	@$(MAKE) --no-print-directory -C kernel clean
+	@$(MAKE) --no-print-directory -C libc clean
 
 

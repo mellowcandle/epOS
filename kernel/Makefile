@@ -60,10 +60,10 @@ clean:
 	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.map
 
 .c.o:
-	@echo "(CC) $@"
+	@echo "EPOS - (CC) $@"
 	@$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
 
 .s.o:
-	@echo "(AS) $@"
+	@echo "EPOS - (AS) $@"
 	@$(ASM) -f elf -o $@ $<
 
