@@ -1,5 +1,9 @@
+
+#include <string.h>
+
 int main(int argc, char *argv[])
 {
+
 
 here:
 	__asm(".intel_syntax noprefix");

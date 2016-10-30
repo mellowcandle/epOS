@@ -14,3 +14,4 @@ toolchain/i686-elf-4.9.1-Linux-x86_64/
 bochsdbg.txt
 bochsout.txt
 serial.txt
+libc/libc.a

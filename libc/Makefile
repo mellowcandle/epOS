@@ -23,27 +23,33 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: program
+.PHONY: all clean
 
-TOOLCHAIN_PATH = ../toolchain/i686-elf-4.9.1-Linux-x86_64
-CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
-LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
-ASM	= nasm
-WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
-CFLAGS := -std=gnu99  -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -c
-INCLUDES := -I../libc
-all: program
+SRCFILES := $(shell find . -type f -name "*.c")
+SRCFILES += $(shell find . -type f -name "*.s")
 
-OBJFILES := program.o
+OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
+OBJFILES := $(patsubst %.s,%.o,$(OBJFILES))
+DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
+
+WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts
+CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding -fstack-protector-strong $(WARNINGS)
+
+-include $(dep)   # include all dep files in the makefile
+
+all: $(OBJFILES)
+	@$(AR) rcs libc.a $<
+
+%.d: %.c
+	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
 .c.o:
-	@echo "(CC) $@"
-	@$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
+	@echo "LIBC - (CC) $@"
+	@$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
 
 .s.o:
-	@echo "(AS) $@"
+	@echo "LIBC - (AS) $@"
 	@$(ASM) -f elf -o $@ $<
 
-program: $(OBJFILES) ../libc/libc.a
-
-	$(LD) -T linker.ld -melf_i386 -o $@ $^  # emulate 32 bits ELF, the binary output is specified
+clean:
+	$(RM) $(OBJFILES) $(DEPFILES) libc.a
