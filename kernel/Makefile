@@ -25,7 +25,8 @@
 
 .PHONY: all clean dist modules testdrivers todolist cscope cscope_update multiboot style lines prepare
 
-TOOLCHAIN_PATH = toolchain/i686-elf-4.9.1-Linux-x86_64
+TOOLCHAIN_PATH = ../toolchain/i686-elf-4.9.1-Linux-x86_64
+ISODIR_PATH = ../isodir
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
 LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 ASM	= nasm
@@ -55,7 +56,7 @@ DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
 all: kernel.iso cscope
 
 kernel.bin: $(OBJFILES)
-	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T make/linker.ld -Wl,-Map=kernel.map -ffreestanding -nostdlib -o $@ $^ -lgcc
+	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T linker.ld -Wl,-Map=kernel.map -ffreestanding -nostdlib -o $@ $^ -lgcc
 
 
 multiboot: kernel.bin
@@ -65,13 +66,13 @@ multiboot: kernel.bin
 
 
 kernel.iso: multiboot
-	@rm -rf isodir
-	@mkdir -p isodir/boot/grub
-	@mkdir -p isodir/modules
-	@cp kernel.bin isodir/boot/kernel.bin
-	@cp make/grub.cfg isodir/boot/grub/grub.cfg
-	@cp modules/program isodir/modules
-	@grub-mkrescue -o kernel.iso isodir > /dev/null 2>&1
+	@rm -rf $(ISODIR_PATH)
+	@mkdir -p $(ISODIR_PATH)/boot/grub
+	@mkdir -p $(ISODIR_PATH)/modules
+	@cp kernel.bin $(ISODIR_PATH)/boot/kernel.bin
+	@cp ../make/grub.cfg $(ISODIR_PATH)/boot/grub/grub.cfg
+	@cp ../modules/program $(ISODIR_PATH)/modules
+	@grub-mkrescue -o kernel.iso $(ISODIR_PATH) > /dev/null 2>&1
 
 clean:
 	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.img kernel.map
@@ -104,4 +105,4 @@ modules:
 	@$(ASM) -f bin modules/program.s -o modules/program
 
 prepare:
-	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
+	@tar xvf ../toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C ../toolchain

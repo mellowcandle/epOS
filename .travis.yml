@@ -6,8 +6,9 @@ language: c
 compiler: gcc
 sudo: true
 script:
-- make prepare
-- make kernel.bin
+  - cd kernel
+  - make prepare
+  - make kernel.bin
 env:
   global:
   - secure: qaV69OQ4rAaKSU+P/I3bxhG5sUuKH7KsTiPmcfPFQK+XCi9MSPveCIAP6sK+04LpkXLVKBDcHZigQK4mnnzfSAGDkyQVKCEMgZw9gmg9uqG2qDFVMd9msytyw/gcFCqeuGOtVrQt+J+Uv1dagAGWOwo31GSGHevRt6awm00iwObQY+Un/7iPF5Ac2NgPMuRr7FUC/mMf9I2Yst+iNHANR71HgEPSzrSkB5J7Qb/Y3O0z0iDRzWnjcLsBQBkeUF95QnSljh+hxKVAoCcv7uhlZNFVDgpVndd6lbb5C19sXdIdf38S4I+r/0ZjWM3e8+gmtEOeWOrV9Jghk7rXGWFDq0Vfr8No2IAvQEHmEZ+LklcvpsX0qpMc68kfwfFevTQUFuK97m4Vpdzmtr7ZU3s9CK/oXd5L10tvIhyKQQdu8u6jwW3R7bwTJHwNmvO6JuzUpK6xQtvEpJAap1k3c93RNy5oLEooGIyFYGOdABSHKRKVOu6POGCGfMXIjrXN7II1Qw7k8lIPh6u5ESjZY0qid0azoKgHv+htKWG0h0xZepro7ZBB7TRZL3F6Cnpl1BJnRojGtCy5GV2PKgvx/T41r377VLBb21Cvq/bvjlXiN/uyhAmE5iH9VFLymd355Ordm1fTkpIhpdzvfcQWr5X+cQLfItjCJbzArLzumf1snaI=
@@ -23,6 +24,6 @@ addons:
       name: mellowcandle/epOS
       description: Build submitted via Travis CI
     notification_email: ramon.fried@gmail.com
-    build_command_prepend: cov-configure --template --comptype gcc --compiler i686-elf-gcc; make clean; make prepare
-    build_command: make -j 4 kernel.bin
+    build_command_prepend: cov-configure --template --comptype gcc --compiler i686-elf-gcc; cd kernel; make clean; make prepare
+    build_command: cd kernel; make -j 4 kernel.bin
     branch_pattern: coverity_scan
