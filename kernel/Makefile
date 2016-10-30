@@ -25,16 +25,7 @@
 
 .PHONY: all clean dist modules testdrivers todolist cscope cscope_update multiboot style lines prepare
 
-TOOLCHAIN_PATH = ../toolchain/i686-elf-4.9.1-Linux-x86_64
-ISODIR_PATH = ../isodir
-CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
-LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
-ASM	= nasm
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts
-
-ASTYLE ?= astyle
-ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
-	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding -fstack-protector-strong $(WARNINGS)
 
@@ -53,7 +44,7 @@ DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
 %.d: %.c
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
-all: kernel.iso cscope
+all: multiboot
 
 kernel.bin: $(OBJFILES)
 	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T linker.ld -Wl,-Map=kernel.map -ffreestanding -nostdlib -o $@ $^ -lgcc
@@ -65,17 +56,8 @@ multiboot: kernel.bin
 	@echo "Multiboot header detected."
 
 
-kernel.iso: multiboot
-	@rm -rf $(ISODIR_PATH)
-	@mkdir -p $(ISODIR_PATH)/boot/grub
-	@mkdir -p $(ISODIR_PATH)/modules
-	@cp kernel.bin $(ISODIR_PATH)/boot/kernel.bin
-	@cp ../make/grub.cfg $(ISODIR_PATH)/boot/grub/grub.cfg
-	@cp ../modules/program $(ISODIR_PATH)/modules
-	@grub-mkrescue -o kernel.iso $(ISODIR_PATH) > /dev/null 2>&1
-
 clean:
-	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.img kernel.map
+	$(RM) $(OBJFILES) $(DEPFILES) kernel.bin kernel.map
 
 .c.o:
 	@echo "(CC) $@"
@@ -85,24 +67,3 @@ clean:
 	@echo "(AS) $@"
 	@$(ASM) -f elf -o $@ $<
 
-cscope:
-	@echo "Preparing cscope tags"
-	@find $(PROJDIRS) -name *.[csh] > cscope.files
-	@cscope -b -q -k
-
-cscope_update:
-	@echo "Updating cscope tags"
-	@cscope -b -q -k
-
-style:
-	@find $(PROJDIRS) -name *.[ch] | xargs ${ASTYLE} ${ASTYLE_CONFIG}
-
-lines:
-	@cloc --exclude-dir=toolchain,drivers/acpi/acpica --exclude-lang=XML,D,Markdown,make,Python,DTD .
-
-modules:
-	@echo "Building multiboot modules:"
-	@$(ASM) -f bin modules/program.s -o modules/program
-
-prepare:
-	@tar xvf ../toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C ../toolchain
