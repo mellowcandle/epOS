@@ -33,12 +33,12 @@ OBJFILES := $(patsubst %.s,%.o,$(OBJFILES))
 DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
 
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts
-CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding -fstack-protector-strong $(WARNINGS)
+CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
 
 -include $(dep)   # include all dep files in the makefile
 
 all: $(OBJFILES)
-	@$(AR) rcs libc.a $<
+	$(AR) rcs libc.a $(OBJFILES)
 
 %.d: %.c
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
