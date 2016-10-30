@@ -44,6 +44,6 @@ OBJFILES := program.o
 	@echo "(AS) $@"
 	@$(ASM) -f elf -o $@ $<
 
-program: $(OBJFILES) ../libc/libc.a
+program: $(OBJFILES)
 
-	$(LD) -T linker.ld -melf_i386 -o $@ $^  # emulate 32 bits ELF, the binary output is specified
+	$(LD) -T linker.ld -melf_i386 -L../libc -lc -o $@ $^  # emulate 32 bits ELF, the binary output is specified
