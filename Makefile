@@ -23,7 +23,7 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: all clean dist modules cscope multiboot style lines prepare
+.PHONY: all clean dist modules cscope multiboot style lines prepare libc
 
 CWD = $(shell pwd)
 export TOOLCHAIN_PATH = $(CWD)/toolchain/i686-elf-4.9.1-Linux-x86_64
