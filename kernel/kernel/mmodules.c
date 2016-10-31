@@ -24,7 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-//#define DEBUG
+#define DEBUG
 
 #include <mmodules.h>
 #include <printk.h>
@@ -47,14 +47,14 @@ static void mmodules_run(multiboot_module_t *module)
 	pages_count = module->mod_end - module->mod_start;
 	pages_count = divide_up(pages_count, PAGE_SIZE);
 
-	mem_identity_map_multiple(module->mod_start, 0, pages_count);
+	mem_map_con_pages(PAGE_ALIGN_DOWN(module->mod_start), pages_count, 0, READ_WRITE_KERNEL);
 
 	/* Run the module here */
-	start_program = (call_module_t) module->mod_start;
-	pr_debug("moduel start address: %x\r\n", (int) start_program);
+	start_program = (call_module_t) 0;//module->mod_start;
+	pr_debug("module start address: %x\r\n", (int) start_program);
 	start_program();
 
-	mem_page_unmap_multiple(module->mod_start, pages_count);
+	mem_page_unmap_multiple(0, pages_count);
 
 	FUNC_LEAVE();
 }
@@ -74,7 +74,7 @@ void mmodules_parse(multiboot_info_t *mbi)
 
 	// Identity map module description
 
-	mem_identity_map(mbi->mods_addr, 0);
+	mem_identity_map(PAGE_ALIGN_DOWN(mbi->mods_addr), READ_WRITE_KERNEL);
 
 	for (i = 0; i < mbi->mods_count; i++)
 	{

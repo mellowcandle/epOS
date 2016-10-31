@@ -1,15 +1,10 @@
 
-#include <string.h>
-#include <stdio.h>
+int printf(const char *format, ...);
 
 int main(int argc, char *argv[])
 {
 
-	char buffer[1024];
-	
-	memset(buffer,0,1024);
-	
-	//	printf("Hello from user space");
+	printf("Hello from user space\r\n");
 here:
 	__asm(".intel_syntax noprefix");
 

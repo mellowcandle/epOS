@@ -77,7 +77,11 @@ void kmain(void)
 		kbd_8042_init();
 	}
 
-//	mmodules_parse(mbi);
+	mmodules_parse(mbi);
+
+	printk("Bla Bla\r\n");
+
+	while (1);
 
 #if 0
 
@@ -95,8 +99,5 @@ void kmain(void)
 	task_t *new_task = clone(&init_task);
 
 
-	printk("Bla Bla\r\n");
-
-	while (1);
 
 }

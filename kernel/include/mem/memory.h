@@ -113,7 +113,6 @@ static inline void mem_tlb_flush(void *m)
 void mem_init(multiboot_info_t *mbi);
 addr_t mem_get_pages(uint32_t count);
 void mem_free_pages(addr_t addr, uint32_t count);
-int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual);
 int mem_unmap_con_pages(addr_t virtual, uint32_t count);
 
 static inline void  mem_free_page(addr_t addr)
@@ -152,6 +151,17 @@ static inline int mem_identity_map_multiple(addr_t addr, int flags, int count)
 	}
 
 	return 0;
+}
+
+static inline int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual, int flags)
+{
+	for (uint32_t i = 0 ; i < count; i++)
+	{
+		mem_page_map(physical + (i * PAGE_SIZE), virtual + (i * PAGE_SIZE), flags);
+	}
+
+	return 0;
+
 }
 
 static inline void *mem_page_map_kernel_single(addr_t physical, int flags)

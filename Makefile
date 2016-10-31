@@ -39,14 +39,14 @@ ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
-all: kernel.iso libc cscope
+all: kernel.iso libc modules cscope
 
 prepare:
 	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
 
-modules:
+modules: libc
 	@echo "Building multiboot modules:"
-	@$(ASM) -f bin modules/program.s -o modules/program
+	@$(MAKE) --no-print-directory -C modules
 
 kernel.iso: multiboot
 	@rm -rf $(ISODIR_PATH)
@@ -77,5 +77,6 @@ libc:
 clean:
 	@$(MAKE) --no-print-directory -C kernel clean
 	@$(MAKE) --no-print-directory -C libc clean
+	@$(MAKE) --no-print-directory -C modules clean
 
 

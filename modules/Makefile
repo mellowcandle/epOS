@@ -46,4 +46,7 @@ OBJFILES := program.o
 
 program: $(OBJFILES)
 
-	$(LD) -T linker.ld -melf_i386 -L../libc -lc -o $@ $^  # emulate 32 bits ELF, the binary output is specified
+	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a libgcc.a # emulate 32 bits ELF, the binary output is specified
+
+clean:
+	rm -rf $(OBFILES) program

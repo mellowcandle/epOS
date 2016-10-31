@@ -44,9 +44,9 @@ flags = [
 # For a C project, you would set this to 'c' instead of 'c++'.
 '-x',
 'c',
-'-Iinclude',
-'-Iarch/x86/include',
-'-Idrivers/include',
+'-Ikernel/include',
+'-Ikernel/arch/x86/include',
+'-Ikernel/drivers/include',
 ]
 
 
