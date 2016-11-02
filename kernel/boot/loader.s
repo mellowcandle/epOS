@@ -151,7 +151,8 @@ idt_flush:
 global tss_flush
 tss_flush:
 
-	mov ax, 0x2B
+	mov ax, 5 << 3
+; 5 is the TSS entry in GDT, if it ever changes, we need to change this value also
 	ltr ax
     ret
 
