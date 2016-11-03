@@ -150,4 +150,8 @@ void gdt_init()
 	tss_flush();
 }
 
-
+void tss_set_kernel_stack(uint16_t segsel, uint32_t vaddr)
+{
+    tss.esp0 = vaddr;
+    tss.ss0 = segsel;
+}
