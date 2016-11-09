@@ -132,7 +132,7 @@ void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages, bool hw)
 
 	for (size_t i = 0; i < count; i++)
 	{
-		mem_page_map(physical + i * (PAGE_SIZE), heap->location + i * (PAGE_SIZE), READ_WRITE_KERNEL);
+		mem_page_map(physical + i * (PAGE_SIZE), (void *) heap->location + i * (PAGE_SIZE), READ_WRITE_KERNEL);
 	}
 
 	ret_address = heap->location;

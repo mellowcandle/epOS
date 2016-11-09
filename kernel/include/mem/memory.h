@@ -125,12 +125,12 @@ static inline addr_t mem_get_page()
 	return mem_get_pages(1);
 }
 
-int mem_page_map(addr_t physical, addr_t virtual, int flags);
+int mem_page_map(addr_t physical, void *virtual, int flags);
 void *mem_page_map_kernel(addr_t physical, int count, int flags);
 
-void mem_page_unmap(addr_t virtual);
+void mem_page_unmap(void *virtual);
 
-static inline void mem_page_unmap_multiple(addr_t virtual, int count)
+static inline void mem_page_unmap_multiple(void *virtual, int count)
 {
 	for (int i = 0; i < count; i++)
 	{
@@ -140,14 +140,14 @@ static inline void mem_page_unmap_multiple(addr_t virtual, int count)
 
 static inline int mem_identity_map(addr_t addr, int flags)
 {
-	return mem_page_map(addr, addr, flags);
+	return mem_page_map(addr, (void *)addr, flags);
 }
 
 static inline int mem_identity_map_multiple(addr_t addr, int flags, int count)
 {
 	for (int i = 0 ; i < count; i++)
 	{
-		mem_page_map(addr + (i * PAGE_SIZE), addr + (i * PAGE_SIZE), flags);
+		mem_page_map(addr + (i * PAGE_SIZE), (void *) addr + (i * PAGE_SIZE), flags);
 	}
 
 	return 0;
@@ -157,7 +157,7 @@ static inline int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virt
 {
 	for (uint32_t i = 0 ; i < count; i++)
 	{
-		mem_page_map(physical + (i * PAGE_SIZE), virtual + (i * PAGE_SIZE), flags);
+		mem_page_map(physical + (i * PAGE_SIZE), (void *)virtual + (i * PAGE_SIZE), flags);
 	}
 
 	return 0;

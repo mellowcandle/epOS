@@ -82,5 +82,5 @@ void mmodules_parse(multiboot_info_t *mbi)
 		mmodules_run(module);
 	}
 
-	mem_page_unmap(mbi->mods_addr);
+	mem_page_unmap((void *)mbi->mods_addr);
 }

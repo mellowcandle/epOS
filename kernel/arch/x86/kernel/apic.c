@@ -171,7 +171,7 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 	/* Idendity map the APIC base */
 
 	lapic.v_addr = (void *) lapic.p_addr;
-	mem_page_map(lapic.p_addr, (addr_t) lapic.v_addr, READ_WRITE_KERNEL);
+	mem_page_map(lapic.p_addr, lapic.v_addr, READ_WRITE_KERNEL);
 
 	pr_info("APIC Base mapping 0x%x -> 0x%x\r\n", lapic.p_addr, (addr_t) lapic.v_addr);
 
@@ -216,7 +216,7 @@ void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 	ioapic->v_addr = (void *) address; // Identity map
 	ioapic->global_irq_base = irq_base;
 
-	mem_page_map(ioapic->p_addr, (addr_t) ioapic->v_addr, READ_WRITE_KERNEL);
+	mem_page_map(ioapic->p_addr, ioapic->v_addr, READ_WRITE_KERNEL);
 
 	pr_info("IOAPIC Base mapping 0x%x -> 0x%x\r\n", ioapic->p_addr, (addr_t) ioapic->v_addr);
 	pr_info("IOAPIC IRQ Base: %u\r\n", ioapic->global_irq_base);

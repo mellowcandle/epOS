@@ -48,7 +48,7 @@ modules: libc
 	@echo "Building multiboot modules:"
 	@$(MAKE) --no-print-directory -C modules
 
-kernel.iso: multiboot
+kernel.iso: multiboot modules
 	@rm -rf $(ISODIR_PATH)
 	@mkdir -p $(ISODIR_PATH)/boot/grub
 	@mkdir -p $(ISODIR_PATH)/modules

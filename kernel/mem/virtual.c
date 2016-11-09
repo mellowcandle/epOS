@@ -113,7 +113,7 @@ void dump_pdt();
 void page_fault_handler(registers_t regs);
 void mem_heap_init();
 void mem_phys_init(addr_t phy_start, uint32_t total_pages);
-static addr_t mem_find_kernel_place(int request);
+static void *mem_find_kernel_place(int request);
 
 
 void mem_switch_page_directory(addr_t new_dir)
@@ -170,7 +170,7 @@ void dump_pdt()
 }
 void *mem_page_map_kernel(addr_t physical, int count, int flags)
 {
-	addr_t addr = mem_find_kernel_place(count);
+	void *addr = mem_find_kernel_place(count);
 
 	if (addr)
 	{
@@ -190,10 +190,10 @@ void *mem_page_map_kernel(addr_t physical, int count, int flags)
 	return NULL;
 }
 
-static addr_t mem_find_kernel_place(int count)
+static void *mem_find_kernel_place(int count)
 {
 	char *ptr;
-	addr_t addr;
+	void *addr;
 	int n = 0;
 	bool begin = false;
 	uint32_t start_i = 0;
@@ -267,7 +267,7 @@ static addr_t mem_find_kernel_place(int count)
 
 		if (n >= count)
 		{
-			addr = PDE_INDEX_TO_ADDR(start_i) + (start_j * PAGE_SIZE);
+			addr = (void *) PDE_INDEX_TO_ADDR(start_i) + (start_j * PAGE_SIZE);
 			pr_debug("Found place for %u pages starting from 0x%x!\r\n", count, addr);
 			return addr;
 		}
@@ -392,7 +392,7 @@ void page_fault_handler(registers_t regs)
 	panic();
 }
 
-int mem_page_map(addr_t physical, addr_t virtual, int flags)
+int mem_page_map(addr_t physical, void *virtual, int flags)
 {
 
 	addr_t page;
@@ -403,11 +403,11 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 
 	assert(IS_PAGE_ALIGNED(physical));
 
-	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
+	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX((addr_t) virtual) * 0x1000));
 
 
 	// Check if the PDT exists
-	if (!(current_pdt[FRAME_TO_PDE_INDEX(virtual)] & PDT_PRESENT))
+	if (!(current_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PDT_PRESENT))
 	{
 		pr_debug("mem_map_page: PDT missing, creating and mapping\r\n");
 		page = mem_get_page();
@@ -415,7 +415,7 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 		mem_assert(page != 0);
 
 		// Put it in PDT
-		current_pdt[FRAME_TO_PDE_INDEX(virtual)] = page | PDT_PRESENT | PDT_ALLOW_WRITE;
+		current_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] = page | PDT_PRESENT | PDT_ALLOW_WRITE;
 		// Invalidate cache
 		mem_tlb_flush(access_ptr);
 		// Clear the PDE table
@@ -423,13 +423,13 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	}
 
 	// Insert the PTE.
-	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
+	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX((addr_t)virtual) * sizeof(uint32_t)));
 
 	if (*pte & PTE_PRESENT)
 	{
 		if ((*pte & PTE_ADDR_MASK) != physical)
 		{
-			pr_fatal("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
+			pr_fatal("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, (addr_t)virtual, flags);
 
 			while (1);
 		}
@@ -447,8 +447,59 @@ int mem_page_map(addr_t physical, addr_t virtual, int flags)
 	return 0;
 }
 
+int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int flags)
+{
 
-void mem_page_unmap(addr_t virtual)
+	addr_t page;
+	char *access_ptr;
+	uint32_t *pte;
+
+	pr_debug("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
+
+	assert(IS_PAGE_ALIGNED(physical));
+
+	// Check if the PDT exists
+	if (!(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PDT_PRESENT))
+	{
+		pr_debug("mem_map_page: PDT missing, creating and mapping\r\n");
+		page = mem_get_page();
+
+		mem_assert(page != 0);
+
+		// Put it in PDT
+		target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] = page | PDT_PRESENT | PDT_ALLOW_WRITE;
+
+		// Clear the PDE table
+		// Temporary map the page
+		access_ptr = mem_page_map_kernel(page, 1, READ_WRITE_KERNEL);
+		memset(access_ptr, 0, PAGE_SIZE);
+	}
+
+	// Insert the PTE.
+	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX((addr_t)virtual) * sizeof(uint32_t)));
+
+	if (*pte & PTE_PRESENT)
+	{
+		if ((*pte & PTE_ADDR_MASK) != physical)
+		{
+			pr_fatal("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, (addr_t)virtual, flags);
+
+			while (1);
+		}
+		else
+		{
+			pr_warn("Identical mapping detected\r\n");
+		}
+	}
+
+	*pte = physical | flags;
+
+	mem_page_unmap(access_ptr);
+	FUNC_LEAVE();
+	return 0;
+}
+
+void mem_page_unmap(void *virtual)
 {
 	char *access_ptr;
 	uint32_t *pte;
@@ -456,9 +507,9 @@ void mem_page_unmap(addr_t virtual)
 	//TODO: unmap page directory if necessary
 	FUNC_ENTER();
 
-	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX(virtual) * 0x1000));
+	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX((addr_t)virtual) * 0x1000));
 
-	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX(virtual) * sizeof(uint32_t)));
+	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX((addr_t)virtual) * sizeof(uint32_t)));
 
 	mem_assert(*pte & PTE_PRESENT);
 
@@ -514,7 +565,7 @@ static int clone_pt(void *source, void *dest)
 			if (!src_virt_page)
 			{
 				pr_error("Can't allocate page\r\n");
-				mem_page_unmap((addr_t)dest_virt_page);
+				mem_page_unmap(dest_virt_page);
 				mem_free_page(phy_page);
 				return -1;
 			}
@@ -538,8 +589,8 @@ static int clone_pt(void *source, void *dest)
 			dest_pte[i] = phy_page | flags;
 
 			// Unmap the temporary pages
-			mem_page_unmap((addr_t)dest_virt_page);
-			mem_page_unmap((addr_t)src_virt_page);
+			mem_page_unmap(dest_virt_page);
+			mem_page_unmap(src_virt_page);
 		}
 	}
 
@@ -607,7 +658,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				if (!dest_virt_page)
 				{
 					pr_error("Can't allocate page\r\n");
-					mem_page_unmap((addr_t)src_virt_page);
+					mem_page_unmap(src_virt_page);
 					mem_free_page(phy_page);
 					return -1;
 				}
@@ -633,8 +684,8 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 
 
 				// Unmap all the temp stuff
-				mem_page_unmap((addr_t)src_virt_page);
-				mem_page_unmap((addr_t)dest_virt_page);
+				mem_page_unmap(src_virt_page);
+				mem_page_unmap(dest_virt_page);
 
 				if (ret)
 				{
