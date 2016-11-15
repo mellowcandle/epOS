@@ -99,6 +99,7 @@ static inline int kheap_free(void *addr, int count)
 }
 
 
+void	 *kzalloc(size_t);
 void     *kmalloc(size_t);				//< The standard function.
 void     *krealloc(void *, size_t);		//< The standard function.
 void     *kcalloc(size_t, size_t);		//< The standard function.

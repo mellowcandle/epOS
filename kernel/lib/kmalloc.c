@@ -322,6 +322,18 @@ static struct boundary_tag *allocate_new_tag(unsigned int size)
 }
 
 
+void *kzalloc(size_t size)
+{
+	void *addr;
+	addr = kmalloc(size);
+
+	if (addr)
+	{
+		memset(addr, 0, size);
+	}
+
+	return addr;
+}
 
 void *kmalloc(size_t size)
 {
