@@ -24,6 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
+#define DEBUG
 
 #include <types.h>
 #include <mem/memory.h>
@@ -46,6 +47,7 @@ uint32_t get_next_pid()
 
 void prepare_init_task(void *physical, uint32_t count)
 {
+	FUNC_ENTER();
 	task_t *new = kzalloc(sizeof(task_t));
 
 	if (!new)
@@ -54,9 +56,11 @@ void prepare_init_task(void *physical, uint32_t count)
 		return;
 	}
 
+	pr_debug("Reached %d\r\n", __LINE__);
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
 	new->pdt_virt_addr = mem_calloc_pdt(&new->pdt_phy_addr);
+	pr_debug("Reached %d\r\n", __LINE__);
 
 	if (!new->pdt_virt_addr)
 	{
@@ -70,7 +74,10 @@ void prepare_init_task(void *physical, uint32_t count)
 		goto fail2;
 	}
 
+	pr_debug("Reached %d\r\n", __LINE__);
+
 	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
+	pr_debug("Reached %d\r\n", __LINE__);
 
 	// Allocate stack
 	new->stack_virt_addr = (void *) KERNEL_VIRTUAL_BASE - PAGE_SIZE;
@@ -82,11 +89,15 @@ void prepare_init_task(void *physical, uint32_t count)
 		goto fail3;
 	}
 
+	pr_debug("Reached %d\r\n", __LINE__);
+
 	// Map the stack
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
 
+	pr_debug("Reached %d\r\n", __LINE__);
 	scheduler_add_task(new);
 
+	FUNC_LEAVE();
 	return;
 
 fail3:
@@ -95,6 +106,8 @@ fail2:
 	mem_release_pdt(new->pdt_phy_addr, new->pdt_virt_addr);
 fail1:
 	kfree(new);
+
+	FUNC_LEAVE();
 }
 
 task_t *clone(task_t *parent)
@@ -128,4 +141,9 @@ task_t *clone(task_t *parent)
 fail:
 	kfree(new);
 	return NULL;
+}
+
+void switch_to_task(task_t *task)
+{
+
 }

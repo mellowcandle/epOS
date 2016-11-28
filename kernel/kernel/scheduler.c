@@ -43,3 +43,18 @@ void scheduler_remove_task(task_t *task)
 	list_remove_entry(&task->list);
 }
 
+static task_t *_scheduler_get_next_running_task()
+{
+	//TODO: Implement the scheduler here.
+	return list_first_entry(&running_tasks, task_t, list);
+}
+void scheduler_start()
+{
+	task_t *next_task;
+	next_task = _scheduler_get_next_running_task();
+	switch_to_task(next_task);
+
+	/* Should not get here */
+	while (1);
+}
+

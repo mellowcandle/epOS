@@ -33,6 +33,7 @@
 #include <bits.h>
 #include <elf.h>
 #include <lib/string.h>
+#include <process.h>
 
 typedef void (*call_module_t)(void);
 
@@ -41,20 +42,12 @@ static void mmodules_run(multiboot_module_t *module)
 {
 	FUNC_ENTER();
 	uint32_t pages_count;
-	call_module_t start_program;
 
 	pr_info("Module: 0x%x - 0x%x params: %s\r\n", module->mod_start, module->mod_end, (char *) module->cmdline);
 	pages_count = module->mod_end - module->mod_start;
 	pages_count = divide_up(pages_count, PAGE_SIZE);
 
-	mem_map_con_pages(PAGE_ALIGN_DOWN(module->mod_start), pages_count, 0, READ_WRITE_KERNEL);
-
-	/* Run the module here */
-	start_program = (call_module_t) 0;//module->mod_start;
-	pr_debug("module start address: %x\r\n", (int) start_program);
-	start_program();
-
-	mem_page_unmap_multiple(0, pages_count);
+	prepare_init_task(PAGE_ALIGN_DOWN(module->mod_start), pages_count);
 
 	FUNC_LEAVE();
 }

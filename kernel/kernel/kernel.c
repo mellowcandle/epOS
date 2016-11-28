@@ -38,7 +38,7 @@
 #include <acpica/acpi.h>
 #include <kbd.h>
 #include <mmodules.h>
-#include <process.h>
+#include <scheduler.h>
 void kmain(void)
 {
 	extern uint32_t magic;
@@ -82,7 +82,7 @@ void kmain(void)
 
 	printk("Bla Bla\r\n");
 
+	scheduler_start();
+
 	while (1);
-
-
 }

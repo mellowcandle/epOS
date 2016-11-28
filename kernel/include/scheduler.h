@@ -33,4 +33,5 @@
 void scheduler_add_task(task_t *task);
 void scheduler_remove_task(task_t *task);
 
+void scheduler_start();
 #endif /* end of include guard: SCHEDULER_H_WTDXB0FE */

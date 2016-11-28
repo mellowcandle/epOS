@@ -1,7 +1,8 @@
 
 int printf(const char *format, ...);
 
-int main(int argc, char *argv[])
+//int main(int argc, char *argv[])
+int main()
 {
 
 	printf("Hello from user space\r\n");
