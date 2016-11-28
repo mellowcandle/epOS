@@ -734,3 +734,19 @@ void *mem_calloc_pdt(addr_t *p_addr)
 	return v_addr;
 }
 
+void mem_release_pdt(addr_t p_addr, void *v_addr)
+{
+	if ((!p_addr) || (!v_addr))
+	{
+		pr_error("NULL ptr\r\n");
+	}
+
+	mem_free_page(p_addr);
+	mem_page_unmap(v_addr);
+
+}
+
+
+
+
+
