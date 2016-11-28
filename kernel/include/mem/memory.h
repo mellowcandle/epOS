@@ -128,6 +128,18 @@ static inline addr_t mem_get_page()
 int mem_page_map(addr_t physical, void *virtual, int flags);
 void *mem_page_map_kernel(addr_t physical, int count, int flags);
 
+int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int flags);
+
+static inline int mem_pages_map_pdt_multiple(uint32_t *target_pdt, addr_t physical, void *virtual, int count, int flags)
+{
+	for (int i = 0; i < count; i++)
+	{
+		mem_page_map_pdt(target_pdt, physical + (PAGE_SIZE * i), virtual + (PAGE_SIZE * i), flags);
+	}
+
+	return 0;
+}
+
 void mem_page_unmap(void *virtual);
 
 static inline void mem_page_unmap_multiple(void *virtual, int count)
@@ -191,6 +203,7 @@ addr_t virt_to_phys(void *addr);
 
 heap_t *get_kernel_heap();
 void *mem_calloc_pdt(addr_t *p_addr);
+void mem_release_pdt(addr_t p_addr, void *v_addr);
 int clone_pdt(void *v_source, void *v_dest, addr_t p_dest);
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
