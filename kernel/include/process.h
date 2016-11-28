@@ -30,6 +30,7 @@
 
 #include <types.h>
 #include <mem/memory.h>
+#include <lib/list.h>
 
 typedef struct
 {
@@ -47,15 +48,28 @@ typedef struct
 	uint32_t eip;
 } __attribute__((packed)) task_registers_t;
 
+typedef enum
+{
+	TASK_RUNNING = 0,
+	TASK_STOPPED
+} task_state_t;
+
 typedef struct
 {
 	uint32_t pid;
 	uint32_t parent_pid;
 
+	task_state_t state;
+
 	addr_t pdt_phy_addr;
 	void *pdt_virt_addr;
+
+	addr_t stack_phy_addr;
+	void *stack_virt_addr;
+
 	task_registers_t regs;
 
+	list_t list;
 } task_t;
 
 task_t *clone(task_t *parent);

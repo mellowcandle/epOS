@@ -25,64 +25,12 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#include <types.h>
-#include <boot/multiboot.h>
-#include <video/vga.h>
-#include <isr.h>
-#include <printk.h>
-#include <mem/memory.h>
-#include <cpu.h>
-#include <serial.h>
-#include <lib/list.h>
-#include <apic.h>
-#include <acpica/acpi.h>
-#include <kbd.h>
-#include <mmodules.h>
+#ifndef SCHEDULER_H_WTDXB0FE
+#define SCHEDULER_H_WTDXB0FE
+
 #include <process.h>
-void kmain(void)
-{
-	extern uint32_t magic;
-	extern void *mbd;
-	multiboot_info_t *mbi = mbd;
 
+void scheduler_add_task(task_t *task);
+void scheduler_remove_task(task_t *task);
 
-	init_serial();
-	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
-
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
-	{
-		/* Something went not according to specs. Print an error */
-		/* message and halt, but do *not* rely on the multiboot */
-		/* data structure. */
-		pr_fatal("Multiboot integrity check failed\r\n");
-		panic();
-	}
-
-	cpu_init();
-	mem_init(mbi);
-
-	ksymbol_init(mbi);
-
-	vga_init();
-	vga_clear_screen();
-
-	acpi_early_init();
-	enable_irq();
-
-	ticks_init();
-
-	if (kbd_8042_avail())
-	{
-		pr_info("8042 keyboard detected\r\n");
-		kbd_8042_init();
-	}
-
-	mmodules_parse(mbi);
-
-
-	printk("Bla Bla\r\n");
-
-	while (1);
-
-
-}
+#endif /* end of include guard: SCHEDULER_H_WTDXB0FE */

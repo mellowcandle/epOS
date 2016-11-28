@@ -30,24 +30,72 @@
 #include <printk.h>
 #include <kmalloc.h>
 #include <process.h>
+#include <scheduler.h>
 
-static uint32_t pid_counter = 1;
+static uint32_t pid_counter = 0;
 extern uint32_t *current_pdt;
+
+
 void mem_switch_page_directory(addr_t new_dir);
+
 
 uint32_t get_next_pid()
 {
 	return ++pid_counter;
 }
 
-task_t init_task =
+void prepare_init_task(void *physical, uint32_t count)
 {
-	1,
-	1,
-	0,
-	(void *) PDT_MIRROR_BASE,
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
-};
+	task_t *new = kzalloc(sizeof(task_t));
+
+	if (!new)
+	{
+		pr_error("No memory to create process\r\n");
+		return;
+	}
+
+	new->pid = get_next_pid();
+	new->parent_pid = new->pid; // init process
+	new->pdt_virt_addr = mem_calloc_pdt(&new->pdt_phy_addr);
+
+	if (!new->pdt_virt_addr)
+	{
+		pr_error("Can't create page directory\r\n");
+		goto fail1;
+	}
+
+	if (clone_pdt(current_pdt, new->pdt_virt_addr, new->pdt_phy_addr))
+	{
+		pr_error("Failed cloning process\r\n");
+		goto fail2;
+	}
+
+	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
+
+	// Allocate stack
+	new->stack_virt_addr = (void *) KERNEL_VIRTUAL_BASE - PAGE_SIZE;
+	new->stack_phy_addr	 = mem_get_page();
+
+	if (!new->stack_phy_addr)
+	{
+		pr_error("Can't get free page\r\n");
+		goto fail3;
+	}
+
+	// Map the stack
+	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
+
+	scheduler_add_task(new);
+
+	return;
+
+fail3:
+	mem_free_page(new->stack_phy_addr);
+fail2:
+	mem_release_pdt(new->pdt_phy_addr, new->pdt_virt_addr);
+fail1:
+	kfree(new);
+}
 
 task_t *clone(task_t *parent)
 {
