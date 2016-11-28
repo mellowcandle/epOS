@@ -474,6 +474,10 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 		access_ptr = mem_page_map_kernel(page, 1, READ_WRITE_KERNEL);
 		memset(access_ptr, 0, PAGE_SIZE);
 	}
+	else
+	{
+		access_ptr = mem_page_map_kernel(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PAGE_MASK, 1, READ_WRITE_KERNEL);
+	}
 
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX((addr_t)virtual) * sizeof(uint32_t)));
@@ -617,7 +621,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 	{
 		/* Skip if nothing there */
 
-		pr_debug("i=%u src_pdt = %x\r\n", i, src_pdt[i]);
+		//pr_debug("i=%u src_pdt = %x\r\n", i, src_pdt[i]);
 
 		if (!(src_pdt[i] & PDT_PRESENT))
 		{
