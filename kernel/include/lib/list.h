@@ -69,6 +69,8 @@ static inline void list_remove_entry(list_t *target)
 	target->prev->next = target->next;
 	target->next->prev = target->prev;
 
+	target->next = NULL;
+	target->prev = NULL;
 }
 
 static inline bool list_is_empty(const list_t *list)
