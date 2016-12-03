@@ -32,6 +32,7 @@
 #include <kmalloc.h>
 #include <process.h>
 #include <scheduler.h>
+#include <tss.h>
 
 static uint32_t pid_counter = 0;
 extern uint32_t *current_pdt;
@@ -74,12 +75,9 @@ void prepare_init_task(void *physical, uint32_t count)
 		goto fail2;
 	}
 
-	pr_debug("Reached %d\r\n", __LINE__);
-
 	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
-	pr_debug("Reached %d\r\n", __LINE__);
 
-	// Allocate stack
+	// Allocate user stack
 	new->stack_virt_addr = (void *) KERNEL_VIRTUAL_BASE - PAGE_SIZE;
 	new->stack_phy_addr	 = mem_get_page();
 
@@ -89,17 +87,36 @@ void prepare_init_task(void *physical, uint32_t count)
 		goto fail3;
 	}
 
-	pr_debug("Reached %d\r\n", __LINE__);
+	// Allocate kernel stack
+	new->kernel_stack_phy_addr = mem_get_page();
 
-	// Map the stack
+	if (!new->kernel_stack_phy_addr)
+	{
+		pr_error("Can't get free page\r\n");
+		goto fail4;
+	}
+
+	new->kernel_stack_virt_addr = mem_find_kernel_place(1);
+
+	if (!new->kernel_stack_virt_addr)
+	{
+		pr_error("Can't get virtual page\r\n");
+		goto fail4;
+	}
+
+	// Map the stacks
+	pr_debug("Reached %d\r\n", __LINE__);
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
-
 	pr_debug("Reached %d\r\n", __LINE__);
+	mem_page_map_pdt(new->pdt_virt_addr, new->kernel_stack_phy_addr, new->kernel_stack_virt_addr, READ_WRITE_KERNEL);
+	pr_debug("Reached %d\r\n", __LINE__);
+
 	scheduler_add_task(new);
 
 	FUNC_LEAVE();
 	return;
-
+fail4:
+	mem_free_page(new->kernel_stack_phy_addr);
 fail3:
 	mem_free_page(new->stack_phy_addr);
 fail2:
@@ -145,5 +162,6 @@ fail:
 
 void switch_to_task(task_t *task)
 {
-
+	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_virt_addr);
+	mem_switch_page_directory(task->pdt_phy_addr);
 }

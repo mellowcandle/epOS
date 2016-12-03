@@ -43,11 +43,11 @@ static void mmodules_run(multiboot_module_t *module)
 	FUNC_ENTER();
 	uint32_t pages_count;
 
-	pr_info("Module: 0x%x - 0x%x params: %s\r\n", module->mod_start, module->mod_end, (char *) module->cmdline);
+	pr_info("Module: 0x%x - 0x%x \r\n", module->mod_start, module->mod_end);//, (char *) module->cmdline);
 	pages_count = module->mod_end - module->mod_start;
 	pages_count = divide_up(pages_count, PAGE_SIZE);
 
-	prepare_init_task(PAGE_ALIGN_DOWN(module->mod_start), pages_count);
+	prepare_init_task((void *) PAGE_ALIGN_DOWN(module->mod_start), pages_count);
 
 	FUNC_LEAVE();
 }
@@ -56,7 +56,7 @@ void mmodules_parse(multiboot_info_t *mbi)
 {
 	FUNC_ENTER();
 	uint32_t i;
-	multiboot_module_t *module;
+	multiboot_module_t modules[mbi->mods_count];
 
 	if (!(mbi->flags & MULTIBOOT_INFO_MODS))
 	{
@@ -68,12 +68,13 @@ void mmodules_parse(multiboot_info_t *mbi)
 	// Identity map module description
 
 	mem_identity_map(PAGE_ALIGN_DOWN(mbi->mods_addr), READ_WRITE_KERNEL);
+	memcpy(modules, (void *) mbi->mods_addr, mbi->mods_count * sizeof(multiboot_module_t));
+	mem_page_unmap((void *)mbi->mods_addr);
 
 	for (i = 0; i < mbi->mods_count; i++)
 	{
-		module = (multiboot_module_t *)(mbi->mods_addr + (i * sizeof(multiboot_module_t)));
-		mmodules_run(module);
+		pr_info("Running module: %u\r\n", i);
+		mmodules_run(&modules[i]);
 	}
 
-	mem_page_unmap((void *)mbi->mods_addr);
 }

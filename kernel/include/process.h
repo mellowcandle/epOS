@@ -67,6 +67,9 @@ typedef struct
 	addr_t stack_phy_addr;
 	void *stack_virt_addr;
 
+	addr_t kernel_stack_phy_addr;
+	void *kernel_stack_virt_addr;
+
 	task_registers_t regs;
 
 	list_t list;
