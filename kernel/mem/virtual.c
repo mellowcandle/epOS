@@ -113,19 +113,14 @@ void dump_pdt();
 void page_fault_handler(registers_t regs);
 void mem_heap_init();
 void mem_phys_init(addr_t phy_start, uint32_t total_pages);
-static void *mem_find_kernel_place(int request);
-
+static void _kernel_allocate_pdt();
 
 void mem_switch_page_directory(addr_t new_dir)
 {
 	FUNC_ENTER();
 
-//	dump_pdt();
 	pr_debug("setting page directory to: 0x%X\r\n", new_dir);
-	//	void *m = 0;
-	disable_irq();
 	__asm volatile("mov %0, %%cr3":: "r"(new_dir));
-
 
 	FUNC_LEAVE();
 
@@ -182,15 +177,13 @@ void *mem_page_map_kernel(addr_t physical, int count, int flags)
 		return (void *) addr;
 	}
 
-	pr_error("No more virtual kernel space to satisfy request\r\n");
-
-	while (1);
-
+	pr_fatal("No more virtual kernel space to satisfy request\r\n");
 	panic();
+
 	return NULL;
 }
 
-static void *mem_find_kernel_place(int count)
+void *mem_find_kernel_place(int count)
 {
 	char *ptr;
 	void *addr;
@@ -268,7 +261,7 @@ static void *mem_find_kernel_place(int count)
 		if (n >= count)
 		{
 			addr = (void *) PDE_INDEX_TO_ADDR(start_i) + (start_j * PAGE_SIZE);
-			pr_debug("Found place for %u pages starting from 0x%x!\r\n", count, addr);
+			pr_debug("Found place for %u pages starting from 0x%x!\r\n", count, (int) addr);
 			return addr;
 		}
 
@@ -335,13 +328,16 @@ void mem_init(multiboot_info_t *mbi)
 	total_memory -= required_kernel_pages * PAGE_SIZE;
 
 	mem_phys_init(physical_start, total_memory);
-
+	_kernel_allocate_pdt();
 	mem_heap_init(get_kernel_heap(), KERNEL_HEAP_VIR_START, KERNEL_HEAP_SIZE);
 
 	FUNC_LEAVE();
 }
 
+static void _kernel_allocate_pdt()
+{
 
+}
 
 void page_fault_handler(registers_t regs)
 {
@@ -546,6 +542,11 @@ static int clone_pt(void *source, void *dest)
 		}
 		else
 		{
+			if (src_pte[i] & PTE_TEMPORARY)
+			{
+				continue;
+			}
+
 			/* User page, copy that */
 			phy_page = mem_get_page();
 
@@ -555,7 +556,7 @@ static int clone_pt(void *source, void *dest)
 				return -1;
 			}
 
-			dest_virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL);
+			dest_virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 
 			if (!dest_virt_page)
 			{
@@ -564,7 +565,7 @@ static int clone_pt(void *source, void *dest)
 				return -1;
 			}
 
-			src_virt_page = mem_page_map_kernel(src_pte[i] & PAGE_MASK, 1, READ_WRITE_KERNEL);
+			src_virt_page = mem_page_map_kernel(src_pte[i] & PAGE_MASK, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 
 			if (!src_virt_page)
 			{
@@ -647,7 +648,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				}
 
 				//Temporary map
-				src_virt_page = mem_page_map_kernel(src_pdt[i] & PAGE_MASK , 1, READ_ONLY_KERNEL);
+				src_virt_page = mem_page_map_kernel(src_pdt[i] & PAGE_MASK , 1, READ_ONLY_KERNEL | PTE_TEMPORARY);
 
 				if (!src_virt_page)
 				{
@@ -657,7 +658,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				}
 
 				//Temporary map
-				dest_virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL);
+				dest_virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 
 				if (!dest_virt_page)
 				{
@@ -747,7 +748,6 @@ void mem_release_pdt(addr_t p_addr, void *v_addr)
 
 	mem_free_page(p_addr);
 	mem_page_unmap(v_addr);
-
 }
 
 

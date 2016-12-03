@@ -84,7 +84,8 @@
 #define PTE_ACCESSED		BIT(5)
 #define PTE_DIRTY			BIT(6)
 #define PTE_PAT				BIT(7)
-#define PTE_GLOBAL			BIT(7)
+#define PTE_GLOBAL			BIT(8)
+#define PTE_TEMPORARY		BIT(9)
 
 #define READ_ONLY_USER (PTE_USER_PAGE  | PTE_PRESENT)
 #define READ_WRITE_USER (PTE_USER_PAGE | PTE_ALLOW_WRITE | PTE_PRESENT)
@@ -205,6 +206,7 @@ heap_t *get_kernel_heap();
 void *mem_calloc_pdt(addr_t *p_addr);
 void mem_release_pdt(addr_t p_addr, void *v_addr);
 int clone_pdt(void *v_source, void *v_dest, addr_t p_dest);
+void *mem_find_kernel_place(int count);
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
 
