@@ -62,5 +62,6 @@ struct tss_entry
 	uint16_t iomap_base;
 }  __attribute__((packed));
 
+void tss_set_kernel_stack(uint16_t segsel, uint32_t vaddr);
 #endif /* end of include guard: TSS_H_JPBOSCUO */
 
