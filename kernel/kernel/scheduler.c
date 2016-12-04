@@ -31,6 +31,7 @@
 static LIST(running_tasks);
 static LIST(stopped_tasks);
 
+
 void scheduler_add_task(task_t *task)
 {
 	task->state = TASK_RUNNING;

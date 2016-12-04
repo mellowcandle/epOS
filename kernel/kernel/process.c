@@ -37,9 +37,18 @@
 static uint32_t pid_counter = 0;
 extern uint32_t *current_pdt;
 
+/* segements */
+#define SEGSEL_KERNEL_CS 0x08
+#define SEGSEL_KERNEL_DS 0x10
+#define SEGSEL_USER_SPACE_CS 0x18
+#define SEGSEL_USER_SPACE_DS 0x20
+
 
 void mem_switch_page_directory(addr_t new_dir);
 
+/* defined in scheduler.s */
+void run_user_task(task_registers_t *registers);
+void run_kernel_task(task_registers_t *registers);
 
 uint32_t get_next_pid()
 {
@@ -56,24 +65,24 @@ void prepare_init_task(void *physical, uint32_t count)
 		pr_error("No memory to create process\r\n");
 		return;
 	}
-
-	pr_debug("Reached %d\r\n", __LINE__);
+	pr_info("%d\r\n", __LINE__);
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
 	new->pdt_virt_addr = mem_calloc_pdt(&new->pdt_phy_addr);
-	pr_debug("Reached %d\r\n", __LINE__);
 
 	if (!new->pdt_virt_addr)
 	{
 		pr_error("Can't create page directory\r\n");
 		goto fail1;
 	}
+	pr_info("%d\r\n", __LINE__);
 
 	if (clone_pdt(current_pdt, new->pdt_virt_addr, new->pdt_phy_addr))
 	{
 		pr_error("Failed cloning process\r\n");
 		goto fail2;
 	}
+	pr_info("%d\r\n", __LINE__);
 
 	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
 
@@ -86,6 +95,7 @@ void prepare_init_task(void *physical, uint32_t count)
 		pr_error("Can't get free page\r\n");
 		goto fail3;
 	}
+	pr_info("%d\r\n", __LINE__);
 
 	// Allocate kernel stack
 	new->kernel_stack_phy_addr = mem_get_page();
@@ -103,13 +113,18 @@ void prepare_init_task(void *physical, uint32_t count)
 		pr_error("Can't get virtual page\r\n");
 		goto fail4;
 	}
+	pr_info("%d\r\n", __LINE__);
 
 	// Map the stacks
-	pr_debug("Reached %d\r\n", __LINE__);
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
-	pr_debug("Reached %d\r\n", __LINE__);
 	mem_page_map_pdt(new->pdt_virt_addr, new->kernel_stack_phy_addr, new->kernel_stack_virt_addr, READ_WRITE_KERNEL);
-	pr_debug("Reached %d\r\n", __LINE__);
+
+	new->regs.eflags = 0x202; //TODO: understand why
+	new->regs.ss = SEGSEL_KERNEL_DS | 0x03;
+	new->regs.cs = SEGSEL_KERNEL_CS | 0x03;
+	new->regs.esp = (uint32_t) new->stack_virt_addr - 4;
+	new->regs.eip = 0;
+	pr_info("%d\r\n", __LINE__);
 
 	scheduler_add_task(new);
 
@@ -162,6 +177,8 @@ fail:
 
 void switch_to_task(task_t *task)
 {
+while(1);	
 	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_virt_addr);
 	mem_switch_page_directory(task->pdt_phy_addr);
+	run_kernel_task(&task->regs);
 }

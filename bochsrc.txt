@@ -54,5 +54,4 @@ debug: action=ignore
 keyboard: type=mf,serial_delay=250,paste_delay=10000
 user_shortcut: keys=none
 mouse: enabled=0, type=ps2
-
 #ne2k: ioaddr=0x300, irq=9, mac=fe:fd:00:00:00:01, ethmod=tuntap, ethdev=/dev/net/tun, script=./tunconfig

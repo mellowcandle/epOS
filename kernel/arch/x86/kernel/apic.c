@@ -213,10 +213,8 @@ void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
 
 	ioapic->id = id;
 	ioapic->p_addr = address;
-	ioapic->v_addr = (void *) address; // Identity map
 	ioapic->global_irq_base = irq_base;
-
-	mem_page_map(ioapic->p_addr, ioapic->v_addr, READ_WRITE_KERNEL);
+	ioapic->v_addr = mem_page_map_kernel(address, 1, READ_WRITE_KERNEL);
 
 	pr_info("IOAPIC Base mapping 0x%x -> 0x%x\r\n", ioapic->p_addr, (addr_t) ioapic->v_addr);
 	pr_info("IOAPIC IRQ Base: %u\r\n", ioapic->global_irq_base);
