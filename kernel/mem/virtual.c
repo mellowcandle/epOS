@@ -411,7 +411,7 @@ int mem_page_map(addr_t physical, void *virtual, int flags)
 		mem_assert(page != 0);
 
 		// Put it in PDT
-		current_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] = page | PDT_PRESENT | PDT_ALLOW_WRITE;
+		current_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] = page | PDT_PRESENT | flags;
 		// Invalidate cache
 		mem_tlb_flush(access_ptr);
 		// Clear the PDE table
@@ -457,22 +457,21 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 	// Check if the PDT exists
 	if (!(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PDT_PRESENT))
 	{
-		pr_debug("mem_map_page: PDT missing, creating and mapping\r\n");
 		page = mem_get_page();
 
 		mem_assert(page != 0);
 
 		// Put it in PDT
-		target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] = page | PDT_PRESENT | PDT_ALLOW_WRITE;
+		target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] = page | PDT_PRESENT | flags;
 
 		// Clear the PDE table
 		// Temporary map the page
-		access_ptr = mem_page_map_kernel(page, 1, READ_WRITE_KERNEL);
+		access_ptr = mem_page_map_kernel(page, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 		memset(access_ptr, 0, PAGE_SIZE);
 	}
 	else
 	{
-		access_ptr = mem_page_map_kernel(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PAGE_MASK, 1, READ_WRITE_KERNEL);
+		access_ptr = mem_page_map_kernel(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PAGE_MASK, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 	}
 
 	// Insert the PTE.
@@ -482,7 +481,7 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 	{
 		if ((*pte & PTE_ADDR_MASK) != physical)
 		{
-			pr_fatal("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, (addr_t)virtual, flags);
+			pr_fatal("+mem_page_map virtual: 0x%x physical 0x%x existing physical: 0x%x flags %X\r\n", (addr_t)virtual, *pte & PTE_ADDR_MASK, physical, flags);
 
 			while (1);
 		}
@@ -575,7 +574,6 @@ static int clone_pt(void *source, void *dest)
 				return -1;
 			}
 
-			pr_debug("Before memcpy\r\n");
 			memcpy(dest_virt_page, src_virt_page, PAGE_SIZE);
 
 			/* Place it in the PDT */
@@ -634,7 +632,10 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 			{
 				//Huge pages are for kernel, we allow write on these
 				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE | PDT_HUGE_PAGE;
-				pr_debug("Huge page !!\r\n");
+			}
+			else if (!(src_pdt[i] & PDT_USER_PAGE))
+			{
+				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE;
 			}
 			else
 			{
