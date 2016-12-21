@@ -65,24 +65,36 @@ void prepare_init_task(void *physical, uint32_t count)
 		pr_error("No memory to create process\r\n");
 		return;
 	}
+
 	pr_info("%d\r\n", __LINE__);
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
+
+	// Allocate kernel stack
+	new->kernel_stack_phy_addr = mem_get_page();
+
+	if (!new->kernel_stack_phy_addr)
+	{
+		pr_error("Can't get free page\r\n");
+		goto fail1;
+	}
+
+	new->kernel_stack_virt_addr = mem_page_map_kernel(new->kernel_stack_phy_addr, 1, READ_WRITE_KERNEL);
+	new->kernel_stack_pointer = new->kernel_stack_virt_addr + PAGE_SIZE - 4;
+	pr_debug("New process stack pointer: 0x%x, stack frame: 0x%x\r\n", (uint32_t) new->kernel_stack_pointer, (uint32_t) new->kernel_stack_virt_addr);
 	new->pdt_virt_addr = mem_calloc_pdt(&new->pdt_phy_addr);
 
 	if (!new->pdt_virt_addr)
 	{
 		pr_error("Can't create page directory\r\n");
-		goto fail1;
+		goto fail2;
 	}
-	pr_info("%d\r\n", __LINE__);
 
 	if (clone_pdt(current_pdt, new->pdt_virt_addr, new->pdt_phy_addr))
 	{
 		pr_error("Failed cloning process\r\n");
-		goto fail2;
+		goto fail3;
 	}
-	pr_info("%d\r\n", __LINE__);
 
 	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
 
@@ -93,36 +105,17 @@ void prepare_init_task(void *physical, uint32_t count)
 	if (!new->stack_phy_addr)
 	{
 		pr_error("Can't get free page\r\n");
-		goto fail3;
-	}
-	pr_info("%d\r\n", __LINE__);
-
-	// Allocate kernel stack
-	new->kernel_stack_phy_addr = mem_get_page();
-
-	if (!new->kernel_stack_phy_addr)
-	{
-		pr_error("Can't get free page\r\n");
 		goto fail4;
 	}
 
-	new->kernel_stack_virt_addr = mem_find_kernel_place(1);
-
-	if (!new->kernel_stack_virt_addr)
-	{
-		pr_error("Can't get virtual page\r\n");
-		goto fail4;
-	}
-	pr_info("%d\r\n", __LINE__);
-
-	// Map the stacks
+	// Map the user stack
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
-	mem_page_map_pdt(new->pdt_virt_addr, new->kernel_stack_phy_addr, new->kernel_stack_virt_addr, READ_WRITE_KERNEL);
 
 	new->regs.eflags = 0x202; //TODO: understand why
-	new->regs.ss = SEGSEL_KERNEL_DS | 0x03;
-	new->regs.cs = SEGSEL_KERNEL_CS | 0x03;
-	new->regs.esp = (uint32_t) new->stack_virt_addr - 4;
+	new->regs.ss = SEGSEL_KERNEL_DS;// | 0x03;
+	new->regs.cs = SEGSEL_KERNEL_CS;// | 0x03;
+	new->regs.esp = (uint32_t) new->kernel_stack_pointer;
+	/* new->regs.esp = (uint32_t) new->stack_virt_addr - 4; */
 	new->regs.eip = 0;
 	pr_info("%d\r\n", __LINE__);
 
@@ -130,12 +123,14 @@ void prepare_init_task(void *physical, uint32_t count)
 
 	FUNC_LEAVE();
 	return;
+
 fail4:
-	mem_free_page(new->kernel_stack_phy_addr);
-fail3:
 	mem_free_page(new->stack_phy_addr);
-fail2:
+fail3:
 	mem_release_pdt(new->pdt_phy_addr, new->pdt_virt_addr);
+fail2:
+	mem_page_unmap(new->kernel_stack_virt_addr);
+	mem_free_page(new->kernel_stack_phy_addr);
 fail1:
 	kfree(new);
 
@@ -177,7 +172,6 @@ fail:
 
 void switch_to_task(task_t *task)
 {
-while(1);	
 	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_virt_addr);
 	mem_switch_page_directory(task->pdt_phy_addr);
 	run_kernel_task(&task->regs);
