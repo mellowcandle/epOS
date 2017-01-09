@@ -7,7 +7,7 @@ int main()
 
 	while (1)
 	{
-		printf("Hello from user space task 1\r\n");
+		printf("Hello from user space task 2\r\n");
 	}
 
 #if 0

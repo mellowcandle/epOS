@@ -55,6 +55,7 @@ kernel.iso: multiboot modules
 	@cp kernel/kernel.bin $(ISODIR_PATH)/boot/kernel.bin
 	@cp make/grub.cfg $(ISODIR_PATH)/boot/grub/grub.cfg
 	@cp modules/program $(ISODIR_PATH)/modules
+	@cp modules/program2 $(ISODIR_PATH)/modules
 	@grub-mkrescue -o kernel.iso $(ISODIR_PATH) > /dev/null 2>&1
 
 cscope:

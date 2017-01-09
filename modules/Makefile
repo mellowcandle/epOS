@@ -32,9 +32,10 @@ ASM	= nasm
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
 CFLAGS := -std=gnu99  -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -c
 INCLUDES := -I../libc
-all: program
+all: program program2
 
 OBJFILES := program.o
+OBJFILES2 := program2.o
 
 .c.o:
 	@echo "(CC) $@"
@@ -45,8 +46,10 @@ OBJFILES := program.o
 	@$(ASM) -f elf -o $@ $<
 
 program: $(OBJFILES)
-
 	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a $(TOOLCHAIN_PATH)/lib/gcc/i686-elf/4.9.1/libgcc.a # emulate 32 bits ELF, the binary output is specified
+program2: $(OBJFILES2)
+	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a $(TOOLCHAIN_PATH)/lib/gcc/i686-elf/4.9.1/libgcc.a # emulate 32 bits ELF, the binary output is specified
+
 
 clean:
 	rm -rf $(OBJFILES) program program.map

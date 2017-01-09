@@ -9,4 +9,4 @@ section .text
 ;	push 0
 	call main
 	; main has returned, eax is return value
-;	jmp  $    ; loop forever
+	jmp  $    ; loop forever
