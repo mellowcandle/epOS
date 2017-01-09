@@ -58,6 +58,7 @@ uint32_t get_next_pid()
 void prepare_init_task(void *physical, uint32_t count)
 {
 	FUNC_ENTER();
+	dump_pdt_indirect(current_pdt);
 	task_t *new = kzalloc(sizeof(task_t));
 
 	if (!new)
@@ -79,10 +80,13 @@ void prepare_init_task(void *physical, uint32_t count)
 		goto fail1;
 	}
 
+	pr_info("%d\r\n", __LINE__);
+
 	new->kernel_stack_virt_addr = mem_page_map_kernel(new->kernel_stack_phy_addr, 1, READ_WRITE_KERNEL);
 	new->kernel_stack_pointer = new->kernel_stack_virt_addr + PAGE_SIZE - 4;
 	pr_debug("New process stack pointer: 0x%x, stack frame: 0x%x\r\n", (uint32_t) new->kernel_stack_pointer, (uint32_t) new->kernel_stack_virt_addr);
 	new->pdt_virt_addr = mem_calloc_pdt(&new->pdt_phy_addr);
+	pr_info("%d\r\n", __LINE__);
 
 	if (!new->pdt_virt_addr)
 	{
@@ -97,6 +101,7 @@ void prepare_init_task(void *physical, uint32_t count)
 	}
 
 	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
+	pr_info("%d\r\n", __LINE__);
 
 	// Allocate user stack
 	new->stack_virt_addr = (void *) KERNEL_VIRTUAL_BASE - PAGE_SIZE;
@@ -110,6 +115,7 @@ void prepare_init_task(void *physical, uint32_t count)
 
 	// Map the user stack
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
+	pr_info("%d\r\n", __LINE__);
 
 	new->regs.eflags = 0x202; //TODO: understand why
 	new->regs.ss = SEGSEL_KERNEL_DS;// | 0x03;
@@ -117,8 +123,9 @@ void prepare_init_task(void *physical, uint32_t count)
 	new->regs.esp = (uint32_t) new->kernel_stack_pointer;
 	/* new->regs.esp = (uint32_t) new->stack_virt_addr - 4; */
 	new->regs.eip = 0;
+	dump_pdt_indirect(current_pdt);
 	pr_info("%d\r\n", __LINE__);
-
+	dump_pdt_indirect(new->pdt_virt_addr);
 	scheduler_add_task(new);
 
 	FUNC_LEAVE();

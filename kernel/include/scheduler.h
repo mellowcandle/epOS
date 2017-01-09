@@ -29,9 +29,11 @@
 #define SCHEDULER_H_WTDXB0FE
 
 #include <process.h>
+#include <isr.h>
 
 void scheduler_add_task(task_t *task);
 void scheduler_remove_task(task_t *task);
+void scheduler_switch_task(registers_t regs);
 
 void scheduler_start();
 #endif /* end of include guard: SCHEDULER_H_WTDXB0FE */

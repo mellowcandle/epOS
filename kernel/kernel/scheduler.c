@@ -27,11 +27,38 @@
 
 #include <process.h>
 #include <lib/list.h>
+#include <scheduler.h>
+#include <printk.h>
 
 static LIST(running_tasks);
 static LIST(stopped_tasks);
 
+static task_t *current_task = NULL;
 
+void scheduler_switch_task(registers_t regs)
+{
+	if (current_task == NULL)
+	{
+		return;    // scheduler wasn't loaded yet
+	}
+
+	/* Save registers */
+	pr_info("Switching task...\r\n");
+	current_task->regs.eax = regs.eax;
+	current_task->regs.ebx = regs.ebx;
+	current_task->regs.ecx = regs.ecx;
+	current_task->regs.edx = regs.edx;
+	current_task->regs.ebp = regs.ebp;
+	current_task->regs.esp = regs.esp + 12; // to exclude what was pushed in IRQ
+	current_task->regs.esi = regs.esi;
+	current_task->regs.edi = regs.edi;
+	current_task->regs.cs = regs.cs;
+	current_task->regs.ss = regs.ss;
+	current_task->regs.eip = regs.eip;
+	current_task->regs.eflags = regs.eflags;
+
+//	scheduler_start();
+}
 void scheduler_add_task(task_t *task)
 {
 	task->state = TASK_RUNNING;
@@ -51,9 +78,8 @@ static task_t *_scheduler_get_next_running_task()
 }
 void scheduler_start()
 {
-	task_t *next_task;
-	next_task = _scheduler_get_next_running_task();
-	switch_to_task(next_task);
+	current_task = _scheduler_get_next_running_task();
+	switch_to_task(current_task);
 
 	/* Should not get here */
 	while (1);
