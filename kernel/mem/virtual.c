@@ -163,6 +163,44 @@ void dump_pdt()
 		}
 	}
 }
+
+void dump_pdt_indirect(uint32_t *target_pdt)
+{
+	addr_t virtual_pos;
+	uint32_t *temp;
+
+	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++)
+	{
+		if (target_pdt[i] & PDT_PRESENT) // exists
+		{
+			printk("PDE: %u value: 0x%x\r\n", i, current_pdt[i]);
+
+			if (target_pdt[i] & PDT_HUGE_PAGE)
+			{
+				printk("Maps 4MB page from 0x%x to 0x%x\r\n", PDE_INDEX_TO_ADDR(i), PDE_INDEX_TO_ADDR(i + 1));
+			}
+			else
+			{
+				temp = mem_page_map_kernel_single(target_pdt[i] & PAGE_MASK, READ_ONLY_KERNEL);
+
+				for (int j = 0; j < PAGE_TABLE_SIZE; j++)
+				{
+					if (*temp & PTE_PRESENT)
+					{
+						virtual_pos = PDE_INDEX_TO_ADDR(i) + (j * PAGE_SIZE);
+						printk("\tPTE: %u value: 0x%x maps 4K page from 0x%x to 0x%x\r\n", j, *temp,
+						       virtual_pos, virtual_pos + PAGE_SIZE);
+					}
+
+					temp++;
+
+				}
+			}
+
+		}
+	}
+}
+
 void *mem_page_map_kernel(addr_t physical, int count, int flags)
 {
 	void *addr = mem_find_kernel_place(count);
@@ -481,7 +519,7 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 	{
 		if ((*pte & PTE_ADDR_MASK) != physical)
 		{
-			pr_fatal("+mem_page_map virtual: 0x%x physical 0x%x existing physical: 0x%x flags %X\r\n", (addr_t)virtual, *pte & PTE_ADDR_MASK, physical, flags);
+			pr_fatal("+mem_page_map virtual: 0x%x existing physical 0x%x physical: 0x%x flags %X\r\n", (addr_t)virtual, *pte & PTE_ADDR_MASK, physical, flags);
 
 			while (1);
 		}

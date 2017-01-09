@@ -207,6 +207,7 @@ void *mem_calloc_pdt(addr_t *p_addr);
 void mem_release_pdt(addr_t p_addr, void *v_addr);
 int clone_pdt(void *v_source, void *v_dest, addr_t p_dest);
 void *mem_find_kernel_place(int count);
+void dump_pdt_indirect(uint32_t *target_pdt);
 
 #endif /* end of include guard: MEM_PAGES_H_HGKLOSQ7 */
 
