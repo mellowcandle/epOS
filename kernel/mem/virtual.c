@@ -168,6 +168,7 @@ void dump_pdt_indirect(uint32_t *target_pdt)
 {
 	addr_t virtual_pos;
 	uint32_t *temp;
+	printk("Dumping PDT: mapped to: 0x%x\r\n", (uint32_t) target_pdt);
 
 	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++)
 	{
@@ -434,6 +435,12 @@ int mem_page_map(addr_t physical, void *virtual, int flags)
 	uint32_t *pte;
 
 	pr_debug("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
+
+
+	if ((uint32_t) virtual < 0xC0000000)
+	{
+		pr_warn("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
+	}
 
 	assert(IS_PAGE_ALIGNED(physical));
 

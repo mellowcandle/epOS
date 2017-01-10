@@ -61,7 +61,7 @@ void kmain(void)
 	cpu_init();
 	mem_init(mbi);
 
-	ksymbol_init(mbi);
+//	ksymbol_init(mbi);
 
 	vga_init();
 	vga_clear_screen();

@@ -33,7 +33,8 @@
 #include <lib/string.h>
 #include <bits.h>
 
-
+//TODO:
+// This identity map is really bad and needs to fixed. elf sections needs to be relocated and fixed to higher kernel memory
 elf_t kernel_elf;
 
 static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf_t *elf)
