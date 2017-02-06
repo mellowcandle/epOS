@@ -25,3 +25,7 @@
 
 * Add testing framework
 
+
+## Prerequisites
+
+$ sudo pacman -S grub mtools nasm
