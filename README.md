@@ -28,4 +28,8 @@
 
 ## Prerequisites
 
-$ sudo pacman -S grub mtools nasm
+* Compilation:
+$ sudo pacman -S grub mtools nasm libisoburn
+
+* Qemu:
+$ sudo pacman -S qemu qemu-arch-extra
