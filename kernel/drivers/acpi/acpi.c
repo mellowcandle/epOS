@@ -60,6 +60,8 @@ void acpi_early_init()
 	acpi_madt_print_subtables();
 
 	_acpi_configure_apic();
+
+	acpi_get_hpet_addr();
 }
 
 void acpi_init()
@@ -134,6 +136,36 @@ ACPI_TABLE_MADT *acpi_get_madt()
 	}
 
 	return (ACPI_TABLE_MADT *)table;
+}
+
+ACPI_TABLE_HPET *acpi_get_hpet()
+{
+	FUNC_ENTER();
+	ACPI_TABLE_HEADER *table;
+
+	assert(acpi_tables_initalized);
+	ACPI_STATUS status = AcpiGetTable(ACPI_SIG_HPET, 1, &table);
+
+	if (ACPI_FAILURE(status))
+	{
+		return 0;
+	}
+
+	return (ACPI_TABLE_HPET *)table;
+}
+
+addr_t acpi_get_hpet_addr()
+{
+	FUNC_ENTER();
+	ACPI_TABLE_HPET *table = acpi_get_hpet();
+	assert(table != NULL);
+
+	if (table->Address.Address)
+	{
+		pr_info("HPET detected at 0x%llx\r\n", table->Address.Address);
+	}
+
+	return table->Address.Address;
 }
 
 addr_t acpi_get_local_apic_addr()

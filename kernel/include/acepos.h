@@ -183,6 +183,7 @@
 void acpi_early_init();
 void acpi_init();
 addr_t acpi_get_local_apic_addr();
+addr_t acpi_get_hpet_addr();
 void acpi_shutdown();
 bool acpi_8259_available();
 
