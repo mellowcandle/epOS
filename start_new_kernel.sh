@@ -2,7 +2,7 @@
 
 DEBUG=0
 QEMU=0
-
+OPTIONS="-nographic -m 1G,slots=3,maxmem=4G -cdrom kernel.iso"
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -28,7 +28,7 @@ shift # past argument or value
 done
 
 if [[ $DEBUG -eq 1 ]]; then
-	qemu-system-i386 -nographic -m 1G,slots=3,maxmem=4G -s -S -cdrom kernel.iso
+	qemu-system-i386 ${OPTIONS} -s -S 2>&1 | tee run.log
 else
-	qemu-system-i386 -nographic -m 1G,slots=3,maxmem=4G -cdrom kernel.iso
+	qemu-system-i386 ${OPTIONS} 2>&1 | tee run.log
 fi
