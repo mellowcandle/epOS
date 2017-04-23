@@ -650,7 +650,7 @@ static int clone_pt(void *source, void *dest)
 }
 int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 {
-	int i;
+	uint32_t i;
 	int ret;
 	uint32_t *src_pdt = v_source;
 	uint32_t *dest_pdt = v_dest;
@@ -680,7 +680,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				//Huge pages are for kernel, we allow write on these
 				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE | PDT_HUGE_PAGE;
 			}
-			else if (!(src_pdt[i] & PDT_USER_PAGE))
+			else if ((!(src_pdt[i] & PDT_USER_PAGE)) && (i >= FRAME_TO_PDE_INDEX((addr_t) KERNEL_VIRTUAL_BASE)))
 			{
 				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE;
 			}
