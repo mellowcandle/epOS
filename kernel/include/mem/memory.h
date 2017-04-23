@@ -199,7 +199,7 @@ static inline void *mem_heap_map(heap_t *heap, size_t count, addr_t hw_pages)
 	return _mem_heap_map_alloc(heap, count, hw_pages, true);
 }
 
-int mem_heap_free(heap_t *heap, void *addr , int count);
+int mem_heap_free(heap_t *heap, void *addr, int count);
 addr_t virt_to_phys(void *addr);
 
 heap_t *get_kernel_heap();

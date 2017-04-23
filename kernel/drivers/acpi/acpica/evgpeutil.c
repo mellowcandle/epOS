@@ -444,7 +444,7 @@ AcpiEvDeleteGpeHandlers(
 		for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
 		{
 			GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
-			                                     ACPI_GPE_REGISTER_WIDTH) + j];
+			                                                  ACPI_GPE_REGISTER_WIDTH) + j];
 
 			if ((ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
 			        ACPI_GPE_DISPATCH_HANDLER) ||

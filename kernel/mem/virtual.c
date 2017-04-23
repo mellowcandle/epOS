@@ -694,7 +694,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				}
 
 				//Temporary map
-				src_virt_page = mem_page_map_kernel(src_pdt[i] & PAGE_MASK , 1, READ_ONLY_KERNEL | PTE_TEMPORARY);
+				src_virt_page = mem_page_map_kernel(src_pdt[i] & PAGE_MASK, 1, READ_ONLY_KERNEL | PTE_TEMPORARY);
 
 				if (!src_virt_page)
 				{

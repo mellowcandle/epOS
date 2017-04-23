@@ -629,7 +629,7 @@ AcpiEvGpeDetect(
 				/* Examine one GPE bit */
 
 				GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
-				                                     ACPI_GPE_REGISTER_WIDTH) + j];
+				                                                  ACPI_GPE_REGISTER_WIDTH) + j];
 				GpeNumber = j + GpeRegisterInfo->BaseGpeNumber;
 
 				if (EnabledStatusByte & (1 << j))

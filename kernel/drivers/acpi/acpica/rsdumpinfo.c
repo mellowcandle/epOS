@@ -141,11 +141,11 @@ ACPI_MODULE_NAME("rsdumpinfo")
 ACPI_RSDUMP_INFO        AcpiRsDumpIrq[7] =
 {
 	{ACPI_RSD_TITLE,    ACPI_RSD_TABLE_SIZE(AcpiRsDumpIrq),                "IRQ",                      NULL},
-	{ACPI_RSD_UINT8 ,   ACPI_RSD_OFFSET(Irq.DescriptorLength),             "Descriptor Length",        NULL},
+	{ACPI_RSD_UINT8,   ACPI_RSD_OFFSET(Irq.DescriptorLength),             "Descriptor Length",        NULL},
 	{ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET(Irq.Triggering),                   "Triggering",               AcpiGbl_HeDecode},
 	{ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET(Irq.Polarity),                     "Polarity",                 AcpiGbl_LlDecode},
 	{ACPI_RSD_2BITFLAG, ACPI_RSD_OFFSET(Irq.Sharable),                     "Sharing",                  AcpiGbl_ShrDecode},
-	{ACPI_RSD_UINT8 ,   ACPI_RSD_OFFSET(Irq.InterruptCount),               "Interrupt Count",          NULL},
+	{ACPI_RSD_UINT8,   ACPI_RSD_OFFSET(Irq.InterruptCount),               "Interrupt Count",          NULL},
 	{ACPI_RSD_SHORTLIST, ACPI_RSD_OFFSET(Irq.Interrupts[0]),                "Interrupt List",           NULL}
 };
 
@@ -162,7 +162,7 @@ ACPI_RSDUMP_INFO        AcpiRsDumpDma[6] =
 ACPI_RSDUMP_INFO        AcpiRsDumpStartDpf[4] =
 {
 	{ACPI_RSD_TITLE,    ACPI_RSD_TABLE_SIZE(AcpiRsDumpStartDpf),           "Start-Dependent-Functions", NULL},
-	{ACPI_RSD_UINT8 ,   ACPI_RSD_OFFSET(StartDpf.DescriptorLength),        "Descriptor Length",        NULL},
+	{ACPI_RSD_UINT8,   ACPI_RSD_OFFSET(StartDpf.DescriptorLength),        "Descriptor Length",        NULL},
 	{ACPI_RSD_2BITFLAG, ACPI_RSD_OFFSET(StartDpf.CompatibilityPriority),   "Compatibility Priority",   AcpiGbl_ConfigDecode},
 	{ACPI_RSD_2BITFLAG, ACPI_RSD_OFFSET(StartDpf.PerformanceRobustness),   "Performance/Robustness",   AcpiGbl_ConfigDecode}
 };

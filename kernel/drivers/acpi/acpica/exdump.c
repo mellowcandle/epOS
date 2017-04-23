@@ -261,7 +261,7 @@ static ACPI_EXDUMP_INFO     AcpiExDumpProcessor[7] =
 {
 	{ACPI_EXD_INIT,     ACPI_EXD_TABLE_SIZE(AcpiExDumpProcessor),      NULL},
 	{ACPI_EXD_UINT8,    ACPI_EXD_OFFSET(Processor.ProcId),             "Processor ID"},
-	{ACPI_EXD_UINT8 ,   ACPI_EXD_OFFSET(Processor.Length),             "Length"},
+	{ACPI_EXD_UINT8,   ACPI_EXD_OFFSET(Processor.Length),             "Length"},
 	{ACPI_EXD_ADDRESS,  ACPI_EXD_OFFSET(Processor.Address),            "Address"},
 	{ACPI_EXD_POINTER,  ACPI_EXD_OFFSET(Processor.NotifyList[0]),      "System Notify"},
 	{ACPI_EXD_POINTER,  ACPI_EXD_OFFSET(Processor.NotifyList[1]),      "Device Notify"},
@@ -366,7 +366,7 @@ static ACPI_EXDUMP_INFO     AcpiExDumpData[3] =
 static ACPI_EXDUMP_INFO     AcpiExDumpCommon[5] =
 {
 	{ACPI_EXD_INIT,     ACPI_EXD_TABLE_SIZE(AcpiExDumpCommon),         NULL},
-	{ACPI_EXD_TYPE ,    0,                                              NULL},
+	{ACPI_EXD_TYPE,    0,                                              NULL},
 	{ACPI_EXD_UINT16,   ACPI_EXD_OFFSET(Common.ReferenceCount),        "Reference Count"},
 	{ACPI_EXD_UINT8,    ACPI_EXD_OFFSET(Common.Flags),                 "Flags"},
 	{ACPI_EXD_LIST,     ACPI_EXD_OFFSET(Common.NextObject),            "Object List"}

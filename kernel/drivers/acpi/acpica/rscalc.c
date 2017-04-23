@@ -443,7 +443,7 @@ AcpiRsGetAmlLength(
 		case ACPI_RESOURCE_TYPE_SERIAL_BUS:
 
 			TotalSize = AcpiGbl_AmlResourceSerialBusSizes [
-			                Resource->Data.CommonSerialBus.Type];
+			     Resource->Data.CommonSerialBus.Type];
 
 			TotalSize = (ACPI_RS_LENGTH)(TotalSize +
 			                             Resource->Data.I2cSerialBus.ResourceSource.StringLength +
@@ -642,7 +642,7 @@ AcpiRsGetListLength(
 		case ACPI_RESOURCE_NAME_SERIAL_BUS:
 
 			MinimumAmlResourceLength = AcpiGbl_ResourceAmlSerialBusSizes[
-			                               AmlResource->CommonSerialBus.Type];
+			                    AmlResource->CommonSerialBus.Type];
 			ExtraStructBytes +=
 			    AmlResource->CommonSerialBus.ResourceLength -
 			    MinimumAmlResourceLength;
@@ -663,7 +663,7 @@ AcpiRsGetListLength(
 		        ACPI_RESOURCE_NAME_SERIAL_BUS)
 		{
 			BufferSize = AcpiGbl_ResourceStructSerialBusSizes[
-			                 AmlResource->CommonSerialBus.Type] + ExtraStructBytes;
+			      AmlResource->CommonSerialBus.Type] + ExtraStructBytes;
 		}
 		else
 		{

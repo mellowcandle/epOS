@@ -184,7 +184,7 @@ AcpiRsConvertAmlToResources(
 			/* This is an I2C, SPI, or UART SerialBus descriptor */
 
 			ConversionTable = AcpiGbl_ConvertResourceSerialBusDispatch [
-			                      AmlResource->CommonSerialBus.Type];
+			           AmlResource->CommonSerialBus.Type];
 		}
 	}
 	else
@@ -295,7 +295,7 @@ AcpiRsConvertResourcesToAml(
 				/* This is an I2C, SPI, or UART SerialBus descriptor */
 
 				ConversionTable = AcpiGbl_ConvertResourceSerialBusDispatch[
-				                      Resource->Data.CommonSerialBus.Type];
+				       Resource->Data.CommonSerialBus.Type];
 			}
 		}
 		else

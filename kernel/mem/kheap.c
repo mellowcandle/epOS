@@ -75,7 +75,7 @@ void mem_heap_destroy(heap_t *heap)
 	FUNC_LEAVE();
 }
 
-int mem_heap_free(heap_t *heap, void *addr , int count)
+int mem_heap_free(heap_t *heap, void *addr, int count)
 {
 	FUNC_ENTER();
 
@@ -154,7 +154,7 @@ error:
 void test_heap()
 {
 
-	char *a , *b, *c, *d, *e;
+	char *a, *b, *c, *d, *e;
 
 	a = kmalloc(10);
 	b = kmalloc(20);
