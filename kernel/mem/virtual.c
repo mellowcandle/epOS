@@ -528,6 +528,8 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 		{
 			pr_fatal("+mem_page_map virtual: 0x%x existing physical 0x%x physical: 0x%x flags %X\r\n", (addr_t)virtual, *pte & PTE_ADDR_MASK, physical, flags);
 
+			printk("Dumping PDT\r\n------------------\r\n");
+			dump_pdt_indirect(target_pdt);
 			while (1);
 		}
 		else
