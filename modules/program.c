@@ -4,10 +4,10 @@ int printf(const char *format, ...);
 //int main(int argc, char *argv[])
 int main()
 {
-
+	unsigned int i=0;
 	while (1)
 	{
-		printf("Hello from user space task 1\r\n");
+		printf("1 - %d\r\n",i++);
 	}
 
 #if 0

@@ -33,7 +33,7 @@ global run_user_task
 
 run_kernel_task:
 	cli
-	mov		eax, [eax+4] ; load task_register_t pointer to eax
+	mov		eax, [esp+4] ; load task_register_t pointer to eax
 
     mov     ebx, [eax+4]
     mov     ecx, [eax+8]
