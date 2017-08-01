@@ -33,18 +33,21 @@
 #include <lib/string.h>
 #include <bits.h>
 
-//TODO:
-// This identity map is really bad and needs to fixed. elf sections needs to be relocated and fixed to higher kernel memory
 elf_t kernel_elf;
 
 static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf_t *elf)
 {
 	FUNC_ENTER();
 	unsigned int i;
+	uint32_t tmp_map;
+
 	elf_section_header_t *sh = (elf_section_header_t *)elf_sec->addr;
 	uint32_t shstrtab = sh[elf_sec->shndx].addr;
 
-	mem_identity_map(PAGE_ALIGN_DOWN(shstrtab), READ_WRITE_KERNEL);
+	tmp_map = (addr_t) mem_page_map_kernel_single(PAGE_ALIGN_DOWN(shstrtab), READ_WRITE_KERNEL);
+	shstrtab = tmp_map | (shstrtab & ~PAGE_MASK);
+
+	pr_debug("shstrtab mapping: 0x%x -> 0x%x\r\n", sh[elf_sec->shndx].addr, shstrtab);
 
 	for (i = 0; i < elf_sec->num; i++)
 	{
@@ -52,18 +55,19 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 
 		if (!strcmp(name, ".strtab"))
 		{
-			elf->strtab = (const char *)sh[i].addr;
 			elf->strtabsz = sh[i].size;
-			pr_debug("Identity maping: 0x%x pages: %u\r\n", (addr_t) elf->strtab, divide_up(elf->strtabsz, PAGE_SIZE));
-			mem_identity_map_multiple(PAGE_ALIGN_DOWN((addr_t)elf->strtab), READ_WRITE_KERNEL, divide_up(elf->strtabsz, PAGE_SIZE));
+			tmp_map = (addr_t) mem_page_map_kernel(PAGE_ALIGN_DOWN(sh[i].addr), divide_up(elf->strtabsz, PAGE_SIZE), READ_WRITE_KERNEL);
+			elf->strtab = (char *) (tmp_map | (sh[i].addr & ~PAGE_MASK));
+			pr_debug("strtab maping: 0x%x -> 0x%x pages: %u\r\n", sh[i].addr, (addr_t) elf->strtab, divide_up(elf->strtabsz, PAGE_SIZE));
 		}
 
 		if (!strcmp(name, ".symtab"))
 		{
-			elf->symtab = (elf_symbol_t *)sh[i].addr;
 			elf->symtabsz = sh[i].size;
-			pr_debug("Identity maping: 0x%x pages: %u\r\n", (addr_t) elf->symtab, divide_up(elf->symtabsz, PAGE_SIZE));
-			mem_identity_map_multiple(PAGE_ALIGN_DOWN((addr_t)elf->symtab), READ_WRITE_KERNEL, divide_up(elf->symtabsz, PAGE_SIZE));
+			tmp_map = (addr_t) mem_page_map_kernel(PAGE_ALIGN_DOWN(sh[i].addr), divide_up(elf->symtabsz, PAGE_SIZE), READ_WRITE_KERNEL);
+			elf->symtab = (elf_symbol_t *) (tmp_map | (sh[i].addr & ~PAGE_MASK));
+			pr_debug("symtab maping: 0x%x -> 0x%x pages: %u\r\n", sh[i].addr, (addr_t) elf->symtab, divide_up(elf->symtabsz, PAGE_SIZE));
+
 		}
 	}
 
@@ -99,6 +103,7 @@ void ksymbol_init(multiboot_info_t *mbi)
 {
 
 	FUNC_ENTER();
+	uint32_t fixed_addr;
 
 	multiboot_elf_section_header_table_t *elf_sec;
 
@@ -109,10 +114,12 @@ void ksymbol_init(multiboot_info_t *mbi)
 
 	elf_sec = &mbi->u.elf_sec;
 
-	pr_debug("multiboot header: sections %u size %u addr: 0x%x shndx %u\r\n",
-	         elf_sec->num, elf_sec->size, elf_sec->addr, elf_sec->shndx);
+	fixed_addr = (addr_t) mem_page_map_kernel(PAGE_ALIGN_DOWN(elf_sec->addr), divide_up(elf_sec->size, PAGE_SIZE), READ_WRITE_KERNEL);
+	fixed_addr |= elf_sec->addr & ~PAGE_MASK;
+	pr_debug("multiboot header: sections %u size %u addr: 0x%x -> 0x%x shndx %u\r\n",
+	         elf_sec->num, elf_sec->size, elf_sec->addr, fixed_addr, elf_sec->shndx);
+	elf_sec->addr = fixed_addr;
 
-	mem_identity_map_multiple(PAGE_ALIGN_DOWN(elf_sec->addr), READ_WRITE_KERNEL, divide_up(elf_sec->size, PAGE_SIZE));
 	elf_from_multiboot(elf_sec, &kernel_elf);
 }
 
