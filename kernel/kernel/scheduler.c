@@ -29,11 +29,17 @@
 #include <lib/list.h>
 #include <scheduler.h>
 #include <printk.h>
-
+#include <apic.h>
 static LIST(running_tasks);
 static LIST(stopped_tasks);
 
 static task_t *current_task = NULL;
+
+static task_t *_scheduler_get_next_running_task()
+{
+	//TODO: Implement the scheduler here.
+	return list_first_entry(&running_tasks, task_t, list);
+}
 
 void scheduler_switch_task(registers_t regs)
 {
@@ -41,9 +47,8 @@ void scheduler_switch_task(registers_t regs)
 	{
 		return;    // scheduler wasn't loaded yet
 	}
+	pr_info("Switching to task %u...\r\n", current_task->pid);
 
-	/* Save registers */
-	pr_info("Switching task...\r\n");
 	current_task->regs.eax = regs.eax;
 	current_task->regs.ebx = regs.ebx;
 	current_task->regs.ecx = regs.ecx;
@@ -57,7 +62,12 @@ void scheduler_switch_task(registers_t regs)
 	current_task->regs.eip = regs.eip;
 	current_task->regs.eflags = regs.eflags;
 
-//	scheduler_start();
+	current_task = _scheduler_get_next_running_task();
+	/* Save registers */
+	apic_eoi();
+
+	switch_to_task(current_task);
+
 }
 void scheduler_add_task(task_t *task)
 {
@@ -71,11 +81,6 @@ void scheduler_remove_task(task_t *task)
 	list_remove_entry(&task->list);
 }
 
-static task_t *_scheduler_get_next_running_task()
-{
-	//TODO: Implement the scheduler here.
-	return list_first_entry(&running_tasks, task_t, list);
-}
 void scheduler_start()
 {
 	current_task = _scheduler_get_next_running_task();
