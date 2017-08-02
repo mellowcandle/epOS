@@ -118,10 +118,6 @@ void prepare_init_task(void *physical, uint32_t count)
 	new->regs.eip = 0;
 	scheduler_add_task(new);
 
-#ifdef DEBUG
-	printk("Dumping new PDT:\r\n-------------------------\r\n");
-	dump_pdt_indirect(new->pdt_virt_addr);
-#endif
 	FUNC_LEAVE();
 	return;
 
