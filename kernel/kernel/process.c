@@ -111,10 +111,9 @@ void prepare_init_task(void *physical, uint32_t count)
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
 
 	new->regs.eflags = 0x202; //TODO: understand why
-	new->regs.ss = SEGSEL_KERNEL_DS;// | 0x03;
-	new->regs.cs = SEGSEL_KERNEL_CS;// | 0x03;
-	new->regs.esp = (uint32_t) new->kernel_stack_pointer;
-	/* new->regs.esp = (uint32_t) new->stack_virt_addr - 4; */
+	new->regs.ss = SEGSEL_USER_SPACE_DS | 0x03;
+	new->regs.cs = SEGSEL_USER_SPACE_CS | 0x03;
+	new->regs.esp = (uint32_t) new->stack_virt_addr - 4;
 	new->regs.eip = 0;
 	scheduler_add_task(new);
 
@@ -171,5 +170,5 @@ void switch_to_task(task_t *task)
 {
 	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_virt_addr);
 	mem_switch_page_directory(task->pdt_phy_addr);
-	run_kernel_task(&task->regs);
+	run_user_task(&task->regs);
 }

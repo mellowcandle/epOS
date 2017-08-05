@@ -30,6 +30,8 @@
 #include <scheduler.h>
 #include <printk.h>
 #include <apic.h>
+#include <cpu.h>
+
 static LIST(running_tasks);
 static LIST(stopped_tasks);
 
@@ -47,8 +49,10 @@ void scheduler_switch_task(registers_t regs)
 	{
 		return;    // scheduler wasn't loaded yet
 	}
+
 	pr_info("Switching to task %u...\r\n", current_task->pid);
 
+	/* Save registers */
 	current_task->regs.eax = regs.eax;
 	current_task->regs.ebx = regs.ebx;
 	current_task->regs.ecx = regs.ecx;
@@ -63,7 +67,6 @@ void scheduler_switch_task(registers_t regs)
 	current_task->regs.eflags = regs.eflags;
 
 	current_task = _scheduler_get_next_running_task();
-	/* Save registers */
 	apic_eoi();
 
 	switch_to_task(current_task);
