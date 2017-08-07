@@ -119,7 +119,7 @@ void mem_switch_page_directory(addr_t new_dir)
 {
 	FUNC_ENTER();
 
-	pr_debug("setting page directory to: 0x%X\r\n", new_dir);
+//	pr_warn("setting page directory to: 0x%X\r\n", new_dir);
 	__asm volatile("mov %0, %%cr3":: "r"(new_dir));
 
 	FUNC_LEAVE();
@@ -516,6 +516,7 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 	}
 	else
 	{
+		target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] |= flags;
 		access_ptr = mem_page_map_kernel(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PAGE_MASK, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 	}
 
