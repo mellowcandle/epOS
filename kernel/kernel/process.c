@@ -94,7 +94,6 @@ void prepare_init_task(void *physical, uint32_t count)
 		pr_error("Failed cloning process\r\n");
 		goto fail3;
 	}
-
 	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
 
 	// Allocate user stack
@@ -110,10 +109,10 @@ void prepare_init_task(void *physical, uint32_t count)
 	// Map the user stack
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
 
-	new->regs.eflags = 0x202; //TODO: understand why
+	new->regs.eflags = 0x202;
 	new->regs.ss = SEGSEL_USER_SPACE_DS | 0x03;
 	new->regs.cs = SEGSEL_USER_SPACE_CS | 0x03;
-	new->regs.esp = (uint32_t) new->stack_virt_addr - 4;
+	new->regs.esp = KERNEL_VIRTUAL_BASE - 4;
 	new->regs.eip = 0;
 	scheduler_add_task(new);
 
@@ -165,10 +164,29 @@ fail:
 	kfree(new);
 	return NULL;
 }
+void dump_task_state(task_t * task)
+{
+	pr_debug("Task dump\r\n");
+	pr_debug("eax: %x ebx: %x ecx: %x edx: %x ebp: %x esi: %x edi: %x ss:%x esp: %x eflags: %x cs: %x eip: %x \r\n",
+			task->regs.eax,
+			task->regs.ebx,
+			task->regs.ecx,
+			task->regs.edx,
+			task->regs.ebp,
+			task->regs.esi,
+			task->regs.edi,
+			task->regs.ss,
+			task->regs.esp,
+			task->regs.eflags,
+			task->regs.cs,
+			task->regs.eip);
 
+}
 void switch_to_task(task_t *task)
 {
 	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_virt_addr);
 	mem_switch_page_directory(task->pdt_phy_addr);
+	dump_task_state(task);
 	run_user_task(&task->regs);
+
 }

@@ -83,7 +83,5 @@ run_user_task:
     pop     ecx
 
     mov     eax, [eax]              ; restore eax
-
     iret                            ; iret into the given mode
-
 

@@ -422,6 +422,8 @@ void page_fault_handler(registers_t regs)
 	printk("Ocurred on %s, ", page_read ? "read" : "write");
 	printk("Page ownership %s\r\n", page_user ? "user" : "kernel");
 
+
+	while(1);
 	irq_reg_dump(&regs);
 	//dump_pdt();
 	panic();
@@ -784,7 +786,7 @@ void *mem_calloc_pdt(addr_t *p_addr)
 	}
 
 	memset(v_addr, 0, PAGE_SIZE);
-	pr_debug("New PDT: physical: 0x%X, virtual: 0x%X\r\n", *p_addr, v_addr);
+	pr_info("New PDT: physical: 0x%X, virtual: 0x%X\r\n", *p_addr, v_addr);
 	return v_addr;
 }
 

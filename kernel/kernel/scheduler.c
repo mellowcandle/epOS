@@ -86,6 +86,7 @@ void scheduler_remove_task(task_t *task)
 
 void scheduler_start()
 {
+	disable_irq(); // Interrupts will be restored in user space
 	current_task = _scheduler_get_next_running_task();
 	switch_to_task(current_task);
 

@@ -7,8 +7,9 @@
 
 static void gen_protection_fault(registers_t regs)
 {
-	pr_fatal("General Protection fault: error code: 0x%x\r\n", regs.err_code);
-	panic();
+	pr_fatal("General Protection fault: 0x%x\r\n", regs.err_code);
+	while(1)
+		;
 }
 static void double_fault(registers_t regs)
 {

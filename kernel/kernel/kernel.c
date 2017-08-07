@@ -64,18 +64,15 @@ void kmain(void)
 	ksymbol_init(mbi);
 	vga_init();
 	vga_clear_screen();
-
 	acpi_early_init();
 	enable_irq();
 
 	ticks_init();
-
 	if (kbd_8042_avail())
 	{
 		pr_info("8042 keyboard detected\r\n");
 		kbd_8042_init();
 	}
-
 	mmodules_parse(mbi);
 
 
