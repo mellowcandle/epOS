@@ -39,6 +39,8 @@
 #include <kbd.h>
 #include <mmodules.h>
 #include <scheduler.h>
+#include <syscall.h>
+
 void kmain(void)
 {
 	extern uint32_t magic;
@@ -65,14 +67,17 @@ void kmain(void)
 	vga_init();
 	vga_clear_screen();
 	acpi_early_init();
+	init_syscalls();
 	enable_irq();
 
 	ticks_init();
+#if 0
 	if (kbd_8042_avail())
 	{
 		pr_info("8042 keyboard detected\r\n");
 		kbd_8042_init();
 	}
+#endif
 	mmodules_parse(mbi);
 
 

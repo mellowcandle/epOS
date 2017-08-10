@@ -26,3 +26,9 @@
 */
 
 #include <syscall.h>
+
+DEFN_SYSCALL1(open, 0, char *)
+//DEFN_SYSCALL1(close, 1, int)
+//DEFN_SYSCALL3(read, 2, int, char *, int)
+//DEFN_SYSCALL3(write, 3, int, char *, int)
+

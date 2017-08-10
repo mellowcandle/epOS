@@ -31,7 +31,8 @@ LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
 CFLAGS := -std=gnu99  -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -c
-INCLUDES := -I../libc
+INCLUDES := -I../libc -I../kernel/include/uapi
+
 all: program program2
 
 OBJFILES := program.o

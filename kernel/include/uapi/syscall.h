@@ -85,10 +85,10 @@ int syscall_##fn(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) \
 }
 
 
-DECL_SYSCALL1(open, const char * file)
+DECL_SYSCALL1(open, char *)
 DECL_SYSCALL1(close, int)
 DECL_SYSCALL3(read, int, char *, int)
-DECL_SYSCALL3(write, int, const char *, int)
+DECL_SYSCALL3(write, int, char *, int)
 
 
 #endif /* end of include guard: SYSCALL_H_M6WW51RJ */
