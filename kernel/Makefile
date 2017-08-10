@@ -31,7 +31,7 @@ CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding -fstack-protector-strong $(WARN
 
 PROJDIRS := include kernel lib boot drivers mem arch
 
-INCLUDES := -Iinclude -Iarch/x86/include -Idrivers/include
+INCLUDES := -Iinclude -Iarch/x86/include -Idrivers/include -Iinclude/uapi
 SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.c")
 SRCFILES += $(shell find $(PROJDIRS) -type f -name "*.s")
 

@@ -34,6 +34,7 @@ DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
 
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding $(WARNINGS)
+INCLUDES := -I../kernel/include/uapi
 
 -include $(dep)   # include all dep files in the makefile
 
