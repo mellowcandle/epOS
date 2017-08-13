@@ -34,6 +34,11 @@
 void scheduler_add_task(task_t *task);
 void scheduler_remove_task(task_t *task);
 void scheduler_switch_task(registers_t regs);
-
+task_t * get_current_task();
 void scheduler_start();
+
+/* defined in scheduler.s */
+void run_user_task(task_registers_t *registers);
+void run_kernel_task(task_registers_t *registers);
+
 #endif /* end of include guard: SCHEDULER_H_WTDXB0FE */

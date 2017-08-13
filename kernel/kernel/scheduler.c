@@ -43,12 +43,18 @@ static task_t *_scheduler_get_next_running_task()
 	return list_first_entry(&running_tasks, task_t, list);
 }
 
+task_t * get_current_task()
+{
+	return current_task;
+}
+
 void scheduler_switch_task(registers_t regs)
 {
 	if (current_task == NULL)
 	{
 		return;    // scheduler wasn't loaded yet
 	}
+	disable_irq(); // Interrupts will be restored in user space
 
 	pr_info("Switching to task %u...\r\n", current_task->pid);
 
@@ -67,7 +73,7 @@ void scheduler_switch_task(registers_t regs)
 	current_task->regs.eflags = regs.eflags;
 
 	current_task = _scheduler_get_next_running_task();
-	apic_eoi();
+//	apic_eoi();
 
 	switch_to_task(current_task);
 
@@ -89,7 +95,6 @@ void scheduler_start()
 	disable_irq(); // Interrupts will be restored in user space
 	current_task = _scheduler_get_next_running_task();
 	switch_to_task(current_task);
-
 	/* Should not get here */
 	while (1);
 }

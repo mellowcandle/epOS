@@ -46,10 +46,6 @@ extern uint32_t *current_pdt;
 
 void mem_switch_page_directory(addr_t new_dir);
 
-/* defined in scheduler.s */
-void run_user_task(task_registers_t *registers);
-void run_kernel_task(task_registers_t *registers);
-
 uint32_t get_next_pid()
 {
 	return ++pid_counter;
