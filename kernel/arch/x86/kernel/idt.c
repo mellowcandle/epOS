@@ -83,7 +83,7 @@ extern void isr28();
 extern void isr29();
 extern void isr30();
 extern void isr31();
-extern void isr128();
+extern void isr64();
 extern void irq0();
 extern void irq1();
 extern void irq2();
@@ -164,7 +164,7 @@ void idt_init()
 	idt_set_gate(29, (uint32_t)isr29, 0x08, 0x8E);
 	idt_set_gate(30, (uint32_t)isr30, 0x08, 0x8E);
 	idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8E);
-	idt_set_gate(128, (uint32_t)isr128, 0x08, 0x8E);
+	idt_set_gate(64, (uint32_t)isr64, 0x08, 0x8E);
 
 	idt_set_gate(32, (uint32_t)irq0, 0x08, 0x8E);
 	idt_set_gate(33, (uint32_t)irq1, 0x08, 0x8E);
