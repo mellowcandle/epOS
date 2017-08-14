@@ -10,8 +10,9 @@ int stderr;
 //int main(int argc, char *argv[])
 int main()
 {
-
-	stdin = syscall_open("/dev/keyboard");
+	int ret;
+	stdin = syscall_open("/dev/console");
+	ret = syscall_close(stdin);
 //	stdout = syscall_open("/dev/console");
 //	stderr = syscall_open("/dev/console");
 
