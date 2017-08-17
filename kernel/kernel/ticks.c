@@ -29,14 +29,13 @@
 #include <i8254.h>
 #include <scheduler.h>
 
-#define TASK_SWITCH_INTERVAL 5
+#define TASK_SWITCH_INTERVAL 10
 
 volatile uint32_t ticks = 0;
 
-static void tick_callback(registers_t regs)
+static void tick_callback(registers_t *regs)
 {
 	ticks++;
-
 	if (ticks % TASK_SWITCH_INTERVAL == 0)
 	{
 		scheduler_switch_task(regs);

@@ -33,9 +33,10 @@
 
 void scheduler_add_task(task_t *task);
 void scheduler_remove_task(task_t *task);
-void scheduler_switch_task(registers_t regs);
+void scheduler_switch_task(registers_t *regs);
 task_t * get_current_task();
 void scheduler_start();
+void save_registers(task_t * current_task, registers_t * regs);
 
 /* defined in scheduler.s */
 void run_user_task(task_registers_t *registers);

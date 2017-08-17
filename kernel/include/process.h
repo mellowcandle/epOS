@@ -79,5 +79,6 @@ typedef struct
 task_t *clone(task_t *parent);
 void prepare_init_task(void *physical, uint32_t count);
 void switch_to_task(task_t *task);
+void dump_task_state(task_t * task);
 
 #endif /* end of include guard: PROCESS_H_98R63AWS */

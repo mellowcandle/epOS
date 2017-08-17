@@ -37,6 +37,7 @@
 int syscall_open(char * file)
 {
 	FUNC_ENTER();
+	printk("%s\r\n", file);
 	return 0;
 }
 
@@ -49,6 +50,7 @@ int syscall_close(int fd)
 int syscall_read(int fd, char * buf, int len)
 {
 	FUNC_ENTER();
+
 	return 0;
 }
 
@@ -67,13 +69,19 @@ static void *syscalls[SYSCALLS_COUNT] =
 };
 
 
-static void syscall_handler(registers_t regs)
+static void syscall_handler(registers_t *regs)
 {
+	task_t * current = get_current_task();
 
-  if (regs.eax >= SYSCALLS_COUNT)
-	return;
-	pr_info("syscall handler: %u\r\n", regs.eax);
-	void *location = syscalls[regs.eax];
+	pr_info("syscall handler: %u\r\n", regs->eax);
+
+	if (regs->eax >= SYSCALLS_COUNT)
+		return;
+
+	save_registers(current, regs);
+	dump_task_state(current);
+
+	void *location = syscalls[regs->eax];
 	// We don't know how many parameters the function wants, so we just
     // push them all onto the stack in the correct order. The function will
     // use all the parameters it wants, and we can pop them all back off afterwards.
@@ -90,9 +98,14 @@ static void syscall_handler(registers_t regs)
       pop %%ebx; \
       pop %%ebx; \
       pop %%ebx; \
-    " : "=a" (ret) : "r" (regs.edi), "r" (regs.esi), "r" (regs.edx), "r" (regs.ecx), "r" (regs.ebx), "r" (location));
-    regs.eax = ret;
+    " : "=a" (ret) : "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
+	current->regs.eax = ret;
+
+	switch_to_task(current);
+
 }
+
+
 
 void init_syscalls()
 {

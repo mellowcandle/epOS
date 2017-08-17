@@ -24,6 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
+#define DEBUG
 
 #include <process.h>
 #include <lib/list.h>
@@ -48,32 +49,21 @@ task_t * get_current_task()
 	return current_task;
 }
 
-void scheduler_switch_task(registers_t regs)
+void scheduler_switch_task(registers_t *regs)
 {
+	FUNC_ENTER();
 	if (current_task == NULL)
 	{
 		return;    // scheduler wasn't loaded yet
 	}
 	disable_irq(); // Interrupts will be restored in user space
-
+	save_registers(current_task, regs);
+	dump_task_state(current_task);
 	pr_info("Switching to task %u...\r\n", current_task->pid);
 
 	/* Save registers */
-	current_task->regs.eax = regs.eax;
-	current_task->regs.ebx = regs.ebx;
-	current_task->regs.ecx = regs.ecx;
-	current_task->regs.edx = regs.edx;
-	current_task->regs.ebp = regs.ebp;
-	current_task->regs.esp = regs.esp + 12; // to exclude what was pushed in IRQ
-	current_task->regs.esi = regs.esi;
-	current_task->regs.edi = regs.edi;
-	current_task->regs.cs = regs.cs;
-	current_task->regs.ss = regs.ss;
-	current_task->regs.eip = regs.eip;
-	current_task->regs.eflags = regs.eflags;
-
 	current_task = _scheduler_get_next_running_task();
-//	apic_eoi();
+	apic_eoi();
 
 	switch_to_task(current_task);
 
@@ -98,4 +88,19 @@ void scheduler_start()
 	/* Should not get here */
 	while (1);
 }
+void save_registers(task_t * current_task, registers_t * regs) {
 
+/* Save registers */
+	current_task->regs.eax = regs->eax;
+	current_task->regs.ebx = regs->ebx;
+	current_task->regs.ecx = regs->ecx;
+	current_task->regs.edx = regs->edx;
+	current_task->regs.ebp = regs->ebp;
+	current_task->regs.esp = regs->useresp;
+	current_task->regs.esi = regs->esi;
+	current_task->regs.edi = regs->edi;
+	current_task->regs.cs = regs->cs;
+	current_task->regs.ss = regs->ss;
+	current_task->regs.eip = regs->eip;
+	current_task->regs.eflags = regs->eflags;
+}

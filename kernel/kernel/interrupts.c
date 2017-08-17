@@ -32,6 +32,8 @@
 #include <cpu.h>
 #include <isr.h>
 #include <apic.h>
+#include <scheduler.h>
+#include <lib/string.h>
 
 isr_t interrupt_handlers[256];
 
@@ -48,7 +50,7 @@ void isr_handler(registers_t regs)
 	if (interrupt_handlers[regs.int_no] != 0)
 	{
 		isr_t handler = interrupt_handlers[regs.int_no];
-		handler(regs);
+		handler(&regs);
 	}
 
 }
@@ -59,7 +61,7 @@ void irq_handler(registers_t regs)
 	if (interrupt_handlers[regs.int_no] != 0)
 	{
 		isr_t handler = interrupt_handlers[regs.int_no];
-		handler(regs);
+		handler(&regs);
 	}
 
 	apic_eoi();
