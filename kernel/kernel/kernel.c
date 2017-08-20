@@ -64,13 +64,13 @@ void kmain(void)
 	mem_init(mbi);
 
 	ksymbol_init(mbi);
-	vga_init();
-	vga_clear_screen();
+//	vga_init();
+//	vga_clear_screen();
 	acpi_early_init();
 	init_syscalls();
 	enable_irq();
 
-	ticks_init();
+//	ticks_init();
 #if 0
 	if (kbd_8042_avail())
 	{
@@ -79,7 +79,6 @@ void kmain(void)
 	}
 #endif
 	mmodules_parse(mbi);
-
 
 	printk("Bla Bla\r\n");
 
