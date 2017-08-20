@@ -180,7 +180,7 @@ void dump_task_state(task_t * task)
 }
 void switch_to_task(task_t *task)
 {
-	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_virt_addr);
+	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_pointer);
 	mem_switch_page_directory(task->pdt_phy_addr);
 	dump_task_state(task);
 	run_user_task(&task->regs);
