@@ -3,15 +3,15 @@
 
 int printf(const char *format, ...);
 
-static int __stdin;
-static int __stdout;
-static int __stderr;
+int __stdin;
+int __stdout;
+int __stderr;
 
 void stdlib_init()
 {
 	__stdin = syscall_open("/dev/keyboard");
-	__stdout = syscall_open("/dev/console1");
-	__stderr = syscall_open("/dev/console2");
+	__stdout = syscall_open("/dev/console");
+	__stderr = syscall_open("/dev/console");
 }
 
 
@@ -20,6 +20,7 @@ int main()
 {
 	while (1)
 	{
+		printf("Hello world from user space\r\n");
 	}
 
 	return 0;

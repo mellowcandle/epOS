@@ -31,13 +31,16 @@
 #include <scheduler.h>
 #include <isr.h>
 #include <printk.h>
-
+#include <lib/string.h>
 #define SYSCALLS_COUNT 4
 
 int syscall_open(char * file)
 {
 	FUNC_ENTER();
-	printk("%s\r\n", file);
+	if(!strcmp(file,"/dev/console"))
+		return 1;
+	else
+
 	return 0;
 }
 
@@ -57,6 +60,8 @@ int syscall_read(int fd, char * buf, int len)
 int syscall_write(int fd, char * buf, int len)
 {
 	FUNC_ENTER();
+	if (fd == 1)
+		printk("%s", buf);
 	return 0;
 }
 
@@ -73,13 +78,12 @@ static void syscall_handler(registers_t *regs)
 {
 	task_t * current = get_current_task();
 
-	pr_info("syscall handler: %u\r\n", regs->eax);
+	pr_debug("syscall handler: %u\r\n", regs->eax);
 
 	if (regs->eax >= SYSCALLS_COUNT)
 		return;
 
 	save_registers(current, regs);
-	dump_task_state(current);
 
 	void *location = syscalls[regs->eax];
 	// We don't know how many parameters the function wants, so we just
