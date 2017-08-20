@@ -110,7 +110,7 @@ addr_t virt_to_phys(void *addr)
 extern uint32_t kernel_end, kernel_start;
 void dump_pdt();
 
-void page_fault_handler(registers_t regs);
+void page_fault_handler(registers_t *regs);
 void mem_heap_init();
 void mem_phys_init(addr_t phy_start, uint32_t total_pages);
 static void _kernel_allocate_pdt();
@@ -378,10 +378,10 @@ static void _kernel_allocate_pdt()
 
 }
 
-void page_fault_handler(registers_t regs)
+void page_fault_handler(registers_t *regs)
 {
 
-	addr_t cr2, err_code = regs.err_code;
+	addr_t cr2, err_code = regs->err_code;
 
 	bool page_present; // else missing
 	bool page_read;  // else write
@@ -424,7 +424,7 @@ void page_fault_handler(registers_t regs)
 
 
 	while(1);
-	irq_reg_dump(&regs);
+	irq_reg_dump(regs);
 	//dump_pdt();
 	panic();
 }

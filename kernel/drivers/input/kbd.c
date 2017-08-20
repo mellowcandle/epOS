@@ -131,7 +131,7 @@ static void kbd_8042_write_config(uint8_t config)
 	kbd_8042_write_data(config);
 }
 
-void kbd_irq_handler(registers_t regs)
+void kbd_irq_handler(registers_t *regs)
 {
 
 	while ((kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))

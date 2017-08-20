@@ -5,13 +5,13 @@
 #include <cpu.h>
 #include <isr.h>
 
-static void gen_protection_fault(registers_t regs)
+static void gen_protection_fault(registers_t *regs)
 {
-	pr_fatal("General Protection fault: 0x%x\r\n", regs.err_code);
+	pr_fatal("General Protection fault: 0x%x\r\n", regs->err_code);
 	while(1)
 		;
 }
-static void double_fault(registers_t regs)
+static void double_fault(registers_t *regs)
 {
 	pr_fatal("Double fault\r\n");
 	panic();
