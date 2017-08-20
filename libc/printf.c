@@ -30,6 +30,7 @@
 #include "ctype.h"
 #include "stdint.h"
 #include "string.h"
+#include <syscall.h>
 
 #define LEFT_JUSTIFY BIT(0)
 #define PLUS_MANDATORY BIT(1)
@@ -68,8 +69,10 @@
 #define SET_LENGTH(a,b) BF_SET(a,b,6,2)
 
 static char buffer[256] = {0};
-
 void serial_write_string(const char *string);
+extern int __stdin;
+extern int __stdout;
+extern int __stderr;
 
 static char *itoa(unsigned long long value, char *str, int base, int width, int precision, int flags)
 {
@@ -621,7 +624,7 @@ int vprintf(const char *format, va_list arg)
 {
 	int done;
 	done = do_printf(buffer, format, arg);
-	serial_write_string(buffer);
+	syscall_write(__stdout, buffer, strlen(buffer));
 
 	return done;
 
@@ -634,7 +637,7 @@ int printf(const char *format, ...)
 	va_start(arg, format);
 	done = do_printf(buffer, format, arg);
 	va_end(arg);
-	serial_write_string(buffer);
+	syscall_write(__stdout, buffer, strlen(buffer));
 
 	return done;
 }
