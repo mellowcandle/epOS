@@ -30,7 +30,7 @@ CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
 LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
-CFLAGS := -std=gnu99  -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -c
+CFLAGS := -std=gnu99  -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -c -g
 INCLUDES := -I../libc -I../kernel/include/uapi
 
 all: program program2

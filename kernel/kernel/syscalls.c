@@ -25,13 +25,15 @@
 	For more information, please refer to <http://unlicense.org>
 */
 
-#define DEBUG
+//#define DEBUG
 
 #include <syscall.h>
 #include <scheduler.h>
 #include <isr.h>
 #include <printk.h>
 #include <lib/string.h>
+#include <cpu.h>
+
 #define SYSCALLS_COUNT 4
 
 int syscall_open(char * file)
@@ -76,6 +78,7 @@ static void *syscalls[SYSCALLS_COUNT] =
 
 static void syscall_handler(registers_t *regs)
 {
+	disable_irq(); // Interrupts will be restored in user space
 	task_t * current = get_current_task();
 
 	pr_debug("syscall handler: %u\r\n", regs->eax);

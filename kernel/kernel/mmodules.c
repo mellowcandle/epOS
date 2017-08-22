@@ -71,8 +71,7 @@ void mmodules_parse(multiboot_info_t *mbi)
 	memcpy(modules, (void *) mbi->mods_addr, mbi->mods_count * sizeof(multiboot_module_t));
 	mem_page_unmap((void *)mbi->mods_addr);
 
-//	for (i = 0; i < mbi->mods_count; i++)
-	for (i = 0; i < 1; i++)
+	for (i = 0; i < mbi->mods_count; i++)
 	{
 		pr_info("Running module: %u\r\n", i);
 		mmodules_run(&modules[i]);

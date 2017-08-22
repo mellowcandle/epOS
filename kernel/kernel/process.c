@@ -43,7 +43,6 @@ extern uint32_t *current_pdt;
 #define SEGSEL_USER_SPACE_CS 0x18
 #define SEGSEL_USER_SPACE_DS 0x20
 
-
 void mem_switch_page_directory(addr_t new_dir);
 
 uint32_t get_next_pid()
@@ -64,7 +63,7 @@ void prepare_init_task(void *physical, uint32_t count)
 
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
-
+	new->type = TASK_USER;
 	// Allocate kernel stack
 	new->kernel_stack_phy_addr = mem_get_page();
 
@@ -180,9 +179,17 @@ void dump_task_state(task_t * task)
 }
 void switch_to_task(task_t *task)
 {
-	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_pointer);
-	mem_switch_page_directory(task->pdt_phy_addr);
+#ifdef DEBUG
 	dump_task_state(task);
-	run_user_task(&task->regs);
+#endif
+
+	if (task->type == TASK_USER) {
+		tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_pointer);
+		mem_switch_page_directory(task->pdt_phy_addr);
+		run_user_task(&task->regs);
+	}
+	else {
+		run_kernel_task(&task->regs);
+	}
 
 }

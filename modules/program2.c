@@ -1,21 +1,27 @@
 
+#include <syscall.h>
+
 int printf(const char *format, ...);
+
+int __stdin;
+int __stdout;
+int __stderr;
+
+void stdlib_init()
+{
+	__stdin = syscall_open("/dev/keyboard");
+	__stdout = syscall_open("/dev/console");
+	__stderr = syscall_open("/dev/console");
+}
+
 
 //int main(int argc, char *argv[])
 int main()
 {
-	unsigned int i=0;
 	while (1)
 	{
-		printf("2 - %d\r\n",i++);
+		printf("(2) Hello world from user space\r\n");
 	}
 
-#if 0
-here:
-	__asm(".intel_syntax noprefix");
-
-	__asm volatile("mov eax, 0xdeadbeef");
-	goto here;
-#endif
 	return 0;
 }

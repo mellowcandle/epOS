@@ -39,7 +39,7 @@
 #include <kbd.h>
 #include <mmodules.h>
 #include <scheduler.h>
-#include <syscall.h>
+#include <uapi/syscall.h>
 
 void kmain(void)
 {
@@ -64,23 +64,19 @@ void kmain(void)
 	mem_init(mbi);
 
 	ksymbol_init(mbi);
-//	vga_init();
-//	vga_clear_screen();
+	vga_init();
 	acpi_early_init();
 	init_syscalls();
 	enable_irq();
+	ticks_init();
 
-//	ticks_init();
-#if 0
 	if (kbd_8042_avail())
 	{
 		pr_info("8042 keyboard detected\r\n");
 		kbd_8042_init();
 	}
-#endif
-	mmodules_parse(mbi);
 
-	printk("Bla Bla\r\n");
+//	mmodules_parse(mbi);
 
 	scheduler_start();
 

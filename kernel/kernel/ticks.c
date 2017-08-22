@@ -29,7 +29,7 @@
 #include <i8254.h>
 #include <scheduler.h>
 
-#define TASK_SWITCH_INTERVAL 10
+#define TASK_SWITCH_INTERVAL 100
 
 volatile uint32_t ticks = 0;
 

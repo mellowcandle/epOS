@@ -45,7 +45,7 @@ void register_interrupt_handler(uint8_t n, isr_t handler)
 // This gets called from our ASM interrupt handler stub.
 void isr_handler(registers_t regs)
 {
-	pr_warn("Recieved interrupt number: %u\r\n", regs.int_no);
+	pr_debug("Recieved interrupt number: %u\r\n", regs.int_no);
 
 	if (interrupt_handlers[regs.int_no] != 0)
 	{

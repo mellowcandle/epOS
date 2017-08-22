@@ -36,12 +36,32 @@
 static LIST(running_tasks);
 static LIST(stopped_tasks);
 
+extern uint32_t *current_pdt;
+
 static task_t *current_task = NULL;
+static task_t idle_task = {
+	.pid = 0,
+	.parent_pid = 0,
+	.state = TASK_RUNNING,
+	.regs.eflags = 0x202,
+#define SEGSEL_KERNEL_CS 0x08
+#define SEGSEL_KERNEL_DS 0x10
+	.regs.ss = SEGSEL_KERNEL_DS,
+	.regs.cs = SEGSEL_KERNEL_CS,
+};
+
 
 static task_t *_scheduler_get_next_running_task()
 {
-	//TODO: Implement the scheduler here.
-	return list_first_entry(&running_tasks, task_t, list);
+	if (list_is_empty(&running_tasks)) {
+		return &idle_task;
+	}
+	else if (!current_task) {
+		return list_first_entry(&running_tasks, task_t, list);
+	}
+	else {
+		return	list_entry(current_task->list.next, task_t, list);
+	}
 }
 
 task_t * get_current_task()
@@ -56,13 +76,13 @@ void scheduler_switch_task(registers_t *regs)
 	{
 		return;    // scheduler wasn't loaded yet
 	}
+
 	disable_irq(); // Interrupts will be restored in user space
 	save_registers(current_task, regs);
-	dump_task_state(current_task);
-	pr_info("Switching to task %u...\r\n", current_task->pid);
 
 	/* Save registers */
 	current_task = _scheduler_get_next_running_task();
+	pr_debug("Switching to task %u...\r\n", current_task->pid);
 	apic_eoi();
 
 	switch_to_task(current_task);
@@ -80,9 +100,37 @@ void scheduler_remove_task(task_t *task)
 	list_remove_entry(&task->list);
 }
 
+void  idle_function()
+{
+	uint32_t i;
+	while(1) {
+		pr_debug("Idle task: %u\r\n", i++);
+	}
+}
+static void prepare_idle_task()
+{
+	/* Setup the idle task */
+	idle_task.pdt_virt_addr = current_pdt;
+	// Allocate kernel stack
+	idle_task.kernel_stack_phy_addr = mem_get_page();
+	if (!idle_task.kernel_stack_phy_addr)
+	{
+		pr_fatal("Can't get free page\r\n");
+		panic();
+	}
+	idle_task.kernel_stack_virt_addr = mem_page_map_kernel(idle_task.kernel_stack_phy_addr, 1, READ_WRITE_KERNEL);
+	idle_task.kernel_stack_pointer = idle_task.kernel_stack_virt_addr + PAGE_SIZE - 4;
+	idle_task.regs.esp = (addr_t) idle_task.kernel_stack_pointer;
+	idle_task.regs.eip = (addr_t) &idle_function;
+	idle_task.regs.eip = (addr_t) &idle_function;
+}
+
 void scheduler_start()
 {
 	disable_irq(); // Interrupts will be restored in user space
+
+	prepare_idle_task();
+
 	current_task = _scheduler_get_next_running_task();
 	switch_to_task(current_task);
 	/* Should not get here */
@@ -96,11 +144,17 @@ void save_registers(task_t * current_task, registers_t * regs) {
 	current_task->regs.ecx = regs->ecx;
 	current_task->regs.edx = regs->edx;
 	current_task->regs.ebp = regs->ebp;
-	current_task->regs.esp = regs->useresp;
 	current_task->regs.esi = regs->esi;
 	current_task->regs.edi = regs->edi;
 	current_task->regs.cs = regs->cs;
 	current_task->regs.ss = regs->ss;
 	current_task->regs.eip = regs->eip;
 	current_task->regs.eflags = regs->eflags;
+	if(current_task->type == TASK_USER) {
+		current_task->regs.esp = regs->useresp;
+	}
+	else {
+		current_task->regs.esp = regs->esp + 12;
+	}
+
 }

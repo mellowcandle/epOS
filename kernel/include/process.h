@@ -54,11 +54,17 @@ typedef enum
 	TASK_STOPPED
 } task_state_t;
 
+typedef enum
+{
+	TASK_KERNEL = 0,
+	TASK_USER
+} task_type_t;
+
 typedef struct
 {
 	uint32_t pid;
 	uint32_t parent_pid;
-
+	task_type_t type;
 	task_state_t state;
 
 	addr_t pdt_phy_addr;

@@ -18,9 +18,10 @@ void stdlib_init()
 //int main(int argc, char *argv[])
 int main()
 {
+	unsigned int i = 0;
 	while (1)
 	{
-		printf("Hello world from user space\r\n");
+		printf("(1) Hello world from user space: %u\r\n", i++);
 	}
 
 	return 0;
