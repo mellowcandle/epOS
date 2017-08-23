@@ -31,7 +31,7 @@ export CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
 export LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
 export AR	= $(TOOLCHAIN_PATH)/bin/i686-elf-ar
 export ASM	= nasm
-export WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts --Wno-missing-field-initializers
+export WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts -Wno-missing-field-initializers
 
 ISODIR_PATH = isodir
 

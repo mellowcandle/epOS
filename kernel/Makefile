@@ -25,7 +25,7 @@
 
 .PHONY: all clean dist modules testdrivers todolist cscope cscope_update multiboot style lines prepare
 
-WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts
+WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts -Wno-missing-field-initializers
 
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding -fstack-protector-strong $(WARNINGS)
 
