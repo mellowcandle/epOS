@@ -184,4 +184,9 @@ static inline void disable_irq()
 	__asm volatile("cli");
 }
 
+static inline void cpu_relax()
+{
+	__asm volatile("hlt");
+}
+
 #endif /* CPU_H_ */

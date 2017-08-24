@@ -101,9 +101,8 @@ void scheduler_remove_task(task_t *task)
 
 void  idle_function()
 {
-	uint32_t i;
 	while(1) {
-		pr_debug("Idle task: %u\r\n", i++);
+		cpu_relax();
 	}
 }
 static void prepare_idle_task()
