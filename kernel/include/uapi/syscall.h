@@ -84,11 +84,26 @@ int syscall_##fn(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) \
   return a; \
 }
 
+/* Forward declerations */
+struct stat;
+struct tms;
 
-DECL_SYSCALL1(open, char *)
+DECL_SYSCALL0(exit)
 DECL_SYSCALL1(close, int)
+DECL_SYSCALL3(execve, char *, char **, char **)
+DECL_SYSCALL0(fork)
+DECL_SYSCALL2(fstat, int, struct stat *)
+DECL_SYSCALL0(getpid)
+DECL_SYSCALL0(iastty)
+DECL_SYSCALL2(kill, int, int)
+DECL_SYSCALL2(link, char *, char *)
+DECL_SYSCALL3(lseek, int, int, int)
+DECL_SYSCALL3(open, char *, int, int)
 DECL_SYSCALL3(read, int, char *, int)
+DECL_SYSCALL1(sbrk, int)
+DECL_SYSCALL2(stat, char *, struct stat *)
+DECL_SYSCALL1(times, struct tms *)
+DECL_SYSCALL1(unlink, char *)
+DECL_SYSCALL1(wait, int *)
 DECL_SYSCALL3(write, int, char *, int)
-
-
 #endif /* end of include guard: SYSCALL_H_M6WW51RJ */

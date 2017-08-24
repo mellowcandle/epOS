@@ -9,9 +9,9 @@ int __stderr;
 
 void stdlib_init()
 {
-	__stdin = syscall_open("/dev/keyboard");
-	__stdout = syscall_open("/dev/console");
-	__stderr = syscall_open("/dev/console");
+	__stdin = syscall_open("/dev/keyboard", 0, 0);
+	__stdout = syscall_open("/dev/console", 0, 0);
+	__stderr = syscall_open("/dev/console", 0, 0);
 }
 
 

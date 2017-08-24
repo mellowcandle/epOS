@@ -27,8 +27,22 @@
 
 #include <syscall.h>
 
-DEFN_SYSCALL1(open, 0, char *)
-DEFN_SYSCALL1(close, 1, int)
-DEFN_SYSCALL3(read, 2, int, char *, int)
-DEFN_SYSCALL3(write, 3, int, char *, int)
+DEFN_SYSCALL0(exit, 0)
+DEFN_SYSCALL1(close, 1,  int)
+DEFN_SYSCALL3(execve, 2, char *, char **, char **)
+DEFN_SYSCALL0(fork, 3)
+DEFN_SYSCALL2(fstat, 4, int, struct stat *)
+DEFN_SYSCALL0(getpid, 5)
+DEFN_SYSCALL0(iastty, 6)
+DEFN_SYSCALL2(kill, 7, int, int)
+DEFN_SYSCALL2(link, 8, char *, char *)
+DEFN_SYSCALL3(lseek, 9, int, int, int)
+DEFN_SYSCALL3(open, 10, char *, int, int)
+DEFN_SYSCALL3(read, 11, int, char *, int)
+DEFN_SYSCALL1(sbrk, 12, int)
+DEFN_SYSCALL2(stat, 13, char *, struct stat *)
+DEFN_SYSCALL1(times, 14, struct tms *)
+DEFN_SYSCALL1(unlink, 15, char *)
+DEFN_SYSCALL1(wait, 16, int *)
+DEFN_SYSCALL3(write, 17, int, char *, int)
 
