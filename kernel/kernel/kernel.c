@@ -76,7 +76,7 @@ void kmain(void)
 		kbd_8042_init();
 	}
 
-//	mmodules_parse(mbi);
+	mmodules_parse(mbi);
 
 	scheduler_start();
 

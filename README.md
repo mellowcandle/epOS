@@ -11,6 +11,8 @@
 * Bitmap Page frame allocator
 * Higer half kernel
 * Paging enabled
+* Preemptable scheduling using round-robin algorithm
+* Ring 0-3 kernel and user space seperation
 * ACPICA
 * APIC/IOAPIC
 * APIC timer
@@ -18,8 +20,6 @@
 
 ## In Progress
 * PS/2 Keyboard driver (8042)
-* Scheduler
-* Ring 3 task execution
 
 ## Todo's
 

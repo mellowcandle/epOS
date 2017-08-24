@@ -24,7 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-#define DEBUG
+//#define DEBUG
 
 #include <types.h>
 #include <mem/memory.h>
@@ -182,9 +182,9 @@ void switch_to_task(task_t *task)
 #ifdef DEBUG
 	dump_task_state(task);
 #endif
+	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_pointer);
 
 	if (task->type == TASK_USER) {
-		tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_pointer);
 		mem_switch_page_directory(task->pdt_phy_addr);
 		run_user_task(&task->regs);
 	}

@@ -53,15 +53,14 @@ static task_t idle_task = {
 
 static task_t *_scheduler_get_next_running_task()
 {
+
 	if (list_is_empty(&running_tasks)) {
 		return &idle_task;
 	}
-	else if (!current_task) {
-		return list_first_entry(&running_tasks, task_t, list);
-	}
 	else {
-		return	list_entry(current_task->list.next, task_t, list);
+		return list_entry(list_remove_entry(running_tasks.next), task_t, list);
 	}
+
 }
 
 task_t * get_current_task()
@@ -77,10 +76,10 @@ void scheduler_switch_task(registers_t *regs)
 		return;    // scheduler wasn't loaded yet
 	}
 
-	disable_irq(); // Interrupts will be restored in user space
+	disable_irq(); // Interrupts will be restored on IRET
 	save_registers(current_task, regs);
+	list_add_tail(&current_task->list, &running_tasks);
 
-	/* Save registers */
 	current_task = _scheduler_get_next_running_task();
 	pr_debug("Switching to task %u...\r\n", current_task->pid);
 	apic_eoi();
@@ -154,7 +153,8 @@ void save_registers(task_t * current_task, registers_t * regs) {
 		current_task->regs.esp = regs->useresp;
 	}
 	else {
-		current_task->regs.esp = regs->esp + 12;
+		current_task->regs.esp = regs->esp + 20;
+		current_task->regs.ss = SEGSEL_KERNEL_DS;
 	}
 
 }

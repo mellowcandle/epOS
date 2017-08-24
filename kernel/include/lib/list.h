@@ -63,7 +63,7 @@ static inline void list_add_tail(list_t *new, list_t *target)
 	list_add_at(new, target->prev, target);
 }
 
-static inline void list_remove_entry(list_t *target)
+static inline list_t * list_remove_entry(list_t *target)
 {
 	// Mind blowing :)
 	target->prev->next = target->next;
@@ -71,6 +71,8 @@ static inline void list_remove_entry(list_t *target)
 
 	target->next = NULL;
 	target->prev = NULL;
+
+	return target;
 }
 
 static inline bool list_is_empty(const list_t *list)
