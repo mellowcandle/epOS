@@ -60,7 +60,7 @@ kernel.iso: multiboot modules
 
 cscope:
 	@echo "Preparing cscope tags"
-	@find . \( -name *.[csh] \) -and -not \( -path "./toolchain/*" \) > cscope.files
+	@find . \( -name *.[csh] \) -and -not \( -path "./toolchain/*" \) -and -not \( -path "./3rd_party/*" \) > cscope.files
 	@cscope -b -q -k
 
 style:
