@@ -36,6 +36,12 @@
 
 #define SYSCALLS_COUNT 18
 
+int syscall_exit(void) {
+	FUNC_ENTER();
+	return 0;
+}
+
+
 int syscall_open(char * file, int flags, int mode)
 {
 	FUNC_ENTER();
@@ -142,6 +148,7 @@ int syscall_wait(int *status) {
 
 static void *syscalls[SYSCALLS_COUNT] =
 {
+	&syscall_exit,
 	&syscall_close,
 	&syscall_execve,
 	&syscall_fork,
