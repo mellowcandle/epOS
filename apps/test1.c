@@ -19,6 +19,7 @@ void stdlib_init()
 int main()
 {
 	unsigned int i = 0;
+
 	while (1)
 	{
 		printf("(1) Hello world from user space: %u\r\n", i++);

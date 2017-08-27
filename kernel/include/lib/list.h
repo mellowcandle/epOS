@@ -63,7 +63,7 @@ static inline void list_add_tail(list_t *new, list_t *target)
 	list_add_at(new, target->prev, target);
 }
 
-static inline list_t * list_remove_entry(list_t *target)
+static inline list_t *list_remove_entry(list_t *target)
 {
 	// Mind blowing :)
 	target->prev->next = target->next;

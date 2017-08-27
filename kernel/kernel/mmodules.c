@@ -36,7 +36,7 @@
 #include <process.h>
 
 typedef void (*call_module_t)(void);
-
+extern int init_ramfs(addr_t phy_addr, uint32_t len);
 
 static void mmodules_run(multiboot_module_t *module)
 {
@@ -44,10 +44,10 @@ static void mmodules_run(multiboot_module_t *module)
 	uint32_t pages_count;
 
 	pr_info("Module: 0x%x - 0x%x \r\n", module->mod_start, module->mod_end);//, (char *) module->cmdline);
-	pages_count = module->mod_end - module->mod_start;
-	pages_count = divide_up(pages_count, PAGE_SIZE);
-
-	prepare_init_task((void *) PAGE_ALIGN_DOWN(module->mod_start), pages_count);
+//	pages_count = module->mod_end - module->mod_start;
+//	pages_count = divide_up(pages_count, PAGE_SIZE);
+	init_ramfs(module->mod_start, module->mod_end - module->mod_start);
+//	prepare_init_task((void *) PAGE_ALIGN_DOWN(module->mod_start), pages_count);
 
 	FUNC_LEAVE();
 }

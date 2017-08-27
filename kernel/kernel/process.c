@@ -89,6 +89,7 @@ void prepare_init_task(void *physical, uint32_t count)
 		pr_error("Failed cloning process\r\n");
 		goto fail3;
 	}
+
 	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
 
 	// Allocate user stack
@@ -159,22 +160,22 @@ fail:
 	kfree(new);
 	return NULL;
 }
-void dump_task_state(task_t * task)
+void dump_task_state(task_t *task)
 {
 	pr_debug("Task dump\r\n");
 	pr_debug("eax: %x ebx: %x ecx: %x edx: %x ebp: %x esi: %x edi: %x ss:%x esp: %x eflags: %x cs: %x eip: %x \r\n",
-			task->regs.eax,
-			task->regs.ebx,
-			task->regs.ecx,
-			task->regs.edx,
-			task->regs.ebp,
-			task->regs.esi,
-			task->regs.edi,
-			task->regs.ss,
-			task->regs.esp,
-			task->regs.eflags,
-			task->regs.cs,
-			task->regs.eip);
+	         task->regs.eax,
+	         task->regs.ebx,
+	         task->regs.ecx,
+	         task->regs.edx,
+	         task->regs.ebp,
+	         task->regs.esi,
+	         task->regs.edi,
+	         task->regs.ss,
+	         task->regs.esp,
+	         task->regs.eflags,
+	         task->regs.cs,
+	         task->regs.eip);
 
 }
 void switch_to_task(task_t *task)
@@ -184,11 +185,13 @@ void switch_to_task(task_t *task)
 #endif
 	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_pointer);
 
-	if (task->type == TASK_USER) {
+	if (task->type == TASK_USER)
+	{
 		mem_switch_page_directory(task->pdt_phy_addr);
 		run_user_task(&task->regs);
 	}
-	else {
+	else
+	{
 		run_kernel_task(&task->regs);
 	}
 

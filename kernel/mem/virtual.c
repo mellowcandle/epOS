@@ -423,7 +423,8 @@ void page_fault_handler(registers_t *regs)
 	printk("Page ownership %s\r\n", page_user ? "user" : "kernel");
 
 
-	while(1);
+	while (1);
+
 	irq_reg_dump(regs);
 	//dump_pdt();
 	panic();
@@ -533,6 +534,7 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 
 			printk("Dumping PDT\r\n------------------\r\n");
 			dump_pdt_indirect(target_pdt);
+
 			while (1);
 		}
 		else

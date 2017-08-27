@@ -57,7 +57,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 		{
 			elf->strtabsz = sh[i].size;
 			tmp_map = (addr_t) mem_page_map_kernel(PAGE_ALIGN_DOWN(sh[i].addr), divide_up(elf->strtabsz, PAGE_SIZE), READ_WRITE_KERNEL);
-			elf->strtab = (char *) (tmp_map | (sh[i].addr & ~PAGE_MASK));
+			elf->strtab = (char *)(tmp_map | (sh[i].addr & ~PAGE_MASK));
 			pr_debug("strtab maping: 0x%x -> 0x%x pages: %u\r\n", sh[i].addr, (addr_t) elf->strtab, divide_up(elf->strtabsz, PAGE_SIZE));
 		}
 
@@ -65,7 +65,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 		{
 			elf->symtabsz = sh[i].size;
 			tmp_map = (addr_t) mem_page_map_kernel(PAGE_ALIGN_DOWN(sh[i].addr), divide_up(elf->symtabsz, PAGE_SIZE), READ_WRITE_KERNEL);
-			elf->symtab = (elf_symbol_t *) (tmp_map | (sh[i].addr & ~PAGE_MASK));
+			elf->symtab = (elf_symbol_t *)(tmp_map | (sh[i].addr & ~PAGE_MASK));
 			pr_debug("symtab maping: 0x%x -> 0x%x pages: %u\r\n", sh[i].addr, (addr_t) elf->symtab, divide_up(elf->symtabsz, PAGE_SIZE));
 
 		}

@@ -160,7 +160,9 @@ addr_t acpi_get_hpet_addr()
 	ACPI_TABLE_HPET *table = acpi_get_hpet();
 
 	if (!table)
+	{
 		return 0;
+	}
 
 	if (table->Address.Address)
 	{
