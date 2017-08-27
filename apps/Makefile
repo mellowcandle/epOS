@@ -23,7 +23,7 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: program
+.PHONY: test1 test2
 
 TOOLCHAIN_PATH = ../toolchain/i686-elf-4.9.1-Linux-x86_64
 CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
@@ -33,10 +33,10 @@ WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
 CFLAGS := -std=gnu99  -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -c -g
 INCLUDES := -I../libc -I../kernel/include/uapi
 
-all: program program2
+all: test1 test2
 
-OBJFILES := program.o
-OBJFILES2 := program2.o
+OBJFILES := test1.o
+OBJFILES2 := test2.o
 
 .c.o:
 	@echo "(CC) $@"
@@ -46,11 +46,12 @@ OBJFILES2 := program2.o
 	@echo "(AS) $@"
 	@$(ASM) -f elf -o $@ $<
 
-program: $(OBJFILES)
+test1: $(OBJFILES)
 	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a $(TOOLCHAIN_PATH)/lib/gcc/i686-elf/4.9.1/libgcc.a # emulate 32 bits ELF, the binary output is specified
-program2: $(OBJFILES2)
+test2: $(OBJFILES2)
 	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a $(TOOLCHAIN_PATH)/lib/gcc/i686-elf/4.9.1/libgcc.a # emulate 32 bits ELF, the binary output is specified
 
 
 clean:
-	rm -rf $(OBJFILES) program program.map
+	rm -rf $(OBJFILES) test1 test2
+

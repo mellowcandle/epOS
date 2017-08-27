@@ -39,35 +39,34 @@ ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
-all: kernel.iso libc modules cscope
+all: kernel.iso libc overlay cscope
 
 prepare:
 	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
 
-modules: libc
-	@echo "Building multiboot modules:"
-	@$(MAKE) --no-print-directory -C modules
+apps: libc
+	@echo "Building Applications:"
+	@$(MAKE) --no-print-directory -C apps
 
 kernel.iso: multiboot modules
 	@rm -rf $(ISODIR_PATH)
 	@mkdir -p $(ISODIR_PATH)/boot/grub
 	@mkdir -p $(ISODIR_PATH)/modules
 	@cp kernel/kernel.bin $(ISODIR_PATH)/boot/kernel.bin
+	@cp rootfs.tar $(ISODIR_PATH)/boot/rootfs.tar
 	@cp make/grub.cfg $(ISODIR_PATH)/boot/grub/grub.cfg
-	@cp modules/program $(ISODIR_PATH)/modules
-	@cp modules/program2 $(ISODIR_PATH)/modules
 	@grub-mkrescue -o kernel.iso $(ISODIR_PATH) > /dev/null 2>&1
 
 cscope:
 	@echo "Preparing cscope tags"
-	@find . \( -name *.[csh] \) -and -not \( -path "./toolchain/*" \) -and -not \( -path "./3rd_party/*" \) > cscope.files
+	@find . \( -name *.[csh] \) -and -not \( -path "./toolchain/*" \) -and -not \( -path "./3rd_party/*" \) -and -not \( -path "./overlay/*" \) > cscope.files
 	@cscope -b -q -k
 
 style:
-	@find . \( -name *.[ch] \) -and -not \( -path "./toolchain/*" \) | xargs ${ASTYLE} ${ASTYLE_CONFIG}
+	@find . \( -name *.[ch] \) -and -not \( -path "./toolchain/*" \) -and -not \( -path "./3rd_party/*" \) -and -not \( -path "./overlay/*" \) | xargs ${ASTYLE} ${ASTYLE_CONFIG}
 
 lines:
-	@cloc --exclude-dir=toolchain,kernel/drivers/acpi/acpica --exclude-lang=XML,D,Markdown,make,Python,DTD .
+	@cloc --exclude-dir=toolchain,kernel/drivers/acpi/acpica,3rd_party,overlay --exclude-lang=XML,D,Markdown,make,Python,DTD .
 
 multiboot:
 	@$(MAKE) --no-print-directory -C kernel
@@ -76,8 +75,15 @@ libc:
 	@$(MAKE) --no-print-directory -C libc
 
 clean:
+	@rm -rf overlay rootfs.tar
+	@rm -rf $(ISODIR_PATH)
 	@$(MAKE) --no-print-directory -C kernel clean
 	@$(MAKE) --no-print-directory -C libc clean
-	@$(MAKE) --no-print-directory -C modules clean
+	@$(MAKE) --no-print-directory -C apps clean
 
-
+overlay: apps
+	@echo "Preparing RAMFS:"
+	@mkdir -p overlay/bin
+	@cp apps/test1 overlay/bin/test1
+	@cp apps/test2 overlay/bin/test2
+	@tar cvf rootfs.tar -C overlay .
