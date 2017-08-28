@@ -387,6 +387,10 @@ case "${host}" in
 	stdio64_dir=stdio64
 	xdr_dir=xdr
 	;;
+  i[3-7]86-*-epos*)
+    sys_dir=epos
+	newlib_cflags="${newlib_cflags} -DSIGNAL_PROVIDED"
+    ;;
   *-*-netware*)
 	signal_dir=
 	sys_dir=netware
