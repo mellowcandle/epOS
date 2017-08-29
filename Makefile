@@ -23,7 +23,7 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: all clean dist modules cscope multiboot style lines prepare libc
+.PHONY: all clean dist modules cscope multiboot style lines libc
 
 CWD = $(shell pwd)
 export TOOLCHAIN_PATH = $(CWD)/toolchain/i686-elf-4.9.1-Linux-x86_64
@@ -40,16 +40,6 @@ ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --in
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
 all: kernel.iso libc overlay cscope
-
-prepare:
-	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
-	@tar xvf toolchain/autoconf-2.65.tar.gz -C toolchain
-	@tar xvf toolchain/automake-1.12.tar.gz -C toolchain
-	@mkdir -p toolchain/bin toolchain/build
-	@cd toolchain/build;${CWD}/toolchain/automake-1.12/configure --prefix="${CWD}/toolchain"
-	@cd toolchain/build;make && make install
-	@cd toolchain/build;${CWD}/toolchain/autoconf-2.65/configure --prefix="${CWD}/toolchain"
-	@cd toolchain/build;make && make install
 
 apps: libc
 	@echo "Building Applications:"
