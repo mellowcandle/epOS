@@ -43,6 +43,13 @@ all: kernel.iso libc overlay cscope
 
 prepare:
 	@tar xvf toolchain/i686-elf-4.9.1-Linux-x86_64.tar.xz -C toolchain
+	@tar xvf toolchain/autoconf-2.65.tar.gz -C toolchain
+	@tar xvf toolchain/automake-1.12.tar.gz -C toolchain
+	@mkdir -p toolchain/bin toolchain/build
+	@cd toolchain/build;${CWD}/toolchain/automake-1.12/configure --prefix="${CWD}/toolchain"
+	@cd toolchain/build;make && make install
+	@cd toolchain/build;${CWD}/toolchain/autoconf-2.65/configure --prefix="${CWD}/toolchain"
+	@cd toolchain/build;make && make install
 
 apps: libc
 	@echo "Building Applications:"
