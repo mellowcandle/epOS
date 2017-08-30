@@ -24,12 +24,14 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-#define DEBUG
+//#define DEBUG
 
 #include <tar.h>
 #include <lib/list.h>
 #include <kmalloc.h>
 #include <printk.h>
+#include <lib/string.h>
+
 #define TAR_BLOCK_SIZE 512
 #define BLOCK_MASK (~(TAR_BLOCK_SIZE-1))
 #define BLOCK_ALIGN_UP(_x) (((_x)+TAR_BLOCK_SIZE - 1) & BLOCK_MASK)
@@ -42,7 +44,7 @@ typedef struct
 	list_t list_head;
 } ramfs_node;
 
-static uint32_t atoi(const char *in, uint32_t len)
+uint32_t ramfs_atoi(const char *in, uint32_t len)
 {
 
 	FUNC_ENTER();
@@ -57,6 +59,20 @@ static uint32_t atoi(const char *in, uint32_t len)
 	return size;
 
 }
+int ramfs_find_node(const char * name, tar_header_t **ptr)
+{
+	ramfs_node * node;
+	list_for_each_entry(node, &ramfs_headers, list_head) {
+		if (strncmp(node->ptr->header.name, name, strlen(name)) == 0) {
+			pr_debug("Found the node\r\n");
+			*ptr = node->ptr;
+			return 0;
+		}
+	}
+	pr_error("Didn't find the node\r\n");
+	return -1;
+}
+
 int parse_ramfs(void *ramfs, uint32_t size)
 {
 	FUNC_ENTER();
@@ -79,11 +95,11 @@ int parse_ramfs(void *ramfs, uint32_t size)
 		new_header->ptr = (tar_header_t *)pos;
 
 		adapt = TAR_BLOCK_SIZE +
-		        BLOCK_ALIGN_UP(atoi(new_header->ptr->header.size, 11));
+		        BLOCK_ALIGN_UP(ramfs_atoi(new_header->ptr->header.size, 11));
 		size -= adapt;
 		offset += adapt;
 
-		list_add(&new_header->list_head, &ramfs_headers);
+		list_add_tail(&new_header->list_head, &ramfs_headers);
 		pr_debug("RAMFS Entry added: %c %s\r\n", new_header->ptr->header.linkflag,
 		         new_header->ptr->header.name);
 	}

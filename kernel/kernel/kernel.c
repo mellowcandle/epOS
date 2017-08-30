@@ -41,6 +41,8 @@
 #include <scheduler.h>
 #include <uapi/syscall.h>
 
+extern void  unit_testing();
+
 void kmain(void)
 {
 	extern uint32_t magic;
@@ -62,6 +64,8 @@ void kmain(void)
 
 	cpu_init();
 	mem_init(mbi);
+
+//	unit_testing();
 
 	ksymbol_init(mbi);
 	vga_init();

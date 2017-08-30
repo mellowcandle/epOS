@@ -25,15 +25,15 @@
 
 .PHONY: test1 test2
 
-TOOLCHAIN_PATH = ../toolchain/i686-elf-4.9.1-Linux-x86_64
-CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
-LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
+TOOLCHAIN_PATH = ../toolchain/i686-elf-7.2.0-epos-x86_64/
+CC	= $(TOOLCHAIN_PATH)/bin/i686-epos-gcc
+LD	= $(TOOLCHAIN_PATH)/bin/i686-epos-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
-CFLAGS := -std=gnu99  -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -c -g
+CFLAGS := -std=gnu99  -fno-stack-protector -c -g --sysroot=../overlay
 INCLUDES := -I../libc -I../kernel/include/uapi
 
-all: test1 test2
+all: test1
 
 OBJFILES := test1.o
 OBJFILES2 := test2.o
@@ -47,7 +47,7 @@ OBJFILES2 := test2.o
 	@$(ASM) -f elf -o $@ $<
 
 test1: $(OBJFILES)
-	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a $(TOOLCHAIN_PATH)/lib/gcc/i686-elf/4.9.1/libgcc.a # emulate 32 bits ELF, the binary output is specified
+	$(CC) --sysroot=../overlay -Wl,-Map=program.map  -o $@ $^  # emulate 32 bits ELF, the binary output is specified
 test2: $(OBJFILES2)
 	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a $(TOOLCHAIN_PATH)/lib/gcc/i686-elf/4.9.1/libgcc.a # emulate 32 bits ELF, the binary output is specified
 

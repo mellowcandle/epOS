@@ -32,7 +32,7 @@ ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
-all: kernel.iso libc cscope
+all: kernel.iso libc apps cscope
 
 apps: libc
 	@echo "Building Applications:"
@@ -75,6 +75,6 @@ clean:
 overlay: libc
 	@echo "Preparing RAMFS:"
 	@mkdir -p overlay/bin
-#	@cp apps/test1 overlay/bin/test1
+	@cp apps/test1 overlay/bin/test1
 #	@cp apps/test2 overlay/bin/test2
 	@tar cvf rootfs.tar -C overlay .

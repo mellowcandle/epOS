@@ -24,7 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-//#define DEBUG
+#define DEBUG
 
 #include <types.h>
 #include <mem/memory.h>
@@ -55,12 +55,15 @@ void prepare_init_task(void *physical, uint32_t count)
 	FUNC_ENTER();
 	task_t *new = kzalloc(sizeof(task_t));
 
+	pr_debug("physical: 0x%x length: 0x%x\r\n", (addr_t) physical, count);
 	if (!new)
 	{
 		pr_error("No memory to create process\r\n");
 		return;
 	}
 
+	while (1)
+		;
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
 	new->type = TASK_USER;
