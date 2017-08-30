@@ -26,26 +26,19 @@
 .PHONY: all clean dist modules cscope multiboot style lines libc
 
 CWD = $(shell pwd)
-export TOOLCHAIN_PATH = $(CWD)/toolchain/i686-elf-4.9.1-Linux-x86_64
-export CC	= $(TOOLCHAIN_PATH)/bin/i686-elf-gcc
-export LD	= $(TOOLCHAIN_PATH)/bin/i686-elf-ld
-export AR	= $(TOOLCHAIN_PATH)/bin/i686-elf-ar
-export ASM	= nasm
-export WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts -Wno-missing-field-initializers
-
 ISODIR_PATH = isodir
 
 ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
-all: kernel.iso libc overlay cscope
+all: kernel.iso libc cscope
 
 apps: libc
 	@echo "Building Applications:"
 	@$(MAKE) --no-print-directory -C apps
 
-kernel.iso: multiboot modules
+kernel.iso: multiboot overlay
 	@rm -rf $(ISODIR_PATH)
 	@mkdir -p $(ISODIR_PATH)/boot/grub
 	@mkdir -p $(ISODIR_PATH)/modules
@@ -69,18 +62,19 @@ multiboot:
 	@$(MAKE) --no-print-directory -C kernel
 
 libc:
-	@$(MAKE) --no-print-directory -C libc
+	@ROOTDIR=${CWD} 3rd_party/build_libc.sh
 
 clean:
 	@rm -rf overlay rootfs.tar
 	@rm -rf $(ISODIR_PATH)
+	@ROOTDIR=${CWD} 3rd_party/build_libc.sh clean
 	@$(MAKE) --no-print-directory -C kernel clean
 	@$(MAKE) --no-print-directory -C libc clean
 	@$(MAKE) --no-print-directory -C apps clean
 
-overlay: apps
+overlay: libc
 	@echo "Preparing RAMFS:"
 	@mkdir -p overlay/bin
-	@cp apps/test1 overlay/bin/test1
-	@cp apps/test2 overlay/bin/test2
+#	@cp apps/test1 overlay/bin/test1
+#	@cp apps/test2 overlay/bin/test2
 	@tar cvf rootfs.tar -C overlay .

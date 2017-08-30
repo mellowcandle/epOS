@@ -27,7 +27,7 @@
 
 #include <syscall.h>
 
-DEFN_SYSCALL0(exit, 0)
+DEFN_SYSCALL0(_exit, 0)
 DEFN_SYSCALL1(close, 1,  int)
 DEFN_SYSCALL3(execve, 2, char *, char **, char **)
 DEFN_SYSCALL0(fork, 3)
@@ -45,4 +45,5 @@ DEFN_SYSCALL1(times, 14, struct tms *)
 DEFN_SYSCALL1(unlink, 15, char *)
 DEFN_SYSCALL1(wait, 16, int *)
 DEFN_SYSCALL3(write, 17, int, char *, int)
+DEFN_SYSCALL2(gettimeofday, 18, struct timeval *, void *);
 

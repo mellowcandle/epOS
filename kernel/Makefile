@@ -26,6 +26,12 @@
 .PHONY: all clean dist modules testdrivers todolist cscope cscope_update multiboot style lines prepare
 
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts -Wno-missing-field-initializers
+CWD = $(shell pwd)
+TOOLCHAIN_PATH = $(CWD)/../toolchain/i686-elf-7.2.0-epos-x86_64/
+CC      = $(TOOLCHAIN_PATH)/bin/i686-epos-gcc
+LD      = $(TOOLCHAIN_PATH)/bin/i686-epos-ld
+AR      = $(TOOLCHAIN_PATH)/bin/i686-epos-ar
+ASM     = nasm
 
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding -fstack-protector-strong $(WARNINGS)
 
@@ -38,8 +44,7 @@ SRCFILES += $(shell find $(PROJDIRS) -type f -name "*.s")
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
 OBJFILES := $(patsubst %.s,%.o,$(OBJFILES))
 DEPFILES := $(patsubst %.o,%.d,$(OBJFILES))
-
--include $(dep)   # include all dep files in the makefile
+include $(dep)   # include all dep files in the makefile
 
 %.d: %.c
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
