@@ -26,8 +26,6 @@
 .PHONY: all clean dist modules testdrivers todolist cscope cscope_update multiboot style lines prepare
 
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter -Wno-char-subscripts -Wno-missing-field-initializers
-CWD = $(shell pwd)
-TOOLCHAIN_PATH = $(CWD)/../toolchain/i686-elf-7.2.0-epos-x86_64/
 CC      = $(TOOLCHAIN_PATH)/bin/i686-epos-gcc
 LD      = $(TOOLCHAIN_PATH)/bin/i686-epos-ld
 AR      = $(TOOLCHAIN_PATH)/bin/i686-epos-ar
@@ -52,7 +50,7 @@ include $(dep)   # include all dep files in the makefile
 all: multiboot
 
 kernel.bin: $(OBJFILES)
-	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-elf/4.9.1/ -T linker.ld -Wl,-Map=kernel.map -ffreestanding -nostdlib -o $@ $^ -lgcc
+	@$(CC) -L${TOOLCHAIN_PATH}/lib/gcc/i686-epos/7.2.0/ -T linker.ld -Wl,-Map=kernel.map -ffreestanding -nostdlib -o $@ $^ -lgcc
 
 
 multiboot: kernel.bin

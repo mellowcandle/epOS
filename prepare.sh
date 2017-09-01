@@ -28,3 +28,11 @@ mkdir -p toolchain/bin toolchain/build
 #popd
 
 ln -sf ${CWD}/kernel/include/uapi/syscall.h ${CWD}/3rd_party/newlib-2.5.0.20170818/newlib/libc/sys/epos/syscall.h
+
+# Create environment file
+
+echo "export EPOS_ROOTDIR=${CWD}" > environment
+echo "export TOOLCHAIN_PATH=${CWD}/toolchain" >> environment
+echo "export EPOS_SYSROOT=${CWD}/sysroot" >> environment
+echo "export PATH=$PATH:$TOOLCHAIN_PATH/bin" >> environment
+

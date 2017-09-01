@@ -23,18 +23,21 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: all clean dist modules cscope multiboot style lines libc
+.PHONY: all clean dist apps overlay modules cscope multiboot style lines libc
 
-CWD = $(shell pwd)
+ifndef EPOS_ROOTDIR
+$(error EPOS_ROOTDIR is not defined, did you run ./prepare ? did you source environment ???)
+endif
+
 ISODIR_PATH = isodir
 
 ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
-all: kernel.iso libc apps cscope
+all: kernel.iso libc apps cscope overlay
 
-apps: libc
+apps:
 	@echo "Building Applications:"
 	@$(MAKE) --no-print-directory -C apps
 
@@ -62,19 +65,20 @@ multiboot:
 	@$(MAKE) --no-print-directory -C kernel
 
 libc:
-	@ROOTDIR=${CWD} 3rd_party/build_libc.sh
+	@3rd_party/build_libc.sh
 
 clean:
-	@rm -rf overlay rootfs.tar
+	@rm -rf rootfs.tar
 	@rm -rf $(ISODIR_PATH)
-	@ROOTDIR=${CWD} 3rd_party/build_libc.sh clean
+	@3rd_party/build_libc.sh clean
 	@$(MAKE) --no-print-directory -C kernel clean
 	@$(MAKE) --no-print-directory -C libc clean
 	@$(MAKE) --no-print-directory -C apps clean
 
-overlay: libc
+overlay:
 	@echo "Preparing RAMFS:"
 	@mkdir -p overlay/bin
 	@cp apps/test1 overlay/bin/test1
 #	@cp apps/test2 overlay/bin/test2
+#	@tar cvf rootfs.tar -C ${EPOS_SYSROOT} .
 	@tar cvf rootfs.tar -C overlay .

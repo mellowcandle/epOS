@@ -25,7 +25,6 @@
 
 .PHONY: test1 test2
 
-TOOLCHAIN_PATH = ../toolchain/i686-elf-7.2.0-epos-x86_64/
 CC	= $(TOOLCHAIN_PATH)/bin/i686-epos-gcc
 LD	= $(TOOLCHAIN_PATH)/bin/i686-epos-ld
 ASM	= nasm
@@ -47,7 +46,7 @@ OBJFILES2 := test2.o
 	@$(ASM) -f elf -o $@ $<
 
 test1: $(OBJFILES)
-	$(CC) --sysroot=../overlay -Wl,-Map=program.map  -o $@ $^  # emulate 32 bits ELF, the binary output is specified
+	$(CC) --sysroot=${EPOS_SYSROOT} -Wl,-Map=program.map  -o $@ $^  # emulate 32 bits ELF, the binary output is specified
 test2: $(OBJFILES2)
 	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a $(TOOLCHAIN_PATH)/lib/gcc/i686-elf/4.9.1/libgcc.a # emulate 32 bits ELF, the binary output is specified
 
