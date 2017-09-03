@@ -37,7 +37,7 @@ ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --in
 
 all: kernel.iso libc apps cscope overlay
 
-apps:
+apps: libc
 	@echo "Building Applications:"
 	@$(MAKE) --no-print-directory -C apps
 
