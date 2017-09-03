@@ -63,8 +63,6 @@ static void mmodules_run(multiboot_module_t *module)
 
 	prepare_init_task(elf_ptr, file_size);
 	pr_info("Spawning init process\r\n");
-	while (1)
-		;
 	FUNC_LEAVE();
 }
 

@@ -60,7 +60,7 @@ typedef enum
 	TASK_USER
 } task_type_t;
 
-typedef struct
+typedef struct __task_t
 {
 	uint32_t pid;
 	uint32_t parent_pid;

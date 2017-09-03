@@ -32,6 +32,7 @@
 #include <printk.h>
 #include <lib/string.h>
 #include <bits.h>
+#include <process.h>
 
 elf_t kernel_elf;
 
@@ -122,4 +123,59 @@ void ksymbol_init(multiboot_info_t *mbi)
 
 	elf_from_multiboot(elf_sec, &kernel_elf);
 }
+static int elf_load_relocateable(task_t * task, elf32_ehdr * header)
+{
+	return 0;
+}
 
+static int elf_check_validity(elf32_ehdr * header)
+{
+	/* Validate ELF header */
+	if (memcmp(elfmag, header->e_ident, selfmag)) {
+		return -1;
+	}
+	if(header->e_ident[ei_class] != elfclass32) {
+		pr_error("Unsupported ELF File Class.\r\n");
+		return -1;
+	}
+	if(header->e_ident[ei_data] != elfdata2lsb) {
+		pr_error("Unsupported ELF File byte order.\r\n");
+		return false;
+	}
+#define EM_386		 3		/* Intel 80386 */
+	if(header->e_machine != EM_386) {
+		pr_error("Unsupported ELF File target.\r\n");
+		return -1;
+	}
+	if(header->e_ident[ei_version] != ev_current) {
+		pr_error("Unsupported ELF File version.\r\n");
+		return -1;
+	}
+	if(header->e_type != et_rel && header->e_type != et_exec) {
+		pr_error("Unsupported ELF File type.\r\n");
+		return -1;
+	}
+	return 0;
+
+}
+
+int load_elf(task_t * task, void *addr)
+{
+	elf32_ehdr *header = (elf32_ehdr *) addr;
+
+	if (elf_check_validity(header))
+	{
+		pr_error("Can't validate ELF header\r\n");
+		return -1;
+	}
+
+	switch(header->e_type) {
+	case et_rel:
+			return elf_load_relocateable(task, header);
+	case et_exec:
+			// TODO : Implement
+	default:
+			return -1;
+	}
+	return 0;
+}

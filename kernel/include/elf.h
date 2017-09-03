@@ -201,21 +201,6 @@ typedef struct
   elf32_word	sh_entsize;		/* entry size if section holds table */
 } elf32_shdr;
 
-#if 0
-typedef struct
-{
-	uint32_t name;
-	uint32_t type;
-	uint32_t flags;
-	uint32_t addr;
-	uint32_t offset;
-	uint32_t size;
-	uint32_t link;
-	uint32_t info;
-	uint32_t addralign;
-	uint32_t entsize;
-} __attribute__((packed)) elf_section_header_t;
-#endif
 #define ELF32_ST_TYPE(i) ((i)&0xf)
 
 /* symbol table entry.  */
@@ -244,5 +229,8 @@ typedef struct
 
 // Looks up a symbol by address.
 const char *elf_lookup_symbol(uint32_t addr, elf_t *elf, int *offset);
+
+struct __task_t;
+int load_elf(struct __task_t *task, void *addr);
 
 #endif /* end of include guard: ELF_H_3IBXPVEH */

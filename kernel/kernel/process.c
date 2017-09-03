@@ -33,6 +33,7 @@
 #include <process.h>
 #include <scheduler.h>
 #include <tss.h>
+#include <elf.h>
 
 static uint32_t pid_counter = 0;
 extern uint32_t *current_pdt;
@@ -50,20 +51,17 @@ uint32_t get_next_pid()
 	return ++pid_counter;
 }
 
-void prepare_init_task(void *physical, uint32_t count)
+void prepare_init_task(void *addr, uint32_t count)
 {
 	FUNC_ENTER();
 	task_t *new = kzalloc(sizeof(task_t));
 
-	pr_debug("physical: 0x%x length: 0x%x\r\n", (addr_t) physical, count);
 	if (!new)
 	{
 		pr_error("No memory to create process\r\n");
 		return;
 	}
 
-	while (1)
-		;
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
 	new->type = TASK_USER;
@@ -93,7 +91,16 @@ void prepare_init_task(void *physical, uint32_t count)
 		goto fail3;
 	}
 
-	mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
+
+	/* Parse the ELF and copy the sections to memory */
+
+	if (load_elf(new, addr))
+	{
+		pr_fatal("Can't load ELF to memory\r\n");
+		panic();
+	}
+	//
+	//mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
 
 	// Allocate user stack
 	new->stack_virt_addr = (void *) KERNEL_VIRTUAL_BASE - PAGE_SIZE;
