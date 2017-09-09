@@ -29,12 +29,14 @@
 #include <printk.h>
 #include <types.h>
 #include <elf.h>
+#include <cpu.h>
 
 extern elf_t kernel_elf;
 
 void print_stack_trace();
 void panic()
 {
+	disable_irq();
 	printk("Kernel panic !\r\n");
 
 	print_stack_trace();
