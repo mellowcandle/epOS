@@ -203,6 +203,18 @@ typedef struct
 
 #define ELF32_ST_TYPE(i) ((i)&0xf)
 
+/* Program headers */
+typedef struct {
+  elf32_word	p_type;
+  elf32_off	p_offset;
+  elf32_addr	p_vaddr;
+  elf32_addr	p_paddr;
+  elf32_word	p_filesz;
+  elf32_word	p_memsz;
+  elf32_word	p_flags;
+  elf32_word	p_align;
+} elf32_phdr;
+
 /* symbol table entry.  */
 
 typedef struct
@@ -233,4 +245,11 @@ const char *elf_lookup_symbol(uint32_t addr, elf_t *elf, int *offset);
 struct __task_t;
 int load_elf(struct __task_t *task, void *addr);
 
+static inline elf32_phdr *elf_pheader(elf32_ehdr *hdr) {
+	return (elf32_phdr *)((int)hdr + hdr->e_phoff);
+}
+
+static inline elf32_phdr *elf_program(elf32_ehdr *hdr, int idx) {
+	return &elf_pheader(hdr)[idx];
+}
 #endif /* end of include guard: ELF_H_3IBXPVEH */

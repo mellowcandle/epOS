@@ -119,7 +119,6 @@ void prepare_init_task(void *addr, uint32_t count)
 	new->regs.ss = SEGSEL_USER_SPACE_DS | 0x03;
 	new->regs.cs = SEGSEL_USER_SPACE_CS | 0x03;
 	new->regs.esp = KERNEL_VIRTUAL_BASE - 4;
-	new->regs.eip = 0;
 	scheduler_add_task(new);
 
 	FUNC_LEAVE();

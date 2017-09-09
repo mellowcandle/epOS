@@ -24,7 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-//#define DEBUG
+#define DEBUG
 
 #include <elf.h>
 #include <boot/multiboot.h>
@@ -48,7 +48,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 	tmp_map = (addr_t) mem_page_map_kernel_single(PAGE_ALIGN_DOWN(shstrtab), READ_WRITE_KERNEL);
 	shstrtab = tmp_map | (shstrtab & ~PAGE_MASK);
 
-	pr_debug("shstrtab mapping: 0x%x -> 0x%x\r\n", sh[elf_sec->shndx].addr, shstrtab);
+	pr_debug("shstrtab mapping: 0x%x -> 0x%x\r\n", sh[elf_sec->shndx].sh_addr, shstrtab);
 
 	for (i = 0; i < elf_sec->num; i++)
 	{
@@ -59,7 +59,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 			elf->strtabsz = sh[i].sh_size;
 			tmp_map = (addr_t) mem_page_map_kernel(PAGE_ALIGN_DOWN(sh[i].sh_addr), divide_up(elf->strtabsz, PAGE_SIZE), READ_WRITE_KERNEL);
 			elf->strtab = (char *)(tmp_map | (sh[i].sh_addr & ~PAGE_MASK));
-			pr_debug("strtab maping: 0x%x -> 0x%x pages: %u\r\n", sh[i].addr, (addr_t) elf->strtab, divide_up(elf->strtabsz, PAGE_SIZE));
+			pr_debug("strtab maping: 0x%x -> 0x%x pages: %u\r\n", sh[i].sh_addr, (addr_t) elf->strtab, divide_up(elf->strtabsz, PAGE_SIZE));
 		}
 
 		if (!strcmp(name, ".symtab"))
@@ -67,7 +67,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 			elf->symtabsz = sh[i].sh_size;
 			tmp_map = (addr_t) mem_page_map_kernel(PAGE_ALIGN_DOWN(sh[i].sh_addr), divide_up(elf->symtabsz, PAGE_SIZE), READ_WRITE_KERNEL);
 			elf->symtab = (elf32_sym *)(tmp_map | (sh[i].sh_addr & ~PAGE_MASK));
-			pr_debug("symtab maping: 0x%x -> 0x%x pages: %u\r\n", sh[i].addr, (addr_t) elf->symtab, divide_up(elf->symtabsz, PAGE_SIZE));
+			pr_debug("symtab maping: 0x%x -> 0x%x pages: %u\r\n", sh[i].sh_addr, (addr_t) elf->symtab, divide_up(elf->symtabsz, PAGE_SIZE));
 
 		}
 	}
@@ -125,11 +125,27 @@ void ksymbol_init(multiboot_info_t *mbi)
 }
 static int elf_load_relocateable(task_t * task, elf32_ehdr * header)
 {
+	FUNC_ENTER();
+	/* Find the program headers */
+	elf32_phdr *phdr;
+	pr_debug("Program headers count: %u\r\n", header->e_phnum);
+
+	for (int i=0; i< header->e_phnum; i++)
+	{
+		phdr = elf_program(header, i);
+		pr_debug("Header: %u\t  Type: %u Offset: 0x%x V-addr: 0x%x P-addr: 0x%x FSize: 0x%x MSize: 0x%x Flags: %x Align: %x\r\n",
+			i,	phdr->p_type, phdr->p_offset, phdr->p_vaddr, phdr->p_vaddr, phdr->p_filesz, phdr->p_memsz, phdr->p_flags, phdr->p_align);
+	}
+
+	/* Set EIP to the entry point of the ELF */
+	task->regs.eip = header->e_entry;
+
 	return 0;
 }
 
 static int elf_check_validity(elf32_ehdr * header)
 {
+	FUNC_ENTER();
 	/* Validate ELF header */
 	if (memcmp(elfmag, header->e_ident, selfmag)) {
 		return -1;
@@ -161,7 +177,9 @@ static int elf_check_validity(elf32_ehdr * header)
 
 int load_elf(task_t * task, void *addr)
 {
+	FUNC_ENTER();
 	elf32_ehdr *header = (elf32_ehdr *) addr;
+
 
 	if (elf_check_validity(header))
 	{
@@ -173,6 +191,7 @@ int load_elf(task_t * task, void *addr)
 	case et_rel:
 			return elf_load_relocateable(task, header);
 	case et_exec:
+			return elf_load_relocateable(task, header);
 			// TODO : Implement
 	default:
 			return -1;
