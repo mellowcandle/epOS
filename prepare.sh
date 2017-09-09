@@ -37,3 +37,6 @@ echo "export EPOS_SYSROOT=${CWD}/sysroot" >> environment
 echo "export PATH=$PATH:${CWD}/toolchain/bin" >> environment
 
 source environment
+
+cd 3rd_party
+./build_libc.sh

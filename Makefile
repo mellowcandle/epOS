@@ -23,8 +23,7 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-.PHONY: all clean dist apps overlay modules cscope multiboot style lines libc
-
+.PHONY: all clean dist apps overlay modules cscope multiboot style lines
 ifndef EPOS_ROOTDIR
 $(error EPOS_ROOTDIR is not defined, did you run ./prepare ? did you source environment ???)
 endif
@@ -35,9 +34,9 @@ ASTYLE ?= astyle
 ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
 
-all: kernel.iso libc apps cscope overlay
+all: kernel.iso apps cscope overlay
 
-apps: libc
+apps:
 	@echo "Building Applications:"
 	@$(MAKE) --no-print-directory -C apps
 
@@ -64,18 +63,13 @@ lines:
 multiboot:
 	@$(MAKE) --no-print-directory -C kernel
 
-libc:
-	@3rd_party/build_libc.sh
-
 clean:
 	@rm -rf rootfs.tar
 	@rm -rf $(ISODIR_PATH)
-	@3rd_party/build_libc.sh clean
 	@$(MAKE) --no-print-directory -C kernel clean
-	@$(MAKE) --no-print-directory -C libc clean
 	@$(MAKE) --no-print-directory -C apps clean
 
-overlay:
+overlay: apps
 	@echo "Preparing RAMFS:"
 	@mkdir -p overlay/bin
 	@cp apps/test1 overlay/bin/test1
