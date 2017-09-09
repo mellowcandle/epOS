@@ -111,16 +111,16 @@ typedef struct
 #define elfmag0		0x7f		/* magic number byte 0 */
 
 #define ei_mag1		1		/* file identification byte 1 index */
-#define elfmag1		'e'		/* magic number byte 1 */
+#define elfmag1		'E'		/* magic number byte 1 */
 
 #define ei_mag2		2		/* file identification byte 2 index */
-#define elfmag2		'l'		/* magic number byte 2 */
+#define elfmag2		'L'		/* magic number byte 2 */
 
 #define ei_mag3		3		/* file identification byte 3 index */
-#define elfmag3		'f'		/* magic number byte 3 */
+#define elfmag3		'F'		/* magic number byte 3 */
 
 /* conglomeration of the identification bytes, for easy testing as a word.  */
-#define	elfmag		"\177elf"
+#define	elfmag		"\177ELF"
 #define	selfmag		4
 
 #define ei_class	4		/* file class byte index */
