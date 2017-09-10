@@ -34,6 +34,14 @@
 
 typedef struct
 {
+	void * v_addr;
+	addr_t p_addr;
+	int count;
+	list_t list;
+} mem_block_t;
+
+typedef struct
+{
 	uint32_t eax;
 	uint32_t ebx;
 	uint32_t ecx;
@@ -78,7 +86,7 @@ typedef struct __task_t
 	void *kernel_stack_pointer;
 
 	task_registers_t regs;
-
+	list_t mapped_memory_list;
 	list_t list;
 } task_t;
 

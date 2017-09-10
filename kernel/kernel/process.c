@@ -62,6 +62,8 @@ void prepare_init_task(void *addr, uint32_t count)
 		return;
 	}
 
+	LIST_HEAD_INIT(new->mapped_memory_list);
+
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
 	new->type = TASK_USER;
