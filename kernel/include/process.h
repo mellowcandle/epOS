@@ -34,7 +34,7 @@
 
 typedef struct
 {
-	void * v_addr;
+	void *v_addr;
 	addr_t p_addr;
 	int count;
 	list_t list;

@@ -51,11 +51,11 @@ kernel.iso: multiboot overlay
 
 cscope:
 	@echo "Preparing cscope tags"
-	@find . \( -name *.[csh] \) -and -not \( -path "./toolchain/*" \) -and -not \( -path "./3rd_party/*" \) -and -not \( -path "./overlay/*" \) > cscope.files
+	@find . \( -name *.[csh] \) -and -not \( -path "./toolchain/*" \) -and -not \( -path "./3rd_party/*" \) -and -not \( -path "./sysroot/*" \) > cscope.files
 	@cscope -b -q -k
 
 style:
-	@find . \( -name *.[ch] \) -and -not \( -path "./toolchain/*" \) -and -not \( -path "./3rd_party/*" \) -and -not \( -path "./overlay/*" \) | xargs ${ASTYLE} ${ASTYLE_CONFIG}
+	@find . \( -name *.[ch] \) -and -not \( -path "./toolchain/*" \) -and -not \( -path "./3rd_party/*" \) -and -not \( -path "./sysroot/*" \) | xargs ${ASTYLE} ${ASTYLE_CONFIG}
 
 lines:
 	@cloc --exclude-dir=toolchain,kernel/drivers/acpi/acpica,3rd_party,overlay --exclude-lang=XML,D,Markdown,make,Python,DTD .

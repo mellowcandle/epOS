@@ -101,6 +101,7 @@ void prepare_init_task(void *addr, uint32_t count)
 		pr_fatal("Can't load ELF to memory\r\n");
 		panic();
 	}
+
 	//
 	//mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
 

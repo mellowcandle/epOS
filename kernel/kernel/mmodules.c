@@ -38,26 +38,29 @@
 
 typedef void (*call_module_t)(void);
 extern int init_ramfs(addr_t phy_addr, uint32_t len);
-extern int ramfs_find_node(const char * name, tar_header_t **ptr);
+extern int ramfs_find_node(const char *name, tar_header_t **ptr);
 extern uint32_t ramfs_atoi(const char *in, uint32_t len);
 
 static void mmodules_run(multiboot_module_t *module)
 {
 	FUNC_ENTER();
 	uint32_t pages_count;
-	tar_header_t * tar_header;
-	void * elf_ptr;
+	tar_header_t *tar_header;
+	void *elf_ptr;
 	uint32_t file_size;
 
 	pr_info("Module: 0x%x - 0x%x \r\n", module->mod_start, module->mod_end);//, (char *) module->cmdline);
 //	pages_count = module->mod_end - module->mod_start;
 //	pages_count = divide_up(pages_count, PAGE_SIZE);
 	init_ramfs(module->mod_start, module->mod_end - module->mod_start);
+
 	if (ramfs_find_node("./bin/test1", &tar_header))
 	{
 		pr_fatal("Can't find init process...\r\n");
-		while(1);
+
+		while (1);
 	}
+
 	elf_ptr = &tar_header->charptr[512]; //On the edge of the tar header lays the file contents
 	file_size = ramfs_atoi(tar_header->header.size, 11);
 

@@ -43,7 +43,7 @@ static int elf_from_multiboot(multiboot_elf_section_header_table_t *elf_sec, elf
 	unsigned int i;
 	uint32_t tmp_map;
 
-	elf32_shdr *sh = (elf32_shdr*)elf_sec->addr;
+	elf32_shdr *sh = (elf32_shdr *)elf_sec->addr;
 	uint32_t shstrtab = sh[elf_sec->shndx].sh_addr;
 
 	tmp_map = (addr_t) mem_page_map_kernel_single(PAGE_ALIGN_DOWN(shstrtab), READ_WRITE_KERNEL);
@@ -124,7 +124,7 @@ void ksymbol_init(multiboot_info_t *mbi)
 
 	elf_from_multiboot(elf_sec, &kernel_elf);
 }
-static int elf_load_relocateable(task_t * task, elf32_ehdr * header)
+static int elf_load_relocateable(task_t *task, elf32_ehdr *header)
 {
 	FUNC_ENTER();
 	int flags;
@@ -134,47 +134,57 @@ static int elf_load_relocateable(task_t * task, elf32_ehdr * header)
 	/* Find the program headers */
 	pr_debug("Program headers count: %u\r\n", header->e_phnum);
 
-	for (int i=0; i< header->e_phnum; i++)
+	for (int i = 0; i < header->e_phnum; i++)
 	{
 		phdr = elf_program(header, i);
 		pr_debug("Header: %u\t  Type: %u Offset: 0x%x V-addr: 0x%x P-addr: 0x%x FSize: 0x%x MSize: 0x%x Flags: %x Align: %x\r\n",
-			i,	phdr->p_type, phdr->p_offset, phdr->p_vaddr, phdr->p_vaddr, phdr->p_filesz, phdr->p_memsz, phdr->p_flags, phdr->p_align);
+		         i,	phdr->p_type, phdr->p_offset, phdr->p_vaddr, phdr->p_vaddr, phdr->p_filesz, phdr->p_memsz, phdr->p_flags, phdr->p_align);
 
-		memblock_t * block = kmalloc(sizeof(memblock_t));
+		memblock_t *block = kmalloc(sizeof(memblock_t));
+
 		if (!block)
 		{
 			pr_error("Out of memory\r\n");
 			return -1;
 		}
+
 		pr_debug("1");
 
 		flags = 0;
 		block->count = divide_up(phdr->p_memsz, PAGE_SIZE);
 		block->p_addr = mem_get_pages(block->count);
 		block->v_addr = (void *) phdr->p_vaddr;
+
 		if (!block->p_addr)
 		{
 			pr_error("Out of memory\r\n");
 			return -1;
 		}
+
 		/* In 64bit we could use also the execute bit here... */
 		if (phdr->p_flags & PF_W)
+		{
 			flags = READ_WRITE_USER;
+		}
 		else
+		{
 			flags = READ_ONLY_USER;
+		}
 
 		/* Temporarily map to allow copy */
-		void * tmp = mem_page_map_kernel(block->p_addr, block->count, READ_WRITE_KERNEL | PTE_TEMPORARY);
-		char * file_ptr = ((char *) header) + phdr->p_offset;
+		void *tmp = mem_page_map_kernel(block->p_addr, block->count, READ_WRITE_KERNEL | PTE_TEMPORARY);
+		char *file_ptr = ((char *) header) + phdr->p_offset;
 		memcpy(tmp, file_ptr, phdr->p_memsz);
 		mem_page_unmap_multiple(tmp, block->count);
 
 		ret = mem_pages_map_pdt_multiple(task->pdt_virt_addr, block->p_addr, block->v_addr, block->count, flags);
 		pr_debug("1");
+
 		if (ret)
 		{
 			goto error1;
 		}
+
 		list_add(&block->list, &task->mapped_memory_list);
 	}
 
@@ -191,39 +201,53 @@ error1:
 	return -1;
 }
 
-static int elf_check_validity(elf32_ehdr * header)
+static int elf_check_validity(elf32_ehdr *header)
 {
 	FUNC_ENTER();
+
 	/* Validate ELF header */
-	if (memcmp(elfmag, header->e_ident, selfmag)) {
+	if (memcmp(elfmag, header->e_ident, selfmag))
+	{
 		return -1;
 	}
-	if(header->e_ident[ei_class] != elfclass32) {
+
+	if (header->e_ident[ei_class] != elfclass32)
+	{
 		pr_error("Unsupported ELF File Class.\r\n");
 		return -1;
 	}
-	if(header->e_ident[ei_data] != elfdata2lsb) {
+
+	if (header->e_ident[ei_data] != elfdata2lsb)
+	{
 		pr_error("Unsupported ELF File byte order.\r\n");
 		return false;
 	}
+
 #define EM_386		 3		/* Intel 80386 */
-	if(header->e_machine != EM_386) {
+
+	if (header->e_machine != EM_386)
+	{
 		pr_error("Unsupported ELF File target.\r\n");
 		return -1;
 	}
-	if(header->e_ident[ei_version] != ev_current) {
+
+	if (header->e_ident[ei_version] != ev_current)
+	{
 		pr_error("Unsupported ELF File version.\r\n");
 		return -1;
 	}
-	if(header->e_type != et_rel && header->e_type != et_exec) {
+
+	if (header->e_type != et_rel && header->e_type != et_exec)
+	{
 		pr_error("Unsupported ELF File type.\r\n");
 		return -1;
 	}
+
 	return 0;
 
 }
 
-int load_elf(task_t * task, void *addr)
+int load_elf(task_t *task, void *addr)
 {
 	FUNC_ENTER();
 	elf32_ehdr *header = (elf32_ehdr *) addr;
@@ -235,14 +259,18 @@ int load_elf(task_t * task, void *addr)
 		return -1;
 	}
 
-	switch(header->e_type) {
+	switch (header->e_type)
+	{
 	case et_rel:
-			return elf_load_relocateable(task, header);
+		return elf_load_relocateable(task, header);
+
 	case et_exec:
-			return elf_load_relocateable(task, header);
-			// TODO : Implement
+		return elf_load_relocateable(task, header);
+
+	// TODO : Implement
 	default:
-			return -1;
+		return -1;
 	}
+
 	return 0;
 }

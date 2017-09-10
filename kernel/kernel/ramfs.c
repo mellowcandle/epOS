@@ -59,11 +59,13 @@ uint32_t ramfs_atoi(const char *in, uint32_t len)
 	return size;
 
 }
-int ramfs_find_node(const char * name, tar_header_t **ptr)
+int ramfs_find_node(const char *name, tar_header_t **ptr)
 {
-	ramfs_node * node;
-	list_for_each_entry(node, &ramfs_headers, list_head) {
-		if (strncmp(node->ptr->header.name, name, strlen(name)) == 0) {
+	ramfs_node *node;
+	list_for_each_entry(node, &ramfs_headers, list_head)
+	{
+		if (strncmp(node->ptr->header.name, name, strlen(name)) == 0)
+		{
 			pr_debug("Found the node\r\n");
 			*ptr = node->ptr;
 			return 0;

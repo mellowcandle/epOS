@@ -69,38 +69,38 @@ typedef elf64_half elf64_versym;
 
 typedef struct
 {
-  unsigned char	e_ident[ei_nident];	/* magic number and other info */
-  elf32_half	e_type;			/* object file type */
-  elf32_half	e_machine;		/* architecture */
-  elf32_word	e_version;		/* object file version */
-  elf32_addr	e_entry;		/* entry point virtual address */
-  elf32_off	e_phoff;		/* program header table file offset */
-  elf32_off	e_shoff;		/* section header table file offset */
-  elf32_word	e_flags;		/* processor-specific flags */
-  elf32_half	e_ehsize;		/* elf header size in bytes */
-  elf32_half	e_phentsize;		/* program header table entry size */
-  elf32_half	e_phnum;		/* program header table entry count */
-  elf32_half	e_shentsize;		/* section header table entry size */
-  elf32_half	e_shnum;		/* section header table entry count */
-  elf32_half	e_shstrndx;		/* section header string table index */
+	unsigned char	e_ident[ei_nident];	/* magic number and other info */
+	elf32_half	e_type;			/* object file type */
+	elf32_half	e_machine;		/* architecture */
+	elf32_word	e_version;		/* object file version */
+	elf32_addr	e_entry;		/* entry point virtual address */
+	elf32_off	e_phoff;		/* program header table file offset */
+	elf32_off	e_shoff;		/* section header table file offset */
+	elf32_word	e_flags;		/* processor-specific flags */
+	elf32_half	e_ehsize;		/* elf header size in bytes */
+	elf32_half	e_phentsize;		/* program header table entry size */
+	elf32_half	e_phnum;		/* program header table entry count */
+	elf32_half	e_shentsize;		/* section header table entry size */
+	elf32_half	e_shnum;		/* section header table entry count */
+	elf32_half	e_shstrndx;		/* section header string table index */
 } elf32_ehdr;
 
 typedef struct
 {
-  unsigned char	e_ident[ei_nident];	/* magic number and other info */
-  elf64_half	e_type;			/* object file type */
-  elf64_half	e_machine;		/* architecture */
-  elf64_word	e_version;		/* object file version */
-  elf64_addr	e_entry;		/* entry point virtual address */
-  elf64_off	e_phoff;		/* program header table file offset */
-  elf64_off	e_shoff;		/* section header table file offset */
-  elf64_word	e_flags;		/* processor-specific flags */
-  elf64_half	e_ehsize;		/* elf header size in bytes */
-  elf64_half	e_phentsize;		/* program header table entry size */
-  elf64_half	e_phnum;		/* program header table entry count */
-  elf64_half	e_shentsize;		/* section header table entry size */
-  elf64_half	e_shnum;		/* section header table entry count */
-  elf64_half	e_shstrndx;		/* section header string table index */
+	unsigned char	e_ident[ei_nident];	/* magic number and other info */
+	elf64_half	e_type;			/* object file type */
+	elf64_half	e_machine;		/* architecture */
+	elf64_word	e_version;		/* object file version */
+	elf64_addr	e_entry;		/* entry point virtual address */
+	elf64_off	e_phoff;		/* program header table file offset */
+	elf64_off	e_shoff;		/* section header table file offset */
+	elf64_word	e_flags;		/* processor-specific flags */
+	elf64_half	e_ehsize;		/* elf header size in bytes */
+	elf64_half	e_phentsize;		/* program header table entry size */
+	elf64_half	e_phnum;		/* program header table entry count */
+	elf64_half	e_shentsize;		/* section header table entry size */
+	elf64_half	e_shnum;		/* section header table entry count */
+	elf64_half	e_shstrndx;		/* section header string table index */
 } elf64_ehdr;
 
 /* fields in the e_ident array.  the ei_* macros are indices into the
@@ -136,7 +136,7 @@ typedef struct
 #define elfdatanum	3
 
 #define ei_version	6		/* file version byte index */
-					/* value must be ev_current */
+/* value must be ev_current */
 
 #define ei_osabi	7		/* os abi identification */
 #define elfosabi_none		0	/* unix system v abi */
@@ -189,30 +189,31 @@ typedef struct
 
 typedef struct
 {
-  elf32_word	sh_name;		/* section name (string tbl index) */
-  elf32_word	sh_type;		/* section type */
-  elf32_word	sh_flags;		/* section flags */
-  elf32_addr	sh_addr;		/* section virtual addr at execution */
-  elf32_off	sh_offset;		/* section file offset */
-  elf32_word	sh_size;		/* section size in bytes */
-  elf32_word	sh_link;		/* link to another section */
-  elf32_word	sh_info;		/* additional section information */
-  elf32_word	sh_addralign;		/* section alignment */
-  elf32_word	sh_entsize;		/* entry size if section holds table */
+	elf32_word	sh_name;		/* section name (string tbl index) */
+	elf32_word	sh_type;		/* section type */
+	elf32_word	sh_flags;		/* section flags */
+	elf32_addr	sh_addr;		/* section virtual addr at execution */
+	elf32_off	sh_offset;		/* section file offset */
+	elf32_word	sh_size;		/* section size in bytes */
+	elf32_word	sh_link;		/* link to another section */
+	elf32_word	sh_info;		/* additional section information */
+	elf32_word	sh_addralign;		/* section alignment */
+	elf32_word	sh_entsize;		/* entry size if section holds table */
 } elf32_shdr;
 
 #define ELF32_ST_TYPE(i) ((i)&0xf)
 
 /* Program headers */
-typedef struct {
-  elf32_word	p_type;
-  elf32_off	p_offset;
-  elf32_addr	p_vaddr;
-  elf32_addr	p_paddr;
-  elf32_word	p_filesz;
-  elf32_word	p_memsz;
-  elf32_word	p_flags;
-  elf32_word	p_align;
+typedef struct
+{
+	elf32_word	p_type;
+	elf32_off	p_offset;
+	elf32_addr	p_vaddr;
+	elf32_addr	p_paddr;
+	elf32_word	p_filesz;
+	elf32_word	p_memsz;
+	elf32_word	p_flags;
+	elf32_word	p_align;
 } elf32_phdr;
 
 #define PF_X		(1 << 0)
@@ -223,12 +224,12 @@ typedef struct {
 
 typedef struct
 {
-  elf32_word	st_name;		/* symbol name (string tbl index) */
-  elf32_addr	st_value;		/* symbol value */
-  elf32_word	st_size;		/* symbol size */
-  unsigned char	st_info;		/* symbol type and binding */
-  unsigned char	st_other;		/* symbol visibility */
-  elf32_section	st_shndx;		/* section index */
+	elf32_word	st_name;		/* symbol name (string tbl index) */
+	elf32_addr	st_value;		/* symbol value */
+	elf32_word	st_size;		/* symbol size */
+	unsigned char	st_info;		/* symbol type and binding */
+	unsigned char	st_other;		/* symbol visibility */
+	elf32_section	st_shndx;		/* section index */
 } elf32_sym;
 
 
@@ -249,11 +250,13 @@ const char *elf_lookup_symbol(uint32_t addr, elf_t *elf, int *offset);
 struct __task_t;
 int load_elf(struct __task_t *task, void *addr);
 
-static inline elf32_phdr *elf_pheader(elf32_ehdr *hdr) {
+static inline elf32_phdr *elf_pheader(elf32_ehdr *hdr)
+{
 	return (elf32_phdr *)((int)hdr + hdr->e_phoff);
 }
 
-static inline elf32_phdr *elf_program(elf32_ehdr *hdr, int idx) {
+static inline elf32_phdr *elf_program(elf32_ehdr *hdr, int idx)
+{
 	return &elf_pheader(hdr)[idx];
 }
 #endif /* end of include guard: ELF_H_3IBXPVEH */
