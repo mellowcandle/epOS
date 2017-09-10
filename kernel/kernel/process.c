@@ -34,6 +34,7 @@
 #include <scheduler.h>
 #include <tss.h>
 #include <elf.h>
+#include <lib/string.h>
 
 static uint32_t pid_counter = 0;
 extern uint32_t *current_pdt;
@@ -62,7 +63,7 @@ void prepare_init_task(void *addr, uint32_t count)
 		return;
 	}
 
-	LIST_HEAD_INIT(new->mapped_memory_list);
+	LIST_HEAD_INIT(&new->mapped_memory_list);
 
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
@@ -118,10 +119,17 @@ void prepare_init_task(void *addr, uint32_t count)
 	// Map the user stack
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
 
+	uint32_t *stack = mem_page_map_kernel_single(new->stack_phy_addr, READ_WRITE_KERNEL | PTE_TEMPORARY);
+	memset(stack,0xff,PAGE_SIZE);
+	stack[1023] = 1; //argc
+	stack[1022] = 2; //argv
+	mem_page_unmap(stack);
+
 	new->regs.eflags = 0x202;
 	new->regs.ss = SEGSEL_USER_SPACE_DS | 0x03;
 	new->regs.cs = SEGSEL_USER_SPACE_CS | 0x03;
-	new->regs.esp = KERNEL_VIRTUAL_BASE - 4;
+	new->regs.esp = KERNEL_VIRTUAL_BASE - 12;
+	// Push argc and argv to the stack
 	scheduler_add_task(new);
 
 	FUNC_LEAVE();

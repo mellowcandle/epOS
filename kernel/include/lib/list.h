@@ -45,10 +45,10 @@ struct list_t
 #define LIST(name) \
 	list_t name = LIST_INIT(name)
 
-static inline void LIST_HEAD_INIT(list_t list)
+static inline void LIST_HEAD_INIT(list_t *list)
 {
-	list.next = &list;
-	list.prev = &list;
+	list->next = list;
+	list->prev = list;
 }
 
 static inline void list_add_at(list_t *new, list_t *prev, list_t *next)

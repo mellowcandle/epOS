@@ -148,8 +148,6 @@ static int elf_load_relocateable(task_t *task, elf32_ehdr *header)
 			return -1;
 		}
 
-		pr_debug("1");
-
 		flags = 0;
 		block->count = divide_up(phdr->p_memsz, PAGE_SIZE);
 		block->p_addr = mem_get_pages(block->count);

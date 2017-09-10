@@ -16,7 +16,7 @@ void stdlib_init()
 
 
 //int main(int argc, char *argv[])
-int main()
+int main(int argc, int argv)
 {
 	unsigned int i = 0;
 
