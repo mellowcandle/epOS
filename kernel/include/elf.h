@@ -215,6 +215,10 @@ typedef struct {
   elf32_word	p_align;
 } elf32_phdr;
 
+#define PF_X		(1 << 0)
+#define PF_W		(1 << 1)
+#define PF_R		(1 << 2)
+
 /* symbol table entry.  */
 
 typedef struct
