@@ -22,7 +22,7 @@ int main()
 
 	while (1)
 	{
-		printf("(1) Hello world from user space: %u\r\n", i++);
+//		printf("(1) Hello world from user space: %u\r\n", i++);
 	}
 
 	return 0;

@@ -29,6 +29,7 @@
 #include <elf.h>
 #include <boot/multiboot.h>
 #include <mem/memory.h>
+#include <kmalloc.h>
 #include <printk.h>
 #include <lib/string.h>
 #include <bits.h>
@@ -126,8 +127,11 @@ void ksymbol_init(multiboot_info_t *mbi)
 static int elf_load_relocateable(task_t * task, elf32_ehdr * header)
 {
 	FUNC_ENTER();
-	/* Find the program headers */
+	int flags;
+	int ret;
 	elf32_phdr *phdr;
+
+	/* Find the program headers */
 	pr_debug("Program headers count: %u\r\n", header->e_phnum);
 
 	for (int i=0; i< header->e_phnum; i++)
@@ -135,12 +139,56 @@ static int elf_load_relocateable(task_t * task, elf32_ehdr * header)
 		phdr = elf_program(header, i);
 		pr_debug("Header: %u\t  Type: %u Offset: 0x%x V-addr: 0x%x P-addr: 0x%x FSize: 0x%x MSize: 0x%x Flags: %x Align: %x\r\n",
 			i,	phdr->p_type, phdr->p_offset, phdr->p_vaddr, phdr->p_vaddr, phdr->p_filesz, phdr->p_memsz, phdr->p_flags, phdr->p_align);
+
+		memblock_t * block = kmalloc(sizeof(memblock_t));
+		if (!block)
+		{
+			pr_error("Out of memory\r\n");
+			return -1;
+		}
+		pr_debug("1");
+
+		flags = 0;
+		block->count = divide_up(phdr->p_memsz, PAGE_SIZE);
+		block->p_addr = mem_get_pages(block->count);
+		block->v_addr = (void *) phdr->p_vaddr;
+		if (!block->p_addr)
+		{
+			pr_error("Out of memory\r\n");
+			return -1;
+		}
+		/* In 64bit we could use also the execute bit here... */
+		if (phdr->p_flags & PF_W)
+			flags = READ_WRITE_USER;
+		else
+			flags = READ_ONLY_USER;
+
+		/* Temporarily map to allow copy */
+		void * tmp = mem_page_map_kernel(block->p_addr, block->count, READ_WRITE_KERNEL | PTE_TEMPORARY);
+		char * file_ptr = ((char *) header) + phdr->p_offset;
+		memcpy(tmp, file_ptr, phdr->p_memsz);
+		mem_page_unmap_multiple(tmp, block->count);
+
+		ret = mem_pages_map_pdt_multiple(task->pdt_virt_addr, block->p_addr, block->v_addr, block->count, flags);
+		pr_debug("1");
+		if (ret)
+		{
+			goto error1;
+		}
+		list_add(&block->list, &task->mapped_memory_list);
 	}
 
 	/* Set EIP to the entry point of the ELF */
 	task->regs.eip = header->e_entry;
 
+
 	return 0;
+
+error1:
+	pr_fatal("Not implemented it yet\r\n");
+	panic();
+
+	return -1;
 }
 
 static int elf_check_validity(elf32_ehdr * header)

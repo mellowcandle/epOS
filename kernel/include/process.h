@@ -38,7 +38,7 @@ typedef struct
 	addr_t p_addr;
 	int count;
 	list_t list;
-} mem_block_t;
+} memblock_t;
 
 typedef struct
 {
