@@ -29,7 +29,7 @@ CC	= $(TOOLCHAIN_PATH)/bin/i686-epos-gcc
 LD	= $(TOOLCHAIN_PATH)/bin/i686-epos-ld
 ASM	= nasm
 WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
-CFLAGS := -std=gnu99  -fno-stack-protector -c -g --sysroot=../overlay
+CFLAGS := -std=gnu99  -fno-stack-protector -c -g --sysroot=${EPOS_SYSROOT}
 INCLUDES := -I../libc -I../kernel/include/uapi
 
 all: test1

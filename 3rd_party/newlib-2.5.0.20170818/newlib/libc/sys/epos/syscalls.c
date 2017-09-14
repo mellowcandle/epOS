@@ -6,17 +6,17 @@
 #include <sys/errno.h>
 #include <sys/time.h>
 #include <stdio.h>
-
+#include <stdarg.h>
 #include <syscall.h>
 char **environ; /* pointer to array of char * strings that define the current environment variables */
 
-DEFN_SYSCALL0(_exit, 0)
+DEFN_SYSCALL0(exit, 0)
 DEFN_SYSCALL1(close, 1,  int)
 DEFN_SYSCALL3(execve, 2, char *, char **, char **)
 DEFN_SYSCALL0(fork, 3)
 DEFN_SYSCALL2(fstat, 4, int, struct stat *)
 DEFN_SYSCALL0(getpid, 5)
-DEFN_SYSCALL0(iastty, 6)
+DEFN_SYSCALL0(isatty, 6)
 DEFN_SYSCALL2(kill, 7, int, int)
 DEFN_SYSCALL2(link, 8, char *, char *)
 DEFN_SYSCALL3(lseek, 9, int, int, int)
@@ -30,25 +30,115 @@ DEFN_SYSCALL1(wait, 16, int *)
 DEFN_SYSCALL3(write, 17, int, char *, int)
 DEFN_SYSCALL2(gettimeofday, 18, struct timeval *, void *);
 
-/*
-void _exit();
-int close(int file);
-int execve(char *name, char **argv, char **env);
-int fork();
-int fstat(int file, struct stat *st);
-int getpid();
-int isatty(int file);
-int kill(int pid, int sig);
-int link(char *old, char *new);
-int lseek(int file, int ptr, int dir);
-int open(const char *name, int flags, ...);
-int read(int file, char *ptr, int len);
-caddr_t sbrk(int incr);
-int stat(const char *file, struct stat *st);
-clock_t times(struct tms *buf);
-int unlink(char *name);
-int wait(int *status);
-int write(int file, char *ptr, int len);
-int gettimeofday(struct timeval *tv, void *tz);
+void _exit()
+{
+	syscall_exit();
+}
 
-*/
+int close(int file)
+{
+	return syscall_close(file);
+}
+
+int execve(char *name, char **argv, char **env)
+{
+	return syscall_execve(name, argv, env);
+}
+
+int fork()
+{
+	return syscall_fork();
+}
+
+int fstat(int file, struct stat *st)
+{
+	return syscall_fstat(file, st);
+}
+
+int getpid()
+{
+	return syscall_getpid();
+}
+
+int isatty(int file)
+{
+	return syscall_isatty(file);
+}
+
+int kill(int pid, int sig)
+{
+	return syscall_kill(pid, sig);
+}
+
+int link(char *old, char *new)
+{
+	return syscall_link(old, new);
+}
+
+int lseek(int file, int ptr, int dir)
+{
+	return syscall_lseek(file, ptr, dir);
+}
+
+int open(const char *name, int flags, ...)
+{
+	va_list argp;
+	int mode;
+	int result;
+	va_start(argp, flags);
+	if (flags & O_CREAT) mode = va_arg(argp, int);
+	va_end(argp);
+
+	result = syscall_open(name, flags, mode);
+	if (result == -1) {
+		if (flags & O_CREAT) {
+			errno = EACCES;
+		} else {
+			errno = ENOENT;
+		}
+	} else if (result < 0) {
+		errno = -result;
+	}
+}
+
+int read(int file, char *ptr, int len)
+{
+	return syscall_read(file, ptr, len);
+}
+
+caddr_t sbrk(int incr)
+{
+	return (caddr_t) syscall_sbrk(incr);
+}
+
+int stat(const char *file, struct stat *st)
+{
+	return syscall_stat(file, st);
+}
+
+clock_t times(struct tms *buf)
+{
+	//TODO: Implement
+	return -1;
+}
+
+int unlink(char *name)
+{
+	return syscall_unlink(name);
+}
+
+int wait(int *status)
+{
+	return syscall_wait(status);
+}
+
+int write(int file, char *ptr, int len)
+{
+	return syscall_write(file, ptr, len);
+}
+
+int gettimeofday(struct timeval *tv, void *tz)
+{
+	return syscall_gettimeofday(tv, tz);
+}
+
