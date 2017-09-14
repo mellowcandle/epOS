@@ -171,12 +171,13 @@ static int elf_load_relocateable(task_t *task, elf32_ehdr *header)
 
 		/* Temporarily map to allow copy */
 		void *tmp = mem_page_map_kernel(block->p_addr, block->count, READ_WRITE_KERNEL | PTE_TEMPORARY);
+		memset(tmp,  0, block->count * PAGE_SIZE);
 		char *file_ptr = ((char *) header) + phdr->p_offset;
-		memcpy(tmp, file_ptr, phdr->p_memsz);
+		memcpy(tmp, file_ptr, phdr->p_filesz);
 		mem_page_unmap_multiple(tmp, block->count);
 
 		ret = mem_pages_map_pdt_multiple(task->pdt_virt_addr, block->p_addr, block->v_addr, block->count, flags);
-		pr_debug("1");
+		pr_debug("Mapping: 0x%x - 0x%x\r\n", (uint32_t) block->v_addr, (uint32_t) block->v_addr + (block->count * PAGE_SIZE));
 
 		if (ret)
 		{
