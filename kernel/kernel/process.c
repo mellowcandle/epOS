@@ -119,6 +119,7 @@ void prepare_init_task(void *addr, uint32_t count)
 	// Map the user stack
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
 
+	/* Temporarily map the user stack in order to push argc, argv and env */
 	uint32_t *stack = mem_page_map_kernel_single(new->stack_phy_addr, READ_WRITE_KERNEL | PTE_TEMPORARY);
 	memset(stack,0xff,PAGE_SIZE);
 	stack[1023] = 1; //argc
@@ -128,7 +129,7 @@ void prepare_init_task(void *addr, uint32_t count)
 	new->regs.eflags = 0x202;
 	new->regs.ss = SEGSEL_USER_SPACE_DS | 0x03;
 	new->regs.cs = SEGSEL_USER_SPACE_CS | 0x03;
-	new->regs.esp = KERNEL_VIRTUAL_BASE - 12;
+	new->regs.esp = KERNEL_VIRTUAL_BASE - 12; //argc + argv
 	// Push argc and argv to the stack
 	scheduler_add_task(new);
 
