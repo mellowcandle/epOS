@@ -18,3 +18,4 @@ toolchain/*
 sysroot/*
 overlay/*
 
+filelist
