@@ -85,6 +85,7 @@ typedef struct __task_t
 	void *kernel_stack_virt_addr;
 	void *kernel_stack_pointer;
 
+	void * heap_top;
 	task_registers_t regs;
 	list_t mapped_memory_list;
 	list_t list;

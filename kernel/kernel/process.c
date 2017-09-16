@@ -67,6 +67,7 @@ void prepare_init_task(void *addr, uint32_t count)
 
 	new->pid = get_next_pid();
 	new->parent_pid = new->pid; // init process
+	new->heap_top = 0;
 	new->type = TASK_USER;
 	// Allocate kernel stack
 	new->kernel_stack_phy_addr = mem_get_page();

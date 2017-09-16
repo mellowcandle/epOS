@@ -163,6 +163,10 @@ static int elf_load_relocateable(task_t *task, elf32_ehdr *header)
 		if (phdr->p_flags & PF_W)
 		{
 			flags = READ_WRITE_USER;
+			// That's probably the data section, let's mark the end of it, incase someone calls sbrk later.
+			if (task->heap_top < block->v_addr + (block->count * PAGE_SIZE)) {
+				task->heap_top = block->v_addr + (block->count * PAGE_SIZE);
+			}
 		}
 		else
 		{
