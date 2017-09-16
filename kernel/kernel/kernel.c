@@ -67,7 +67,7 @@ void kmain(void)
 
 //	unit_testing();
 
-	ksymbol_init(mbi);
+//	ksymbol_init(mbi);
 	vga_init();
 	acpi_early_init();
 	init_syscalls();
