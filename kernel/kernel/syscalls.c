@@ -29,6 +29,7 @@
 
 #include <syscall.h>
 #include <errno.h>
+#include <stat.h>
 #include <kmalloc.h>
 #include <scheduler.h>
 #include <isr.h>
@@ -101,8 +102,18 @@ int syscall_fork(void)
 int syscall_fstat(int file, struct stat *st)
 {
 	FUNC_ENTER();
-//	st->st_mode = S_IFCHR;
-	return -1;
+	switch (file)
+	{
+	case 0:
+	case 1:
+	case 2:
+		st->st_mode = S_IFCHR;
+		break;
+	default:
+		break;
+	}
+
+	return 0;
 }
 
 int syscall_getpid(void)
