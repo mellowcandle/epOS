@@ -28,6 +28,8 @@
 #define DEBUG
 
 #include <syscall.h>
+#include <errno.h>
+#include <kmalloc.h>
 #include <scheduler.h>
 #include <isr.h>
 #include <printk.h>
@@ -100,7 +102,7 @@ int syscall_fstat(int file, struct stat *st)
 {
 	FUNC_ENTER();
 //	st->st_mode = S_IFCHR;
-	return 0;
+	return -1;
 }
 
 int syscall_getpid(void)
@@ -137,8 +139,47 @@ int syscall_lseek(int file, int ptr, int dir)
 
 int syscall_sbrk(int incr)
 {
-	FUNC_ENTER();
-	return -1;
+	pr_debug("+syscall_sbrk: increment with: %d bytes\r\n", incr);
+
+	int ret;
+	task_t * task = get_current_task();
+	memblock_t *block = kmalloc(sizeof(memblock_t));
+	if (!block) {
+		pr_error("Memory allocation failure\r\n");
+		return -ENOMEM;
+	}
+
+	block->count = divide_up(incr, PAGE_SIZE);
+	block->v_addr = task->heap_top;
+	block->p_addr = mem_get_pages(block->count);
+	if (!block->p_addr) {
+		pr_warn("Out of physical memory\r\n");
+		goto cleanup2;
+	}
+
+	void *tmp = mem_page_map_kernel(block->p_addr, block->count, READ_WRITE_KERNEL | PTE_TEMPORARY);
+	if (!tmp) {
+		pr_error("kernel mapping error\r\n");
+		goto cleanup1;
+	}
+	memset(tmp,  0, block->count * PAGE_SIZE);
+	mem_page_unmap_multiple(tmp, block->count);
+
+	ret = mem_pages_map_pdt_multiple(task->pdt_virt_addr, block->p_addr, block->v_addr, block->count, READ_WRITE_USER);
+	if (ret)
+	{
+		pr_error("Can't sbrk\r\n");
+		goto cleanup1;
+	}
+	task->heap_top += block->count * PAGE_SIZE;
+	list_add(&block->list, &task->mapped_memory_list);
+	return (int) block->v_addr;
+
+cleanup1:
+	mem_free_pages(block->p_addr, block->count);
+cleanup2:
+	kfree(block);
+	return -ENOMEM;
 }
 
 struct stat;
