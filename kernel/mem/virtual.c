@@ -423,10 +423,8 @@ void page_fault_handler(registers_t *regs)
 	printk("Page ownership %s\r\n", page_user ? "user" : "kernel");
 
 
-	while (1);
-
 	irq_reg_dump(regs);
-	//dump_pdt();
+	dump_pdt();
 	panic();
 }
 
@@ -498,7 +496,7 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 	char *access_ptr;
 	uint32_t *pte;
 
-	pr_debug("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
+	pr_info("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
 
 	assert(IS_PAGE_ALIGNED(physical));
 
