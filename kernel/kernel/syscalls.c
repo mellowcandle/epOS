@@ -72,19 +72,25 @@ int syscall_write(int fd, char *buf, int len)
 {
 	FUNC_ENTER();
 
-	if (fd == 1)
+	switch(fd)
 	{
+	case 1:
+	case 2:
 		printk("%s", buf);
+		break;
+	default:
+		break;
 	}
 
-	return 0;
+	return len;
 }
 
 
 
 int syscall_close(int file)
 {
-	return -1;
+	pr_debug("+syscall_close: file: %d\r\n", file);
+	return 0;
 }
 
 int syscall_execve(char *name, char **argv, char **env)
