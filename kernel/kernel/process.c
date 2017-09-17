@@ -124,13 +124,14 @@ void prepare_init_task(void *addr, uint32_t count)
 	uint32_t *stack = mem_page_map_kernel_single(new->stack_phy_addr, READ_WRITE_KERNEL | PTE_TEMPORARY);
 	memset(stack,0xff,PAGE_SIZE);
 	stack[1023] = 1; //argc
-	stack[1022] = 2; //argv
+	stack[1022] = 0; //argv
+	stack[1021] = 0; //env
 	mem_page_unmap(stack);
 
 	new->regs.eflags = 0x202;
 	new->regs.ss = SEGSEL_USER_SPACE_DS | 0x03;
 	new->regs.cs = SEGSEL_USER_SPACE_CS | 0x03;
-	new->regs.esp = KERNEL_VIRTUAL_BASE - 12; //argc + argv
+	new->regs.esp = KERNEL_VIRTUAL_BASE - 16; //argc + argv + env
 	// Push argc and argv to the stack
 	scheduler_add_task(new);
 
