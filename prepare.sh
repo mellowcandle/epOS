@@ -35,6 +35,7 @@ echo "export EPOS_ROOTDIR=${CWD}" > environment
 echo "export TOOLCHAIN_PATH=${CWD}/toolchain" >> environment
 echo "export EPOS_SYSROOT=${CWD}/sysroot" >> environment
 echo "export PATH=$PATH:${CWD}/toolchain/bin" >> environment
+cat _env >> environment
 
 source environment
 
