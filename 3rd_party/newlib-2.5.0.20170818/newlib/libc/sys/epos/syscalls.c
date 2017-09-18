@@ -10,7 +10,7 @@
 #include <syscall.h>
 char **environ; /* pointer to array of char * strings that define the current environment variables */
 
-DEFN_SYSCALL0(exit, 0)
+DEFN_SYSCALL1(exit, 0, int)
 DEFN_SYSCALL1(close, 1,  int)
 DEFN_SYSCALL3(execve, 2, char *, char **, char **)
 DEFN_SYSCALL0(fork, 3)
@@ -30,9 +30,9 @@ DEFN_SYSCALL1(wait, 16, int *)
 DEFN_SYSCALL3(write, 17, int, char *, int)
 DEFN_SYSCALL2(gettimeofday, 18, struct timeval *, void *);
 
-void _exit()
+void _exit(int ret)
 {
-	syscall_exit();
+	syscall_exit(ret);
 }
 
 int close(int file)

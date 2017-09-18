@@ -89,7 +89,7 @@ struct stat;
 struct tms;
 struct timeval;
 
-DECL_SYSCALL0(exit)
+DECL_SYSCALL1(exit, int)
 DECL_SYSCALL1(close, int)
 DECL_SYSCALL3(execve, char *, char **, char **)
 DECL_SYSCALL0(fork)

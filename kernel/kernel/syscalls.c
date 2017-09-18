@@ -39,9 +39,9 @@
 
 #define SYSCALLS_COUNT 18
 
-int syscall_exit(void)
+int syscall_exit(int ret)
 {
-	FUNC_ENTER();
+	pr_debug("+syscall_exit: %d\r\n", ret);
 	return 0;
 }
 
