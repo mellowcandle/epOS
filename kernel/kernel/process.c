@@ -219,3 +219,32 @@ void switch_to_task(task_t *task)
 	}
 
 }
+
+int process_cleanup(task_t * task)
+{
+	memblock_t *block;
+
+	/* TODO: Free the file descriptors */
+	/* TODO: Notify parent via signal */
+
+	/* Free the user stack */
+	mem_free_page(task->stack_phy_addr);
+
+	/* Free all process memory */
+	list_for_each_entry(block, &task->mapped_memory_list, list)
+	{
+		pr_debug("Freeing block: V0x%x P0x%x, size: %u\r\n",
+				block->v_addr, block->p_addr, block->count);
+		mem_free_pages(block->p_addr, block->count);
+		/* TODO: kfree the structures */
+
+	}
+
+	/* Free the kernel stack */
+	mem_page_unmap(task->kernel_stack_virt_addr);
+	mem_free_page(task->kernel_stack_phy_addr);
+
+
+	/* TODO: add process to zombie list */
+	return 0;
+}

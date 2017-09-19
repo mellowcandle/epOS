@@ -72,6 +72,7 @@ typedef struct __task_t
 {
 	uint32_t pid;
 	uint32_t parent_pid;
+	int32_t exit_value;
 	task_type_t type;
 	task_state_t state;
 
@@ -92,6 +93,7 @@ typedef struct __task_t
 } task_t;
 
 task_t *clone(task_t *parent);
+int process_cleanup(task_t *task);
 void prepare_init_task(void *physical, uint32_t count);
 void switch_to_task(task_t *task);
 void dump_task_state(task_t *task);

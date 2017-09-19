@@ -36,13 +36,23 @@
 #include <printk.h>
 #include <lib/string.h>
 #include <cpu.h>
+#include <process.h>
+
 
 #define SYSCALLS_COUNT 18
 
 int syscall_exit(int ret)
 {
 	pr_debug("+syscall_exit: %d\r\n", ret);
-	return 0;
+	task_t * task = get_current_task();
+	task->exit_value = ret;
+
+	/* Remove process from running procces list */
+	scheduler_remove_task(task);
+
+	/* Start clean up */
+
+	return process_cleanup(task);
 }
 
 
