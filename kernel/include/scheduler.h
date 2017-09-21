@@ -35,6 +35,7 @@ void scheduler_add_task(task_t *task);
 void scheduler_remove_task(task_t *task);
 void scheduler_set_zombie(task_t *task);
 void scheduler_switch_task(registers_t *regs);
+void schedule();
 task_t *get_current_task();
 void scheduler_start();
 void save_registers(task_t *current_task, registers_t *regs);

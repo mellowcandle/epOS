@@ -150,6 +150,14 @@ void scheduler_start()
 	/* Should not get here */
 	while (1);
 }
+void schedule()
+{
+	current_task = _scheduler_get_next_running_task();
+	switch_to_task(current_task);
+
+	/* Should not get here */
+	while (1);
+}
 void save_registers(task_t *current_task, registers_t *regs)
 {
 

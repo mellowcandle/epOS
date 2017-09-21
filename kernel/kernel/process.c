@@ -24,7 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-//#define DEBUG
+#define DEBUG
 
 #include <types.h>
 #include <mem/memory.h>
@@ -222,6 +222,7 @@ void switch_to_task(task_t *task)
 
 int process_cleanup(task_t * task)
 {
+	FUNC_ENTER();
 	memblock_t *block;
 
 	/* TODO: Free the file descriptors */
@@ -245,5 +246,6 @@ int process_cleanup(task_t * task)
 	mem_free_page(task->kernel_stack_phy_addr);
 
 	scheduler_set_zombie(task);
+	FUNC_LEAVE();
 	return 0;
 }

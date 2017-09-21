@@ -46,13 +46,18 @@ int syscall_exit(int ret)
 	pr_debug("+syscall_exit: %d\r\n", ret);
 	task_t * task = get_current_task();
 	task->exit_value = ret;
-
+	DBG_LINE();
 	/* Remove process from running procces list */
 	scheduler_remove_task(task);
 
 	/* Start clean up */
 
-	return process_cleanup(task);
+	process_cleanup(task);
+
+	schedule();
+	/* Should not return from this */
+
+	return 0;
 }
 
 
