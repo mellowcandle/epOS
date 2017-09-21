@@ -46,6 +46,7 @@ void hex_dump(void *ptr, uint32_t len);
 #ifdef DEBUG
 #define FUNC_ENTER() printk("+ %s\r\n", __FUNCTION__)
 #define FUNC_LEAVE() printk("- %s\r\n", __FUNCTION__)
+#define DBG_LINE() printk("---%s:%u\r\n", __FILE__, __LINE__);
 #define pr_debug(_format, _args...)	printk("DEBUG: " _format, ##_args)
 
 #else
