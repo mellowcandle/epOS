@@ -244,7 +244,6 @@ int process_cleanup(task_t * task)
 	mem_page_unmap(task->kernel_stack_virt_addr);
 	mem_free_page(task->kernel_stack_phy_addr);
 
-
-	/* TODO: add process to zombie list */
+	scheduler_set_zombie(task);
 	return 0;
 }

@@ -34,6 +34,7 @@
 #include <cpu.h>
 
 static LIST(running_tasks);
+static LIST(zombie_tasks);
 static LIST(stopped_tasks);
 
 extern uint32_t *current_pdt;
@@ -96,6 +97,13 @@ void scheduler_add_task(task_t *task)
 	task->state = TASK_RUNNING;
 	list_add_tail(&task->list, &running_tasks);
 }
+
+void scheduler_set_zombie(task_t *task)
+{
+	task->state = TASK_ZOMBIE;
+	list_add_tail(&task->list, &zombie_tasks);
+}
+
 
 void scheduler_remove_task(task_t *task)
 {

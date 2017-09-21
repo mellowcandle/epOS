@@ -59,6 +59,9 @@ typedef struct
 typedef enum
 {
 	TASK_RUNNING = 0,
+	TASK_UNINTERRUPTABLE,
+	TASK_INTERRUPTABLE,
+	TASK_ZOMBIE,
 	TASK_STOPPED
 } task_state_t;
 
