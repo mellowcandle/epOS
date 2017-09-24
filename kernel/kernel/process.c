@@ -223,7 +223,7 @@ void switch_to_task(task_t *task)
 int process_cleanup(task_t * task)
 {
 	FUNC_ENTER();
-	memblock_t *block;
+	memblock_t *block, *tmp;
 
 	/* TODO: Free the file descriptors */
 	/* TODO: Notify parent via signal */
@@ -232,14 +232,15 @@ int process_cleanup(task_t * task)
 	mem_free_page(task->stack_phy_addr);
 
 	/* Free all process memory */
-	list_for_each_entry(block, &task->mapped_memory_list, list)
+	list_for_each_entry_safe(block, tmp, &task->mapped_memory_list, list)
 	{
 		pr_debug("Freeing block: V0x%x P0x%x, size: %u\r\n",
 				block->v_addr, block->p_addr, block->count);
 		mem_free_pages(block->p_addr, block->count);
-		/* TODO: kfree the structures */
-
+		kfree(block);
+		/* no need to remove the nodes from the list, we shred it anyway.... */
 	}
+	task->mapped_memory_list.next = task->mapped_memory_list.prev = &task->mapped_memory_list;
 
 	/* Free the kernel stack */
 	mem_page_unmap(task->kernel_stack_virt_addr);
