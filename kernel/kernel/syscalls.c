@@ -134,7 +134,8 @@ int syscall_fstat(int file, struct stat *st)
 int syscall_getpid(void)
 {
 	FUNC_ENTER();
-	return 1;
+	task_t * task = get_current_task();
+	return task->pid;
 }
 
 int syscall_isatty(int file)

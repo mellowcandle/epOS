@@ -104,9 +104,6 @@ void prepare_init_task(void *addr, uint32_t count)
 		panic();
 	}
 
-	//
-	//mem_pages_map_pdt_multiple(new->pdt_virt_addr, (addr_t) physical, 0, count, READ_WRITE_USER);
-
 	// Allocate user stack
 	new->stack_virt_addr = (void *) KERNEL_VIRTUAL_BASE - PAGE_SIZE;
 	new->stack_phy_addr	 = mem_get_page();
