@@ -110,8 +110,11 @@ int syscall_execve(char *name, char **argv, char **env)
 
 int syscall_fork(void)
 {
-//	errno = EAGAIN;
-	return -1;
+	task_t * task = clone(get_current_task());
+	if (task) {
+		return task->pid;
+	}
+	return -ENOMEM;
 }
 
 int syscall_fstat(int file, struct stat *st)

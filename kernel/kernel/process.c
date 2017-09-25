@@ -150,7 +150,7 @@ fail1:
 
 task_t *clone(task_t *parent)
 {
-	task_t *new = kmalloc(sizeof(task_t));
+	task_t *new = kzalloc(sizeof(task_t));
 
 	if (!new)
 	{
@@ -158,10 +158,19 @@ task_t *clone(task_t *parent)
 		return NULL;
 	}
 
+	LIST_HEAD_INIT(&new->mapped_memory_list);
+
 	new->parent_pid = parent->pid;
+	new->type = parent->type;
 	new->pid = get_next_pid();
 	new->regs = parent->regs;
+	new->regs.eax = 0; // The new process will return 0 in fork's return
+
 	new->pdt_virt_addr = mem_calloc_pdt(&new->pdt_phy_addr);
+
+	new->kernel_stack_virt_addr = mem_page_map_kernel(new->kernel_stack_phy_addr, 1, READ_WRITE_KERNEL);
+	new->kernel_stack_pointer = new->kernel_stack_virt_addr + PAGE_SIZE - 4;
+
 
 	if (!new->pdt_virt_addr)
 	{
@@ -174,7 +183,19 @@ task_t *clone(task_t *parent)
 		pr_error("Failed cloning process\r\n");
 	}
 
-	mem_switch_page_directory(new->pdt_phy_addr);
+	memblock_t *tmp, *block;
+	list_for_each_entry(block, &parent->mapped_memory_list, list)
+	{
+		tmp = kmalloc(sizeof(memblock_t));
+		assert(tmp);
+		memcpy(tmp, block, sizeof(memblock_t));
+		list_add_tail(&tmp->list, &new->mapped_memory_list);
+	}
+	new->stack_virt_addr = parent->stack_virt_addr;
+	new->heap_top = parent->heap_top;
+	/* What to do with stack phy addr ??? */
+	scheduler_add_task(new);
+
 	return new;
 fail:
 	kfree(new);
