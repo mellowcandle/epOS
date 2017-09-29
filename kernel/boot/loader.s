@@ -27,8 +27,8 @@ extern kmain                            ; _main is defined elsewhere
 
 global mbd ; Grub structure
 global magic ; Grub magic number
-global pdt; Page directory
-global pte;
+global initial_pdt; Page directory
+;global pte;
 ; setting up the Multiboot header - see GRUB docs for details
 MODULEALIGN equ  1<<0             ; align loaded modules on page boundaries
 MEMINFO     equ  1<<1             ; provide memory map
@@ -57,7 +57,7 @@ global      EntryPoint
 EntryPoint:
     ; NOTE: Until paging is set up, the code must be position-independent and use physical
     ; addresses, not virtual ones!
-    mov ecx, (pdt - KERNEL_VIRTUAL_BASE)
+    mov ecx, (initial_pdt - KERNEL_VIRTUAL_BASE)
     mov cr3, ecx                                        ; Load Page Directory Base Register.
 
     mov ecx, cr4
@@ -78,7 +78,7 @@ EntryPoint:
 
 section .data
 align 4096
-pdt:
+initial_pdt:
     ; This page directory entry identity-maps the first 4MB of the 32-bit physical address space.
     ; All bits are clear except the following:
     ; bit 7: PS The kernel page is 4MB.
@@ -91,7 +91,7 @@ pdt:
     ; This page directory entry defines a 4MB page containing the kernel.
     dd 0x00000083
     times (1024 - KERNEL_PAGE_NUMBER - 2) dd 0  ; Pages after the kernel image.
-	dd (pdt - KERNEL_VIRTUAL_BASE) + 3
+	dd (initial_pdt - KERNEL_VIRTUAL_BASE) + 3
 
 section .text
 align 4
@@ -102,7 +102,7 @@ align 4
 StartInHigherHalf:
     ; Unmap the identity-mapped first 4MB of physical address space. It should not be needed
     ; anymore.
-    mov dword [pdt], 0
+    mov dword [initial_pdt], 0
     invlpg [0]
 
     ; NOTE: From now on, paging should be enabled. The first 4MB of physical address space is

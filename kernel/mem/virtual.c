@@ -556,12 +556,6 @@ void mem_page_unmap(void *virtual)
 	//TODO: unmap page directory if necessary
 	FUNC_ENTER();
 
-	if ((addr_t) virtual >= KERNEL_VIRTUAL_BASE) {
-		pr_error("Freeing kernel memory, need to do this on all pdt's\r\n");
-		/* TODO: Implement this */
-		return;
-	}
-
 	access_ptr = (char *)(PDE_MIRROR_BASE + (FRAME_TO_PDE_INDEX((addr_t)virtual) * 0x1000));
 
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX((addr_t)virtual) * sizeof(uint32_t)));
@@ -796,6 +790,10 @@ void *mem_calloc_pdt(addr_t *p_addr)
 	return v_addr;
 }
 
+void mem_free_pdt(void *pdt)
+{
+// TODO: Implement
+}
 void mem_release_pdt(addr_t p_addr, void *v_addr)
 {
 	if ((!p_addr) || (!v_addr))

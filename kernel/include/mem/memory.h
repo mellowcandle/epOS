@@ -204,6 +204,7 @@ addr_t virt_to_phys(void *addr);
 
 heap_t *get_kernel_heap();
 void *mem_calloc_pdt(addr_t *p_addr);
+void mem_free_pdt(void *pdt);
 void mem_release_pdt(addr_t p_addr, void *v_addr);
 int clone_pdt(void *v_source, void *v_dest, addr_t p_dest);
 void *mem_find_kernel_place(int count);

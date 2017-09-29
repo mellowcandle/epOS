@@ -38,7 +38,7 @@
 
 static uint32_t pid_counter = 0;
 extern uint32_t *current_pdt;
-
+extern addr_t initial_pdt;
 /* segements */
 #define SEGSEL_KERNEL_CS 0x08
 #define SEGSEL_KERNEL_DS 0x10
@@ -265,6 +265,12 @@ int process_cleanup(task_t * task)
 	mem_free_page(task->kernel_stack_phy_addr);
 
 	scheduler_set_zombie(task);
+
+	/* Cleanup the PDT */
+	mem_switch_page_directory(initial_pdt);
+	mem_free_pdt(task->pdt_virt_addr);
+	mem_release_pdt(task->pdt_phy_addr, task->pdt_virt_addr);
+
 	FUNC_LEAVE();
 	return 0;
 }
