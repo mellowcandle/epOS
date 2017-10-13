@@ -28,6 +28,17 @@ ifndef EPOS_ROOTDIR
 $(error EPOS_ROOTDIR is not defined, did you run ./prepare ? did you source environment ???)
 endif
 
+# Determine core count so we can hurry up build
+NPROCS:=1
+OS:=$(shell uname -s)
+
+ifeq ($(OS),Linux)
+	NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+endif
+ifeq ($(OS),Darwin) # Assume Mac OS X
+	NPROCS:=$(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
+endif
+
 ISODIR_PATH = isodir
 
 ASTYLE ?= astyle
@@ -38,7 +49,7 @@ all: kernel.iso apps cscope overlay
 
 apps:
 	@echo "Building Applications:"
-	@$(MAKE) --no-print-directory -C apps
+	@$(MAKE) --no-print-directory -j$(NPROCS) -C apps
 
 kernel.iso: multiboot overlay
 	@rm -rf $(ISODIR_PATH)
@@ -61,7 +72,7 @@ lines:
 	@cloc --exclude-dir=toolchain,kernel/drivers/acpi/acpica,3rd_party,overlay --exclude-lang=XML,D,Markdown,make,Python,DTD .
 
 multiboot:
-	@$(MAKE) --no-print-directory -C kernel
+	@$(MAKE) --no-print-directory -j$(NPROCS) -C kernel
 
 clean:
 	@rm -rf rootfs.tar
