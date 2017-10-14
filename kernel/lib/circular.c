@@ -118,13 +118,17 @@ bool circ_buffer_is_full(circ_buffer_t *buffer)
 static size_t _circ_buffer_space_left(circ_buffer_t *buffer)
 {
 
-	if (buffer->read_idx >= buffer->write_idx)
+	if (buffer->read_idx == buffer->write_idx)
+	{
+		return buffer->size - 1;
+	}
+	else if (buffer->read_idx > buffer->write_idx)
 	{
 		return (buffer->read_idx - buffer->write_idx);
 	}
 	else
 	{
-		return (buffer->size - 1 - buffer->write_idx) + (buffer->read_idx - 1);
+		return (buffer->size - 1 - (buffer->write_idx - buffer->read_idx));
 	}
 }
 
