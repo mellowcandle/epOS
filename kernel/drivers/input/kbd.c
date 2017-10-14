@@ -33,7 +33,9 @@
 #include <printk.h>
 #include <acpica/acpi.h>
 #include <isr.h>
+#include <lib/circular.h>
 
+#define KBD_BUFFER_SIZE 128 // Must be power of 2
 /* Port addresses */
 #define KBD_8042_DATA_PORT	0x60
 #define KBD_8042_CMD_PORT	0x64
@@ -53,16 +55,23 @@
 #define SCROLL_LOCK_BIT 1
 #define NUM_LOCK_BIT 2
 
-#define KBD_STATE_CAPS_LOCK		BIT(CAPS_LOCK_BIT)
-#define KBD_STATE_SCROLL_LOCK	BIT(SCROLL_LOCK_BIT)
-#define KBD_STATE_NUM_LOCK		BIT(NUM_LOCK_BIT)
-#define KBD_STATE_LEFT_CTRL		BIT(3)
-#define KBD_STATE_RIGHT_CTRL	BIT(4)
-#define KBD_STATE_LEFT_ALT		BIT(5)
-#define KBD_STATE_RIGHT_ALT		BIT(6)
-#define KBD_STATE_LEFT_SHIFT	BIT(7)
-#define KBD_STATE_RIGHT_SHIFT	BIT(8)
+#define state_CAPS_LOCK		BIT(CAPS_LOCK_BIT)
+#define state_SCROLL_LOCK	BIT(SCROLL_LOCK_BIT)
+#define state_NUM_LOCK		BIT(NUM_LOCK_BIT)
+#define state_LEFT_CTRL		BIT(3)
+#define state_RIGHT_CTRL	BIT(4)
+#define state_LEFT_ALT		BIT(5)
+#define state_RIGHT_ALT		BIT(6)
+#define state_LEFT_SHIFT	BIT(7)
+#define state_RIGHT_SHIFT	BIT(8)
 
+typedef struct {
+	int state;
+	circ_buffer_t * queue;
+	bool ps2_dual_channel;
+} kbd_device_t;
+
+static kbd_device_t kbd;
 
 ACPI_TABLE_FADT *acpi_get_fadt();
 
@@ -90,14 +99,12 @@ static uint8_t kbd_scan_table_shift[128] =
 };
 
 static int kbd_8042_self_test();
-static bool ps2_dual_channel = false;
 static int ps2_port_test(bool dual);
-static int kbd_state = 0;
 
 void kbd_8042_enable(uint8_t port);
 void kbd_8042_disable(uint8_t port);
 void kbd_8042_poll();
-void kbd_state_machine(uint8_t scan_code);
+void state_machine(uint8_t scan_code);
 
 static uint8_t kbd_8042_status()
 {
@@ -136,7 +143,7 @@ void kbd_irq_handler(registers_t *regs)
 
 	while ((kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
 	{
-		kbd_state_machine(kbd_8042_data());
+		state_machine(kbd_8042_data());
 	}
 }
 
@@ -144,109 +151,109 @@ void kbd_irq_handler(registers_t *regs)
 #define STATE_PRE_RELEASE BIT(1)
 #define STATE_PRE_RIGHT BIT(2)
 
-void kbd_state_machine(uint8_t scan_code)
+void state_machine(uint8_t scan_code)
 {
-	static int kbd_statemachine = STATE_IDLE;
+	static int statemachine = STATE_IDLE;
 	const uint8_t *scan_table;
 
 	switch (scan_code)
 	{
 	case 0xF0:
-		kbd_statemachine |= STATE_PRE_RELEASE;
+		statemachine |= STATE_PRE_RELEASE;
 		break;
 
 	case 0xE0:
-		kbd_statemachine |= STATE_PRE_RIGHT;
+		statemachine |= STATE_PRE_RIGHT;
 		break;
 
 	case 0x11: // alt
-		if (kbd_statemachine & STATE_PRE_RELEASE)
+		if (statemachine & STATE_PRE_RELEASE)
 		{
-			kbd_state &= (kbd_statemachine & STATE_PRE_RIGHT) ? ~KBD_STATE_LEFT_ALT : ~KBD_STATE_RIGHT_ALT;
+			kbd.state &= (statemachine & STATE_PRE_RIGHT) ? ~state_LEFT_ALT : ~state_RIGHT_ALT;
 
 		}
 		else
 		{
-			kbd_state |= (kbd_statemachine & STATE_PRE_RIGHT) ? KBD_STATE_LEFT_ALT : KBD_STATE_RIGHT_ALT;
+			kbd.state |= (statemachine & STATE_PRE_RIGHT) ? state_LEFT_ALT : state_RIGHT_ALT;
 		}
 
-		kbd_statemachine = STATE_IDLE;
+		statemachine = STATE_IDLE;
 		break;
 
 	case 0x12: // left shift
 
-		if (kbd_statemachine & STATE_PRE_RELEASE)
+		if (statemachine & STATE_PRE_RELEASE)
 		{
-			kbd_state &=  ~KBD_STATE_LEFT_SHIFT;
+			kbd.state &=  ~state_LEFT_SHIFT;
 		}
 		else
 		{
-			kbd_state |= KBD_STATE_LEFT_SHIFT;
+			kbd.state |= state_LEFT_SHIFT;
 		}
 
-		kbd_statemachine = STATE_IDLE;
+		statemachine = STATE_IDLE;
 		break;
 
 	case 0x59: //right shift
-		if (kbd_statemachine & STATE_PRE_RELEASE)
+		if (statemachine & STATE_PRE_RELEASE)
 		{
-			kbd_state &=  ~KBD_STATE_RIGHT_SHIFT;
+			kbd.state &=  ~state_RIGHT_SHIFT;
 		}
 		else
 		{
-			kbd_state |= KBD_STATE_RIGHT_SHIFT;
+			kbd.state |= state_RIGHT_SHIFT;
 		}
 
-		kbd_statemachine = STATE_IDLE;
+		statemachine = STATE_IDLE;
 		break;
 
 	case 0x14: // control
 
-		if (kbd_statemachine & STATE_PRE_RELEASE)
+		if (statemachine & STATE_PRE_RELEASE)
 		{
-			kbd_state &= (kbd_statemachine & STATE_PRE_RIGHT) ? ~KBD_STATE_LEFT_CTRL : ~KBD_STATE_RIGHT_CTRL;
+			kbd.state &= (statemachine & STATE_PRE_RIGHT) ? ~state_LEFT_CTRL : ~state_RIGHT_CTRL;
 		}
 		else
 		{
-			kbd_state |= (kbd_statemachine & STATE_PRE_RIGHT) ? KBD_STATE_LEFT_CTRL : KBD_STATE_RIGHT_CTRL;
+			kbd.state |= (statemachine & STATE_PRE_RIGHT) ? state_LEFT_CTRL : state_RIGHT_CTRL;
 		}
 
-		kbd_statemachine = STATE_IDLE;
+		statemachine = STATE_IDLE;
 		break;
 
 	case 0x58: // Caps lock
 
-		if (!(kbd_statemachine & STATE_PRE_RELEASE))
+		if (!(statemachine & STATE_PRE_RELEASE))
 		{
-			BIT_TOGGLE(kbd_state, CAPS_LOCK_BIT);
+			BIT_TOGGLE(kbd.state, CAPS_LOCK_BIT);
 		}
 
-		kbd_statemachine = STATE_IDLE;
+		statemachine = STATE_IDLE;
 		break;
 
 	case 0x77: // Numlock
 
-		if (!(kbd_statemachine & STATE_PRE_RELEASE))
+		if (!(statemachine & STATE_PRE_RELEASE))
 		{
-			BIT_TOGGLE(kbd_state, NUM_LOCK_BIT);
+			BIT_TOGGLE(kbd.state, NUM_LOCK_BIT);
 		}
 
-		kbd_statemachine = STATE_IDLE;
+		statemachine = STATE_IDLE;
 		break;
 
 	case 0x7e: // Scroll lock
 
-		if (!(kbd_statemachine & STATE_PRE_RELEASE))
+		if (!(statemachine & STATE_PRE_RELEASE))
 		{
-			BIT_TOGGLE(kbd_state, SCROLL_LOCK_BIT);
+			BIT_TOGGLE(kbd.state, SCROLL_LOCK_BIT);
 		}
 
-		kbd_statemachine = STATE_IDLE;
+		statemachine = STATE_IDLE;
 		break;
 
 	default:
 
-		if (kbd_state & (KBD_STATE_LEFT_SHIFT | KBD_STATE_RIGHT_SHIFT))
+		if (kbd.state & (state_LEFT_SHIFT | state_RIGHT_SHIFT))
 		{
 			scan_table = kbd_scan_table_shift;
 		}
@@ -255,16 +262,19 @@ void kbd_state_machine(uint8_t scan_code)
 			scan_table = kbd_scan_table;
 		}
 
-		if (kbd_statemachine == STATE_PRE_RELEASE)
+		if (statemachine == STATE_PRE_RELEASE)
 		{
 			pr_debug("scan code %hhx  key: %c released\r\n", scan_code, (char) scan_table[scan_code]);
 		}
 		else
 		{
 			pr_debug("scan code %hhx key %c pressed\r\n", scan_code, scan_table[scan_code]);
+			if (!write_circ_buffer(kbd.queue, 1, (void *) &scan_table[scan_code])) {
+				pr_warn("Can't write to keyboard queue, is it full ?\n");
+			}
 		}
 
-		kbd_statemachine = STATE_IDLE;
+		statemachine = STATE_IDLE;
 
 		break;
 	}
@@ -289,7 +299,7 @@ void kbd_8042_init()
 
 	if (BIT_CHECK(config, 5))
 	{
-		ps2_dual_channel = true;
+		kbd.ps2_dual_channel = true;
 		pr_info("Detected dual channel PS2 controller\r\n");
 	}
 
@@ -306,10 +316,17 @@ void kbd_8042_init()
 		return;
 	}
 
-	if (ps2_port_test(ps2_dual_channel))
+	if (ps2_port_test(kbd.ps2_dual_channel))
 	{
 		return;
 	}
+
+	kbd.queue = create_circ_buffer(KBD_BUFFER_SIZE);
+	if (!kbd.queue) {
+		pr_error("Couldn't get memory for keyboard queue");
+		return;
+	}
+
 
 	register_interrupt_handler(IRQ1, &kbd_irq_handler);
 	arch_map_irq(1, IRQ1);
