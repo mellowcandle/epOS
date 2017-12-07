@@ -101,10 +101,10 @@ static uint8_t kbd_scan_table_shift[128] =
 static int kbd_8042_self_test();
 static int ps2_port_test(bool dual);
 
-void kbd_8042_enable(uint8_t port);
-void kbd_8042_disable(uint8_t port);
-void kbd_8042_poll();
-void state_machine(uint8_t scan_code);
+static void kbd_8042_enable(uint8_t port);
+static void kbd_8042_disable(uint8_t port);
+static void kbd_8042_poll();
+static void state_machine(uint8_t scan_code);
 
 static uint8_t kbd_8042_status()
 {
@@ -151,7 +151,7 @@ void kbd_irq_handler(registers_t *regs)
 #define STATE_PRE_RELEASE BIT(1)
 #define STATE_PRE_RIGHT BIT(2)
 
-void state_machine(uint8_t scan_code)
+static void state_machine(uint8_t scan_code)
 {
 	static int statemachine = STATE_IDLE;
 	const uint8_t *scan_table;
@@ -336,7 +336,7 @@ void kbd_8042_init()
 //	kbd_8042_enable(2);
 }
 
-void kbd_8042_enable(uint8_t port)
+static void kbd_8042_enable(uint8_t port)
 {
 	uint8_t config;
 	config = kbd_8042_read_config();
@@ -367,7 +367,8 @@ void kbd_8042_enable(uint8_t port)
 	}
 
 }
-void kbd_8042_disable(uint8_t port)
+
+static void kbd_8042_disable(uint8_t port)
 {
 	if (port == 1)
 	{
@@ -384,7 +385,7 @@ void kbd_8042_disable(uint8_t port)
 	}
 
 }
-int kbd_8042_self_test()
+static int kbd_8042_self_test()
 {
 	uint8_t data;
 	kbd_8042_write_cmd(0xAA);
@@ -402,7 +403,7 @@ int kbd_8042_self_test()
 
 	return 0;
 }
-int ps2_port_test(bool dual)
+static int ps2_port_test(bool dual)
 {
 	uint8_t data;
 	kbd_8042_write_cmd(0xAB);
@@ -439,7 +440,7 @@ int ps2_port_test(bool dual)
 	return 0;
 }
 
-void kbd_8042_poll()
+static void kbd_8042_poll()
 {
 	uint8_t data;
 
