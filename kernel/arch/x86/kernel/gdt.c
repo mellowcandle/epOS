@@ -41,8 +41,7 @@ void dump_gdt_table();
 /* Defines a GDT entry. We say packed, because it prevents the
 *  compiler from doing things that it thinks is best: Prevent
 *  compiler "optimization" by packing */
-struct gdt_entry
-{
+struct gdt_entry {
 	unsigned short limit_low;
 	unsigned short base_low;
 	unsigned char base_middle;
@@ -54,8 +53,7 @@ struct gdt_entry
 
 /* Special pointer which includes the limit: The max bytes
 *  taken up by the GDT, minus 1. Again, this NEEDS to be packed */
-struct gdt_ptr
-{
+struct gdt_ptr {
 	unsigned short limit;
 	unsigned int base;
 } __attribute__((packed));
@@ -67,7 +65,8 @@ struct gdt_ptr gp;
 struct tss_entry __attribute__((aligned(PAGE_SIZE))) tss;
 
 /* Setup a descriptor in the Global Descriptor Table */
-static void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)
+static void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access,
+                         unsigned char gran)
 {
 	/* Setup the descriptor base address */
 	gdt[num].base_low = (base & 0xFFFF);

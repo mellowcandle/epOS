@@ -130,8 +130,7 @@ ACPI_MODULE_NAME("dswexec")
 /*
  * Dispatch table for opcode classes
  */
-static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] =
-{
+static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] = {
 	AcpiExOpcode_0A_0T_1R,
 	AcpiExOpcode_1A_0T_0R,
 	AcpiExOpcode_1A_0T_1R,
@@ -162,8 +161,8 @@ static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] =
 
 ACPI_STATUS
 AcpiDsGetPredicateValue(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     *ResultObj)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_OPERAND_OBJECT     *ResultObj)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -175,39 +174,30 @@ AcpiDsGetPredicateValue(
 
 	WalkState->ControlState->Common.State = 0;
 
-	if (ResultObj)
-	{
+	if (ResultObj) {
 		Status = AcpiDsResultPop(&ObjDesc, WalkState);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_EXCEPTION((AE_INFO, Status,
 			                "Could not get result from predicate evaluation"));
 
 			return_ACPI_STATUS(Status);
 		}
-	}
-	else
-	{
+	} else {
 		Status = AcpiDsCreateOperand(WalkState, WalkState->Op, 0);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
 		Status = AcpiExResolveToValue(&WalkState->Operands [0], WalkState);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
 		ObjDesc = WalkState->Operands [0];
 	}
 
-	if (!ObjDesc)
-	{
+	if (!ObjDesc) {
 		ACPI_ERROR((AE_INFO,
 		            "No predicate ObjDesc=%p State=%p",
 		            ObjDesc, WalkState));
@@ -223,12 +213,9 @@ AcpiDsGetPredicateValue(
 	                                ACPI_STRTOUL_BASE16);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
-	if (LocalObjDesc->Common.Type != ACPI_TYPE_INTEGER)
-	{
+	if (LocalObjDesc->Common.Type != ACPI_TYPE_INTEGER) {
 		ACPI_ERROR((AE_INFO,
 		            "Bad predicate (not an integer) ObjDesc=%p State=%p Type=0x%X",
 		            ObjDesc, WalkState, ObjDesc->Common.Type));
@@ -246,11 +233,8 @@ AcpiDsGetPredicateValue(
 	 * the control stack
 	 */
 	if (LocalObjDesc->Integer.Value)
-	{
 		WalkState->ControlState->Common.Value = TRUE;
-	}
-	else
-	{
+	else {
 		/*
 		 * Predicate is FALSE, we will just toss the
 		 * rest of the package
@@ -279,9 +263,7 @@ Cleanup:
 	 * we don't need it anymore)
 	 */
 	if (LocalObjDesc != ObjDesc)
-	{
 		AcpiUtRemoveReference(LocalObjDesc);
-	}
 
 	AcpiUtRemoveReference(ObjDesc);
 
@@ -307,8 +289,8 @@ Cleanup:
 
 ACPI_STATUS
 AcpiDsExecBeginOp(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       **OutOp)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       **OutOp)
 {
 	ACPI_PARSE_OBJECT       *Op;
 	ACPI_STATUS             Status = AE_OK;
@@ -320,22 +302,18 @@ AcpiDsExecBeginOp(
 
 	Op = WalkState->Op;
 
-	if (!Op)
-	{
+	if (!Op) {
 		Status = AcpiDsLoad2BeginOp(WalkState, OutOp);
 
 		if (ACPI_FAILURE(Status))
-		{
 			goto ErrorExit;
-		}
 
 		Op = *OutOp;
 		WalkState->Op = Op;
 		WalkState->Opcode = Op->Common.AmlOpcode;
 		WalkState->OpInfo = AcpiPsGetOpcodeInfo(Op->Common.AmlOpcode);
 
-		if (AcpiNsOpensScope(WalkState->OpInfo->ObjectType))
-		{
+		if (AcpiNsOpensScope(WalkState->OpInfo->ObjectType)) {
 			ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 			                  "(%s) Popping scope for Op %p\n",
 			                  AcpiUtGetTypeName(WalkState->OpInfo->ObjectType), Op));
@@ -343,18 +321,13 @@ AcpiDsExecBeginOp(
 			Status = AcpiDsScopeStackPop(WalkState);
 
 			if (ACPI_FAILURE(Status))
-			{
 				goto ErrorExit;
-			}
 		}
 	}
 
-	if (Op == WalkState->Origin)
-	{
+	if (Op == WalkState->Origin) {
 		if (OutOp)
-		{
 			*OutOp = Op;
-		}
 
 		return_ACPI_STATUS(AE_OK);
 	}
@@ -365,15 +338,14 @@ AcpiDsExecBeginOp(
 	 * Save this knowledge in the current scope descriptor
 	 */
 	if ((WalkState->ControlState) &&
-	        (WalkState->ControlState->Common.State ==
-	         ACPI_CONTROL_CONDITIONAL_EXECUTING))
-	{
+	    (WalkState->ControlState->Common.State ==
+	     ACPI_CONTROL_CONDITIONAL_EXECUTING)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 		                  "Exec predicate Op=%p State=%p\n",
 		                  Op, WalkState));
 
 		WalkState->ControlState->Common.State =
-		    ACPI_CONTROL_PREDICATE_EXECUTING;
+		        ACPI_CONTROL_PREDICATE_EXECUTING;
 
 		/* Save start of predicate */
 
@@ -386,15 +358,12 @@ AcpiDsExecBeginOp(
 	/* We want to send namepaths to the load code */
 
 	if (Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
-	{
 		OpcodeClass = AML_CLASS_NAMED_OBJECT;
-	}
 
 	/*
 	 * Handle the opcode based upon the opcode type
 	 */
-	switch (OpcodeClass)
-	{
+	switch (OpcodeClass) {
 	case AML_CLASS_CONTROL:
 
 		Status = AcpiDsExecBeginControlOp(WalkState, Op);
@@ -402,8 +371,7 @@ AcpiDsExecBeginOp(
 
 	case AML_CLASS_NAMED_OBJECT:
 
-		if (WalkState->WalkType & ACPI_WALK_METHOD)
-		{
+		if (WalkState->WalkType & ACPI_WALK_METHOD) {
 			/*
 			 * Found a named object declaration during method execution;
 			 * we must enter this object into the namespace. The created
@@ -416,18 +384,13 @@ AcpiDsExecBeginOp(
 			 * new scope.
 			 */
 			if (Op->Common.AmlOpcode != AML_SCOPE_OP)
-			{
 				Status = AcpiDsLoad2BeginOp(WalkState, NULL);
-			}
-			else
-			{
+			else {
 				Status = AcpiDsScopeStackPush(
-				             Op->Named.Node, Op->Named.Node->Type, WalkState);
+				                 Op->Named.Node, Op->Named.Node->Type, WalkState);
 
 				if (ACPI_FAILURE(Status))
-				{
 					return_ACPI_STATUS(Status);
-				}
 			}
 		}
 
@@ -470,7 +433,7 @@ ErrorExit:
 
 ACPI_STATUS
 AcpiDsExecEndOp(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_PARSE_OBJECT       *Op;
 	ACPI_STATUS             Status = AE_OK;
@@ -487,8 +450,7 @@ AcpiDsExecEndOp(
 	OpType = WalkState->OpInfo->Type;
 	OpClass = WalkState->OpInfo->Class;
 
-	if (OpClass == AML_CLASS_UNKNOWN)
-	{
+	if (OpClass == AML_CLASS_UNKNOWN) {
 		ACPI_ERROR((AE_INFO, "Unknown opcode 0x%X", Op->Common.AmlOpcode));
 		return_ACPI_STATUS(AE_NOT_IMPLEMENTED);
 	}
@@ -507,24 +469,18 @@ AcpiDsExecEndOp(
 	Status = AcpiDbSingleStep(WalkState, Op, OpClass);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Decode the Opcode Class */
 
-	switch (OpClass)
-	{
+	switch (OpClass) {
 	case AML_CLASS_ARGUMENT:    /* Constants, literals, etc. */
 
-		if (WalkState->Opcode == AML_INT_NAMEPATH_OP)
-		{
+		if (WalkState->Opcode == AML_INT_NAMEPATH_OP) {
 			Status = AcpiDsEvaluateNamePath(WalkState);
 
 			if (ACPI_FAILURE(Status))
-			{
 				goto Cleanup;
-			}
 		}
 
 		break;
@@ -536,16 +492,13 @@ AcpiDsExecEndOp(
 		Status = AcpiDsCreateOperands(WalkState, FirstArg);
 
 		if (ACPI_FAILURE(Status))
-		{
 			goto Cleanup;
-		}
 
 		/*
 		 * All opcodes require operand resolution, with the only exceptions
 		 * being the ObjectType and SizeOf operators.
 		 */
-		if (!(WalkState->OpInfo->Flags & AML_NO_OPERAND_RESOLVE))
-		{
+		if (!(WalkState->OpInfo->Flags & AML_NO_OPERAND_RESOLVE)) {
 			/* Resolve all operands */
 
 			Status = AcpiExResolveOperands(WalkState->Opcode,
@@ -553,34 +506,28 @@ AcpiDsExecEndOp(
 			                               WalkState);
 		}
 
-		if (ACPI_SUCCESS(Status))
-		{
+		if (ACPI_SUCCESS(Status)) {
 			/*
 			 * Dispatch the request to the appropriate interpreter handler
 			 * routine. There is one routine per opcode "type" based upon the
 			 * number of opcode arguments and return type.
 			 */
 			Status = AcpiGbl_OpTypeDispatch[OpType](WalkState);
-		}
-		else
-		{
+		} else {
 			/*
 			 * Treat constructs of the form "Store(LocalX,LocalX)" as noops when the
 			 * Local is uninitialized.
 			 */
 			if ((Status == AE_AML_UNINITIALIZED_LOCAL) &&
-			        (WalkState->Opcode == AML_STORE_OP) &&
-			        (WalkState->Operands[0]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
-			        (WalkState->Operands[1]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
-			        (WalkState->Operands[0]->Reference.Class ==
-			         WalkState->Operands[1]->Reference.Class) &&
-			        (WalkState->Operands[0]->Reference.Value ==
-			         WalkState->Operands[1]->Reference.Value))
-			{
+			    (WalkState->Opcode == AML_STORE_OP) &&
+			    (WalkState->Operands[0]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
+			    (WalkState->Operands[1]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
+			    (WalkState->Operands[0]->Reference.Class ==
+			     WalkState->Operands[1]->Reference.Class) &&
+			    (WalkState->Operands[0]->Reference.Value ==
+			     WalkState->Operands[1]->Reference.Value))
 				Status = AE_OK;
-			}
-			else
-			{
+			else {
 				ACPI_EXCEPTION((AE_INFO, Status,
 				                "While resolving operands for [%s]",
 				                AcpiPsGetOpcodeName(WalkState->Opcode)));
@@ -596,17 +543,14 @@ AcpiDsExecEndOp(
 		 * current result stack
 		 */
 		if (ACPI_SUCCESS(Status) &&
-		        WalkState->ResultObj)
-		{
+		    WalkState->ResultObj)
 			Status = AcpiDsResultPush(WalkState->ResultObj, WalkState);
-		}
 
 		break;
 
 	default:
 
-		switch (OpType)
-		{
+		switch (OpType) {
 		case AML_TYPE_CONTROL:    /* Type 1 opcode, IF/ELSE/WHILE/NOOP */
 
 			/* 1 Operand, 0 ExternalResult, 0 InternalResult */
@@ -623,9 +567,8 @@ AcpiDsExecEndOp(
 			 * a reference to it.
 			 */
 			if ((Op->Asl.Parent) &&
-			        ((Op->Asl.Parent->Asl.AmlOpcode == AML_PACKAGE_OP) ||
-			         (Op->Asl.Parent->Asl.AmlOpcode == AML_VAR_PACKAGE_OP)))
-			{
+			    ((Op->Asl.Parent->Asl.AmlOpcode == AML_PACKAGE_OP) ||
+			     (Op->Asl.Parent->Asl.AmlOpcode == AML_VAR_PACKAGE_OP))) {
 				ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 				                  "Method Reference in a Package, Op=%p\n", Op));
 
@@ -656,9 +599,7 @@ AcpiDsExecEndOp(
 			Status = AcpiDsCreateOperands(WalkState, NextOp);
 
 			if (ACPI_FAILURE(Status))
-			{
 				break;
-			}
 
 			/*
 			 * Since the operands will be passed to another control method,
@@ -667,8 +608,7 @@ AcpiDsExecEndOp(
 			 */
 			Status = AcpiDsResolveOperands(WalkState);
 
-			if (ACPI_FAILURE(Status))
-			{
+			if (ACPI_FAILURE(Status)) {
 				/* On error, clear all resolved operands */
 
 				AcpiDsClearOperands(WalkState);
@@ -695,9 +635,7 @@ AcpiDsExecEndOp(
 			Status = AcpiDsLoad2EndOp(WalkState);
 
 			if (ACPI_FAILURE(Status))
-			{
 				break;
-			}
 
 			Status = AcpiDsEvalBufferFieldOperands(WalkState, Op);
 			break;
@@ -708,8 +646,7 @@ AcpiDsExecEndOp(
 			ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 			                  "Executing CreateObject (Buffer/Package) Op=%p\n", Op));
 
-			switch (Op->Common.Parent->Common.AmlOpcode)
-			{
+			switch (Op->Common.Parent->Common.AmlOpcode) {
 			case AML_NAME_OP:
 				/*
 				 * Put the Node on the object stack (Contains the ACPI Name
@@ -723,9 +660,7 @@ AcpiDsExecEndOp(
 				                          Op->Common.Parent->Common.Node, Op->Common.Parent);
 
 				if (ACPI_FAILURE(Status))
-				{
 					break;
-				}
 
 			/* Fall through */
 			/*lint -fallthrough */
@@ -747,9 +682,7 @@ AcpiDsExecEndOp(
 			 * current result stack
 			 */
 			if (WalkState->ResultObj)
-			{
 				Status = AcpiDsResultPush(WalkState->ResultObj, WalkState);
-			}
 
 			break;
 
@@ -761,45 +694,32 @@ AcpiDsExecEndOp(
 			Status = AcpiDsLoad2EndOp(WalkState);
 
 			if (ACPI_FAILURE(Status))
-			{
 				break;
-			}
 
-			if (Op->Common.AmlOpcode == AML_REGION_OP)
-			{
+			if (Op->Common.AmlOpcode == AML_REGION_OP) {
 				ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 				                  "Executing OpRegion Address/Length Op=%p\n", Op));
 
 				Status = AcpiDsEvalRegionOperands(WalkState, Op);
 
 				if (ACPI_FAILURE(Status))
-				{
 					break;
-				}
-			}
-			else if (Op->Common.AmlOpcode == AML_DATA_REGION_OP)
-			{
+			} else if (Op->Common.AmlOpcode == AML_DATA_REGION_OP) {
 				ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 				                  "Executing DataTableRegion Strings Op=%p\n", Op));
 
 				Status = AcpiDsEvalTableRegionOperands(WalkState, Op);
 
 				if (ACPI_FAILURE(Status))
-				{
 					break;
-				}
-			}
-			else if (Op->Common.AmlOpcode == AML_BANK_FIELD_OP)
-			{
+			} else if (Op->Common.AmlOpcode == AML_BANK_FIELD_OP) {
 				ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 				                  "Executing BankField Op=%p\n", Op));
 
 				Status = AcpiDsEvalBankFieldOperands(WalkState, Op);
 
 				if (ACPI_FAILURE(Status))
-				{
 					break;
-				}
 			}
 
 			break;
@@ -840,11 +760,10 @@ AcpiDsExecEndOp(
 	 * conditional predicate
 	 */
 	if ((ACPI_SUCCESS(Status)) &&
-	        (WalkState->ControlState) &&
-	        (WalkState->ControlState->Common.State ==
-	         ACPI_CONTROL_PREDICATE_EXECUTING) &&
-	        (WalkState->ControlState->Control.PredicateOp == Op))
-	{
+	    (WalkState->ControlState) &&
+	    (WalkState->ControlState->Common.State ==
+	     ACPI_CONTROL_PREDICATE_EXECUTING) &&
+	    (WalkState->ControlState->Control.PredicateOp == Op)) {
 		Status = AcpiDsGetPredicateValue(WalkState, WalkState->ResultObj);
 		WalkState->ResultObj = NULL;
 	}
@@ -852,8 +771,7 @@ AcpiDsExecEndOp(
 
 Cleanup:
 
-	if (WalkState->ResultObj)
-	{
+	if (WalkState->ResultObj) {
 		/* Break to debugger to display result */
 
 		AcpiDbDisplayResultObject(WalkState->ResultObj, WalkState);
@@ -869,18 +787,14 @@ Cleanup:
 #ifdef _UNDER_DEVELOPMENT
 
 	if (WalkState->ParserState.Aml == WalkState->ParserState.AmlEnd)
-	{
 		AcpiDbMethodEnd(WalkState);
-	}
 
 #endif
 
 	/* Invoke exception handler on error */
 
 	if (ACPI_FAILURE(Status))
-	{
 		Status = AcpiDsMethodError(Status, WalkState);
-	}
 
 	/* Always clear the object stack */
 

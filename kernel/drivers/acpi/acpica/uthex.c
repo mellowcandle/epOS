@@ -122,8 +122,7 @@ ACPI_MODULE_NAME("uthex")
 
 /* Hex to ASCII conversion table */
 
-static const char           AcpiGbl_HexToAscii[] =
-{
+static const char           AcpiGbl_HexToAscii[] = {
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
 
@@ -144,8 +143,8 @@ static const char           AcpiGbl_HexToAscii[] =
 
 char
 AcpiUtHexToAsciiChar(
-    UINT64                  Integer,
-    UINT32                  Position)
+        UINT64                  Integer,
+        UINT32                  Position)
 {
 
 	return (AcpiGbl_HexToAscii[(Integer >> Position) & 0xF]);
@@ -168,21 +167,19 @@ AcpiUtHexToAsciiChar(
 
 ACPI_STATUS
 AcpiUtAsciiToHexByte(
-    char                    *TwoAsciiChars,
-    UINT8                   *ReturnByte)
+        char                    *TwoAsciiChars,
+        UINT8                   *ReturnByte)
 {
 
 	/* Both ASCII characters must be valid hex digits */
 
 	if (!isxdigit((int) TwoAsciiChars[0]) ||
-	        !isxdigit((int) TwoAsciiChars[1]))
-	{
+	    !isxdigit((int) TwoAsciiChars[1]))
 		return (AE_BAD_HEX_CONSTANT);
-	}
 
 	*ReturnByte =
-	    AcpiUtAsciiCharToHex(TwoAsciiChars[1]) |
-	    (AcpiUtAsciiCharToHex(TwoAsciiChars[0]) << 4);
+	        AcpiUtAsciiCharToHex(TwoAsciiChars[1]) |
+	        (AcpiUtAsciiCharToHex(TwoAsciiChars[0]) << 4);
 
 	return (AE_OK);
 }
@@ -203,22 +200,18 @@ AcpiUtAsciiToHexByte(
 
 UINT8
 AcpiUtAsciiCharToHex(
-    int                     HexChar)
+        int                     HexChar)
 {
 
 	/* Values 0-9 */
 
 	if (HexChar <= '9')
-	{
 		return ((UINT8)(HexChar - '0'));
-	}
 
 	/* Upper case A-F */
 
 	if (HexChar <= 'F')
-	{
 		return ((UINT8)(HexChar - 0x37));
-	}
 
 	/* Lower case a-f */
 

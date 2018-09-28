@@ -190,8 +190,7 @@
  *
  *****************************************************************************/
 
-enum AcpiReturnPackageTypes
-{
+enum AcpiReturnPackageTypes {
 	ACPI_PTYPE1_FIXED       = 1,
 	ACPI_PTYPE1_VAR         = 2,
 	ACPI_PTYPE1_OPTION      = 3,
@@ -294,8 +293,7 @@ enum AcpiReturnPackageTypes
  *
  *****************************************************************************/
 
-const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
-{
+const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] = {
 	{	{
 			"_AC0",   METHOD_0ARGS,
 			METHOD_RETURNS(ACPI_RTYPE_INTEGER)
@@ -1039,7 +1037,7 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
 		}
 	}, /* Variable-length (3 Int, n Pkg (10 Int/Buf) */
 	PACKAGE_INFO(ACPI_PTYPE2_VAR_VAR, ACPI_RTYPE_INTEGER, 3,
-	ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER | ACPI_RTYPE_STRING, 10, 0),
+	             ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER | ACPI_RTYPE_STRING, 10, 0),
 
 	{	{
 			"_MAT",   METHOD_0ARGS,
@@ -1268,7 +1266,7 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
 		}
 	}, /* Variable-length (Pkgs) each (4): Int,Int,Int/Ref,Int */
 	PACKAGE_INFO(ACPI_PTYPE2_FIXED, 4, ACPI_RTYPE_INTEGER, ACPI_RTYPE_INTEGER,
-	ACPI_RTYPE_INTEGER | ACPI_RTYPE_REFERENCE, ACPI_RTYPE_INTEGER),
+	             ACPI_RTYPE_INTEGER | ACPI_RTYPE_REFERENCE, ACPI_RTYPE_INTEGER),
 
 	{	{
 			"_PRW",   METHOD_0ARGS,
@@ -1276,7 +1274,7 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
 		}
 	}, /* Variable-length (Pkgs) each: Pkg/Int,Int,[Variable-length Refs] (Pkg is Ref/Int) */
 	PACKAGE_INFO(ACPI_PTYPE1_OPTION, 2, ACPI_RTYPE_INTEGER | ACPI_RTYPE_PACKAGE,
-	ACPI_RTYPE_INTEGER, ACPI_RTYPE_REFERENCE, 0),
+	             ACPI_RTYPE_INTEGER, ACPI_RTYPE_REFERENCE, 0),
 
 	{	{
 			"_PS0",   METHOD_0ARGS,
@@ -1391,7 +1389,7 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
 		}
 	}, /* Variable-length (1 Int, n Pkg (m Ref)) */
 	PACKAGE_INFO(ACPI_PTYPE2_VAR_VAR, ACPI_RTYPE_INTEGER, 1,
-	ACPI_RTYPE_REFERENCE, 0, 0),
+	             ACPI_RTYPE_REFERENCE, 0, 0),
 
 	{	{
 			"_REG",   METHOD_2ARGS(ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
@@ -1847,8 +1845,7 @@ extern const ACPI_PREDEFINED_INFO       AcpiGbl_PredefinedMethods[];
  *
  *****************************************************************************/
 
-const ACPI_PREDEFINED_INFO      AcpiGbl_ResourceNames[] =
-{
+const ACPI_PREDEFINED_INFO      AcpiGbl_ResourceNames[] = {
 	{{"_ADR",   WIDTH_16 | WIDTH_64,            0}},
 	{{"_ALN",   WIDTH_8 | WIDTH_16 | WIDTH_32,  0}},
 	{{"_ASI",   WIDTH_8,                        0}},
@@ -1903,8 +1900,7 @@ const ACPI_PREDEFINED_INFO      AcpiGbl_ResourceNames[] =
 	PACKAGE_INFO(0, 0, 0, 0, 0, 0) /* Table terminator */
 };
 
-const ACPI_PREDEFINED_INFO              AcpiGbl_ScopeNames[] =
-{
+const ACPI_PREDEFINED_INFO              AcpiGbl_ScopeNames[] = {
 	{{"_GPE",     0,      0}},
 	{{"_PR_",     0,      0}},
 	{{"_SB_",     0,      0}},

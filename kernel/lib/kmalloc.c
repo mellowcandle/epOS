@@ -38,8 +38,7 @@ static unsigned int l_pageCount = 16;			//< Minimum number of pages to allocate.
  */
 static inline int getexp(unsigned int size)
 {
-	if (size < (1 << MINEXP))
-	{
+	if (size < (1 << MINEXP)) {
 #ifdef DEBUG
 		pr_debug("getexp returns -1 for %i less than MINEXP\r\n", size);
 #endif
@@ -49,12 +48,9 @@ static inline int getexp(unsigned int size)
 
 	unsigned int shift = MINEXP;
 
-	while (shift < MAXEXP)
-	{
+	while (shift < MAXEXP) {
 		if ((unsigned int)(1 << shift) > size)
-		{
 			break;
-		}
 
 		shift += 1;
 	}
@@ -70,9 +66,7 @@ static void 	*liballoc_memset(void *s, int c, size_t n)
 	unsigned int i;
 
 	for (i = 0; i < n ; i++)
-	{
 		((char *)s)[i] = c;
-	}
 
 	return s;
 }
@@ -84,8 +78,7 @@ static void 	*liballoc_memcpy(void *s1, const void *s2, size_t n)
 	unsigned int *ldest = (unsigned int *)s1;
 	unsigned int *lsrc  = (unsigned int *)s2;
 
-	while (n >= sizeof(unsigned int))
-	{
+	while (n >= sizeof(unsigned int)) {
 		*ldest++ = *lsrc++;
 		n -= sizeof(unsigned int);
 	}
@@ -93,8 +86,7 @@ static void 	*liballoc_memcpy(void *s1, const void *s2, size_t n)
 	cdest = (char *)ldest;
 	csrc  = (char *)lsrc;
 
-	while (n > 0)
-	{
+	while (n > 0) {
 		*cdest++ = *csrc++;
 		n -= 1;
 	}
@@ -114,25 +106,19 @@ static void dump_array()
 	pr_debug("System memory allocated: %i\r\n", l_allocated);
 	pr_debug("Memory in used (malloc'ed): %i\r\n", l_inuse);
 
-	for (i = 0; i < MAXEXP; i++)
-	{
+	for (i = 0; i < MAXEXP; i++) {
 		pr_debug("%.2i(%i): ", i, l_completePages[i]);
 
 		tag = l_freePages[ i ];
 
-		while (tag != NULL)
-		{
+		while (tag != NULL) {
 			if (tag->split_left  != NULL)
-			{
 				pr_debug("*");
-			}
 
 			pr_debug("%i", tag->real_size);
 
 			if (tag->split_right != NULL)
-			{
 				pr_debug("*");
-			}
 
 			pr_debug(" ");
 			tag = tag->next;
@@ -151,24 +137,17 @@ static inline void insert_tag(struct boundary_tag *tag, int index)
 {
 	int realIndex;
 
-	if (index < 0)
-	{
+	if (index < 0) {
 		realIndex = getexp(tag->real_size - sizeof(struct boundary_tag));
 
 		if (realIndex < MINEXP)
-		{
 			realIndex = MINEXP;
-		}
-	}
-	else
-	{
+	} else
 		realIndex = index;
-	}
 
 	tag->index = realIndex;
 
-	if (l_freePages[ realIndex ] != NULL)
-	{
+	if (l_freePages[ realIndex ] != NULL) {
 		l_freePages[ realIndex ]->prev = tag;
 		tag->next = l_freePages[ realIndex ];
 	}
@@ -179,19 +158,13 @@ static inline void insert_tag(struct boundary_tag *tag, int index)
 static inline void remove_tag(struct boundary_tag *tag)
 {
 	if (l_freePages[ tag->index ] == tag)
-	{
 		l_freePages[ tag->index ] = tag->next;
-	}
 
 	if (tag->prev != NULL)
-	{
 		tag->prev->next = tag->next;
-	}
 
 	if (tag->next != NULL)
-	{
 		tag->next->prev = tag->prev;
-	}
 
 	tag->next = NULL;
 	tag->prev = NULL;
@@ -207,9 +180,7 @@ static inline struct boundary_tag *melt_left(struct boundary_tag *tag)
 	left->split_right  = tag->split_right;
 
 	if (tag->split_right != NULL)
-	{
 		tag->split_right->split_left = left;
-	}
 
 	return left;
 }
@@ -226,9 +197,7 @@ static inline struct boundary_tag *absorb_right(struct boundary_tag *tag)
 	tag->split_right  = right->split_right;
 
 	if (right->split_right != NULL)
-	{
 		right->split_right->split_left = tag;
-	}
 
 	return tag;
 }
@@ -238,7 +207,7 @@ static inline struct boundary_tag *split_tag(struct boundary_tag *tag)
 	unsigned int remainder = tag->real_size - sizeof(struct boundary_tag) - tag->size;
 
 	struct boundary_tag *new_tag =
-	    (struct boundary_tag *)((unsigned int)tag + sizeof(struct boundary_tag) + tag->size);
+	        (struct boundary_tag *)((unsigned int)tag + sizeof(struct boundary_tag) + tag->size);
 
 	new_tag->magic = LIBALLOC_MAGIC;
 	new_tag->real_size = remainder;
@@ -250,9 +219,7 @@ static inline struct boundary_tag *split_tag(struct boundary_tag *tag)
 	new_tag->split_right = tag->split_right;
 
 	if (new_tag->split_right != NULL)
-	{
 		new_tag->split_right->split_left = new_tag;
-	}
 
 	tag->split_right = new_tag;
 
@@ -282,20 +249,15 @@ static struct boundary_tag *allocate_new_tag(unsigned int size)
 	pages = usage / l_pageSize;
 
 	if ((usage % l_pageSize) != 0)
-	{
 		pages += 1;
-	}
 
 	// Make sure it's >= the minimum size.
 	if (pages < l_pageCount)
-	{
 		pages = l_pageCount;
-	}
 
 	tag = (struct boundary_tag *)kheap_alloc(pages);
 
-	if (tag == NULL)
-	{
+	if (tag == NULL) {
 		return NULL;    // uh oh, we ran out of memory.
 	}
 
@@ -311,7 +273,8 @@ static struct boundary_tag *allocate_new_tag(unsigned int size)
 
 
 #ifdef DEBUG
-	pr_debug("Resource allocated %x of %i pages (%i bytes) for %i size.\r\n", tag, pages, pages * l_pageSize, size);
+	pr_debug("Resource allocated %x of %i pages (%i bytes) for %i size.\r\n", tag, pages,
+	         pages * l_pageSize, size);
 
 	l_allocated += pages * l_pageSize;
 
@@ -328,9 +291,7 @@ void *kzalloc(size_t size)
 	addr = kmalloc(size);
 
 	if (addr)
-	{
 		memset(addr, 0, size);
-	}
 
 	return addr;
 }
@@ -343,14 +304,12 @@ void *kmalloc(size_t size)
 
 	kheap_lock();
 
-	if (l_initialized == 0)
-	{
+	if (l_initialized == 0) {
 #ifdef DEBUG
 		pr_debug("%s\r\n", "liballoc initializing.");
 #endif
 
-		for (index = 0; index < MAXEXP; index++)
-		{
+		for (index = 0; index < MAXEXP; index++) {
 			l_freePages[index] = NULL;
 			l_completePages[index] = 0;
 		}
@@ -361,22 +320,19 @@ void *kmalloc(size_t size)
 	index = getexp(size) + MODE;
 
 	if (index < MINEXP)
-	{
 		index = MINEXP;
-	}
 
 
 	// Find one big enough.
 	tag = l_freePages[ index ];				// Start at the front of the list.
 
-	while (tag != NULL)
-	{
+	while (tag != NULL) {
 		// If there's enough space in this tag.
 		if ((tag->real_size - sizeof(struct boundary_tag))
-		        >= (size + sizeof(struct boundary_tag)))
-		{
+		    >= (size + sizeof(struct boundary_tag))) {
 #ifdef DEBUG
-			pr_debug("Tag search found %i >= %i\r\n", (tag->real_size - sizeof(struct boundary_tag)), (size + sizeof(struct boundary_tag)));
+			pr_debug("Tag search found %i >= %i\r\n", (tag->real_size - sizeof(struct boundary_tag)),
+			         (size + sizeof(struct boundary_tag)));
 #endif
 			break;
 		}
@@ -386,24 +342,18 @@ void *kmalloc(size_t size)
 
 
 	// No page found. Make one.
-	if (tag == NULL)
-	{
-		if ((tag = allocate_new_tag(size)) == NULL)
-		{
+	if (tag == NULL) {
+		if ((tag = allocate_new_tag(size)) == NULL) {
 			kheap_unlock();
 			return NULL;
 		}
 
 		index = getexp(tag->real_size - sizeof(struct boundary_tag));
-	}
-	else
-	{
+	} else {
 		remove_tag(tag);
 
 		if ((tag->split_left == NULL) && (tag->split_right == NULL))
-		{
 			l_completePages[ index ] -= 1;
-		}
 	}
 
 	// We have a free page.  Remove it from the free pages list.
@@ -413,17 +363,18 @@ void *kmalloc(size_t size)
 	// Removed... see if we can re-use the excess space.
 
 #ifdef DEBUG
-	pr_debug("Found tag with %i bytes available (requested %i bytes, leaving %i), which has exponent: %i (%i bytes)\r\n", tag->real_size - sizeof(struct boundary_tag), size, tag->real_size - size - sizeof(struct boundary_tag), index, 1 << index);
+	pr_debug("Found tag with %i bytes available (requested %i bytes, leaving %i), which has exponent: %i (%i bytes)\r\n",
+	         tag->real_size - sizeof(struct boundary_tag), size,
+	         tag->real_size - size - sizeof(struct boundary_tag), index, 1 << index);
 #endif
 
-	unsigned int remainder = tag->real_size - size - sizeof(struct boundary_tag) * 2;   // Support a new tag + remainder
+	unsigned int remainder = tag->real_size - size - sizeof(struct boundary_tag) *
+	                         2;   // Support a new tag + remainder
 
-	if (((int)(remainder) > 0) /*&& ( (tag->real_size - remainder) >= (1<<MINEXP))*/)
-	{
+	if (((int)(remainder) > 0) /*&& ( (tag->real_size - remainder) >= (1<<MINEXP))*/) {
 		int childIndex = getexp(remainder);
 
-		if (childIndex >= 0)
-		{
+		if (childIndex >= 0) {
 #ifdef DEBUG
 			pr_debug("Seems to be splittable: %i >= 2^%i .. %i\r\n", remainder, childIndex, (1 << childIndex));
 #endif
@@ -433,7 +384,8 @@ void *kmalloc(size_t size)
 			new_tag = new_tag;	// Get around the compiler warning about unused variables.
 
 #ifdef DEBUG
-			pr_debug("Old tag has become %i bytes, new tag is now %i bytes (%i exp)\r\n", tag->real_size, new_tag->real_size, new_tag->index);
+			pr_debug("Old tag has become %i bytes, new tag is now %i bytes (%i exp)\r\n", tag->real_size,
+			         new_tag->real_size, new_tag->index);
 #endif
 		}
 	}
@@ -465,17 +417,14 @@ void kfree(void *ptr)
 	struct boundary_tag *tag;
 
 	if (ptr == NULL)
-	{
 		return;
-	}
 
 	kheap_lock();
 
 
 	tag = (struct boundary_tag *)((unsigned int)ptr - sizeof(struct boundary_tag));
 
-	if (tag->magic != LIBALLOC_MAGIC)
-	{
+	if (tag->magic != LIBALLOC_MAGIC) {
 		kheap_unlock();		// release the lock
 		return;
 	}
@@ -489,20 +438,21 @@ void kfree(void *ptr)
 
 
 	// MELT LEFT...
-	while ((tag->split_left != NULL) && (tag->split_left->index >= 0))
-	{
+	while ((tag->split_left != NULL) && (tag->split_left->index >= 0)) {
 #ifdef DEBUG
-		pr_debug("Melting tag left into available memory. Left was %i, becomes %i (%i)\r\n", tag->split_left->real_size, tag->split_left->real_size + tag->real_size, tag->split_left->real_size);
+		pr_debug("Melting tag left into available memory. Left was %i, becomes %i (%i)\r\n",
+		         tag->split_left->real_size, tag->split_left->real_size + tag->real_size,
+		         tag->split_left->real_size);
 #endif
 		tag = melt_left(tag);
 		remove_tag(tag);
 	}
 
 	// MELT RIGHT...
-	while ((tag->split_right != NULL) && (tag->split_right->index >= 0))
-	{
+	while ((tag->split_right != NULL) && (tag->split_right->index >= 0)) {
 #ifdef DEBUG
-		pr_debug("Melting tag right into available memory. This was was %i, becomes %i (%i)\r\n", tag->real_size, tag->split_right->real_size + tag->real_size, tag->split_right->real_size);
+		pr_debug("Melting tag right into available memory. This was was %i, becomes %i (%i)\r\n",
+		         tag->real_size, tag->split_right->real_size + tag->real_size, tag->split_right->real_size);
 #endif
 		tag = absorb_right(tag);
 	}
@@ -512,28 +462,20 @@ void kfree(void *ptr)
 	index = getexp(tag->real_size - sizeof(struct boundary_tag));
 
 	if (index < MINEXP)
-	{
 		index = MINEXP;
-	}
 
 	// A whole, empty block?
-	if ((tag->split_left == NULL) && (tag->split_right == NULL))
-	{
+	if ((tag->split_left == NULL) && (tag->split_right == NULL)) {
 
-		if (l_completePages[ index ] == MAXCOMPLETE)
-		{
+		if (l_completePages[ index ] == MAXCOMPLETE) {
 			// Too many standing by to keep. Free this one.
 			unsigned int pages = tag->real_size / l_pageSize;
 
 			if ((tag->real_size % l_pageSize) != 0)
-			{
 				pages += 1;
-			}
 
 			if (pages < l_pageCount)
-			{
 				pages = l_pageCount;
-			}
 
 			kheap_free(tag, pages);
 
@@ -557,7 +499,8 @@ void kfree(void *ptr)
 
 	insert_tag(tag, index);
 
-	pr_debug("Returning tag with %i bytes (requested %i bytes), which has exponent: %i\r\n", tag->real_size, tag->size, index);
+	pr_debug("Returning tag with %i bytes (requested %i bytes), which has exponent: %i\r\n",
+	         tag->real_size, tag->size, index);
 #ifdef DEBUG
 	dump_array();
 #endif
@@ -589,16 +532,13 @@ void   *krealloc(void *p, size_t size)
 	struct boundary_tag *tag;
 	size_t real_size;
 
-	if (size == 0)
-	{
+	if (size == 0) {
 		kfree(p);
 		return NULL;
 	}
 
 	if (p == NULL)
-	{
 		return kmalloc(size);
-	}
 
 	kheap_lock();    // lockit
 
@@ -608,9 +548,7 @@ void   *krealloc(void *p, size_t size)
 	kheap_unlock();
 
 	if (real_size > size)
-	{
 		real_size = size;
-	}
 
 	ptr = kmalloc(size);
 	liballoc_memcpy(ptr, p, real_size);

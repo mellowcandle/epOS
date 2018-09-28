@@ -174,11 +174,12 @@
  *
  ******************************************************************************/
 
-typedef struct acpi_table_header
-{
+typedef struct acpi_table_header {
 	char                    Signature[ACPI_NAME_SIZE];          /* ASCII table signature */
-	UINT32                  Length;                             /* Length of table in bytes, including this header */
-	UINT8                   Revision;                           /* ACPI Specification minor version number */
+	UINT32
+	Length;                             /* Length of table in bytes, including this header */
+	UINT8
+	Revision;                           /* ACPI Specification minor version number */
 	UINT8                   Checksum;                           /* To make sum of entire table == 0 */
 	char                    OemId[ACPI_OEM_ID_SIZE];            /* ASCII OEM identification */
 	char                    OemTableId[ACPI_OEM_TABLE_ID_SIZE]; /* ASCII OEM table identification */
@@ -199,8 +200,7 @@ typedef struct acpi_table_header
  *
  ******************************************************************************/
 
-typedef struct acpi_generic_address
-{
+typedef struct acpi_generic_address {
 	UINT8                   SpaceId;                /* Address space where struct or register exists */
 	UINT8                   BitWidth;               /* Size in bits of given register */
 	UINT8                   BitOffset;              /* Bit offset within the register */
@@ -217,15 +217,17 @@ typedef struct acpi_generic_address
  *
  ******************************************************************************/
 
-typedef struct acpi_table_rsdp
-{
+typedef struct acpi_table_rsdp {
 	char                    Signature[8];               /* ACPI signature, contains "RSD PTR " */
 	UINT8                   Checksum;                   /* ACPI 1.0 checksum */
 	char                    OemId[ACPI_OEM_ID_SIZE];    /* OEM identification */
-	UINT8                   Revision;                   /* Must be (0) for ACPI 1.0 or (2) for ACPI 2.0+ */
+	UINT8
+	Revision;                   /* Must be (0) for ACPI 1.0 or (2) for ACPI 2.0+ */
 	UINT32                  RsdtPhysicalAddress;        /* 32-bit physical address of the RSDT */
-	UINT32                  Length;                     /* Table length in bytes, including header (ACPI 2.0+) */
-	UINT64                  XsdtPhysicalAddress;        /* 64-bit physical address of the XSDT (ACPI 2.0+) */
+	UINT32
+	Length;                     /* Table length in bytes, including header (ACPI 2.0+) */
+	UINT64
+	XsdtPhysicalAddress;        /* 64-bit physical address of the XSDT (ACPI 2.0+) */
 	UINT8                   ExtendedChecksum;           /* Checksum of entire table (ACPI 2.0+) */
 	UINT8                   Reserved[3];                /* Reserved, must be zero */
 
@@ -233,8 +235,7 @@ typedef struct acpi_table_rsdp
 
 /* Standalone struct for the ACPI 1.0 RSDP */
 
-typedef struct acpi_rsdp_common
-{
+typedef struct acpi_rsdp_common {
 	char                    Signature[8];
 	UINT8                   Checksum;
 	char                    OemId[ACPI_OEM_ID_SIZE];
@@ -245,8 +246,7 @@ typedef struct acpi_rsdp_common
 
 /* Standalone struct for the extended part of the RSDP (ACPI 2.0+) */
 
-typedef struct acpi_rsdp_extension
-{
+typedef struct acpi_rsdp_extension {
 	UINT32                  Length;
 	UINT64                  XsdtPhysicalAddress;
 	UINT8                   ExtendedChecksum;
@@ -262,15 +262,13 @@ typedef struct acpi_rsdp_extension
  *
  ******************************************************************************/
 
-typedef struct acpi_table_rsdt
-{
+typedef struct acpi_table_rsdt {
 	ACPI_TABLE_HEADER       Header;                 /* Common ACPI table header */
 	UINT32                  TableOffsetEntry[1];    /* Array of pointers to ACPI tables */
 
 } ACPI_TABLE_RSDT;
 
-typedef struct acpi_table_xsdt
-{
+typedef struct acpi_table_xsdt {
 	ACPI_TABLE_HEADER       Header;                 /* Common ACPI table header */
 	UINT64                  TableOffsetEntry[1];    /* Array of pointers to ACPI tables */
 
@@ -286,15 +284,16 @@ typedef struct acpi_table_xsdt
  *
  ******************************************************************************/
 
-typedef struct acpi_table_facs
-{
+typedef struct acpi_table_facs {
 	char                    Signature[4];           /* ASCII table signature */
 	UINT32                  Length;                 /* Length of structure, in bytes */
 	UINT32                  HardwareSignature;      /* Hardware configuration signature */
-	UINT32                  FirmwareWakingVector;   /* 32-bit physical address of the Firmware Waking Vector */
+	UINT32
+	FirmwareWakingVector;   /* 32-bit physical address of the Firmware Waking Vector */
 	UINT32                  GlobalLock;             /* Global Lock for shared hardware resources */
 	UINT32                  Flags;
-	UINT64                  XFirmwareWakingVector;  /* 64-bit version of the Firmware Waking Vector (ACPI 2.0+) */
+	UINT64
+	XFirmwareWakingVector;  /* 64-bit version of the Firmware Waking Vector (ACPI 2.0+) */
 	UINT8                   Version;                /* Version of this table (ACPI 2.0+) */
 	UINT8                   Reserved[3];            /* Reserved, must be zero */
 	UINT32                  OspmFlags;              /* Flags to be set by OSPM (ACPI 4.0) */
@@ -326,63 +325,89 @@ typedef struct acpi_table_facs
 
 /* Fields common to all versions of the FADT */
 
-typedef struct acpi_table_fadt
-{
+typedef struct acpi_table_fadt {
 	ACPI_TABLE_HEADER       Header;             /* [V1] Common ACPI table header */
 	UINT32                  Facs;               /* [V1] 32-bit physical address of FACS */
 	UINT32                  Dsdt;               /* [V1] 32-bit physical address of DSDT */
-	UINT8                   Model;              /* [V1] System Interrupt Model (ACPI 1.0) - not used in ACPI 2.0+ */
-	UINT8                   PreferredProfile;   /* [V1] Conveys preferred power management profile to OSPM. */
+	UINT8
+	Model;              /* [V1] System Interrupt Model (ACPI 1.0) - not used in ACPI 2.0+ */
+	UINT8
+	PreferredProfile;   /* [V1] Conveys preferred power management profile to OSPM. */
 	UINT16                  SciInterrupt;       /* [V1] System vector of SCI interrupt */
 	UINT32                  SmiCommand;         /* [V1] 32-bit Port address of SMI command port */
 	UINT8                   AcpiEnable;         /* [V1] Value to write to SMI_CMD to enable ACPI */
 	UINT8                   AcpiDisable;        /* [V1] Value to write to SMI_CMD to disable ACPI */
-	UINT8                   S4BiosRequest;      /* [V1] Value to write to SMI_CMD to enter S4BIOS state */
+	UINT8
+	S4BiosRequest;      /* [V1] Value to write to SMI_CMD to enter S4BIOS state */
 	UINT8                   PstateControl;      /* [V1] Processor performance state control*/
-	UINT32                  Pm1aEventBlock;     /* [V1] 32-bit port address of Power Mgt 1a Event Reg Blk */
-	UINT32                  Pm1bEventBlock;     /* [V1] 32-bit port address of Power Mgt 1b Event Reg Blk */
-	UINT32                  Pm1aControlBlock;   /* [V1] 32-bit port address of Power Mgt 1a Control Reg Blk */
-	UINT32                  Pm1bControlBlock;   /* [V1] 32-bit port address of Power Mgt 1b Control Reg Blk */
-	UINT32                  Pm2ControlBlock;    /* [V1] 32-bit port address of Power Mgt 2 Control Reg Blk */
-	UINT32                  PmTimerBlock;       /* [V1] 32-bit port address of Power Mgt Timer Ctrl Reg Blk */
-	UINT32                  Gpe0Block;          /* [V1] 32-bit port address of General Purpose Event 0 Reg Blk */
-	UINT32                  Gpe1Block;          /* [V1] 32-bit port address of General Purpose Event 1 Reg Blk */
+	UINT32
+	Pm1aEventBlock;     /* [V1] 32-bit port address of Power Mgt 1a Event Reg Blk */
+	UINT32
+	Pm1bEventBlock;     /* [V1] 32-bit port address of Power Mgt 1b Event Reg Blk */
+	UINT32
+	Pm1aControlBlock;   /* [V1] 32-bit port address of Power Mgt 1a Control Reg Blk */
+	UINT32
+	Pm1bControlBlock;   /* [V1] 32-bit port address of Power Mgt 1b Control Reg Blk */
+	UINT32
+	Pm2ControlBlock;    /* [V1] 32-bit port address of Power Mgt 2 Control Reg Blk */
+	UINT32
+	PmTimerBlock;       /* [V1] 32-bit port address of Power Mgt Timer Ctrl Reg Blk */
+	UINT32
+	Gpe0Block;          /* [V1] 32-bit port address of General Purpose Event 0 Reg Blk */
+	UINT32
+	Gpe1Block;          /* [V1] 32-bit port address of General Purpose Event 1 Reg Blk */
 	UINT8                   Pm1EventLength;     /* [V1] Byte Length of ports at Pm1xEventBlock */
 	UINT8                   Pm1ControlLength;   /* [V1] Byte Length of ports at Pm1xControlBlock */
 	UINT8                   Pm2ControlLength;   /* [V1] Byte Length of ports at Pm2ControlBlock */
 	UINT8                   PmTimerLength;      /* [V1] Byte Length of ports at PmTimerBlock */
 	UINT8                   Gpe0BlockLength;    /* [V1] Byte Length of ports at Gpe0Block */
 	UINT8                   Gpe1BlockLength;    /* [V1] Byte Length of ports at Gpe1Block */
-	UINT8                   Gpe1Base;           /* [V1] Offset in GPE number space where GPE1 events start */
-	UINT8                   CstControl;         /* [V1] Support for the _CST object and C-States change notification */
+	UINT8
+	Gpe1Base;           /* [V1] Offset in GPE number space where GPE1 events start */
+	UINT8
+	CstControl;         /* [V1] Support for the _CST object and C-States change notification */
 	UINT16                  C2Latency;          /* [V1] Worst case HW latency to enter/exit C2 state */
 	UINT16                  C3Latency;          /* [V1] Worst case HW latency to enter/exit C3 state */
 	UINT16                  FlushSize;          /* [V1] Processor memory cache line width, in bytes */
 	UINT16                  FlushStride;        /* [V1] Number of flush strides that need to be read */
-	UINT8                   DutyOffset;         /* [V1] Processor duty cycle index in processor P_CNT reg */
-	UINT8                   DutyWidth;          /* [V1] Processor duty cycle value bit width in P_CNT register */
+	UINT8
+	DutyOffset;         /* [V1] Processor duty cycle index in processor P_CNT reg */
+	UINT8
+	DutyWidth;          /* [V1] Processor duty cycle value bit width in P_CNT register */
 	UINT8                   DayAlarm;           /* [V1] Index to day-of-month alarm in RTC CMOS RAM */
 	UINT8                   MonthAlarm;         /* [V1] Index to month-of-year alarm in RTC CMOS RAM */
 	UINT8                   Century;            /* [V1] Index to century in RTC CMOS RAM */
-	UINT16                  BootFlags;          /* [V3] IA-PC Boot Architecture Flags (see below for individual flags) */
+	UINT16
+	BootFlags;          /* [V3] IA-PC Boot Architecture Flags (see below for individual flags) */
 	UINT8                   Reserved;           /* [V1] Reserved, must be zero */
-	UINT32                  Flags;              /* [V1] Miscellaneous flag bits (see below for individual flags) */
+	UINT32
+	Flags;              /* [V1] Miscellaneous flag bits (see below for individual flags) */
 	/* End of Version 1 FADT fields (ACPI 1.0) */
 
 	ACPI_GENERIC_ADDRESS    ResetRegister;      /* [V3] 64-bit address of the Reset register */
-	UINT8                   ResetValue;         /* [V3] Value to write to the ResetRegister port to reset the system */
-	UINT16                  ArmBootFlags;       /* [V5] ARM-Specific Boot Flags (see below for individual flags) (ACPI 5.1) */
+	UINT8
+	ResetValue;         /* [V3] Value to write to the ResetRegister port to reset the system */
+	UINT16
+	ArmBootFlags;       /* [V5] ARM-Specific Boot Flags (see below for individual flags) (ACPI 5.1) */
 	UINT8                   MinorRevision;      /* [V5] FADT Minor Revision (ACPI 5.1) */
 	UINT64                  XFacs;              /* [V3] 64-bit physical address of FACS */
 	UINT64                  XDsdt;              /* [V3] 64-bit physical address of DSDT */
-	ACPI_GENERIC_ADDRESS    XPm1aEventBlock;    /* [V3] 64-bit Extended Power Mgt 1a Event Reg Blk address */
-	ACPI_GENERIC_ADDRESS    XPm1bEventBlock;    /* [V3] 64-bit Extended Power Mgt 1b Event Reg Blk address */
-	ACPI_GENERIC_ADDRESS    XPm1aControlBlock;  /* [V3] 64-bit Extended Power Mgt 1a Control Reg Blk address */
-	ACPI_GENERIC_ADDRESS    XPm1bControlBlock;  /* [V3] 64-bit Extended Power Mgt 1b Control Reg Blk address */
-	ACPI_GENERIC_ADDRESS    XPm2ControlBlock;   /* [V3] 64-bit Extended Power Mgt 2 Control Reg Blk address */
-	ACPI_GENERIC_ADDRESS    XPmTimerBlock;      /* [V3] 64-bit Extended Power Mgt Timer Ctrl Reg Blk address */
-	ACPI_GENERIC_ADDRESS    XGpe0Block;         /* [V3] 64-bit Extended General Purpose Event 0 Reg Blk address */
-	ACPI_GENERIC_ADDRESS    XGpe1Block;         /* [V3] 64-bit Extended General Purpose Event 1 Reg Blk address */
+	ACPI_GENERIC_ADDRESS
+	XPm1aEventBlock;    /* [V3] 64-bit Extended Power Mgt 1a Event Reg Blk address */
+	ACPI_GENERIC_ADDRESS
+	XPm1bEventBlock;    /* [V3] 64-bit Extended Power Mgt 1b Event Reg Blk address */
+	ACPI_GENERIC_ADDRESS
+	XPm1aControlBlock;  /* [V3] 64-bit Extended Power Mgt 1a Control Reg Blk address */
+	ACPI_GENERIC_ADDRESS
+	XPm1bControlBlock;  /* [V3] 64-bit Extended Power Mgt 1b Control Reg Blk address */
+	ACPI_GENERIC_ADDRESS
+	XPm2ControlBlock;   /* [V3] 64-bit Extended Power Mgt 2 Control Reg Blk address */
+	ACPI_GENERIC_ADDRESS
+	XPmTimerBlock;      /* [V3] 64-bit Extended Power Mgt Timer Ctrl Reg Blk address */
+	ACPI_GENERIC_ADDRESS
+	XGpe0Block;         /* [V3] 64-bit Extended General Purpose Event 0 Reg Blk address */
+	ACPI_GENERIC_ADDRESS
+	XGpe1Block;         /* [V3] 64-bit Extended General Purpose Event 1 Reg Blk address */
 	/* End of Version 3 FADT fields (ACPI 2.0) */
 
 	ACPI_GENERIC_ADDRESS    SleepControl;       /* [V4] 64-bit Sleep Control register (ACPI 5.0) */
@@ -440,8 +465,7 @@ typedef struct acpi_table_fadt
 
 /* Values for PreferredProfile (Preferred Power Management Profiles) */
 
-enum AcpiPreferredPmProfiles
-{
+enum AcpiPreferredPmProfiles {
 	PM_UNSPECIFIED          = 0,
 	PM_DESKTOP              = 1,
 	PM_MOBILE               = 2,
@@ -469,8 +493,7 @@ enum AcpiPreferredPmProfiles
 /*
  * Internal table-related structures
  */
-typedef union acpi_name_union
-{
+typedef union acpi_name_union {
 	UINT32                          Integer;
 	char                            Ascii[4];
 
@@ -479,8 +502,7 @@ typedef union acpi_name_union
 
 /* Internal ACPI Table Descriptor. One per ACPI table. */
 
-typedef struct acpi_table_desc
-{
+typedef struct acpi_table_desc {
 	ACPI_PHYSICAL_ADDRESS           Address;
 	ACPI_TABLE_HEADER               *Pointer;
 	UINT32                          Length;     /* Length fixed at 32 bits (fixed in table header) */

@@ -42,8 +42,11 @@ endif
 ISODIR_PATH = isodir
 
 ASTYLE ?= astyle
-ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
+#ASTYLE_CONFIG := --suffix=none --style=allman --indent=tab --indent-classes --indent-namespaces --pad-oper --pad-header \
 	--add-brackets --align-pointer=name --align-reference=name --lineend=linux --break-blocks --unpad-paren
+
+ASTYLE_CONFIG := --suffix=none --style=linux --indent=tab -t8 --align-pointer=name --pad-oper --pad-header --unpad-paren \
+		--align-pointer=name --align-reference=name --lineend=linux --remove-braces --max-code-length=100
 
 all: kernel.iso apps cscope overlay
 

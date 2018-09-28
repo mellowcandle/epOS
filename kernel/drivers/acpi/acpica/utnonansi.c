@@ -139,7 +139,7 @@ ACPI_MODULE_NAME("utnonansi")
 
 void
 AcpiUtStrlwr(
-    char                    *SrcString)
+        char                    *SrcString)
 {
 	char                    *String;
 
@@ -148,16 +148,12 @@ AcpiUtStrlwr(
 
 
 	if (!SrcString)
-	{
 		return;
-	}
 
 	/* Walk entire string, lowercasing the letters */
 
 	for (String = SrcString; *String; String++)
-	{
 		*String = (char) tolower((int) * String);
-	}
 }
 
 
@@ -175,7 +171,7 @@ AcpiUtStrlwr(
 
 void
 AcpiUtStrupr(
-    char                    *SrcString)
+        char                    *SrcString)
 {
 	char                    *String;
 
@@ -184,16 +180,12 @@ AcpiUtStrupr(
 
 
 	if (!SrcString)
-	{
 		return;
-	}
 
 	/* Walk entire string, uppercasing the letters */
 
 	for (String = SrcString; *String; String++)
-	{
 		*String = (char) toupper((int) * String);
-	}
 }
 
 
@@ -214,22 +206,20 @@ AcpiUtStrupr(
 
 int
 AcpiUtStricmp(
-    char                    *String1,
-    char                    *String2)
+        char                    *String1,
+        char                    *String2)
 {
 	int                     c1;
 	int                     c2;
 
 
-	do
-	{
+	do {
 		c1 = tolower((int) * String1);
 		c2 = tolower((int) * String2);
 
 		String1++;
 		String2++;
-	}
-	while ((c1 == c2) && (c1));
+	} while ((c1 == c2) && (c1));
 
 	return (c1 - c2);
 }
@@ -258,15 +248,13 @@ AcpiUtStricmp(
 
 BOOLEAN
 AcpiUtSafeStrcpy(
-    char                    *Dest,
-    ACPI_SIZE               DestSize,
-    char                    *Source)
+        char                    *Dest,
+        ACPI_SIZE               DestSize,
+        char                    *Source)
 {
 
 	if (strlen(Source) >= DestSize)
-	{
 		return (TRUE);
-	}
 
 	strcpy(Dest, Source);
 	return (FALSE);
@@ -274,15 +262,13 @@ AcpiUtSafeStrcpy(
 
 BOOLEAN
 AcpiUtSafeStrcat(
-    char                    *Dest,
-    ACPI_SIZE               DestSize,
-    char                    *Source)
+        char                    *Dest,
+        ACPI_SIZE               DestSize,
+        char                    *Source)
 {
 
 	if ((strlen(Dest) + strlen(Source)) >= DestSize)
-	{
 		return (TRUE);
-	}
 
 	strcat(Dest, Source);
 	return (FALSE);
@@ -290,10 +276,10 @@ AcpiUtSafeStrcat(
 
 BOOLEAN
 AcpiUtSafeStrncat(
-    char                    *Dest,
-    ACPI_SIZE               DestSize,
-    char                    *Source,
-    ACPI_SIZE               MaxTransferLength)
+        char                    *Dest,
+        ACPI_SIZE               DestSize,
+        char                    *Source,
+        ACPI_SIZE               MaxTransferLength)
 {
 	ACPI_SIZE               ActualTransferLength;
 
@@ -301,9 +287,7 @@ AcpiUtSafeStrncat(
 	ActualTransferLength = ACPI_MIN(MaxTransferLength, strlen(Source));
 
 	if ((strlen(Dest) + ActualTransferLength) >= DestSize)
-	{
 		return (TRUE);
-	}
 
 	strncat(Dest, Source, MaxTransferLength);
 	return (FALSE);

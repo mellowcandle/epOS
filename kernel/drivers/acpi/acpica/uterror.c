@@ -149,12 +149,12 @@ ACPI_MODULE_NAME("uterror")
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedWarning(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Pathname,
-    UINT8                   NodeFlags,
-    const char              *Format,
-    ...)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        char                    *Pathname,
+        UINT8                   NodeFlags,
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 
@@ -164,9 +164,7 @@ AcpiUtPredefinedWarning(
 	 * first time a validation fails or an object is successfully repaired.
 	 */
 	if (NodeFlags & ANOBJ_EVALUATED)
-	{
 		return;
-	}
 
 	AcpiOsPrintf(ACPI_MSG_WARNING "%s: ", Pathname);
 
@@ -198,12 +196,12 @@ AcpiUtPredefinedWarning(
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedInfo(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Pathname,
-    UINT8                   NodeFlags,
-    const char              *Format,
-    ...)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        char                    *Pathname,
+        UINT8                   NodeFlags,
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 
@@ -213,9 +211,7 @@ AcpiUtPredefinedInfo(
 	 * first time a validation fails or an object is successfully repaired.
 	 */
 	if (NodeFlags & ANOBJ_EVALUATED)
-	{
 		return;
-	}
 
 	AcpiOsPrintf(ACPI_MSG_INFO "%s: ", Pathname);
 
@@ -247,12 +243,12 @@ AcpiUtPredefinedInfo(
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedBiosError(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Pathname,
-    UINT8                   NodeFlags,
-    const char              *Format,
-    ...)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        char                    *Pathname,
+        UINT8                   NodeFlags,
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 
@@ -262,9 +258,7 @@ AcpiUtPredefinedBiosError(
 	 * first time a validation fails or an object is successfully repaired.
 	 */
 	if (NodeFlags & ANOBJ_EVALUATED)
-	{
 		return;
-	}
 
 	AcpiOsPrintf(ACPI_MSG_BIOS_ERROR "%s: ", Pathname);
 
@@ -292,10 +286,10 @@ AcpiUtPredefinedBiosError(
 
 void
 AcpiUtNamespaceError(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *InternalName,
-    ACPI_STATUS             LookupStatus)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        const char              *InternalName,
+        ACPI_STATUS             LookupStatus)
 {
 	ACPI_STATUS             Status;
 	UINT32                  BadName;
@@ -305,35 +299,26 @@ AcpiUtNamespaceError(
 	ACPI_MSG_REDIRECT_BEGIN;
 	AcpiOsPrintf(ACPI_MSG_ERROR);
 
-	if (LookupStatus == AE_BAD_CHARACTER)
-	{
+	if (LookupStatus == AE_BAD_CHARACTER) {
 		/* There is a non-ascii character in the name */
 
 		ACPI_MOVE_32_TO_32(&BadName, ACPI_CAST_PTR(UINT32, InternalName));
 		AcpiOsPrintf("[0x%.8X] (NON-ASCII)", BadName);
-	}
-	else
-	{
+	} else {
 		/* Convert path to external format */
 
 		Status = AcpiNsExternalizeName(
-		             ACPI_UINT32_MAX, InternalName, NULL, &Name);
+		                 ACPI_UINT32_MAX, InternalName, NULL, &Name);
 
 		/* Print target name */
 
 		if (ACPI_SUCCESS(Status))
-		{
 			AcpiOsPrintf("[%s]", Name);
-		}
 		else
-		{
 			AcpiOsPrintf("[COULD NOT EXTERNALIZE NAME]");
-		}
 
 		if (Name)
-		{
 			ACPI_FREE(Name);
-		}
 	}
 
 	AcpiOsPrintf(" Namespace lookup failure, %s",
@@ -363,12 +348,12 @@ AcpiUtNamespaceError(
 
 void
 AcpiUtMethodError(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Message,
-    ACPI_NAMESPACE_NODE     *PrefixNode,
-    const char              *Path,
-    ACPI_STATUS             MethodStatus)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        const char              *Message,
+        ACPI_NAMESPACE_NODE     *PrefixNode,
+        const char              *Path,
+        ACPI_STATUS             MethodStatus)
 {
 	ACPI_STATUS             Status;
 	ACPI_NAMESPACE_NODE     *Node = PrefixNode;
@@ -377,15 +362,12 @@ AcpiUtMethodError(
 	ACPI_MSG_REDIRECT_BEGIN;
 	AcpiOsPrintf(ACPI_MSG_ERROR);
 
-	if (Path)
-	{
+	if (Path) {
 		Status = AcpiNsGetNode(PrefixNode, Path,
 		                       ACPI_NS_NO_UPSEARCH, &Node);
 
 		if (ACPI_FAILURE(Status))
-		{
 			AcpiOsPrintf("[Could not get node by pathname]");
-		}
 	}
 
 	AcpiNsPrintNodePathname(Node, Message);

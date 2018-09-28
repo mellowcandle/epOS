@@ -19,9 +19,7 @@ void stdlib_init()
 int main()
 {
 	while (1)
-	{
 		printf("(2) Hello world from user space\r\n");
-	}
 
 	return 0;
 }

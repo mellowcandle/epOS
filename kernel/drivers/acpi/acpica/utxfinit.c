@@ -128,7 +128,7 @@ ACPI_MODULE_NAME("utxfinit")
 /* For AcpiExec only */
 void
 AeDoObjectOverrides(
-    void);
+        void);
 
 
 /*******************************************************************************
@@ -146,7 +146,7 @@ AeDoObjectOverrides(
 
 ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInitializeSubsystem(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 
@@ -161,8 +161,7 @@ AcpiInitializeSubsystem(
 
 	Status = AcpiOsInitialize();
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status, "During OSL initialization"));
 		return_ACPI_STATUS(Status);
 	}
@@ -171,8 +170,7 @@ AcpiInitializeSubsystem(
 
 	Status = AcpiUtInitGlobals();
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status, "During initialization of globals"));
 		return_ACPI_STATUS(Status);
 	}
@@ -181,8 +179,7 @@ AcpiInitializeSubsystem(
 
 	Status = AcpiUtMutexInitialize();
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status, "During Global Mutex creation"));
 		return_ACPI_STATUS(Status);
 	}
@@ -193,8 +190,7 @@ AcpiInitializeSubsystem(
 	 */
 	Status = AcpiNsRootInitialize();
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status, "During Namespace initialization"));
 		return_ACPI_STATUS(Status);
 	}
@@ -203,8 +199,7 @@ AcpiInitializeSubsystem(
 
 	Status = AcpiUtInitializeInterfaces();
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status, "During OSI interfaces initialization"));
 		return_ACPI_STATUS(Status);
 	}
@@ -230,7 +225,7 @@ ACPI_EXPORT_SYMBOL_INIT(AcpiInitializeSubsystem)
 
 ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiEnableSubsystem(
-    UINT32                  Flags)
+        UINT32                  Flags)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -249,16 +244,14 @@ AcpiEnableSubsystem(
 
 	/* Enable ACPI mode */
 
-	if (!(Flags & ACPI_NO_ACPI_ENABLE))
-	{
+	if (!(Flags & ACPI_NO_ACPI_ENABLE)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[Init] Going into ACPI mode\n"));
 
 		AcpiGbl_OriginalMode = AcpiHwGetMode();
 
 		Status = AcpiEnable();
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_WARNING((AE_INFO, "AcpiEnable failed"));
 			return_ACPI_STATUS(Status);
 		}
@@ -268,12 +261,10 @@ AcpiEnableSubsystem(
 	 * Obtain a permanent mapping for the FACS. This is required for the
 	 * Global Lock and the Firmware Waking Vector
 	 */
-	if (!(Flags & ACPI_NO_FACS_INIT))
-	{
+	if (!(Flags & ACPI_NO_FACS_INIT)) {
 		Status = AcpiTbInitializeFacs();
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_WARNING((AE_INFO, "Could not map the FACS table"));
 			return_ACPI_STATUS(Status);
 		}
@@ -293,34 +284,28 @@ AcpiEnableSubsystem(
 	 * initialization control methods are run (_REG, _STA, _INI) on the
 	 * entire namespace.
 	 */
-	if (!(Flags & ACPI_NO_EVENT_INIT))
-	{
+	if (!(Flags & ACPI_NO_EVENT_INIT)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 		                  "[Init] Initializing ACPI events\n"));
 
 		Status = AcpiEvInitializeEvents();
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 	/*
 	 * Install the SCI handler and Global Lock handler. This completes the
 	 * hardware initialization.
 	 */
-	if (!(Flags & ACPI_NO_HANDLER_INIT))
-	{
+	if (!(Flags & ACPI_NO_HANDLER_INIT)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 		                  "[Init] Installing SCI/GL handlers\n"));
 
 		Status = AcpiEvInstallXruptHandlers();
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 #endif /* !ACPI_REDUCED_HARDWARE */
@@ -346,7 +331,7 @@ ACPI_EXPORT_SYMBOL_INIT(AcpiEnableSubsystem)
 
 ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInitializeObjects(
-    UINT32                  Flags)
+        UINT32                  Flags)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -374,8 +359,7 @@ AcpiInitializeObjects(
 	 * all of the tables have been loaded. It is a legacy option and is
 	 * not compatible with other ACPI implementations. See AcpiNsLoadTable.
 	 */
-	if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode)
-	{
+	if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode) {
 		AcpiNsExecModuleCodeList();
 
 		/*
@@ -384,14 +368,11 @@ AcpiInitializeObjects(
 		 * declaration of these objects:
 		 * OperationRegions, BufferFields, Buffers, and Packages.
 		 */
-		if (!(Flags & ACPI_NO_OBJECT_INIT))
-		{
+		if (!(Flags & ACPI_NO_OBJECT_INIT)) {
 			Status = AcpiNsInitializeObjects();
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 		}
 	}
 
@@ -399,14 +380,11 @@ AcpiInitializeObjects(
 	 * Initialize all device/region objects in the namespace. This runs
 	 * the device _STA and _INI methods and region _REG methods.
 	 */
-	if (!(Flags & (ACPI_NO_DEVICE_INIT | ACPI_NO_ADDRESS_SPACE_INIT)))
-	{
+	if (!(Flags & (ACPI_NO_DEVICE_INIT | ACPI_NO_ADDRESS_SPACE_INIT))) {
 		Status = AcpiNsInitializeDevices(Flags);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 	/*

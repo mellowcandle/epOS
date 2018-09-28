@@ -140,8 +140,8 @@ ACPI_MODULE_NAME("nsconvert")
 
 ACPI_STATUS
 AcpiNsConvertToInteger(
-    ACPI_OPERAND_OBJECT     *OriginalObject,
-    ACPI_OPERAND_OBJECT     **ReturnObject)
+        ACPI_OPERAND_OBJECT     *OriginalObject,
+        ACPI_OPERAND_OBJECT     **ReturnObject)
 {
 	ACPI_OPERAND_OBJECT     *NewObject;
 	ACPI_STATUS             Status;
@@ -149,8 +149,7 @@ AcpiNsConvertToInteger(
 	UINT32                  i;
 
 
-	switch (OriginalObject->Common.Type)
-	{
+	switch (OriginalObject->Common.Type) {
 	case ACPI_TYPE_STRING:
 
 		/* String-to-Integer conversion */
@@ -159,9 +158,7 @@ AcpiNsConvertToInteger(
 		                         AcpiGbl_IntegerByteWidth, &Value);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
 		break;
 
@@ -170,14 +167,11 @@ AcpiNsConvertToInteger(
 		/* Buffer-to-Integer conversion. Max buffer size is 64 bits. */
 
 		if (OriginalObject->Buffer.Length > 8)
-		{
 			return (AE_AML_OPERAND_TYPE);
-		}
 
 		/* Extract each buffer byte to create the integer */
 
-		for (i = 0; i < OriginalObject->Buffer.Length; i++)
-		{
+		for (i = 0; i < OriginalObject->Buffer.Length; i++) {
 			Value |= ((UINT64)
 			          OriginalObject->Buffer.Pointer[i] << (i * 8));
 		}
@@ -192,9 +186,7 @@ AcpiNsConvertToInteger(
 	NewObject = AcpiUtCreateIntegerObject(Value);
 
 	if (!NewObject)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	*ReturnObject = NewObject;
 	return (AE_OK);
@@ -216,16 +208,15 @@ AcpiNsConvertToInteger(
 
 ACPI_STATUS
 AcpiNsConvertToString(
-    ACPI_OPERAND_OBJECT     *OriginalObject,
-    ACPI_OPERAND_OBJECT     **ReturnObject)
+        ACPI_OPERAND_OBJECT     *OriginalObject,
+        ACPI_OPERAND_OBJECT     **ReturnObject)
 {
 	ACPI_OPERAND_OBJECT     *NewObject;
 	ACPI_SIZE               Length;
 	ACPI_STATUS             Status;
 
 
-	switch (OriginalObject->Common.Type)
-	{
+	switch (OriginalObject->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 
 		/*
@@ -233,26 +224,19 @@ AcpiNsConvertToString(
 		 * an integer of value 0 to a NULL string. The last element of
 		 * _BIF and _BIX packages occasionally need this fix.
 		 */
-		if (OriginalObject->Integer.Value == 0)
-		{
+		if (OriginalObject->Integer.Value == 0) {
 			/* Allocate a new NULL string object */
 
 			NewObject = AcpiUtCreateStringObject(0);
 
 			if (!NewObject)
-			{
 				return (AE_NO_MEMORY);
-			}
-		}
-		else
-		{
+		} else {
 			Status = AcpiExConvertToString(OriginalObject,
 			                               &NewObject, ACPI_IMPLICIT_CONVERT_HEX);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return (Status);
-			}
 		}
 
 		break;
@@ -267,19 +251,15 @@ AcpiNsConvertToString(
 		Length = 0;
 
 		while ((Length < OriginalObject->Buffer.Length) &&
-		        (OriginalObject->Buffer.Pointer[Length]))
-		{
+		       (OriginalObject->Buffer.Pointer[Length]))
 			Length++;
-		}
 
 		/* Allocate a new string object */
 
 		NewObject = AcpiUtCreateStringObject(Length);
 
 		if (!NewObject)
-		{
 			return (AE_NO_MEMORY);
-		}
 
 		/*
 		 * Copy the raw buffer data with no transform. String is already NULL
@@ -314,8 +294,8 @@ AcpiNsConvertToString(
 
 ACPI_STATUS
 AcpiNsConvertToBuffer(
-    ACPI_OPERAND_OBJECT     *OriginalObject,
-    ACPI_OPERAND_OBJECT     **ReturnObject)
+        ACPI_OPERAND_OBJECT     *OriginalObject,
+        ACPI_OPERAND_OBJECT     **ReturnObject)
 {
 	ACPI_OPERAND_OBJECT     *NewObject;
 	ACPI_STATUS             Status;
@@ -325,8 +305,7 @@ AcpiNsConvertToBuffer(
 	UINT32                  i;
 
 
-	switch (OriginalObject->Common.Type)
-	{
+	switch (OriginalObject->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 		/*
 		 * Integer-to-Buffer conversion.
@@ -338,9 +317,7 @@ AcpiNsConvertToBuffer(
 		Status = AcpiExConvertToBuffer(OriginalObject, &NewObject);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
 		break;
 
@@ -352,9 +329,7 @@ AcpiNsConvertToBuffer(
 		            (OriginalObject->String.Length);
 
 		if (!NewObject)
-		{
 			return (AE_NO_MEMORY);
-		}
 
 		memcpy(NewObject->Buffer.Pointer,
 		       OriginalObject->String.Pointer, OriginalObject->String.Length);
@@ -372,13 +347,10 @@ AcpiNsConvertToBuffer(
 		Elements = OriginalObject->Package.Elements;
 		Count = OriginalObject->Package.Count;
 
-		for (i = 0; i < Count; i++)
-		{
+		for (i = 0; i < Count; i++) {
 			if ((!*Elements) ||
-			        ((*Elements)->Common.Type != ACPI_TYPE_INTEGER))
-			{
+			    ((*Elements)->Common.Type != ACPI_TYPE_INTEGER))
 				return (AE_AML_OPERAND_TYPE);
-			}
 
 			Elements++;
 		}
@@ -388,17 +360,14 @@ AcpiNsConvertToBuffer(
 		NewObject = AcpiUtCreateBufferObject(ACPI_MUL_4(Count));
 
 		if (!NewObject)
-		{
 			return (AE_NO_MEMORY);
-		}
 
 		/* Copy the package elements (integers) to the buffer as DWORDs */
 
 		Elements = OriginalObject->Package.Elements;
 		DwordBuffer = ACPI_CAST_PTR(UINT32, NewObject->Buffer.Pointer);
 
-		for (i = 0; i < Count; i++)
-		{
+		for (i = 0; i < Count; i++) {
 			*DwordBuffer = (UINT32)(*Elements)->Integer.Value;
 			DwordBuffer++;
 			Elements++;
@@ -432,9 +401,9 @@ AcpiNsConvertToBuffer(
 
 ACPI_STATUS
 AcpiNsConvertToUnicode(
-    ACPI_NAMESPACE_NODE     *Scope,
-    ACPI_OPERAND_OBJECT     *OriginalObject,
-    ACPI_OPERAND_OBJECT     **ReturnObject)
+        ACPI_NAMESPACE_NODE     *Scope,
+        ACPI_OPERAND_OBJECT     *OriginalObject,
+        ACPI_OPERAND_OBJECT     **ReturnObject)
 {
 	ACPI_OPERAND_OBJECT     *NewObject;
 	char                    *AsciiString;
@@ -444,18 +413,13 @@ AcpiNsConvertToUnicode(
 
 
 	if (!OriginalObject)
-	{
 		return (AE_OK);
-	}
 
 	/* If a Buffer was returned, it must be at least two bytes long */
 
-	if (OriginalObject->Common.Type == ACPI_TYPE_BUFFER)
-	{
+	if (OriginalObject->Common.Type == ACPI_TYPE_BUFFER) {
 		if (OriginalObject->Buffer.Length < 2)
-		{
 			return (AE_AML_OPERAND_VALUE);
-		}
 
 		*ReturnObject = NULL;
 		return (AE_OK);
@@ -473,18 +437,14 @@ AcpiNsConvertToUnicode(
 	NewObject = AcpiUtCreateBufferObject(UnicodeLength);
 
 	if (!NewObject)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	UnicodeBuffer = ACPI_CAST_PTR(UINT16, NewObject->Buffer.Pointer);
 
 	/* Convert ASCII to Unicode */
 
 	for (i = 0; i < OriginalObject->String.Length; i++)
-	{
 		UnicodeBuffer[i] = (UINT16) AsciiString[i];
-	}
 
 	*ReturnObject = NewObject;
 	return (AE_OK);
@@ -508,9 +468,9 @@ AcpiNsConvertToUnicode(
 
 ACPI_STATUS
 AcpiNsConvertToResource(
-    ACPI_NAMESPACE_NODE     *Scope,
-    ACPI_OPERAND_OBJECT     *OriginalObject,
-    ACPI_OPERAND_OBJECT     **ReturnObject)
+        ACPI_NAMESPACE_NODE     *Scope,
+        ACPI_OPERAND_OBJECT     *OriginalObject,
+        ACPI_OPERAND_OBJECT     **ReturnObject)
 {
 	ACPI_OPERAND_OBJECT     *NewObject;
 	UINT8                   *Buffer;
@@ -525,25 +485,20 @@ AcpiNsConvertToResource(
 	 * We will return a buffer containing a single EndTag
 	 * resource descriptor.
 	 */
-	if (OriginalObject)
-	{
-		switch (OriginalObject->Common.Type)
-		{
+	if (OriginalObject) {
+		switch (OriginalObject->Common.Type) {
 		case ACPI_TYPE_INTEGER:
 
 			/* We can only repair an Integer==0 */
 
 			if (OriginalObject->Integer.Value)
-			{
 				return (AE_AML_OPERAND_TYPE);
-			}
 
 			break;
 
 		case ACPI_TYPE_BUFFER:
 
-			if (OriginalObject->Buffer.Length)
-			{
+			if (OriginalObject->Buffer.Length) {
 				/* Additional checks can be added in the future */
 
 				*ReturnObject = NULL;
@@ -564,9 +519,7 @@ AcpiNsConvertToResource(
 	NewObject = AcpiUtCreateBufferObject(2);
 
 	if (!NewObject)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	Buffer = ACPI_CAST_PTR(UINT8, NewObject->Buffer.Pointer);
 
@@ -597,9 +550,9 @@ AcpiNsConvertToResource(
 
 ACPI_STATUS
 AcpiNsConvertToReference(
-    ACPI_NAMESPACE_NODE     *Scope,
-    ACPI_OPERAND_OBJECT     *OriginalObject,
-    ACPI_OPERAND_OBJECT     **ReturnObject)
+        ACPI_NAMESPACE_NODE     *Scope,
+        ACPI_OPERAND_OBJECT     *OriginalObject,
+        ACPI_OPERAND_OBJECT     **ReturnObject)
 {
 	ACPI_OPERAND_OBJECT     *NewObject = NULL;
 	ACPI_STATUS             Status;
@@ -616,9 +569,7 @@ AcpiNsConvertToReference(
 	Status = AcpiNsInternalizeName(OriginalObject->String.Pointer, &Name);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Find the namespace node */
 
@@ -627,8 +578,7 @@ AcpiNsConvertToReference(
 	                      ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
 	                      ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		/* Check if we are resolving a named reference within a package */
 
 		ACPI_ERROR_NAMESPACE(OriginalObject->String.Pointer, Status);
@@ -639,8 +589,7 @@ AcpiNsConvertToReference(
 
 	NewObject = AcpiUtCreateInternalObject(ACPI_TYPE_LOCAL_REFERENCE);
 
-	if (!NewObject)
-	{
+	if (!NewObject) {
 		Status = AE_NO_MEMORY;
 		goto ErrorExit;
 	}

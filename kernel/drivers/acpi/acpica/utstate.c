@@ -135,8 +135,8 @@ ACPI_MODULE_NAME("utstate")
 
 void
 AcpiUtPushGenericState(
-    ACPI_GENERIC_STATE      **ListHead,
-    ACPI_GENERIC_STATE      *State)
+        ACPI_GENERIC_STATE      **ListHead,
+        ACPI_GENERIC_STATE      *State)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -163,7 +163,7 @@ AcpiUtPushGenericState(
 
 ACPI_GENERIC_STATE *
 AcpiUtPopGenericState(
-    ACPI_GENERIC_STATE      **ListHead)
+        ACPI_GENERIC_STATE      **ListHead)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -175,8 +175,7 @@ AcpiUtPopGenericState(
 
 	State = *ListHead;
 
-	if (State)
-	{
+	if (State) {
 		/* Update the list head */
 
 		*ListHead = State->Common.Next;
@@ -201,7 +200,7 @@ AcpiUtPopGenericState(
 
 ACPI_GENERIC_STATE *
 AcpiUtCreateGenericState(
-    void)
+        void)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -211,8 +210,7 @@ AcpiUtCreateGenericState(
 
 	State = AcpiOsAcquireObject(AcpiGbl_StateCache);
 
-	if (State)
-	{
+	if (State) {
 		/* Initialize */
 		State->Common.DescriptorType = ACPI_DESC_TYPE_STATE;
 	}
@@ -236,7 +234,7 @@ AcpiUtCreateGenericState(
 
 ACPI_THREAD_STATE *
 AcpiUtCreateThreadState(
-    void)
+        void)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -249,9 +247,7 @@ AcpiUtCreateThreadState(
 	State = AcpiUtCreateGenericState();
 
 	if (!State)
-	{
 		return (NULL);
-	}
 
 	/* Init fields specific to the update struct */
 
@@ -260,8 +256,7 @@ AcpiUtCreateThreadState(
 
 	/* Check for invalid thread ID - zero is very bad, it will break things */
 
-	if (!State->Thread.ThreadId)
-	{
+	if (!State->Thread.ThreadId) {
 		ACPI_ERROR((AE_INFO, "Invalid zero ID from AcpiOsGetThreadId"));
 		State->Thread.ThreadId = (ACPI_THREAD_ID) 1;
 	}
@@ -287,8 +282,8 @@ AcpiUtCreateThreadState(
 
 ACPI_GENERIC_STATE *
 AcpiUtCreateUpdateState(
-    ACPI_OPERAND_OBJECT     *Object,
-    UINT16                  Action)
+        ACPI_OPERAND_OBJECT     *Object,
+        UINT16                  Action)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -301,9 +296,7 @@ AcpiUtCreateUpdateState(
 	State = AcpiUtCreateGenericState();
 
 	if (!State)
-	{
 		return (NULL);
-	}
 
 	/* Init fields specific to the update struct */
 
@@ -329,9 +322,9 @@ AcpiUtCreateUpdateState(
 
 ACPI_GENERIC_STATE *
 AcpiUtCreatePkgState(
-    void                    *InternalObject,
-    void                    *ExternalObject,
-    UINT16                  Index)
+        void                    *InternalObject,
+        void                    *ExternalObject,
+        UINT16                  Index)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -344,9 +337,7 @@ AcpiUtCreatePkgState(
 	State = AcpiUtCreateGenericState();
 
 	if (!State)
-	{
 		return (NULL);
-	}
 
 	/* Init fields specific to the update struct */
 
@@ -375,7 +366,7 @@ AcpiUtCreatePkgState(
 
 ACPI_GENERIC_STATE *
 AcpiUtCreateControlState(
-    void)
+        void)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -388,9 +379,7 @@ AcpiUtCreateControlState(
 	State = AcpiUtCreateGenericState();
 
 	if (!State)
-	{
 		return (NULL);
-	}
 
 	/* Init fields specific to the control struct */
 
@@ -416,7 +405,7 @@ AcpiUtCreateControlState(
 
 void
 AcpiUtDeleteGenericState(
-    ACPI_GENERIC_STATE      *State)
+        ACPI_GENERIC_STATE      *State)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -424,9 +413,7 @@ AcpiUtDeleteGenericState(
 	/* Ignore null state */
 
 	if (State)
-	{
 		(void) AcpiOsReleaseObject(AcpiGbl_StateCache, State);
-	}
 
 	return;
 }

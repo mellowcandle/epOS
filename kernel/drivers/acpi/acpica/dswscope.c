@@ -137,15 +137,14 @@ ACPI_MODULE_NAME("dswscope")
 
 void
 AcpiDsScopeStackClear(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_GENERIC_STATE      *ScopeInfo;
 
 	ACPI_FUNCTION_NAME(DsScopeStackClear);
 
 
-	while (WalkState->ScopeInfo)
-	{
+	while (WalkState->ScopeInfo) {
 		/* Pop a scope off the stack */
 
 		ScopeInfo = WalkState->ScopeInfo;
@@ -177,9 +176,9 @@ AcpiDsScopeStackClear(
 
 ACPI_STATUS
 AcpiDsScopeStackPush(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_OBJECT_TYPE        Type,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_GENERIC_STATE      *ScopeInfo;
 	ACPI_GENERIC_STATE      *OldScopeInfo;
@@ -188,8 +187,7 @@ AcpiDsScopeStackPush(
 	ACPI_FUNCTION_TRACE(DsScopeStackPush);
 
 
-	if (!Node)
-	{
+	if (!Node) {
 		/* Invalid scope   */
 
 		ACPI_ERROR((AE_INFO, "Null scope parameter"));
@@ -198,8 +196,7 @@ AcpiDsScopeStackPush(
 
 	/* Make sure object type is valid */
 
-	if (!AcpiUtValidObjectType(Type))
-	{
+	if (!AcpiUtValidObjectType(Type)) {
 		ACPI_WARNING((AE_INFO,
 		              "Invalid object type: 0x%X", Type));
 	}
@@ -209,9 +206,7 @@ AcpiDsScopeStackPush(
 	ScopeInfo = AcpiUtCreateGenericState();
 
 	if (!ScopeInfo)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Init new scope object */
 
@@ -226,15 +221,12 @@ AcpiDsScopeStackPush(
 
 	OldScopeInfo = WalkState->ScopeInfo;
 
-	if (OldScopeInfo)
-	{
+	if (OldScopeInfo) {
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC,
 		                      "[%4.4s] (%s)",
 		                      AcpiUtGetNodeName(OldScopeInfo->Scope.Node),
 		                      AcpiUtGetTypeName(OldScopeInfo->Common.Value)));
-	}
-	else
-	{
+	} else {
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC,
 		                      "[\\___] (%s)", "ROOT"));
 	}
@@ -265,7 +257,7 @@ AcpiDsScopeStackPush(
 
 ACPI_STATUS
 AcpiDsScopeStackPop(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_GENERIC_STATE      *ScopeInfo;
 	ACPI_GENERIC_STATE      *NewScopeInfo;
@@ -280,9 +272,7 @@ AcpiDsScopeStackPop(
 	ScopeInfo = AcpiUtPopGenericState(&WalkState->ScopeInfo);
 
 	if (!ScopeInfo)
-	{
 		return_ACPI_STATUS(AE_STACK_UNDERFLOW);
-	}
 
 	WalkState->ScopeDepth--;
 
@@ -294,15 +284,12 @@ AcpiDsScopeStackPop(
 
 	NewScopeInfo = WalkState->ScopeInfo;
 
-	if (NewScopeInfo)
-	{
+	if (NewScopeInfo) {
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC,
 		                      "[%4.4s] (%s)\n",
 		                      AcpiUtGetNodeName(NewScopeInfo->Scope.Node),
 		                      AcpiUtGetTypeName(NewScopeInfo->Common.Value)));
-	}
-	else
-	{
+	} else {
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC,
 		                      "[\\___] (ROOT)\n"));
 	}

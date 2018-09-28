@@ -986,10 +986,9 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 /* Sleep function dispatch */
 
 typedef ACPI_STATUS(*ACPI_SLEEP_FUNCTION)(
-    UINT8                   SleepState);
+        UINT8                   SleepState);
 
-typedef struct acpi_sleep_functions
-{
+typedef struct acpi_sleep_functions {
 	ACPI_SLEEP_FUNCTION     LegacyFunction;
 	ACPI_SLEEP_FUNCTION     ExtendedFunction;
 
@@ -1004,53 +1003,45 @@ typedef struct acpi_sleep_functions
  * Note: Type == ACPI_TYPE_ANY (0) is used to indicate a NULL package element
  * or an unresolved named reference.
  */
-typedef union acpi_object
-{
+typedef union acpi_object {
 	ACPI_OBJECT_TYPE                Type;   /* See definition of AcpiNsType for values */
-	struct
-	{
+	struct {
 		ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_INTEGER */
 		UINT64                          Value;      /* The actual number */
 	} Integer;
 
-	struct
-	{
+	struct {
 		ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_STRING */
 		UINT32                          Length;     /* # of bytes in string, excluding trailing null */
 		char                            *Pointer;   /* points to the string value */
 	} String;
 
-	struct
-	{
+	struct {
 		ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_BUFFER */
 		UINT32                          Length;     /* # of bytes in buffer */
 		UINT8                           *Pointer;   /* points to the buffer */
 	} Buffer;
 
-	struct
-	{
+	struct {
 		ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_PACKAGE */
 		UINT32                          Count;      /* # of elements in package */
 		union acpi_object               *Elements;  /* Pointer to an array of ACPI_OBJECTs */
 	} Package;
 
-	struct
-	{
+	struct {
 		ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_LOCAL_REFERENCE */
 		ACPI_OBJECT_TYPE                ActualType; /* Type associated with the Handle */
 		ACPI_HANDLE                     Handle;     /* object reference */
 	} Reference;
 
-	struct
-	{
+	struct {
 		ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_PROCESSOR */
 		UINT32                          ProcId;
 		ACPI_IO_ADDRESS                 PblkAddress;
 		UINT32                          PblkLength;
 	} Processor;
 
-	struct
-	{
+	struct {
 		ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_POWER */
 		UINT32                          SystemLevel;
 		UINT32                          ResourceOrder;
@@ -1062,8 +1053,7 @@ typedef union acpi_object
 /*
  * List of objects, used as a parameter list for control method evaluation
  */
-typedef struct acpi_object_list
-{
+typedef struct acpi_object_list {
 	UINT32                          Count;
 	ACPI_OBJECT                     *Pointer;
 
@@ -1087,8 +1077,7 @@ typedef struct acpi_object_list
 
 #endif /* ACPI_NO_MEM_ALLOCATIONS */
 
-typedef struct acpi_buffer
-{
+typedef struct acpi_buffer {
 	ACPI_SIZE                       Length;         /* Length in bytes of the buffer */
 	void                            *Pointer;       /* pointer to buffer */
 
@@ -1107,8 +1096,7 @@ typedef struct acpi_buffer
 /*
  * Predefined Namespace items
  */
-typedef struct acpi_predefined_names
-{
+typedef struct acpi_predefined_names {
 	const char                      *Name;
 	UINT8                           Type;
 	char                            *Val;
@@ -1128,8 +1116,7 @@ typedef struct acpi_predefined_names
 /*
  * System info returned by AcpiGetSystemInfo()
  */
-typedef struct acpi_system_info
-{
+typedef struct acpi_system_info {
 	UINT32                          AcpiCaVersion;
 	UINT32                          Flags;
 	UINT32                          TimerResolution;
@@ -1144,8 +1131,7 @@ typedef struct acpi_system_info
 /*
  * System statistics returned by AcpiGetStatistics()
  */
-typedef struct acpi_statistics
-{
+typedef struct acpi_statistics {
 	UINT32                          SciCount;
 	UINT32                          GpeCount;
 	UINT32                          FixedEventCount[ACPI_NUM_FIXED_EVENTS];
@@ -1159,72 +1145,72 @@ typedef struct acpi_statistics
  */
 typedef UINT32
 (ACPI_SYSTEM_XFACE *ACPI_OSD_HANDLER)(
-    void                            *Context);
+        void                            *Context);
 
 typedef void
 (ACPI_SYSTEM_XFACE *ACPI_OSD_EXEC_CALLBACK)(
-    void                            *Context);
+        void                            *Context);
 
 /*
  * Various handlers and callback procedures
  */
 typedef
 UINT32(*ACPI_SCI_HANDLER)(
-    void                            *Context);
+        void                            *Context);
 
 typedef
 void (*ACPI_GBL_EVENT_HANDLER)(
-    UINT32                          EventType,
-    ACPI_HANDLE                     Device,
-    UINT32                          EventNumber,
-    void                            *Context);
+        UINT32                          EventType,
+        ACPI_HANDLE                     Device,
+        UINT32                          EventNumber,
+        void                            *Context);
 
 #define ACPI_EVENT_TYPE_GPE         0
 #define ACPI_EVENT_TYPE_FIXED       1
 
 typedef
 UINT32(*ACPI_EVENT_HANDLER)(
-    void                            *Context);
+        void                            *Context);
 
 typedef
 UINT32(*ACPI_GPE_HANDLER)(
-    ACPI_HANDLE                     GpeDevice,
-    UINT32                          GpeNumber,
-    void                            *Context);
+        ACPI_HANDLE                     GpeDevice,
+        UINT32                          GpeNumber,
+        void                            *Context);
 
 typedef
 void (*ACPI_NOTIFY_HANDLER)(
-    ACPI_HANDLE                     Device,
-    UINT32                          Value,
-    void                            *Context);
+        ACPI_HANDLE                     Device,
+        UINT32                          Value,
+        void                            *Context);
 
 typedef
 void (*ACPI_OBJECT_HANDLER)(
-    ACPI_HANDLE                     Object,
-    void                            *Data);
+        ACPI_HANDLE                     Object,
+        void                            *Data);
 
 typedef
 ACPI_STATUS(*ACPI_INIT_HANDLER)(
-    ACPI_HANDLE                     Object,
-    UINT32                          Function);
+        ACPI_HANDLE                     Object,
+        UINT32                          Function);
 
 #define ACPI_INIT_DEVICE_INI        1
 
 typedef
 ACPI_STATUS(*ACPI_EXCEPTION_HANDLER)(
-    ACPI_STATUS                     AmlStatus,
-    ACPI_NAME                       Name,
-    UINT16                          Opcode,
-    UINT32                          AmlOffset,
-    void                            *Context);
+        ACPI_STATUS                     AmlStatus,
+        ACPI_NAME                       Name,
+        UINT16                          Opcode,
+        UINT32                          AmlOffset,
+        void                            *Context);
 
 /* Table Event handler (Load, LoadTable, etc.) and types */
 
 typedef
 ACPI_STATUS(*ACPI_TABLE_HANDLER)(
-    UINT32                          Event,
-    void                            *Table,
-    void                            *Context);
+        UINT32                          Event,
+        void                            *Table,
+        void                            *Context);
 
 
 /* Table Event Types */
@@ -1240,19 +1226,18 @@ ACPI_STATUS(*ACPI_TABLE_HANDLER)(
 
 typedef
 ACPI_STATUS(*ACPI_ADR_SPACE_HANDLER)(
-    UINT32                          Function,
-    ACPI_PHYSICAL_ADDRESS           Address,
-    UINT32                          BitWidth,
-    UINT64                          *Value,
-    void                            *HandlerContext,
-    void                            *RegionContext);
+        UINT32                          Function,
+        ACPI_PHYSICAL_ADDRESS           Address,
+        UINT32                          BitWidth,
+        UINT64                          *Value,
+        void                            *HandlerContext,
+        void                            *RegionContext);
 
 #define ACPI_DEFAULT_HANDLER            NULL
 
 /* Special Context data for GenericSerialBus/GeneralPurposeIo (ACPI 5.0) */
 
-typedef struct acpi_connection_info
-{
+typedef struct acpi_connection_info {
 	UINT8                           *Connection;
 	UINT16                          Length;
 	UINT8                           AccessLength;
@@ -1262,25 +1247,25 @@ typedef struct acpi_connection_info
 
 typedef
 ACPI_STATUS(*ACPI_ADR_SPACE_SETUP)(
-    ACPI_HANDLE                     RegionHandle,
-    UINT32                          Function,
-    void                            *HandlerContext,
-    void                            **RegionContext);
+        ACPI_HANDLE                     RegionHandle,
+        UINT32                          Function,
+        void                            *HandlerContext,
+        void                            **RegionContext);
 
 #define ACPI_REGION_ACTIVATE    0
 #define ACPI_REGION_DEACTIVATE  1
 
 typedef
 ACPI_STATUS(*ACPI_WALK_CALLBACK)(
-    ACPI_HANDLE                     Object,
-    UINT32                          NestingLevel,
-    void                            *Context,
-    void                            **ReturnValue);
+        ACPI_HANDLE                     Object,
+        UINT32                          NestingLevel,
+        void                            *Context,
+        void                            **ReturnValue);
 
 typedef
 UINT32(*ACPI_INTERFACE_HANDLER)(
-    ACPI_STRING                     InterfaceName,
-    UINT32                          Supported);
+        ACPI_STRING                     InterfaceName,
+        UINT32                          Supported);
 
 
 /* Interrupt handler return values */
@@ -1308,15 +1293,13 @@ UINT32(*ACPI_INTERFACE_HANDLER)(
 
 /* Structures used for device/processor HID, UID, CID */
 
-typedef struct acpi_pnp_device_id
-{
+typedef struct acpi_pnp_device_id {
 	UINT32                          Length;             /* Length of string + null */
 	char                            *String;
 
 } ACPI_PNP_DEVICE_ID;
 
-typedef struct acpi_pnp_device_id_list
-{
+typedef struct acpi_pnp_device_id_list {
 	UINT32                          Count;              /* Number of IDs in Ids array */
 	UINT32                          ListSize;           /* Size of list, including ID strings */
 	ACPI_PNP_DEVICE_ID              Ids[1];             /* ID array */
@@ -1327,8 +1310,7 @@ typedef struct acpi_pnp_device_id_list
  * Structure returned from AcpiGetObjectInfo.
  * Optimized for both 32- and 64-bit builds
  */
-typedef struct acpi_device_info
-{
+typedef struct acpi_device_info {
 	UINT32                          InfoSize;           /* Size of info, including ID strings */
 	UINT32                          Name;               /* ACPI object Name */
 	ACPI_OBJECT_TYPE                Type;               /* ACPI object Type */
@@ -1373,8 +1355,7 @@ typedef struct acpi_device_info
 
 /* Context structs for address space handlers */
 
-typedef struct acpi_pci_id
-{
+typedef struct acpi_pci_id {
 	UINT16                          Segment;
 	UINT16                          Bus;
 	UINT16                          Device;
@@ -1382,8 +1363,7 @@ typedef struct acpi_pci_id
 
 } ACPI_PCI_ID;
 
-typedef struct acpi_mem_space_context
-{
+typedef struct acpi_mem_space_context {
 	UINT32                          Length;
 	ACPI_PHYSICAL_ADDRESS           Address;
 	ACPI_PHYSICAL_ADDRESS           MappedPhysicalAddress;
@@ -1396,8 +1376,7 @@ typedef struct acpi_mem_space_context
 /*
  * ACPI_MEMORY_LIST is used only if the ACPICA local cache is enabled
  */
-typedef struct acpi_memory_list
-{
+typedef struct acpi_memory_list {
 	const char                      *ListName;
 	void                            *ListHead;
 	UINT16                          ObjectSize;
@@ -1422,8 +1401,7 @@ typedef struct acpi_memory_list
 
 /* Definitions of trace event types */
 
-typedef enum
-{
+typedef enum {
 	ACPI_TRACE_AML_METHOD,
 	ACPI_TRACE_AML_OPCODE,
 	ACPI_TRACE_AML_REGION

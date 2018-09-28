@@ -153,11 +153,11 @@ extern const UINT8      AcpiGbl_LongOpIndex[];
  */
 ACPI_STATUS
 AcpiPsExecuteMethod(
-    ACPI_EVALUATE_INFO      *Info);
+        ACPI_EVALUATE_INFO      *Info);
 
 ACPI_STATUS
 AcpiPsExecuteTable(
-    ACPI_EVALUATE_INFO      *Info);
+        ACPI_EVALUATE_INFO      *Info);
 
 
 /*
@@ -165,24 +165,24 @@ AcpiPsExecuteTable(
  */
 UINT8 *
 AcpiPsGetNextPackageEnd(
-    ACPI_PARSE_STATE        *ParserState);
+        ACPI_PARSE_STATE        *ParserState);
 
 char *
 AcpiPsGetNextNamestring(
-    ACPI_PARSE_STATE        *ParserState);
+        ACPI_PARSE_STATE        *ParserState);
 
 void
 AcpiPsGetNextSimpleArg(
-    ACPI_PARSE_STATE        *ParserState,
-    UINT32                  ArgType,
-    ACPI_PARSE_OBJECT       *Arg);
+        ACPI_PARSE_STATE        *ParserState,
+        UINT32                  ArgType,
+        ACPI_PARSE_OBJECT       *Arg);
 
 ACPI_STATUS
 AcpiPsGetNextNamepath(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Arg,
-    BOOLEAN                 PossibleMethodCall);
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_STATE        *ParserState,
+        ACPI_PARSE_OBJECT       *Arg,
+        BOOLEAN                 PossibleMethodCall);
 
 /* Values for BOOLEAN above */
 
@@ -191,10 +191,10 @@ AcpiPsGetNextNamepath(
 
 ACPI_STATUS
 AcpiPsGetNextArg(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_STATE        *ParserState,
-    UINT32                  ArgType,
-    ACPI_PARSE_OBJECT       **ReturnArg);
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_STATE        *ParserState,
+        UINT32                  ArgType,
+        ACPI_PARSE_OBJECT       **ReturnArg);
 
 
 /*
@@ -202,13 +202,13 @@ AcpiPsGetNextArg(
  */
 ACPI_PARSE_OBJECT *
 AcpiPsFindName(
-    ACPI_PARSE_OBJECT       *Scope,
-    UINT32                  Name,
-    UINT32                  Opcode);
+        ACPI_PARSE_OBJECT       *Scope,
+        UINT32                  Name,
+        UINT32                  Opcode);
 
 ACPI_PARSE_OBJECT *
 AcpiPsGetParent(
-    ACPI_PARSE_OBJECT       *Op);
+        ACPI_PARSE_OBJECT       *Op);
 
 
 /*
@@ -216,28 +216,28 @@ AcpiPsGetParent(
  */
 ACPI_STATUS
 AcpiPsBuildNamedOp(
-    ACPI_WALK_STATE         *WalkState,
-    UINT8                   *AmlOpStart,
-    ACPI_PARSE_OBJECT       *UnnamedOp,
-    ACPI_PARSE_OBJECT       **Op);
+        ACPI_WALK_STATE         *WalkState,
+        UINT8                   *AmlOpStart,
+        ACPI_PARSE_OBJECT       *UnnamedOp,
+        ACPI_PARSE_OBJECT       **Op);
 
 ACPI_STATUS
 AcpiPsCreateOp(
-    ACPI_WALK_STATE         *WalkState,
-    UINT8                   *AmlOpStart,
-    ACPI_PARSE_OBJECT       **NewOp);
+        ACPI_WALK_STATE         *WalkState,
+        UINT8                   *AmlOpStart,
+        ACPI_PARSE_OBJECT       **NewOp);
 
 ACPI_STATUS
 AcpiPsCompleteOp(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       **Op,
-    ACPI_STATUS             Status);
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       **Op,
+        ACPI_STATUS             Status);
 
 ACPI_STATUS
 AcpiPsCompleteFinalOp(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_STATUS             Status);
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_STATUS             Status);
 
 
 /*
@@ -245,15 +245,15 @@ AcpiPsCompleteFinalOp(
  */
 const ACPI_OPCODE_INFO *
 AcpiPsGetOpcodeInfo(
-    UINT16                  Opcode);
+        UINT16                  Opcode);
 
 const char *
 AcpiPsGetOpcodeName(
-    UINT16                  Opcode);
+        UINT16                  Opcode);
 
 UINT8
 AcpiPsGetArgumentCount(
-    UINT32                  OpType);
+        UINT32                  OpType);
 
 
 /*
@@ -261,26 +261,26 @@ AcpiPsGetArgumentCount(
  */
 ACPI_STATUS
 AcpiPsParseAml(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 UINT32
 AcpiPsGetOpcodeSize(
-    UINT32                  Opcode);
+        UINT32                  Opcode);
 
 UINT16
 AcpiPsPeekOpcode(
-    ACPI_PARSE_STATE        *state);
+        ACPI_PARSE_STATE        *state);
 
 ACPI_STATUS
 AcpiPsCompleteThisOp(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op);
 
 ACPI_STATUS
 AcpiPsNextParseState(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_STATUS             CallbackStatus);
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_STATUS             CallbackStatus);
 
 
 /*
@@ -288,7 +288,7 @@ AcpiPsNextParseState(
  */
 ACPI_STATUS
 AcpiPsParseLoop(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -296,34 +296,34 @@ AcpiPsParseLoop(
  */
 ACPI_STATUS
 AcpiPsInitScope(
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Root);
+        ACPI_PARSE_STATE        *ParserState,
+        ACPI_PARSE_OBJECT       *Root);
 
 ACPI_PARSE_OBJECT *
 AcpiPsGetParentScope(
-    ACPI_PARSE_STATE        *state);
+        ACPI_PARSE_STATE        *state);
 
 BOOLEAN
 AcpiPsHasCompletedScope(
-    ACPI_PARSE_STATE        *ParserState);
+        ACPI_PARSE_STATE        *ParserState);
 
 void
 AcpiPsPopScope(
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       **Op,
-    UINT32                  *ArgList,
-    UINT32                  *ArgCount);
+        ACPI_PARSE_STATE        *ParserState,
+        ACPI_PARSE_OBJECT       **Op,
+        UINT32                  *ArgList,
+        UINT32                  *ArgCount);
 
 ACPI_STATUS
 AcpiPsPushScope(
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  RemainingArgs,
-    UINT32                  ArgCount);
+        ACPI_PARSE_STATE        *ParserState,
+        ACPI_PARSE_OBJECT       *Op,
+        UINT32                  RemainingArgs,
+        UINT32                  ArgCount);
 
 void
 AcpiPsCleanupScope(
-    ACPI_PARSE_STATE        *state);
+        ACPI_PARSE_STATE        *state);
 
 
 /*
@@ -331,25 +331,25 @@ AcpiPsCleanupScope(
  */
 void
 AcpiPsAppendArg(
-    ACPI_PARSE_OBJECT       *op,
-    ACPI_PARSE_OBJECT       *arg);
+        ACPI_PARSE_OBJECT       *op,
+        ACPI_PARSE_OBJECT       *arg);
 
 ACPI_PARSE_OBJECT *
 AcpiPsFind(
-    ACPI_PARSE_OBJECT       *Scope,
-    char                    *Path,
-    UINT16                  Opcode,
-    UINT32                  Create);
+        ACPI_PARSE_OBJECT       *Scope,
+        char                    *Path,
+        UINT16                  Opcode,
+        UINT32                  Create);
 
 ACPI_PARSE_OBJECT *
 AcpiPsGetArg(
-    ACPI_PARSE_OBJECT       *op,
-    UINT32                   argn);
+        ACPI_PARSE_OBJECT       *op,
+        UINT32                   argn);
 
 ACPI_PARSE_OBJECT *
 AcpiPsGetDepthNext(
-    ACPI_PARSE_OBJECT       *Origin,
-    ACPI_PARSE_OBJECT       *Op);
+        ACPI_PARSE_OBJECT       *Origin,
+        ACPI_PARSE_OBJECT       *Op);
 
 
 /*
@@ -357,29 +357,29 @@ AcpiPsGetDepthNext(
  */
 ACPI_STATUS
 AcpiPsWalkParsedAml(
-    ACPI_PARSE_OBJECT       *StartOp,
-    ACPI_PARSE_OBJECT       *EndOp,
-    ACPI_OPERAND_OBJECT     *MthDesc,
-    ACPI_NAMESPACE_NODE     *StartNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **CallerReturnDesc,
-    ACPI_OWNER_ID           OwnerId,
-    ACPI_PARSE_DOWNWARDS    DescendingCallback,
-    ACPI_PARSE_UPWARDS      AscendingCallback);
+        ACPI_PARSE_OBJECT       *StartOp,
+        ACPI_PARSE_OBJECT       *EndOp,
+        ACPI_OPERAND_OBJECT     *MthDesc,
+        ACPI_NAMESPACE_NODE     *StartNode,
+        ACPI_OPERAND_OBJECT     **Params,
+        ACPI_OPERAND_OBJECT     **CallerReturnDesc,
+        ACPI_OWNER_ID           OwnerId,
+        ACPI_PARSE_DOWNWARDS    DescendingCallback,
+        ACPI_PARSE_UPWARDS      AscendingCallback);
 
 ACPI_STATUS
 AcpiPsGetNextWalkOp(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_PARSE_UPWARDS      AscendingCallback);
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_PARSE_UPWARDS      AscendingCallback);
 
 ACPI_STATUS
 AcpiPsDeleteCompletedOp(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 void
 AcpiPsDeleteParseTree(
-    ACPI_PARSE_OBJECT       *root);
+        ACPI_PARSE_OBJECT       *root);
 
 
 /*
@@ -387,34 +387,34 @@ AcpiPsDeleteParseTree(
  */
 ACPI_PARSE_OBJECT *
 AcpiPsCreateScopeOp(
-    UINT8                   *Aml);
+        UINT8                   *Aml);
 
 void
 AcpiPsInitOp(
-    ACPI_PARSE_OBJECT       *op,
-    UINT16                  opcode);
+        ACPI_PARSE_OBJECT       *op,
+        UINT16                  opcode);
 
 ACPI_PARSE_OBJECT *
 AcpiPsAllocOp(
-    UINT16                  Opcode,
-    UINT8                   *Aml);
+        UINT16                  Opcode,
+        UINT8                   *Aml);
 
 void
 AcpiPsFreeOp(
-    ACPI_PARSE_OBJECT       *Op);
+        ACPI_PARSE_OBJECT       *Op);
 
 BOOLEAN
 AcpiPsIsLeadingChar(
-    UINT32                  c);
+        UINT32                  c);
 
 UINT32
 AcpiPsGetName(
-    ACPI_PARSE_OBJECT       *op);
+        ACPI_PARSE_OBJECT       *op);
 
 void
 AcpiPsSetName(
-    ACPI_PARSE_OBJECT       *op,
-    UINT32                  name);
+        ACPI_PARSE_OBJECT       *op,
+        UINT32                  name);
 
 
 /*
@@ -422,19 +422,19 @@ AcpiPsSetName(
  */
 UINT32
 AcpiPsSprintPath(
-    char                    *BufferStart,
-    UINT32                  BufferSize,
-    ACPI_PARSE_OBJECT       *Op);
+        char                    *BufferStart,
+        UINT32                  BufferSize,
+        ACPI_PARSE_OBJECT       *Op);
 
 UINT32
 AcpiPsSprintOp(
-    char                    *BufferStart,
-    UINT32                  BufferSize,
-    ACPI_PARSE_OBJECT       *Op);
+        char                    *BufferStart,
+        UINT32                  BufferSize,
+        ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiPsShow(
-    ACPI_PARSE_OBJECT       *op);
+        ACPI_PARSE_OBJECT       *op);
 
 
 #endif /* __ACPARSER_H__ */

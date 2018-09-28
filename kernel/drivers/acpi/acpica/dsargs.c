@@ -128,10 +128,10 @@ ACPI_MODULE_NAME("dsargs")
 
 static ACPI_STATUS
 AcpiDsExecuteArguments(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_NAMESPACE_NODE     *ScopeNode,
-    UINT32                  AmlLength,
-    UINT8                   *AmlStart);
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_NAMESPACE_NODE     *ScopeNode,
+        UINT32                  AmlLength,
+        UINT8                   *AmlStart);
 
 
 /*******************************************************************************
@@ -151,10 +151,10 @@ AcpiDsExecuteArguments(
 
 static ACPI_STATUS
 AcpiDsExecuteArguments(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_NAMESPACE_NODE     *ScopeNode,
-    UINT32                  AmlLength,
-    UINT8                   *AmlStart)
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_NAMESPACE_NODE     *ScopeNode,
+        UINT32                  AmlLength,
+        UINT8                   *AmlStart)
 {
 	ACPI_STATUS             Status;
 	ACPI_PARSE_OBJECT       *Op;
@@ -169,9 +169,7 @@ AcpiDsExecuteArguments(
 	Op = AcpiPsAllocOp(AML_INT_EVAL_SUBTREE_OP, AmlStart);
 
 	if (!Op)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Save the Node for use in AcpiPsParseAml */
 
@@ -181,8 +179,7 @@ AcpiDsExecuteArguments(
 
 	WalkState = AcpiDsCreateWalkState(0, NULL, NULL, NULL);
 
-	if (!WalkState)
-	{
+	if (!WalkState) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -190,8 +187,7 @@ AcpiDsExecuteArguments(
 	Status = AcpiDsInitAmlWalk(WalkState, Op, NULL, AmlStart,
 	                           AmlLength, NULL, ACPI_IMODE_LOAD_PASS1);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		AcpiDsDeleteWalkState(WalkState);
 		goto Cleanup;
 	}
@@ -206,9 +202,7 @@ AcpiDsExecuteArguments(
 	Status = AcpiPsParseAml(WalkState);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	/* Get and init the Op created above */
 
@@ -220,9 +214,7 @@ AcpiDsExecuteArguments(
 	Op = AcpiPsAllocOp(AML_INT_EVAL_SUBTREE_OP, AmlStart);
 
 	if (!Op)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	Op->Common.Node = ScopeNode;
 
@@ -230,8 +222,7 @@ AcpiDsExecuteArguments(
 
 	WalkState = AcpiDsCreateWalkState(0, NULL, NULL, NULL);
 
-	if (!WalkState)
-	{
+	if (!WalkState) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -241,8 +232,7 @@ AcpiDsExecuteArguments(
 	Status = AcpiDsInitAmlWalk(WalkState, Op, NULL, AmlStart,
 	                           AmlLength, NULL, ACPI_IMODE_EXECUTE);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		AcpiDsDeleteWalkState(WalkState);
 		goto Cleanup;
 	}
@@ -273,7 +263,7 @@ Cleanup:
 
 ACPI_STATUS
 AcpiDsGetBufferFieldArguments(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_OPERAND_OBJECT     *ExtraDesc;
 	ACPI_NAMESPACE_NODE     *Node;
@@ -284,9 +274,7 @@ AcpiDsGetBufferFieldArguments(
 
 
 	if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Get the AML pointer (method object) and BufferField node */
 
@@ -294,7 +282,7 @@ AcpiDsGetBufferFieldArguments(
 	Node = ObjDesc->BufferField.Node;
 
 	ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname(
-	                    ACPI_TYPE_BUFFER_FIELD, Node, NULL));
+	                        ACPI_TYPE_BUFFER_FIELD, Node, NULL));
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[%4.4s] BufferField Arg Init\n",
 	                  AcpiUtGetNodeName(Node)));
@@ -322,7 +310,7 @@ AcpiDsGetBufferFieldArguments(
 
 ACPI_STATUS
 AcpiDsGetBankFieldArguments(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_OPERAND_OBJECT     *ExtraDesc;
 	ACPI_NAMESPACE_NODE     *Node;
@@ -333,9 +321,7 @@ AcpiDsGetBankFieldArguments(
 
 
 	if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Get the AML pointer (method object) and BankField node */
 
@@ -343,7 +329,7 @@ AcpiDsGetBankFieldArguments(
 	Node = ObjDesc->BankField.Node;
 
 	ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname(
-	                    ACPI_TYPE_LOCAL_BANK_FIELD, Node, NULL));
+	                        ACPI_TYPE_LOCAL_BANK_FIELD, Node, NULL));
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[%4.4s] BankField Arg Init\n",
 	                  AcpiUtGetNodeName(Node)));
@@ -371,7 +357,7 @@ AcpiDsGetBankFieldArguments(
 
 ACPI_STATUS
 AcpiDsGetBufferArguments(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_NAMESPACE_NODE     *Node;
 	ACPI_STATUS             Status;
@@ -381,16 +367,13 @@ AcpiDsGetBufferArguments(
 
 
 	if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Get the Buffer node */
 
 	Node = ObjDesc->Buffer.Node;
 
-	if (!Node)
-	{
+	if (!Node) {
 		ACPI_ERROR((AE_INFO,
 		            "No pointer back to namespace node in buffer object %p",
 		            ObjDesc));
@@ -422,7 +405,7 @@ AcpiDsGetBufferArguments(
 
 ACPI_STATUS
 AcpiDsGetPackageArguments(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_NAMESPACE_NODE     *Node;
 	ACPI_STATUS             Status;
@@ -432,16 +415,13 @@ AcpiDsGetPackageArguments(
 
 
 	if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Get the Package node */
 
 	Node = ObjDesc->Package.Node;
 
-	if (!Node)
-	{
+	if (!Node) {
 		ACPI_ERROR((AE_INFO,
 		            "No pointer back to namespace node in package %p", ObjDesc));
 		return_ACPI_STATUS(AE_AML_INTERNAL);
@@ -472,7 +452,7 @@ AcpiDsGetPackageArguments(
 
 ACPI_STATUS
 AcpiDsGetRegionArguments(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_NAMESPACE_NODE     *Node;
 	ACPI_STATUS             Status;
@@ -483,23 +463,19 @@ AcpiDsGetRegionArguments(
 
 
 	if (ObjDesc->Region.Flags & AOPOBJ_DATA_VALID)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	ExtraDesc = AcpiNsGetSecondaryObject(ObjDesc);
 
 	if (!ExtraDesc)
-	{
 		return_ACPI_STATUS(AE_NOT_EXIST);
-	}
 
 	/* Get the Region node */
 
 	Node = ObjDesc->Region.Node;
 
 	ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname(
-	                    ACPI_TYPE_REGION, Node, NULL));
+	                        ACPI_TYPE_REGION, Node, NULL));
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 	                  "[%4.4s] OpRegion Arg Init at AML %p\n",
@@ -511,9 +487,7 @@ AcpiDsGetRegionArguments(
 	                                ExtraDesc->Extra.AmlLength, ExtraDesc->Extra.AmlStart);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiUtAddAddressRange(ObjDesc->Region.SpaceId,
 	                               ObjDesc->Region.Address, ObjDesc->Region.Length, Node);

@@ -124,8 +124,8 @@ ACPI_MODULE_NAME("tbinstal")
 
 static BOOLEAN
 AcpiTbCompareTables(
-    ACPI_TABLE_DESC         *TableDesc,
-    UINT32                  TableIndex);
+        ACPI_TABLE_DESC         *TableDesc,
+        UINT32                  TableIndex);
 
 
 /*******************************************************************************
@@ -144,8 +144,8 @@ AcpiTbCompareTables(
 
 static BOOLEAN
 AcpiTbCompareTables(
-    ACPI_TABLE_DESC         *TableDesc,
-    UINT32                  TableIndex)
+        ACPI_TABLE_DESC         *TableDesc,
+        UINT32                  TableIndex)
 {
 	ACPI_STATUS             Status = AE_OK;
 	BOOLEAN                 IsIdentical;
@@ -158,9 +158,7 @@ AcpiTbCompareTables(
 	                            &Table, &TableLength, &TableFlags);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (FALSE);
-	}
 
 	/*
 	 * Check for a table match on the entire table length,
@@ -196,9 +194,9 @@ AcpiTbCompareTables(
 
 void
 AcpiTbInstallTableWithOverride(
-    ACPI_TABLE_DESC         *NewTableDesc,
-    BOOLEAN                 Override,
-    UINT32                  *TableIndex)
+        ACPI_TABLE_DESC         *NewTableDesc,
+        BOOLEAN                 Override,
+        UINT32                  *TableIndex)
 {
 	UINT32                  i;
 	ACPI_STATUS             Status;
@@ -207,9 +205,7 @@ AcpiTbInstallTableWithOverride(
 	Status = AcpiTbGetNextTableDescriptor(&i, NULL);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return;
-	}
 
 	/*
 	 * ACPI Table Override:
@@ -219,9 +215,7 @@ AcpiTbInstallTableWithOverride(
 	 * including the DSDT which is pointed to by the FADT.
 	 */
 	if (Override)
-	{
 		AcpiTbOverrideTable(NewTableDesc);
-	}
 
 	AcpiTbInitTableDescriptor(&AcpiGbl_RootTableList.Tables[i],
 	                          NewTableDesc->Address, NewTableDesc->Flags, NewTableDesc->Pointer);
@@ -235,9 +229,7 @@ AcpiTbInstallTableWithOverride(
 	/* Set the global integer width (based upon revision of the DSDT) */
 
 	if (i == AcpiGbl_DsdtIndex)
-	{
 		AcpiUtSetIntegerWidth(NewTableDesc->Pointer->Revision);
-	}
 }
 
 
@@ -264,11 +256,11 @@ AcpiTbInstallTableWithOverride(
 
 ACPI_STATUS
 AcpiTbInstallStandardTable(
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags,
-    BOOLEAN                 Reload,
-    BOOLEAN                 Override,
-    UINT32                  *TableIndex)
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT8                   Flags,
+        BOOLEAN                 Reload,
+        BOOLEAN                 Override,
+        UINT32                  *TableIndex)
 {
 	UINT32                  i;
 	ACPI_STATUS             Status = AE_OK;
@@ -282,8 +274,7 @@ AcpiTbInstallStandardTable(
 
 	Status = AcpiTbAcquireTempTable(&NewTableDesc, Address, Flags);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_ERROR((AE_INFO,
 		            "Could not acquire table length at %8.8X%8.8X",
 		            ACPI_FORMAT_UINT64(Address)));
@@ -295,12 +286,11 @@ AcpiTbInstallStandardTable(
 	 * be useful for debugging ACPI problems on some machines.
 	 */
 	if (!Reload &&
-	        AcpiGbl_DisableSsdtTableInstall &&
-	        ACPI_COMPARE_NAME(&NewTableDesc.Signature, ACPI_SIG_SSDT))
-	{
+	    AcpiGbl_DisableSsdtTableInstall &&
+	    ACPI_COMPARE_NAME(&NewTableDesc.Signature, ACPI_SIG_SSDT)) {
 		ACPI_INFO((
-		              "Ignoring installation of %4.4s at %8.8X%8.8X",
-		              NewTableDesc.Signature.Ascii, ACPI_FORMAT_UINT64(Address)));
+		                  "Ignoring installation of %4.4s at %8.8X%8.8X",
+		                  NewTableDesc.Signature.Ascii, ACPI_FORMAT_UINT64(Address)));
 		goto ReleaseAndExit;
 	}
 
@@ -309,12 +299,9 @@ AcpiTbInstallStandardTable(
 	Status = AcpiTbVerifyTempTable(&NewTableDesc, NULL);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto ReleaseAndExit;
-	}
 
-	if (Reload)
-	{
+	if (Reload) {
 		/*
 		 * Validate the incoming table signature.
 		 *
@@ -327,9 +314,8 @@ AcpiTbInstallStandardTable(
 		 *    only "SSDT", "OEMx", and now, also a null signature. (05/2011).
 		 */
 		if ((NewTableDesc.Signature.Ascii[0] != 0x00) &&
-		        (!ACPI_COMPARE_NAME(&NewTableDesc.Signature, ACPI_SIG_SSDT)) &&
-		        (strncmp(NewTableDesc.Signature.Ascii, "OEM", 3)))
-		{
+		    (!ACPI_COMPARE_NAME(&NewTableDesc.Signature, ACPI_SIG_SSDT)) &&
+		    (strncmp(NewTableDesc.Signature.Ascii, "OEM", 3))) {
 			ACPI_BIOS_ERROR((AE_INFO,
 			                 "Table has invalid signature [%4.4s] (0x%8.8X), "
 			                 "must be SSDT or OEMx",
@@ -343,16 +329,13 @@ AcpiTbInstallStandardTable(
 
 		/* Check if table is already registered */
 
-		for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
-		{
+		for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i) {
 			/*
 			 * Check for a table match on the entire table length,
 			 * not just the header.
 			 */
 			if (!AcpiTbCompareTables(&NewTableDesc, i))
-			{
 				continue;
-			}
 
 			/*
 			 * Note: the current mechanism does not unregister a table if it is
@@ -369,15 +352,12 @@ AcpiTbInstallStandardTable(
 			 * root table list should be reused when empty.
 			 */
 			if (AcpiGbl_RootTableList.Tables[i].Flags &
-			        ACPI_TABLE_IS_LOADED)
-			{
+			    ACPI_TABLE_IS_LOADED) {
 				/* Table is still loaded, this is an error */
 
 				Status = AE_ALREADY_EXISTS;
 				goto ReleaseAndExit;
-			}
-			else
-			{
+			} else {
 				/*
 				 * Table was unloaded, allow it to be reloaded.
 				 * As we are going to return AE_OK to the caller, we should
@@ -399,8 +379,7 @@ AcpiTbInstallStandardTable(
 
 	/* Invoke table handler if present */
 
-	if (AcpiGbl_TableHandler)
-	{
+	if (AcpiGbl_TableHandler) {
 		(void) AcpiGbl_TableHandler(ACPI_TABLE_EVENT_INSTALL,
 		                            NewTableDesc.Pointer, AcpiGbl_TableHandlerContext);
 	}
@@ -433,7 +412,7 @@ ReleaseAndExit:
 
 void
 AcpiTbOverrideTable(
-    ACPI_TABLE_DESC         *OldTableDesc)
+        ACPI_TABLE_DESC         *OldTableDesc)
 {
 	ACPI_STATUS             Status;
 	char                    *OverrideType;
@@ -447,8 +426,7 @@ AcpiTbOverrideTable(
 
 	Status = AcpiOsTableOverride(OldTableDesc->Pointer, &Table);
 
-	if (ACPI_SUCCESS(Status) && Table)
-	{
+	if (ACPI_SUCCESS(Status) && Table) {
 		AcpiTbAcquireTempTable(&NewTableDesc, ACPI_PTR_TO_PHYSADDR(Table),
 		                       ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL);
 		OverrideType = "Logical";
@@ -460,8 +438,7 @@ AcpiTbOverrideTable(
 	Status = AcpiOsPhysicalTableOverride(OldTableDesc->Pointer,
 	                                     &Address, &Length);
 
-	if (ACPI_SUCCESS(Status) && Address && Length)
-	{
+	if (ACPI_SUCCESS(Status) && Address && Length) {
 		AcpiTbAcquireTempTable(&NewTableDesc, Address,
 		                       ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL);
 		OverrideType = "Physical";
@@ -478,9 +455,7 @@ FinishOverride:
 	Status = AcpiTbVerifyTempTable(&NewTableDesc, NULL);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return;
-	}
 
 	ACPI_INFO(("%4.4s 0x%8.8X%8.8X"
 	           " %s table override, new table: 0x%8.8X%8.8X",
@@ -520,7 +495,7 @@ FinishOverride:
 
 void
 AcpiTbUninstallTable(
-    ACPI_TABLE_DESC         *TableDesc)
+        ACPI_TABLE_DESC         *TableDesc)
 {
 
 	ACPI_FUNCTION_TRACE(TbUninstallTable);
@@ -529,17 +504,13 @@ AcpiTbUninstallTable(
 	/* Table must be installed */
 
 	if (!TableDesc->Address)
-	{
 		return_VOID;
-	}
 
 	AcpiTbInvalidateTable(TableDesc);
 
 	if ((TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) ==
-	        ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL)
-	{
+	    ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL)
 		ACPI_FREE(ACPI_PHYSADDR_TO_PTR(TableDesc->Address));
-	}
 
 	TableDesc->Address = ACPI_PTR_TO_PHYSADDR(NULL);
 	return_VOID;

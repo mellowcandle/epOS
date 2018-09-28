@@ -137,23 +137,23 @@ ACPI_MODULE_NAME("uttrack")
 
 static ACPI_DEBUG_MEM_BLOCK *
 AcpiUtFindAllocation(
-    ACPI_DEBUG_MEM_BLOCK    *Allocation);
+        ACPI_DEBUG_MEM_BLOCK    *Allocation);
 
 static ACPI_STATUS
 AcpiUtTrackAllocation(
-    ACPI_DEBUG_MEM_BLOCK    *Address,
-    ACPI_SIZE               Size,
-    UINT8                   AllocType,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line);
+        ACPI_DEBUG_MEM_BLOCK    *Address,
+        ACPI_SIZE               Size,
+        UINT8                   AllocType,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line);
 
 static ACPI_STATUS
 AcpiUtRemoveAllocation(
-    ACPI_DEBUG_MEM_BLOCK    *Address,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line);
+        ACPI_DEBUG_MEM_BLOCK    *Address,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line);
 
 
 /*******************************************************************************
@@ -172,9 +172,9 @@ AcpiUtRemoveAllocation(
 
 ACPI_STATUS
 AcpiUtCreateList(
-    const char              *ListName,
-    UINT16                  ObjectSize,
-    ACPI_MEMORY_LIST        **ReturnCache)
+        const char              *ListName,
+        UINT16                  ObjectSize,
+        ACPI_MEMORY_LIST        **ReturnCache)
 {
 	ACPI_MEMORY_LIST        *Cache;
 
@@ -182,9 +182,7 @@ AcpiUtCreateList(
 	Cache = AcpiOsAllocateZeroed(sizeof(ACPI_MEMORY_LIST));
 
 	if (!Cache)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	Cache->ListName = ListName;
 	Cache->ObjectSize = ObjectSize;
@@ -211,10 +209,10 @@ AcpiUtCreateList(
 
 void *
 AcpiUtAllocateAndTrack(
-    ACPI_SIZE               Size,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line)
+        ACPI_SIZE               Size,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line)
 {
 	ACPI_DEBUG_MEM_BLOCK    *Allocation;
 	ACPI_STATUS             Status;
@@ -222,8 +220,7 @@ AcpiUtAllocateAndTrack(
 
 	/* Check for an inadvertent size of zero bytes */
 
-	if (!Size)
-	{
+	if (!Size) {
 		ACPI_WARNING((Module, Line,
 		              "Attempt to allocate zero bytes, allocating 1 byte"));
 		Size = 1;
@@ -231,8 +228,7 @@ AcpiUtAllocateAndTrack(
 
 	Allocation = AcpiOsAllocate(Size + sizeof(ACPI_DEBUG_MEM_HEADER));
 
-	if (!Allocation)
-	{
+	if (!Allocation) {
 		/* Report allocation error */
 
 		ACPI_WARNING((Module, Line,
@@ -242,10 +238,9 @@ AcpiUtAllocateAndTrack(
 	}
 
 	Status = AcpiUtTrackAllocation(
-	             Allocation, Size, ACPI_MEM_MALLOC, Component, Module, Line);
+	                 Allocation, Size, ACPI_MEM_MALLOC, Component, Module, Line);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		AcpiOsFree(Allocation);
 		return (NULL);
 	}
@@ -255,10 +250,9 @@ AcpiUtAllocateAndTrack(
 	AcpiGbl_GlobalList->CurrentTotalSize += (UINT32) Size;
 
 	if (AcpiGbl_GlobalList->CurrentTotalSize >
-	        AcpiGbl_GlobalList->MaxOccupied)
-	{
+	    AcpiGbl_GlobalList->MaxOccupied) {
 		AcpiGbl_GlobalList->MaxOccupied =
-		    AcpiGbl_GlobalList->CurrentTotalSize;
+		        AcpiGbl_GlobalList->CurrentTotalSize;
 	}
 
 	return ((void *) &Allocation->UserSpace);
@@ -282,10 +276,10 @@ AcpiUtAllocateAndTrack(
 
 void *
 AcpiUtAllocateZeroedAndTrack(
-    ACPI_SIZE               Size,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line)
+        ACPI_SIZE               Size,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line)
 {
 	ACPI_DEBUG_MEM_BLOCK    *Allocation;
 	ACPI_STATUS             Status;
@@ -293,18 +287,16 @@ AcpiUtAllocateZeroedAndTrack(
 
 	/* Check for an inadvertent size of zero bytes */
 
-	if (!Size)
-	{
+	if (!Size) {
 		ACPI_WARNING((Module, Line,
 		              "Attempt to allocate zero bytes, allocating 1 byte"));
 		Size = 1;
 	}
 
 	Allocation = AcpiOsAllocateZeroed(
-	                 Size + sizeof(ACPI_DEBUG_MEM_HEADER));
+	                     Size + sizeof(ACPI_DEBUG_MEM_HEADER));
 
-	if (!Allocation)
-	{
+	if (!Allocation) {
 		/* Report allocation error */
 
 		ACPI_ERROR((Module, Line,
@@ -315,8 +307,7 @@ AcpiUtAllocateZeroedAndTrack(
 	Status = AcpiUtTrackAllocation(Allocation, Size,
 	                               ACPI_MEM_CALLOC, Component, Module, Line);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		AcpiOsFree(Allocation);
 		return (NULL);
 	}
@@ -326,10 +317,9 @@ AcpiUtAllocateZeroedAndTrack(
 	AcpiGbl_GlobalList->CurrentTotalSize += (UINT32) Size;
 
 	if (AcpiGbl_GlobalList->CurrentTotalSize >
-	        AcpiGbl_GlobalList->MaxOccupied)
-	{
+	    AcpiGbl_GlobalList->MaxOccupied) {
 		AcpiGbl_GlobalList->MaxOccupied =
-		    AcpiGbl_GlobalList->CurrentTotalSize;
+		        AcpiGbl_GlobalList->CurrentTotalSize;
 	}
 
 	return ((void *) &Allocation->UserSpace);
@@ -353,10 +343,10 @@ AcpiUtAllocateZeroedAndTrack(
 
 void
 AcpiUtFreeAndTrack(
-    void                    *Allocation,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line)
+        void                    *Allocation,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line)
 {
 	ACPI_DEBUG_MEM_BLOCK    *DebugBlock;
 	ACPI_STATUS             Status;
@@ -365,8 +355,7 @@ AcpiUtFreeAndTrack(
 	ACPI_FUNCTION_TRACE_PTR(UtFree, Allocation);
 
 
-	if (NULL == Allocation)
-	{
+	if (NULL == Allocation) {
 		ACPI_ERROR((Module, Line,
 		            "Attempt to delete a NULL address"));
 
@@ -382,9 +371,7 @@ AcpiUtFreeAndTrack(
 	Status = AcpiUtRemoveAllocation(DebugBlock, Component, Module, Line);
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_EXCEPTION((AE_INFO, Status, "Could not free memory"));
-	}
 
 	AcpiOsFree(DebugBlock);
 	ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS, "%p freed (block %p)\n",
@@ -422,7 +409,7 @@ AcpiUtFreeAndTrack(
 
 static ACPI_DEBUG_MEM_BLOCK *
 AcpiUtFindAllocation(
-    ACPI_DEBUG_MEM_BLOCK    *Allocation)
+        ACPI_DEBUG_MEM_BLOCK    *Allocation)
 {
 	ACPI_DEBUG_MEM_BLOCK    *Element;
 
@@ -430,9 +417,7 @@ AcpiUtFindAllocation(
 	Element = AcpiGbl_GlobalList->ListHead;
 
 	if (!Element)
-	{
 		return (NULL);
-	}
 
 	/*
 	 * Search for the address.
@@ -441,22 +426,17 @@ AcpiUtFindAllocation(
 	 * assumption that a new allocation usually has a larger address
 	 * than previous allocations.
 	 */
-	while (Element > Allocation)
-	{
+	while (Element > Allocation) {
 		/* Check for end-of-list */
 
 		if (!Element->Next)
-		{
 			return (Element);
-		}
 
 		Element = Element->Next;
 	}
 
 	if (Element == Allocation)
-	{
 		return (Element);
-	}
 
 	return (Element->Previous);
 }
@@ -481,12 +461,12 @@ AcpiUtFindAllocation(
 
 static ACPI_STATUS
 AcpiUtTrackAllocation(
-    ACPI_DEBUG_MEM_BLOCK    *Allocation,
-    ACPI_SIZE               Size,
-    UINT8                   AllocType,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line)
+        ACPI_DEBUG_MEM_BLOCK    *Allocation,
+        ACPI_SIZE               Size,
+        UINT8                   AllocType,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line)
 {
 	ACPI_MEMORY_LIST        *MemList;
 	ACPI_DEBUG_MEM_BLOCK    *Element;
@@ -497,17 +477,13 @@ AcpiUtTrackAllocation(
 
 
 	if (AcpiGbl_DisableMemTracking)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	MemList = AcpiGbl_GlobalList;
 	Status = AcpiUtAcquireMutex(ACPI_MTX_MEMORY);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Search the global list for this address to make sure it is not
@@ -515,8 +491,7 @@ AcpiUtTrackAllocation(
 	 */
 	Element = AcpiUtFindAllocation(Allocation);
 
-	if (Element == Allocation)
-	{
+	if (Element == Allocation) {
 		ACPI_ERROR((AE_INFO,
 		            "UtTrackAllocation: Allocation (%p) already present in global list!",
 		            Allocation));
@@ -533,32 +508,26 @@ AcpiUtTrackAllocation(
 	strncpy(Allocation->Module, Module, ACPI_MAX_MODULE_NAME);
 	Allocation->Module[ACPI_MAX_MODULE_NAME - 1] = 0;
 
-	if (!Element)
-	{
+	if (!Element) {
 		/* Insert at list head */
 
-		if (MemList->ListHead)
-		{
+		if (MemList->ListHead) {
 			((ACPI_DEBUG_MEM_BLOCK *)(MemList->ListHead))->Previous =
-			    Allocation;
+			        Allocation;
 		}
 
 		Allocation->Next = MemList->ListHead;
 		Allocation->Previous = NULL;
 
 		MemList->ListHead = Allocation;
-	}
-	else
-	{
+	} else {
 		/* Insert after element */
 
 		Allocation->Next = Element->Next;
 		Allocation->Previous = Element;
 
 		if (Element->Next)
-		{
 			(Element->Next)->Previous = Allocation;
-		}
 
 		Element->Next = Allocation;
 	}
@@ -587,10 +556,10 @@ UnlockAndExit:
 
 static ACPI_STATUS
 AcpiUtRemoveAllocation(
-    ACPI_DEBUG_MEM_BLOCK    *Allocation,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line)
+        ACPI_DEBUG_MEM_BLOCK    *Allocation,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line)
 {
 	ACPI_MEMORY_LIST        *MemList;
 	ACPI_STATUS             Status;
@@ -600,14 +569,11 @@ AcpiUtRemoveAllocation(
 
 
 	if (AcpiGbl_DisableMemTracking)
-	{
 		return (AE_OK);
-	}
 
 	MemList = AcpiGbl_GlobalList;
 
-	if (NULL == MemList->ListHead)
-	{
+	if (NULL == MemList->ListHead) {
 		/* No allocations! */
 
 		ACPI_ERROR((Module, Line,
@@ -619,25 +585,17 @@ AcpiUtRemoveAllocation(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_MEMORY);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/* Unlink */
 
 	if (Allocation->Previous)
-	{
 		(Allocation->Previous)->Next = Allocation->Next;
-	}
 	else
-	{
 		MemList->ListHead = Allocation->Next;
-	}
 
 	if (Allocation->Next)
-	{
 		(Allocation->Next)->Previous = Allocation->Previous;
-	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS, "Freeing %p, size 0%X\n",
 	                  &Allocation->UserSpace, Allocation->Size));
@@ -665,7 +623,7 @@ AcpiUtRemoveAllocation(
 
 void
 AcpiUtDumpAllocationInfo(
-    void)
+        void)
 {
 	/*
 	    ACPI_MEMORY_LIST        *MemList;
@@ -726,8 +684,8 @@ AcpiUtDumpAllocationInfo(
 
 void
 AcpiUtDumpAllocations(
-    UINT32                  Component,
-    const char              *Module)
+        UINT32                  Component,
+        const char              *Module)
 {
 	ACPI_DEBUG_MEM_BLOCK    *Element;
 	ACPI_DESCRIPTOR         *Descriptor;
@@ -739,42 +697,32 @@ AcpiUtDumpAllocations(
 
 
 	if (AcpiGbl_DisableMemTracking)
-	{
 		return_VOID;
-	}
 
 	/*
 	 * Walk the allocation list.
 	 */
 	if (ACPI_FAILURE(AcpiUtAcquireMutex(ACPI_MTX_MEMORY)))
-	{
 		return_VOID;
-	}
 
 	Element = AcpiGbl_GlobalList->ListHead;
 
-	while (Element)
-	{
+	while (Element) {
 		if ((Element->Component & Component) &&
-		        ((Module == NULL) || (0 == strcmp(Module, Element->Module))))
-		{
+		    ((Module == NULL) || (0 == strcmp(Module, Element->Module)))) {
 			Descriptor = ACPI_CAST_PTR(
-			                 ACPI_DESCRIPTOR, &Element->UserSpace);
+			                     ACPI_DESCRIPTOR, &Element->UserSpace);
 
-			if (Element->Size < sizeof(ACPI_COMMON_DESCRIPTOR))
-			{
+			if (Element->Size < sizeof(ACPI_COMMON_DESCRIPTOR)) {
 				AcpiOsPrintf("%p Length 0x%04X %9.9s-%u "
 				             "[Not a Descriptor - too small]\n",
 				             Descriptor, Element->Size, Element->Module,
 				             Element->Line);
-			}
-			else
-			{
+			} else {
 				/* Ignore allocated objects that are in a cache */
 
 				if (ACPI_GET_DESCRIPTOR_TYPE(Descriptor) !=
-				        ACPI_DESC_TYPE_CACHED)
-				{
+				    ACPI_DESC_TYPE_CACHED) {
 					AcpiOsPrintf("%p Length 0x%04X %9.9s-%u [%s] ",
 					             Descriptor, Element->Size, Element->Module,
 					             Element->Line, AcpiUtGetDescriptorName(Descriptor));
@@ -783,32 +731,25 @@ AcpiUtDumpAllocations(
 
 					DescriptorType = 0; /* Not a valid descriptor type */
 
-					switch (ACPI_GET_DESCRIPTOR_TYPE(Descriptor))
-					{
+					switch (ACPI_GET_DESCRIPTOR_TYPE(Descriptor)) {
 					case ACPI_DESC_TYPE_OPERAND:
 
 						if (Element->Size == sizeof(ACPI_OPERAND_OBJECT))
-						{
 							DescriptorType = ACPI_DESC_TYPE_OPERAND;
-						}
 
 						break;
 
 					case ACPI_DESC_TYPE_PARSER:
 
 						if (Element->Size == sizeof(ACPI_PARSE_OBJECT))
-						{
 							DescriptorType = ACPI_DESC_TYPE_PARSER;
-						}
 
 						break;
 
 					case ACPI_DESC_TYPE_NAMED:
 
 						if (Element->Size == sizeof(ACPI_NAMESPACE_NODE))
-						{
 							DescriptorType = ACPI_DESC_TYPE_NAMED;
-						}
 
 						break;
 
@@ -819,8 +760,7 @@ AcpiUtDumpAllocations(
 
 					/* Display additional info for the major descriptor types */
 
-					switch (DescriptorType)
-					{
+					switch (DescriptorType) {
 					case ACPI_DESC_TYPE_OPERAND:
 
 						AcpiOsPrintf("%12.12s  RefCount 0x%04X\n",
@@ -859,11 +799,8 @@ AcpiUtDumpAllocations(
 	/* Print summary */
 
 	if (!NumOutstanding)
-	{
 		ACPI_INFO(("No outstanding allocations"));
-	}
-	else
-	{
+	else {
 		ACPI_ERROR((AE_INFO, "%u(0x%X) Outstanding allocations",
 		            NumOutstanding, NumOutstanding));
 	}

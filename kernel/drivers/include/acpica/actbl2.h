@@ -199,8 +199,7 @@
  *
  ******************************************************************************/
 
-typedef struct acpi_table_asf
-{
+typedef struct acpi_table_asf {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
 } ACPI_TABLE_ASF;
@@ -208,8 +207,7 @@ typedef struct acpi_table_asf
 
 /* ASF subtable header */
 
-typedef struct acpi_asf_header
-{
+typedef struct acpi_asf_header {
 	UINT8                   Type;
 	UINT8                   Reserved;
 	UINT16                  Length;
@@ -219,8 +217,7 @@ typedef struct acpi_asf_header
 
 /* Values for Type field above */
 
-enum AcpiAsfType
-{
+enum AcpiAsfType {
 	ACPI_ASF_TYPE_INFO          = 0,
 	ACPI_ASF_TYPE_ALERT         = 1,
 	ACPI_ASF_TYPE_CONTROL       = 2,
@@ -235,8 +232,7 @@ enum AcpiAsfType
 
 /* 0: ASF Information */
 
-typedef struct acpi_asf_info
-{
+typedef struct acpi_asf_info {
 	ACPI_ASF_HEADER         Header;
 	UINT8                   MinResetValue;
 	UINT8                   MinPollInterval;
@@ -254,8 +250,7 @@ typedef struct acpi_asf_info
 
 /* 1: ASF Alerts */
 
-typedef struct acpi_asf_alert
-{
+typedef struct acpi_asf_alert {
 	ACPI_ASF_HEADER         Header;
 	UINT8                   AssertMask;
 	UINT8                   DeassertMask;
@@ -264,8 +259,7 @@ typedef struct acpi_asf_alert
 
 } ACPI_ASF_ALERT;
 
-typedef struct acpi_asf_alert_data
-{
+typedef struct acpi_asf_alert_data {
 	UINT8                   Address;
 	UINT8                   Command;
 	UINT8                   Mask;
@@ -284,8 +278,7 @@ typedef struct acpi_asf_alert_data
 
 /* 2: ASF Remote Control */
 
-typedef struct acpi_asf_remote
-{
+typedef struct acpi_asf_remote {
 	ACPI_ASF_HEADER         Header;
 	UINT8                   Controls;
 	UINT8                   DataLength;
@@ -293,8 +286,7 @@ typedef struct acpi_asf_remote
 
 } ACPI_ASF_REMOTE;
 
-typedef struct acpi_asf_control_data
-{
+typedef struct acpi_asf_control_data {
 	UINT8                   Function;
 	UINT8                   Address;
 	UINT8                   Command;
@@ -305,8 +297,7 @@ typedef struct acpi_asf_control_data
 
 /* 3: ASF RMCP Boot Options */
 
-typedef struct acpi_asf_rmcp
-{
+typedef struct acpi_asf_rmcp {
 	ACPI_ASF_HEADER         Header;
 	UINT8                   Capabilities[7];
 	UINT8                   CompletionCode;
@@ -321,8 +312,7 @@ typedef struct acpi_asf_rmcp
 
 /* 4: ASF Address */
 
-typedef struct acpi_asf_address
-{
+typedef struct acpi_asf_address {
 	ACPI_ASF_HEADER         Header;
 	UINT8                   EpromAddress;
 	UINT8                   Devices;
@@ -339,8 +329,7 @@ typedef struct acpi_asf_address
  *
  ******************************************************************************/
 
-typedef struct acpi_table_boot
-{
+typedef struct acpi_table_boot {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   CmosIndex;          /* Index in CMOS RAM for the boot register */
 	UINT8                   Reserved[3];
@@ -357,8 +346,7 @@ typedef struct acpi_table_boot
  *
  ******************************************************************************/
 
-typedef struct acpi_table_csrt
-{
+typedef struct acpi_table_csrt {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
 } ACPI_TABLE_CSRT;
@@ -366,8 +354,7 @@ typedef struct acpi_table_csrt
 
 /* Resource Group subtable */
 
-typedef struct acpi_csrt_group
-{
+typedef struct acpi_csrt_group {
 	UINT32                  Length;
 	UINT32                  VendorId;
 	UINT32                  SubvendorId;
@@ -383,8 +370,7 @@ typedef struct acpi_csrt_group
 
 /* Shared Info subtable */
 
-typedef struct acpi_csrt_shared_info
-{
+typedef struct acpi_csrt_shared_info {
 	UINT16                  MajorVersion;
 	UINT16                  MinorVersion;
 	UINT32                  MmioBaseLow;
@@ -404,8 +390,7 @@ typedef struct acpi_csrt_shared_info
 
 /* Resource Descriptor subtable */
 
-typedef struct acpi_csrt_descriptor
-{
+typedef struct acpi_csrt_descriptor {
 	UINT32                  Length;
 	UINT16                  Type;
 	UINT16                  Subtype;
@@ -440,8 +425,7 @@ typedef struct acpi_csrt_descriptor
  *
  ******************************************************************************/
 
-typedef struct acpi_table_dbg2
-{
+typedef struct acpi_table_dbg2 {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT32                  InfoOffset;
 	UINT32                  InfoCount;
@@ -449,8 +433,7 @@ typedef struct acpi_table_dbg2
 } ACPI_TABLE_DBG2;
 
 
-typedef struct acpi_dbg2_header
-{
+typedef struct acpi_dbg2_header {
 	UINT32                  InfoOffset;
 	UINT32                  InfoCount;
 
@@ -459,8 +442,7 @@ typedef struct acpi_dbg2_header
 
 /* Debug Device Information Subtable */
 
-typedef struct acpi_dbg2_device
-{
+typedef struct acpi_dbg2_device {
 	UINT8                   Revision;
 	UINT16                  Length;
 	UINT8                   RegisterCount;      /* Number of BaseAddress registers */
@@ -514,8 +496,7 @@ typedef struct acpi_dbg2_device
  *
  ******************************************************************************/
 
-typedef struct acpi_table_dbgp
-{
+typedef struct acpi_table_dbgp {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   Type;               /* 0=full 16550, 1=subset of 16550 */
 	UINT8                   Reserved[3];
@@ -534,8 +515,7 @@ typedef struct acpi_table_dbgp
  *
  ******************************************************************************/
 
-typedef struct acpi_table_dmar
-{
+typedef struct acpi_table_dmar {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   Width;              /* Host Address Width */
 	UINT8                   Flags;
@@ -552,8 +532,7 @@ typedef struct acpi_table_dmar
 
 /* DMAR subtable header */
 
-typedef struct acpi_dmar_header
-{
+typedef struct acpi_dmar_header {
 	UINT16                  Type;
 	UINT16                  Length;
 
@@ -561,8 +540,7 @@ typedef struct acpi_dmar_header
 
 /* Values for subtable type in ACPI_DMAR_HEADER */
 
-enum AcpiDmarType
-{
+enum AcpiDmarType {
 	ACPI_DMAR_TYPE_HARDWARE_UNIT        = 0,
 	ACPI_DMAR_TYPE_RESERVED_MEMORY      = 1,
 	ACPI_DMAR_TYPE_ROOT_ATS             = 2,
@@ -574,8 +552,7 @@ enum AcpiDmarType
 
 /* DMAR Device Scope structure */
 
-typedef struct acpi_dmar_device_scope
-{
+typedef struct acpi_dmar_device_scope {
 	UINT8                   EntryType;
 	UINT8                   Length;
 	UINT16                  Reserved;
@@ -586,8 +563,7 @@ typedef struct acpi_dmar_device_scope
 
 /* Values for EntryType in ACPI_DMAR_DEVICE_SCOPE - device types */
 
-enum AcpiDmarScopeType
-{
+enum AcpiDmarScopeType {
 	ACPI_DMAR_SCOPE_TYPE_NOT_USED       = 0,
 	ACPI_DMAR_SCOPE_TYPE_ENDPOINT       = 1,
 	ACPI_DMAR_SCOPE_TYPE_BRIDGE         = 2,
@@ -597,8 +573,7 @@ enum AcpiDmarScopeType
 	ACPI_DMAR_SCOPE_TYPE_RESERVED       = 6     /* 6 and greater are reserved */
 };
 
-typedef struct acpi_dmar_pci_path
-{
+typedef struct acpi_dmar_pci_path {
 	UINT8                   Device;
 	UINT8                   Function;
 
@@ -611,8 +586,7 @@ typedef struct acpi_dmar_pci_path
 
 /* 0: Hardware Unit Definition */
 
-typedef struct acpi_dmar_hardware_unit
-{
+typedef struct acpi_dmar_hardware_unit {
 	ACPI_DMAR_HEADER        Header;
 	UINT8                   Flags;
 	UINT8                   Reserved;
@@ -628,8 +602,7 @@ typedef struct acpi_dmar_hardware_unit
 
 /* 1: Reserved Memory Defininition */
 
-typedef struct acpi_dmar_reserved_memory
-{
+typedef struct acpi_dmar_reserved_memory {
 	ACPI_DMAR_HEADER        Header;
 	UINT16                  Reserved;
 	UINT16                  Segment;
@@ -645,8 +618,7 @@ typedef struct acpi_dmar_reserved_memory
 
 /* 2: Root Port ATS Capability Reporting Structure */
 
-typedef struct acpi_dmar_atsr
-{
+typedef struct acpi_dmar_atsr {
 	ACPI_DMAR_HEADER        Header;
 	UINT8                   Flags;
 	UINT8                   Reserved;
@@ -661,8 +633,7 @@ typedef struct acpi_dmar_atsr
 
 /* 3: Remapping Hardware Static Affinity Structure */
 
-typedef struct acpi_dmar_rhsa
-{
+typedef struct acpi_dmar_rhsa {
 	ACPI_DMAR_HEADER        Header;
 	UINT32                  Reserved;
 	UINT64                  BaseAddress;
@@ -673,8 +644,7 @@ typedef struct acpi_dmar_rhsa
 
 /* 4: ACPI Namespace Device Declaration Structure */
 
-typedef struct acpi_dmar_andd
-{
+typedef struct acpi_dmar_andd {
 	ACPI_DMAR_HEADER        Header;
 	UINT8                   Reserved[3];
 	UINT8                   DeviceNumber;
@@ -693,8 +663,7 @@ typedef struct acpi_dmar_andd
  *
  ******************************************************************************/
 
-typedef struct acpi_table_hpet
-{
+typedef struct acpi_table_hpet {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT32                  Id;                 /* Hardware ID of event timer block */
 	ACPI_GENERIC_ADDRESS    Address;            /* Address of event timer block */
@@ -710,8 +679,7 @@ typedef struct acpi_table_hpet
 
 /* Values for Page Protect flags */
 
-enum AcpiHpetPageProtect
-{
+enum AcpiHpetPageProtect {
 	ACPI_HPET_NO_PAGE_PROTECT       = 0,
 	ACPI_HPET_PAGE_PROTECT4         = 1,
 	ACPI_HPET_PAGE_PROTECT64        = 2
@@ -731,8 +699,7 @@ enum AcpiHpetPageProtect
  *
  ******************************************************************************/
 
-typedef struct acpi_table_ibft
-{
+typedef struct acpi_table_ibft {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   Reserved[12];
 
@@ -741,8 +708,7 @@ typedef struct acpi_table_ibft
 
 /* IBFT common subtable header */
 
-typedef struct acpi_ibft_header
-{
+typedef struct acpi_ibft_header {
 	UINT8                   Type;
 	UINT8                   Version;
 	UINT16                  Length;
@@ -753,8 +719,7 @@ typedef struct acpi_ibft_header
 
 /* Values for Type field above */
 
-enum AcpiIbftType
-{
+enum AcpiIbftType {
 	ACPI_IBFT_TYPE_NOT_USED         = 0,
 	ACPI_IBFT_TYPE_CONTROL          = 1,
 	ACPI_IBFT_TYPE_INITIATOR        = 2,
@@ -767,8 +732,7 @@ enum AcpiIbftType
 
 /* IBFT subtables */
 
-typedef struct acpi_ibft_control
-{
+typedef struct acpi_ibft_control {
 	ACPI_IBFT_HEADER        Header;
 	UINT16                  Extensions;
 	UINT16                  InitiatorOffset;
@@ -779,8 +743,7 @@ typedef struct acpi_ibft_control
 
 } ACPI_IBFT_CONTROL;
 
-typedef struct acpi_ibft_initiator
-{
+typedef struct acpi_ibft_initiator {
 	ACPI_IBFT_HEADER        Header;
 	UINT8                   SnsServer[16];
 	UINT8                   SlpServer[16];
@@ -791,8 +754,7 @@ typedef struct acpi_ibft_initiator
 
 } ACPI_IBFT_INITIATOR;
 
-typedef struct acpi_ibft_nic
-{
+typedef struct acpi_ibft_nic {
 	ACPI_IBFT_HEADER        Header;
 	UINT8                   IpAddress[16];
 	UINT8                   SubnetMaskPrefix;
@@ -809,8 +771,7 @@ typedef struct acpi_ibft_nic
 
 } ACPI_IBFT_NIC;
 
-typedef struct acpi_ibft_target
-{
+typedef struct acpi_ibft_target {
 	ACPI_IBFT_HEADER        Header;
 	UINT8                   TargetIpAddress[16];
 	UINT16                  TargetIpSocket;
@@ -840,8 +801,7 @@ typedef struct acpi_ibft_target
  *
  ******************************************************************************/
 
-typedef struct acpi_table_iort
-{
+typedef struct acpi_table_iort {
 	ACPI_TABLE_HEADER       Header;
 	UINT32                  NodeCount;
 	UINT32                  NodeOffset;
@@ -853,8 +813,7 @@ typedef struct acpi_table_iort
 /*
  * IORT subtables
  */
-typedef struct acpi_iort_node
-{
+typedef struct acpi_iort_node {
 	UINT8                   Type;
 	UINT16                  Length;
 	UINT8                   Revision;
@@ -867,8 +826,7 @@ typedef struct acpi_iort_node
 
 /* Values for subtable Type above */
 
-enum AcpiIortNodeType
-{
+enum AcpiIortNodeType {
 	ACPI_IORT_NODE_ITS_GROUP            = 0x00,
 	ACPI_IORT_NODE_NAMED_COMPONENT      = 0x01,
 	ACPI_IORT_NODE_PCI_ROOT_COMPLEX     = 0x02,
@@ -877,8 +835,7 @@ enum AcpiIortNodeType
 };
 
 
-typedef struct acpi_iort_id_mapping
-{
+typedef struct acpi_iort_id_mapping {
 	UINT32                  InputBase;          /* Lowest value in input range */
 	UINT32                  IdCount;            /* Number of IDs */
 	UINT32                  OutputBase;         /* Lowest value in output range */
@@ -892,8 +849,7 @@ typedef struct acpi_iort_id_mapping
 #define ACPI_IORT_ID_SINGLE_MAPPING (1)
 
 
-typedef struct acpi_iort_memory_access
-{
+typedef struct acpi_iort_memory_access {
 	UINT32                  CacheCoherency;
 	UINT8                   Hints;
 	UINT16                  Reserved;
@@ -922,16 +878,14 @@ typedef struct acpi_iort_memory_access
 /*
  * IORT node specific subtables
  */
-typedef struct acpi_iort_its_group
-{
+typedef struct acpi_iort_its_group {
 	UINT32                  ItsCount;
 	UINT32                  Identifiers[1];         /* GIC ITS identifier arrary */
 
 } ACPI_IORT_ITS_GROUP;
 
 
-typedef struct acpi_iort_named_component
-{
+typedef struct acpi_iort_named_component {
 	UINT32                  NodeFlags;
 	UINT64                  MemoryProperties;       /* Memory access properties */
 	UINT8                   MemoryAddressLimit;     /* Memory address size limit */
@@ -940,8 +894,7 @@ typedef struct acpi_iort_named_component
 } ACPI_IORT_NAMED_COMPONENT;
 
 
-typedef struct acpi_iort_root_complex
-{
+typedef struct acpi_iort_root_complex {
 	UINT64                  MemoryProperties;       /* Memory access properties */
 	UINT32                  AtsAttribute;
 	UINT32                  PciSegmentNumber;
@@ -954,8 +907,7 @@ typedef struct acpi_iort_root_complex
 #define ACPI_IORT_ATS_UNSUPPORTED       0x00000000  /* The root complex doesn't support ATS */
 
 
-typedef struct acpi_iort_smmu
-{
+typedef struct acpi_iort_smmu {
 	UINT64                  BaseAddress;            /* SMMU base address */
 	UINT64                  Span;                   /* Length of memory range */
 	UINT32                  Model;
@@ -982,8 +934,7 @@ typedef struct acpi_iort_smmu
 #define ACPI_IORT_SMMU_COHERENT_WALK    (1<<1)
 
 
-typedef struct acpi_iort_smmu_v3
-{
+typedef struct acpi_iort_smmu_v3 {
 	UINT64                  BaseAddress;            /* SMMUv3 base address */
 	UINT32                  Flags;
 	UINT32                  Reserved;
@@ -1012,8 +963,7 @@ typedef struct acpi_iort_smmu_v3
  *
  ******************************************************************************/
 
-typedef struct acpi_table_ivrs
-{
+typedef struct acpi_table_ivrs {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT32                  Info;               /* Common virtualization info */
 	UINT64                  Reserved;
@@ -1029,8 +979,7 @@ typedef struct acpi_table_ivrs
 
 /* IVRS subtable header */
 
-typedef struct acpi_ivrs_header
-{
+typedef struct acpi_ivrs_header {
 	UINT8                   Type;               /* Subtable type */
 	UINT8                   Flags;
 	UINT16                  Length;             /* Subtable length */
@@ -1040,8 +989,7 @@ typedef struct acpi_ivrs_header
 
 /* Values for subtable Type above */
 
-enum AcpiIvrsType
-{
+enum AcpiIvrsType {
 	ACPI_IVRS_TYPE_HARDWARE         = 0x10,
 	ACPI_IVRS_TYPE_MEMORY1          = 0x20,
 	ACPI_IVRS_TYPE_MEMORY2          = 0x21,
@@ -1070,8 +1018,7 @@ enum AcpiIvrsType
 
 /* 0x10: I/O Virtualization Hardware Definition Block (IVHD) */
 
-typedef struct acpi_ivrs_hardware
-{
+typedef struct acpi_ivrs_hardware {
 	ACPI_IVRS_HEADER        Header;
 	UINT16                  CapabilityOffset;   /* Offset for IOMMU control fields */
 	UINT64                  BaseAddress;        /* IOMMU control registers */
@@ -1093,8 +1040,7 @@ typedef struct acpi_ivrs_hardware
  * Currently, only 4 and 8 byte entries are defined. 16 and 32 byte entries
  * are reserved for future use but not defined.
  */
-typedef struct acpi_ivrs_de_header
-{
+typedef struct acpi_ivrs_de_header {
 	UINT8                   Type;
 	UINT16                  Id;
 	UINT8                   DataSetting;
@@ -1107,8 +1053,7 @@ typedef struct acpi_ivrs_de_header
 
 /* Values for device entry Type field above */
 
-enum AcpiIvrsDeviceEntryType
-{
+enum AcpiIvrsDeviceEntryType {
 	/* 4-byte device entries, all use ACPI_IVRS_DEVICE4 */
 
 	ACPI_IVRS_TYPE_PAD4             = 0,
@@ -1140,16 +1085,14 @@ enum AcpiIvrsDeviceEntryType
 
 /* Types 0-4: 4-byte device entry */
 
-typedef struct acpi_ivrs_device4
-{
+typedef struct acpi_ivrs_device4 {
 	ACPI_IVRS_DE_HEADER     Header;
 
 } ACPI_IVRS_DEVICE4;
 
 /* Types 66-67: 8-byte device entry */
 
-typedef struct acpi_ivrs_device8a
-{
+typedef struct acpi_ivrs_device8a {
 	ACPI_IVRS_DE_HEADER     Header;
 	UINT8                   Reserved1;
 	UINT16                  UsedId;
@@ -1159,8 +1102,7 @@ typedef struct acpi_ivrs_device8a
 
 /* Types 70-71: 8-byte device entry */
 
-typedef struct acpi_ivrs_device8b
-{
+typedef struct acpi_ivrs_device8b {
 	ACPI_IVRS_DE_HEADER     Header;
 	UINT32                  ExtendedData;
 
@@ -1172,8 +1114,7 @@ typedef struct acpi_ivrs_device8b
 
 /* Type 72: 8-byte device entry */
 
-typedef struct acpi_ivrs_device8c
-{
+typedef struct acpi_ivrs_device8c {
 	ACPI_IVRS_DE_HEADER     Header;
 	UINT8                   Handle;
 	UINT16                  UsedId;
@@ -1189,8 +1130,7 @@ typedef struct acpi_ivrs_device8c
 
 /* 0x20, 0x21, 0x22: I/O Virtualization Memory Definition Block (IVMD) */
 
-typedef struct acpi_ivrs_memory
-{
+typedef struct acpi_ivrs_memory {
 	ACPI_IVRS_HEADER        Header;
 	UINT16                  AuxData;
 	UINT64                  Reserved;
@@ -1208,8 +1148,7 @@ typedef struct acpi_ivrs_memory
  *
  ******************************************************************************/
 
-typedef struct acpi_table_lpit
-{
+typedef struct acpi_table_lpit {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
 } ACPI_TABLE_LPIT;
@@ -1217,8 +1156,7 @@ typedef struct acpi_table_lpit
 
 /* LPIT subtable header */
 
-typedef struct acpi_lpit_header
-{
+typedef struct acpi_lpit_header {
 	UINT32                  Type;               /* Subtable type */
 	UINT32                  Length;             /* Subtable length */
 	UINT16                  UniqueId;
@@ -1229,8 +1167,7 @@ typedef struct acpi_lpit_header
 
 /* Values for subtable Type above */
 
-enum AcpiLpitType
-{
+enum AcpiLpitType {
 	ACPI_LPIT_TYPE_NATIVE_CSTATE    = 0x00,
 	ACPI_LPIT_TYPE_RESERVED         = 0x01      /* 1 and above are reserved */
 };
@@ -1246,8 +1183,7 @@ enum AcpiLpitType
 
 /* 0x00: Native C-state instruction based LPI structure */
 
-typedef struct acpi_lpit_native
-{
+typedef struct acpi_lpit_native {
 	ACPI_LPIT_HEADER        Header;
 	ACPI_GENERIC_ADDRESS    EntryTrigger;
 	UINT32                  Residency;
@@ -1267,8 +1203,7 @@ typedef struct acpi_lpit_native
  *
  ******************************************************************************/
 
-typedef struct acpi_table_mcfg
-{
+typedef struct acpi_table_mcfg {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   Reserved[8];
 
@@ -1277,8 +1212,7 @@ typedef struct acpi_table_mcfg
 
 /* Subtable */
 
-typedef struct acpi_mcfg_allocation
-{
+typedef struct acpi_mcfg_allocation {
 	UINT64                  Address;            /* Base address, processor-relative */
 	UINT16                  PciSegment;         /* PCI segment group number */
 	UINT8                   StartBusNumber;     /* Starting PCI Bus number */
@@ -1298,8 +1232,7 @@ typedef struct acpi_mcfg_allocation
  *
  ******************************************************************************/
 
-typedef struct acpi_table_mchi
-{
+typedef struct acpi_table_mchi {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   InterfaceType;
 	UINT8                   Protocol;
@@ -1328,8 +1261,7 @@ typedef struct acpi_table_mchi
 
 /* Basic MSDM table is only the common ACPI header */
 
-typedef struct acpi_table_msdm
-{
+typedef struct acpi_table_msdm {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
 } ACPI_TABLE_MSDM;
@@ -1346,16 +1278,14 @@ typedef struct acpi_table_msdm
  *
  ******************************************************************************/
 
-typedef struct acpi_table_mtmr
-{
+typedef struct acpi_table_mtmr {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
 } ACPI_TABLE_MTMR;
 
 /* MTMR entry */
 
-typedef struct acpi_mtmr_entry
-{
+typedef struct acpi_mtmr_entry {
 	ACPI_GENERIC_ADDRESS    PhysicalAddress;
 	UINT32                  Frequency;
 	UINT32                  Irq;
@@ -1374,8 +1304,7 @@ typedef struct acpi_mtmr_entry
 
 /* Basic SLIC table is only the common ACPI header */
 
-typedef struct acpi_table_slic
-{
+typedef struct acpi_table_slic {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
 } ACPI_TABLE_SLIC;
@@ -1391,8 +1320,7 @@ typedef struct acpi_table_slic
  *
  ******************************************************************************/
 
-typedef struct acpi_table_spcr
-{
+typedef struct acpi_table_spcr {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   InterfaceType;      /* 0=full 16550, 1=subset of 16550 */
 	UINT8                   Reserved[3];
@@ -1435,8 +1363,7 @@ typedef struct acpi_table_spcr
  *
  ******************************************************************************/
 
-typedef struct acpi_table_spmi
-{
+typedef struct acpi_table_spmi {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   InterfaceType;
 	UINT8                   Reserved;           /* Must be 1 */
@@ -1457,8 +1384,7 @@ typedef struct acpi_table_spmi
 
 /* Values for InterfaceType above */
 
-enum AcpiSpmiInterfaceTypes
-{
+enum AcpiSpmiInterfaceTypes {
 	ACPI_SPMI_NOT_USED              = 0,
 	ACPI_SPMI_KEYBOARD              = 1,
 	ACPI_SPMI_SMI                   = 2,
@@ -1482,8 +1408,7 @@ enum AcpiSpmiInterfaceTypes
  *
  ******************************************************************************/
 
-typedef struct acpi_table_tcpa_hdr
-{
+typedef struct acpi_table_tcpa_hdr {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT16                  PlatformClass;
 
@@ -1497,15 +1422,13 @@ typedef struct acpi_table_tcpa_hdr
 #define ACPI_TCPA_SERVER_TABLE          1
 
 
-typedef struct acpi_table_tcpa_client
-{
+typedef struct acpi_table_tcpa_client {
 	UINT32                  MinimumLogLength;   /* Minimum length for the event log area */
 	UINT64                  LogAddress;         /* Address of the event log area */
 
 } ACPI_TABLE_TCPA_CLIENT;
 
-typedef struct acpi_table_tcpa_server
-{
+typedef struct acpi_table_tcpa_server {
 	UINT16                  Reserved;
 	UINT64                  MinimumLogLength;   /* Minimum length for the event log area */
 	UINT64                  LogAddress;         /* Address of the event log area */
@@ -1549,8 +1472,7 @@ typedef struct acpi_table_tcpa_server
  *
  ******************************************************************************/
 
-typedef struct acpi_table_tpm2
-{
+typedef struct acpi_table_tpm2 {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT16                  PlatformClass;
 	UINT16                  Reserved;
@@ -1580,8 +1502,7 @@ typedef struct acpi_table_tpm2
  *
  ******************************************************************************/
 
-typedef struct acpi_table_uefi
-{
+typedef struct acpi_table_uefi {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT8                   Identifier[16];     /* UUID identifier */
 	UINT16                  DataOffset;         /* Offset of remaining data in table */
@@ -1600,16 +1521,14 @@ typedef struct acpi_table_uefi
  *
  ******************************************************************************/
 
-typedef struct acpi_table_vrtc
-{
+typedef struct acpi_table_vrtc {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 
 } ACPI_TABLE_VRTC;
 
 /* VRTC entry */
 
-typedef struct acpi_vrtc_entry
-{
+typedef struct acpi_vrtc_entry {
 	ACPI_GENERIC_ADDRESS    PhysicalAddress;
 	UINT32                  Irq;
 
@@ -1625,8 +1544,7 @@ typedef struct acpi_vrtc_entry
  *
  ******************************************************************************/
 
-typedef struct acpi_table_waet
-{
+typedef struct acpi_table_waet {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT32                  Flags;
 
@@ -1648,8 +1566,7 @@ typedef struct acpi_table_waet
  *
  ******************************************************************************/
 
-typedef struct acpi_table_wdat
-{
+typedef struct acpi_table_wdat {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT32                  HeaderLength;       /* Watchdog Header Length */
 	UINT16                  PciSegment;         /* PCI Segment number */
@@ -1674,8 +1591,7 @@ typedef struct acpi_table_wdat
 
 /* WDAT Instruction Entries (actions) */
 
-typedef struct acpi_wdat_entry
-{
+typedef struct acpi_wdat_entry {
 	UINT8                   Action;
 	UINT8                   Instruction;
 	UINT16                  Reserved;
@@ -1687,8 +1603,7 @@ typedef struct acpi_wdat_entry
 
 /* Values for Action field above */
 
-enum AcpiWdatActions
-{
+enum AcpiWdatActions {
 	ACPI_WDAT_RESET                 = 1,
 	ACPI_WDAT_GET_CURRENT_COUNTDOWN = 4,
 	ACPI_WDAT_GET_COUNTDOWN         = 5,
@@ -1708,8 +1623,7 @@ enum AcpiWdatActions
 
 /* Values for Instruction field above */
 
-enum AcpiWdatInstructions
-{
+enum AcpiWdatInstructions {
 	ACPI_WDAT_READ_VALUE            = 0,
 	ACPI_WDAT_READ_COUNTDOWN        = 1,
 	ACPI_WDAT_WRITE_VALUE           = 2,
@@ -1729,8 +1643,7 @@ enum AcpiWdatInstructions
  *
  ******************************************************************************/
 
-typedef struct acpi_table_wddt
-{
+typedef struct acpi_table_wddt {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	UINT16                  SpecVersion;
 	UINT16                  TableVersion;
@@ -1770,8 +1683,7 @@ typedef struct acpi_table_wddt
  *
  ******************************************************************************/
 
-typedef struct acpi_table_wdrt
-{
+typedef struct acpi_table_wdrt {
 	ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
 	ACPI_GENERIC_ADDRESS    ControlRegister;
 	ACPI_GENERIC_ADDRESS    CountRegister;

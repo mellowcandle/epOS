@@ -186,16 +186,14 @@
 #define ASL_RDESC_END_TAG_SIZE                  0x01
 
 
-typedef struct asl_resource_node
-{
+typedef struct asl_resource_node {
 	UINT32                          BufferLength;
 	void                            *Buffer;
 	struct asl_resource_node        *Next;
 
 } ASL_RESOURCE_NODE;
 
-typedef struct asl_resource_info
-{
+typedef struct asl_resource_info {
 	ACPI_PARSE_OBJECT               *DescriptorTypeOp;  /* Resource descriptor parse node */
 	ACPI_PARSE_OBJECT               *MappingOp;         /* Used for mapfile support */
 	UINT32                          CurrentByteOffset;  /* Offset in resource template */
@@ -222,15 +220,13 @@ typedef struct asl_resource_info
 #define AML_RESOURCE_SMALL_HEADER_COMMON \
     UINT8                           DescriptorType;
 
-typedef struct aml_resource_small_header
-{
+typedef struct aml_resource_small_header {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 
 } AML_RESOURCE_SMALL_HEADER;
 
 
-typedef struct aml_resource_irq
-{
+typedef struct aml_resource_irq {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 	UINT16                          IrqMask;
 	UINT8                           Flags;
@@ -238,16 +234,14 @@ typedef struct aml_resource_irq
 } AML_RESOURCE_IRQ;
 
 
-typedef struct aml_resource_irq_noflags
-{
+typedef struct aml_resource_irq_noflags {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 	UINT16                          IrqMask;
 
 } AML_RESOURCE_IRQ_NOFLAGS;
 
 
-typedef struct aml_resource_dma
-{
+typedef struct aml_resource_dma {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 	UINT8                           DmaChannelMask;
 	UINT8                           Flags;
@@ -255,30 +249,26 @@ typedef struct aml_resource_dma
 } AML_RESOURCE_DMA;
 
 
-typedef struct aml_resource_start_dependent
-{
+typedef struct aml_resource_start_dependent {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 	UINT8                           Flags;
 
 } AML_RESOURCE_START_DEPENDENT;
 
 
-typedef struct aml_resource_start_dependent_noprio
-{
+typedef struct aml_resource_start_dependent_noprio {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 
 } AML_RESOURCE_START_DEPENDENT_NOPRIO;
 
 
-typedef struct aml_resource_end_dependent
-{
+typedef struct aml_resource_end_dependent {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 
 } AML_RESOURCE_END_DEPENDENT;
 
 
-typedef struct aml_resource_io
-{
+typedef struct aml_resource_io {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 	UINT8                           Flags;
 	UINT16                          Minimum;
@@ -289,8 +279,7 @@ typedef struct aml_resource_io
 } AML_RESOURCE_IO;
 
 
-typedef struct aml_resource_fixed_io
-{
+typedef struct aml_resource_fixed_io {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 	UINT16                          Address;
 	UINT8                           AddressLength;
@@ -298,23 +287,20 @@ typedef struct aml_resource_fixed_io
 } AML_RESOURCE_FIXED_IO;
 
 
-typedef struct aml_resource_vendor_small
-{
+typedef struct aml_resource_vendor_small {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 
 } AML_RESOURCE_VENDOR_SMALL;
 
 
-typedef struct aml_resource_end_tag
-{
+typedef struct aml_resource_end_tag {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 	UINT8                           Checksum;
 
 } AML_RESOURCE_END_TAG;
 
 
-typedef struct aml_resource_fixed_dma
-{
+typedef struct aml_resource_fixed_dma {
 	AML_RESOURCE_SMALL_HEADER_COMMON
 	UINT16                          RequestLines;
 	UINT16                          Channels;
@@ -330,8 +316,7 @@ typedef struct aml_resource_fixed_dma
     UINT8                           DescriptorType;\
     UINT16                          ResourceLength;
 
-typedef struct aml_resource_large_header
-{
+typedef struct aml_resource_large_header {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 
 } AML_RESOURCE_LARGE_HEADER;
@@ -343,8 +328,7 @@ typedef struct aml_resource_large_header
 #define ACPI_RESOURCE_FLAG_MIF      4
 #define ACPI_RESOURCE_FLAG_MAF      8
 
-typedef struct aml_resource_memory24
-{
+typedef struct aml_resource_memory24 {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	UINT8                           Flags;
 	UINT16                          Minimum;
@@ -355,15 +339,13 @@ typedef struct aml_resource_memory24
 } AML_RESOURCE_MEMORY24;
 
 
-typedef struct aml_resource_vendor_large
-{
+typedef struct aml_resource_vendor_large {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 
 } AML_RESOURCE_VENDOR_LARGE;
 
 
-typedef struct aml_resource_memory32
-{
+typedef struct aml_resource_memory32 {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	UINT8                           Flags;
 	UINT32                          Minimum;
@@ -374,8 +356,7 @@ typedef struct aml_resource_memory32
 } AML_RESOURCE_MEMORY32;
 
 
-typedef struct aml_resource_fixed_memory32
-{
+typedef struct aml_resource_fixed_memory32 {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	UINT8                           Flags;
 	UINT32                          Address;
@@ -390,16 +371,14 @@ typedef struct aml_resource_fixed_memory32
     UINT8                           SpecificFlags;
 
 
-typedef struct aml_resource_address
-{
+typedef struct aml_resource_address {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_ADDRESS_COMMON
 
 } AML_RESOURCE_ADDRESS;
 
 
-typedef struct aml_resource_extended_address64
-{
+typedef struct aml_resource_extended_address64 {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_ADDRESS_COMMON
 	UINT8                           RevisionID;
@@ -416,8 +395,7 @@ typedef struct aml_resource_extended_address64
 #define AML_RESOURCE_EXTENDED_ADDRESS_REVISION          1       /* ACPI 3.0 */
 
 
-typedef struct aml_resource_address64
-{
+typedef struct aml_resource_address64 {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_ADDRESS_COMMON
 	UINT64                          Granularity;
@@ -429,8 +407,7 @@ typedef struct aml_resource_address64
 } AML_RESOURCE_ADDRESS64;
 
 
-typedef struct aml_resource_address32
-{
+typedef struct aml_resource_address32 {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_ADDRESS_COMMON
 	UINT32                          Granularity;
@@ -442,8 +419,7 @@ typedef struct aml_resource_address32
 } AML_RESOURCE_ADDRESS32;
 
 
-typedef struct aml_resource_address16
-{
+typedef struct aml_resource_address16 {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_ADDRESS_COMMON
 	UINT16                          Granularity;
@@ -455,8 +431,7 @@ typedef struct aml_resource_address16
 } AML_RESOURCE_ADDRESS16;
 
 
-typedef struct aml_resource_extended_irq
-{
+typedef struct aml_resource_extended_irq {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	UINT8                           Flags;
 	UINT8                           InterruptCount;
@@ -466,8 +441,7 @@ typedef struct aml_resource_extended_irq
 } AML_RESOURCE_EXTENDED_IRQ;
 
 
-typedef struct aml_resource_generic_register
-{
+typedef struct aml_resource_generic_register {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	UINT8                           AddressSpaceId;
 	UINT8                           BitWidth;
@@ -480,8 +454,7 @@ typedef struct aml_resource_generic_register
 
 /* Common descriptor for GpioInt and GpioIo (ACPI 5.0) */
 
-typedef struct aml_resource_gpio
-{
+typedef struct aml_resource_gpio {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	UINT8                           RevisionId;
 	UINT8                           ConnectionType;
@@ -532,15 +505,13 @@ typedef struct aml_resource_gpio
 #define AML_RESOURCE_MAX_SERIALBUSTYPE          3
 #define AML_RESOURCE_VENDOR_SERIALBUSTYPE       192 /* Vendor defined is 0xC0-0xFF (NOT SUPPORTED) */
 
-typedef struct aml_resource_common_serialbus
-{
+typedef struct aml_resource_common_serialbus {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_SERIAL_COMMON
 
 } AML_RESOURCE_COMMON_SERIALBUS;
 
-typedef struct aml_resource_i2c_serialbus
-{
+typedef struct aml_resource_i2c_serialbus {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_SERIAL_COMMON
 	UINT32                          ConnectionSpeed;
@@ -557,8 +528,7 @@ typedef struct aml_resource_i2c_serialbus
 #define AML_RESOURCE_I2C_TYPE_REVISION          1       /* ACPI 5.0 */
 #define AML_RESOURCE_I2C_MIN_DATA_LEN           6
 
-typedef struct aml_resource_spi_serialbus
-{
+typedef struct aml_resource_spi_serialbus {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_SERIAL_COMMON
 	UINT32                          ConnectionSpeed;
@@ -579,8 +549,7 @@ typedef struct aml_resource_spi_serialbus
 #define AML_RESOURCE_SPI_MIN_DATA_LEN           9
 
 
-typedef struct aml_resource_uart_serialbus
-{
+typedef struct aml_resource_uart_serialbus {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	AML_RESOURCE_SERIAL_COMMON
 	UINT32                          DefaultBaudRate;
@@ -607,8 +576,7 @@ typedef struct aml_resource_uart_serialbus
 
 /* Union of all resource descriptors, so we can allocate the worst case */
 
-typedef union aml_resource
-{
+typedef union aml_resource {
 	/* Descriptor headers */
 
 	UINT8                                   DescriptorType;
@@ -659,45 +627,45 @@ typedef union aml_resource
 
 void
 MpSaveGpioInfo(
-    ACPI_PARSE_OBJECT       *Op,
-    AML_RESOURCE            *Resource,
-    UINT32                  PinCount,
-    UINT16                  *PinList,
-    char                    *DeviceName);
+        ACPI_PARSE_OBJECT       *Op,
+        AML_RESOURCE            *Resource,
+        UINT32                  PinCount,
+        UINT16                  *PinList,
+        char                    *DeviceName);
 
 void
 MpSaveSerialInfo(
-    ACPI_PARSE_OBJECT       *Op,
-    AML_RESOURCE            *Resource,
-    char                    *DeviceName);
+        ACPI_PARSE_OBJECT       *Op,
+        AML_RESOURCE            *Resource,
+        char                    *DeviceName);
 
 char *
 MpGetHidFromParseTree(
-    ACPI_NAMESPACE_NODE     *HidNode);
+        ACPI_NAMESPACE_NODE     *HidNode);
 
 char *
 MpGetHidViaNamestring(
-    char                    *DeviceName);
+        char                    *DeviceName);
 
 char *
 MpGetConnectionInfo(
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  PinIndex,
-    ACPI_NAMESPACE_NODE     **TargetNode,
-    char                    **TargetName);
+        ACPI_PARSE_OBJECT       *Op,
+        UINT32                  PinIndex,
+        ACPI_NAMESPACE_NODE     **TargetNode,
+        char                    **TargetName);
 
 char *
 MpGetParentDeviceHid(
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     **TargetNode,
-    char                    **ParentDeviceName);
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_NAMESPACE_NODE     **TargetNode,
+        char                    **ParentDeviceName);
 
 char *
 MpGetDdnValue(
-    char                    *DeviceName);
+        char                    *DeviceName);
 
 char *
 MpGetHidValue(
-    ACPI_NAMESPACE_NODE     *DeviceNode);
+        ACPI_NAMESPACE_NODE     *DeviceNode);
 
 #endif

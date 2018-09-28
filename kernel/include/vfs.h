@@ -49,8 +49,7 @@ typedef void (*close_type_t)(struct fs_node *);
 typedef struct dirent *(*readdir_type_t)(struct fs_node *, uint32_t);
 typedef struct fs_node *(*finddir_type_t)(struct fs_node *, char *name);
 
-typedef struct fs_node
-{
+typedef struct fs_node {
 	char name[128];     // The filename.
 	uint32_t mask;        // The permissions mask.
 	uint32_t uid;         // The owning user.
@@ -68,8 +67,7 @@ typedef struct fs_node
 	struct fs_node *ptr; // Used by mountpoints and symlinks.
 } fs_node_t;
 
-struct dirent
-{
+struct dirent {
 	char name[128]; // Filename.
 	uint32_t ino;     // Inode number. Required by POSIX.
 };

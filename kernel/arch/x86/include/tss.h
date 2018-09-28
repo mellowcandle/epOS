@@ -30,8 +30,7 @@
 #include <types.h>
 
 
-struct tss_entry
-{
+struct tss_entry {
 	uint32_t prev_task_link; // 16 bits
 	uint32_t esp0;
 	uint32_t ss0; // 16 bits

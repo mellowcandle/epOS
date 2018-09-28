@@ -24,7 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-#define DEBUG
+//#define DEBUG
 
 #include <types.h>
 #include <mem/memory.h>
@@ -57,8 +57,7 @@ void prepare_init_task(void *addr, uint32_t count)
 	FUNC_ENTER();
 	task_t *new = kzalloc(sizeof(task_t));
 
-	if (!new)
-	{
+	if (!new) {
 		pr_error("No memory to create process\r\n");
 		return;
 	}
@@ -72,25 +71,23 @@ void prepare_init_task(void *addr, uint32_t count)
 	// Allocate kernel stack
 	new->kernel_stack_phy_addr = mem_get_page();
 
-	if (!new->kernel_stack_phy_addr)
-	{
+	if (!new->kernel_stack_phy_addr) {
 		pr_error("Can't get free page\r\n");
 		goto fail1;
 	}
 
 	new->kernel_stack_virt_addr = mem_page_map_kernel(new->kernel_stack_phy_addr, 1, READ_WRITE_KERNEL);
 	new->kernel_stack_pointer = new->kernel_stack_virt_addr + PAGE_SIZE - 4;
-	pr_debug("New process stack pointer: 0x%x, stack frame: 0x%x\r\n", (uint32_t) new->kernel_stack_pointer, (uint32_t) new->kernel_stack_virt_addr);
+	pr_debug("New process stack pointer: 0x%x, stack frame: 0x%x\r\n",
+	         (uint32_t) new->kernel_stack_pointer, (uint32_t) new->kernel_stack_virt_addr);
 	new->pdt_virt_addr = mem_calloc_pdt(&new->pdt_phy_addr);
 
-	if (!new->pdt_virt_addr)
-	{
+	if (!new->pdt_virt_addr) {
 		pr_error("Can't create page directory\r\n");
 		goto fail2;
 	}
 
-	if (clone_pdt(current_pdt, new->pdt_virt_addr, new->pdt_phy_addr))
-	{
+	if (clone_pdt(current_pdt, new->pdt_virt_addr, new->pdt_phy_addr)) {
 		pr_error("Failed cloning process\r\n");
 		goto fail3;
 	}
@@ -98,8 +95,7 @@ void prepare_init_task(void *addr, uint32_t count)
 
 	/* Parse the ELF and copy the sections to memory */
 
-	if (load_elf(new, addr))
-	{
+	if (load_elf(new, addr)) {
 		pr_fatal("Can't load ELF to memory\r\n");
 		panic();
 	}
@@ -108,8 +104,7 @@ void prepare_init_task(void *addr, uint32_t count)
 	new->stack_virt_addr = (void *) KERNEL_VIRTUAL_BASE - PAGE_SIZE;
 	new->stack_phy_addr	 = mem_get_page();
 
-	if (!new->stack_phy_addr)
-	{
+	if (!new->stack_phy_addr) {
 		pr_error("Can't get free page\r\n");
 		goto fail4;
 	}
@@ -118,8 +113,9 @@ void prepare_init_task(void *addr, uint32_t count)
 	mem_page_map_pdt(new->pdt_virt_addr, new->stack_phy_addr, new->stack_virt_addr, READ_WRITE_USER);
 
 	/* Temporarily map the user stack in order to push argc, argv and env */
-	uint32_t *stack = mem_page_map_kernel_single(new->stack_phy_addr, READ_WRITE_KERNEL | PTE_TEMPORARY);
-	memset(stack,0xff,PAGE_SIZE);
+	uint32_t *stack = mem_page_map_kernel_single(new->stack_phy_addr,
+	                  READ_WRITE_KERNEL | PTE_TEMPORARY);
+	memset(stack, 0xff, PAGE_SIZE);
 	stack[1023] = 1; //argc
 	stack[1022] = 0; //argv
 	stack[1021] = 0; //env
@@ -152,8 +148,7 @@ task_t *clone(task_t *parent)
 {
 	task_t *new = kzalloc(sizeof(task_t));
 
-	if (!new)
-	{
+	if (!new) {
 		pr_error("No memory to create process\r\n");
 		return NULL;
 	}
@@ -172,20 +167,16 @@ task_t *clone(task_t *parent)
 	new->kernel_stack_pointer = new->kernel_stack_virt_addr + PAGE_SIZE - 4;
 
 
-	if (!new->pdt_virt_addr)
-	{
+	if (!new->pdt_virt_addr) {
 		pr_error("Can't create page directory\r\n");
 		goto fail;
 	}
 
 	if (clone_pdt(current_pdt, new->pdt_virt_addr, new->pdt_phy_addr))
-	{
 		pr_error("Failed cloning process\r\n");
-	}
 
 	memblock_t *tmp, *block;
-	list_for_each_entry(block, &parent->mapped_memory_list, list)
-	{
+	list_for_each_entry(block, &parent->mapped_memory_list, list) {
 		tmp = kmalloc(sizeof(memblock_t));
 		assert(tmp);
 		memcpy(tmp, block, sizeof(memblock_t));
@@ -226,19 +217,15 @@ void switch_to_task(task_t *task)
 #endif
 	tss_set_kernel_stack(0x10, (uint32_t)task->kernel_stack_pointer);
 
-	if (task->type == TASK_USER)
-	{
+	if (task->type == TASK_USER) {
 		mem_switch_page_directory(task->pdt_phy_addr);
 		run_user_task(&task->regs);
-	}
-	else
-	{
+	} else
 		run_kernel_task(&task->regs);
-	}
 
 }
 
-int process_cleanup(task_t * task)
+int process_cleanup(task_t *task)
 {
 	FUNC_ENTER();
 	memblock_t *block, *tmp;
@@ -250,10 +237,9 @@ int process_cleanup(task_t * task)
 	mem_free_page(task->stack_phy_addr);
 
 	/* Free all process memory */
-	list_for_each_entry_safe(block, tmp, &task->mapped_memory_list, list)
-	{
+	list_for_each_entry_safe(block, tmp, &task->mapped_memory_list, list) {
 		pr_debug("Freeing block: V0x%x P0x%x, size: %u\r\n",
-				block->v_addr, block->p_addr, block->count);
+		         block->v_addr, block->p_addr, block->count);
 		mem_free_pages(block->p_addr, block->count);
 		kfree(block);
 		/* no need to remove the nodes from the list, we shred it anyway.... */

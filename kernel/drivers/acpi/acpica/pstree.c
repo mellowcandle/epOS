@@ -126,7 +126,7 @@ ACPI_MODULE_NAME("pstree")
 #ifdef ACPI_OBSOLETE_FUNCTIONS
 ACPI_PARSE_OBJECT *
 AcpiPsGetChild(
-    ACPI_PARSE_OBJECT       *op);
+        ACPI_PARSE_OBJECT       *op);
 #endif
 
 
@@ -145,8 +145,8 @@ AcpiPsGetChild(
 
 ACPI_PARSE_OBJECT *
 AcpiPsGetArg(
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Argn)
+        ACPI_PARSE_OBJECT       *Op,
+        UINT32                  Argn)
 {
 	ACPI_PARSE_OBJECT       *Arg = NULL;
 	const ACPI_OPCODE_INFO  *OpInfo;
@@ -164,8 +164,7 @@ AcpiPsGetArg(
 
 	OpInfo = AcpiPsGetOpcodeInfo(Op->Common.AmlOpcode);
 
-	if (OpInfo->Class == AML_CLASS_UNKNOWN)
-	{
+	if (OpInfo->Class == AML_CLASS_UNKNOWN) {
 		/* Invalid opcode or ASCII character */
 
 		return (NULL);
@@ -173,8 +172,7 @@ AcpiPsGetArg(
 
 	/* Check if this opcode requires argument sub-objects */
 
-	if (!(OpInfo->Flags & AML_HAS_ARGS))
-	{
+	if (!(OpInfo->Flags & AML_HAS_ARGS)) {
 		/* Has no linked argument objects */
 
 		return (NULL);
@@ -184,8 +182,7 @@ AcpiPsGetArg(
 
 	Arg = Op->Common.Value.Arg;
 
-	while (Arg && Argn)
-	{
+	while (Arg && Argn) {
 		Argn--;
 		Arg = Arg->Common.Next;
 	}
@@ -209,8 +206,8 @@ AcpiPsGetArg(
 
 void
 AcpiPsAppendArg(
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_PARSE_OBJECT       *Arg)
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_PARSE_OBJECT       *Arg)
 {
 	ACPI_PARSE_OBJECT       *PrevArg;
 	const ACPI_OPCODE_INFO  *OpInfo;
@@ -220,16 +217,13 @@ AcpiPsAppendArg(
 
 
 	if (!Op)
-	{
 		return;
-	}
 
 	/* Get the info structure for this opcode */
 
 	OpInfo = AcpiPsGetOpcodeInfo(Op->Common.AmlOpcode);
 
-	if (OpInfo->Class == AML_CLASS_UNKNOWN)
-	{
+	if (OpInfo->Class == AML_CLASS_UNKNOWN) {
 		/* Invalid opcode */
 
 		ACPI_ERROR((AE_INFO, "Invalid AML Opcode: 0x%2.2X",
@@ -239,8 +233,7 @@ AcpiPsAppendArg(
 
 	/* Check if this opcode requires argument sub-objects */
 
-	if (!(OpInfo->Flags & AML_HAS_ARGS))
-	{
+	if (!(OpInfo->Flags & AML_HAS_ARGS)) {
 		/* Has no linked argument objects */
 
 		return;
@@ -248,21 +241,16 @@ AcpiPsAppendArg(
 
 	/* Append the argument to the linked argument list */
 
-	if (Op->Common.Value.Arg)
-	{
+	if (Op->Common.Value.Arg) {
 		/* Append to existing argument list */
 
 		PrevArg = Op->Common.Value.Arg;
 
 		while (PrevArg->Common.Next)
-		{
 			PrevArg = PrevArg->Common.Next;
-		}
 
 		PrevArg->Common.Next = Arg;
-	}
-	else
-	{
+	} else {
 		/* No argument list, this will be the first argument */
 
 		Op->Common.Value.Arg = Arg;
@@ -270,8 +258,7 @@ AcpiPsAppendArg(
 
 	/* Set the parent in this arg and any args linked after it */
 
-	while (Arg)
-	{
+	while (Arg) {
 		Arg->Common.Parent = Op;
 		Arg = Arg->Common.Next;
 
@@ -296,8 +283,8 @@ AcpiPsAppendArg(
 
 ACPI_PARSE_OBJECT *
 AcpiPsGetDepthNext(
-    ACPI_PARSE_OBJECT       *Origin,
-    ACPI_PARSE_OBJECT       *Op)
+        ACPI_PARSE_OBJECT       *Origin,
+        ACPI_PARSE_OBJECT       *Op)
 {
 	ACPI_PARSE_OBJECT       *Next = NULL;
 	ACPI_PARSE_OBJECT       *Parent;
@@ -308,50 +295,39 @@ AcpiPsGetDepthNext(
 
 
 	if (!Op)
-	{
 		return (NULL);
-	}
 
 	/* Look for an argument or child */
 
 	Next = AcpiPsGetArg(Op, 0);
 
 	if (Next)
-	{
 		return (Next);
-	}
 
 	/* Look for a sibling */
 
 	Next = Op->Common.Next;
 
 	if (Next)
-	{
 		return (Next);
-	}
 
 	/* Look for a sibling of parent */
 
 	Parent = Op->Common.Parent;
 
-	while (Parent)
-	{
+	while (Parent) {
 		Arg = AcpiPsGetArg(Parent, 0);
 
 		while (Arg && (Arg != Origin) && (Arg != Op))
-		{
 			Arg = Arg->Common.Next;
-		}
 
-		if (Arg == Origin)
-		{
+		if (Arg == Origin) {
 			/* Reached parent of origin, end search */
 
 			return (NULL);
 		}
 
-		if (Parent->Common.Next)
-		{
+		if (Parent->Common.Next) {
 			/* Found sibling of parent */
 
 			return (Parent->Common.Next);
@@ -380,7 +356,7 @@ AcpiPsGetDepthNext(
 
 ACPI_PARSE_OBJECT *
 AcpiPsGetChild(
-    ACPI_PARSE_OBJECT       *Op)
+        ACPI_PARSE_OBJECT       *Op)
 {
 	ACPI_PARSE_OBJECT       *Child = NULL;
 
@@ -388,8 +364,7 @@ AcpiPsGetChild(
 	ACPI_FUNCTION_ENTRY();
 
 
-	switch (Op->Common.AmlOpcode)
-	{
+	switch (Op->Common.AmlOpcode) {
 	case AML_SCOPE_OP:
 	case AML_ELSE_OP:
 	case AML_DEVICE_OP:

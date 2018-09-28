@@ -138,10 +138,10 @@ ACPI_MODULE_NAME("utcache")
 
 ACPI_STATUS
 AcpiOsCreateCache(
-    char                    *CacheName,
-    UINT16                  ObjectSize,
-    UINT16                  MaxDepth,
-    ACPI_MEMORY_LIST        **ReturnCache)
+        char                    *CacheName,
+        UINT16                  ObjectSize,
+        UINT16                  MaxDepth,
+        ACPI_MEMORY_LIST        **ReturnCache)
 {
 	ACPI_MEMORY_LIST        *Cache;
 
@@ -150,18 +150,14 @@ AcpiOsCreateCache(
 
 
 	if (!CacheName || !ReturnCache || (ObjectSize < 16))
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	/* Create the cache object */
 
 	Cache = AcpiOsAllocate(sizeof(ACPI_MEMORY_LIST));
 
 	if (!Cache)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	/* Populate the cache object and return it */
 
@@ -189,7 +185,7 @@ AcpiOsCreateCache(
 
 ACPI_STATUS
 AcpiOsPurgeCache(
-    ACPI_MEMORY_LIST        *Cache)
+        ACPI_MEMORY_LIST        *Cache)
 {
 	void                    *Next;
 	ACPI_STATUS             Status;
@@ -199,21 +195,16 @@ AcpiOsPurgeCache(
 
 
 	if (!Cache)
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_CACHES);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/* Walk the list of objects in this cache */
 
-	while (Cache->ListHead)
-	{
+	while (Cache->ListHead) {
 		/* Delete and unlink one cached state object */
 
 		Next = ACPI_GET_DESCRIPTOR_PTR(Cache->ListHead);
@@ -243,7 +234,7 @@ AcpiOsPurgeCache(
 
 ACPI_STATUS
 AcpiOsDeleteCache(
-    ACPI_MEMORY_LIST        *Cache)
+        ACPI_MEMORY_LIST        *Cache)
 {
 	ACPI_STATUS             Status;
 
@@ -256,9 +247,7 @@ AcpiOsDeleteCache(
 	Status = AcpiOsPurgeCache(Cache);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/* Now we can delete the cache object */
 
@@ -283,8 +272,8 @@ AcpiOsDeleteCache(
 
 ACPI_STATUS
 AcpiOsReleaseObject(
-    ACPI_MEMORY_LIST        *Cache,
-    void                    *Object)
+        ACPI_MEMORY_LIST        *Cache,
+        void                    *Object)
 {
 	ACPI_STATUS             Status;
 
@@ -293,28 +282,22 @@ AcpiOsReleaseObject(
 
 
 	if (!Cache || !Object)
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	/* If cache is full, just free this object */
 
-	if (Cache->CurrentDepth >= Cache->MaxDepth)
-	{
+	if (Cache->CurrentDepth >= Cache->MaxDepth) {
 		ACPI_FREE(Object);
 		ACPI_MEM_TRACKING(Cache->TotalFreed++);
 	}
 
 	/* Otherwise put this object back into the cache */
 
-	else
-	{
+	else {
 		Status = AcpiUtAcquireMutex(ACPI_MTX_CACHES);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
 		/* Mark the object as cached */
 
@@ -349,7 +332,7 @@ AcpiOsReleaseObject(
 
 void *
 AcpiOsAcquireObject(
-    ACPI_MEMORY_LIST        *Cache)
+        ACPI_MEMORY_LIST        *Cache)
 {
 	ACPI_STATUS             Status;
 	void                    *Object;
@@ -359,23 +342,18 @@ AcpiOsAcquireObject(
 
 
 	if (!Cache)
-	{
 		return_PTR(NULL);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_CACHES);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_PTR(NULL);
-	}
 
 	ACPI_MEM_TRACKING(Cache->Requests++);
 
 	/* Check the cache first */
 
-	if (Cache->ListHead)
-	{
+	if (Cache->ListHead) {
 		/* There is an object available, use it */
 
 		Object = Cache->ListHead;
@@ -390,16 +368,12 @@ AcpiOsAcquireObject(
 		Status = AcpiUtReleaseMutex(ACPI_MTX_CACHES);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_PTR(NULL);
-		}
 
 		/* Clear (zero) the previously used Object */
 
 		memset(Object, 0, Cache->ObjectSize);
-	}
-	else
-	{
+	} else {
 		/* The cache is empty, create a new object */
 
 		ACPI_MEM_TRACKING(Cache->TotalAllocated++);
@@ -407,9 +381,7 @@ AcpiOsAcquireObject(
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
 		if ((Cache->TotalAllocated - Cache->TotalFreed) > Cache->MaxOccupied)
-		{
 			Cache->MaxOccupied = Cache->TotalAllocated - Cache->TotalFreed;
-		}
 
 #endif
 
@@ -418,16 +390,12 @@ AcpiOsAcquireObject(
 		Status = AcpiUtReleaseMutex(ACPI_MTX_CACHES);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_PTR(NULL);
-		}
 
 		Object = ACPI_ALLOCATE_ZEROED(Cache->ObjectSize);
 
 		if (!Object)
-		{
 			return_PTR(NULL);
-		}
 	}
 
 	return_PTR(Object);

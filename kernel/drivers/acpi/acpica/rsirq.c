@@ -127,8 +127,7 @@ ACPI_MODULE_NAME("rsirq")
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsGetIrq[9] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsGetIrq[9] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_IRQ,
 		ACPI_RS_SIZE(ACPI_RESOURCE_IRQ),
@@ -197,8 +196,7 @@ ACPI_RSCONVERT_INFO     AcpiRsGetIrq[9] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsSetIrq[14] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsSetIrq[14] = {
 	/* Start with a default descriptor of length 3 */
 
 	{
@@ -305,8 +303,7 @@ ACPI_RSCONVERT_INFO     AcpiRsSetIrq[14] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[10] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[10] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_EXTENDED_IRQ,
 		ACPI_RS_SIZE(ACPI_RESOURCE_EXTENDED_IRQ),
@@ -385,8 +382,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertExtIrq[10] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertDma[6] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertDma[6] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_DMA,
 		ACPI_RS_SIZE(ACPI_RESOURCE_DMA),
@@ -435,8 +431,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertDma[6] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertFixedDma[4] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertFixedDma[4] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_FIXED_DMA,
 		ACPI_RS_SIZE(ACPI_RESOURCE_FIXED_DMA),

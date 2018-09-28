@@ -135,7 +135,7 @@ ACPI_MODULE_NAME("psscope")
 
 ACPI_PARSE_OBJECT *
 AcpiPsGetParentScope(
-    ACPI_PARSE_STATE        *ParserState)
+        ACPI_PARSE_STATE        *ParserState)
 {
 
 	return (ParserState->Scope->ParseScope.Op);
@@ -158,7 +158,7 @@ AcpiPsGetParentScope(
 
 BOOLEAN
 AcpiPsHasCompletedScope(
-    ACPI_PARSE_STATE        *ParserState)
+        ACPI_PARSE_STATE        *ParserState)
 {
 
 	return ((BOOLEAN)
@@ -182,8 +182,8 @@ AcpiPsHasCompletedScope(
 
 ACPI_STATUS
 AcpiPsInitScope(
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *RootOp)
+        ACPI_PARSE_STATE        *ParserState,
+        ACPI_PARSE_OBJECT       *RootOp)
 {
 	ACPI_GENERIC_STATE      *Scope;
 
@@ -194,9 +194,7 @@ AcpiPsInitScope(
 	Scope = AcpiUtCreateGenericState();
 
 	if (!Scope)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	Scope->Common.DescriptorType = ACPI_DESC_TYPE_STATE_RPSCOPE;
 	Scope->ParseScope.Op = RootOp;
@@ -228,10 +226,10 @@ AcpiPsInitScope(
 
 ACPI_STATUS
 AcpiPsPushScope(
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  RemainingArgs,
-    UINT32                  ArgCount)
+        ACPI_PARSE_STATE        *ParserState,
+        ACPI_PARSE_OBJECT       *Op,
+        UINT32                  RemainingArgs,
+        UINT32                  ArgCount)
 {
 	ACPI_GENERIC_STATE      *Scope;
 
@@ -242,9 +240,7 @@ AcpiPsPushScope(
 	Scope = AcpiUtCreateGenericState();
 
 	if (!Scope)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	Scope->Common.DescriptorType = ACPI_DESC_TYPE_STATE_PSCOPE;
 	Scope->ParseScope.Op = Op;
@@ -256,14 +252,11 @@ AcpiPsPushScope(
 
 	AcpiUtPushGenericState(&ParserState->Scope, Scope);
 
-	if (ArgCount == ACPI_VAR_ARGS)
-	{
+	if (ArgCount == ACPI_VAR_ARGS) {
 		/* Multiple arguments */
 
 		Scope->ParseScope.ArgEnd = ParserState->PkgEnd;
-	}
-	else
-	{
+	} else {
 		/* Single argument */
 
 		Scope->ParseScope.ArgEnd = ACPI_TO_POINTER(ACPI_MAX_PTR);
@@ -291,10 +284,10 @@ AcpiPsPushScope(
 
 void
 AcpiPsPopScope(
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       **Op,
-    UINT32                  *ArgList,
-    UINT32                  *ArgCount)
+        ACPI_PARSE_STATE        *ParserState,
+        ACPI_PARSE_OBJECT       **Op,
+        UINT32                  *ArgList,
+        UINT32                  *ArgCount)
 {
 	ACPI_GENERIC_STATE      *Scope = ParserState->Scope;
 
@@ -304,8 +297,7 @@ AcpiPsPopScope(
 
 	/* Only pop the scope if there is in fact a next scope */
 
-	if (Scope->Common.Next)
-	{
+	if (Scope->Common.Next) {
 		Scope = AcpiUtPopGenericState(&ParserState->Scope);
 
 		/* Return to parsing previous op */
@@ -318,9 +310,7 @@ AcpiPsPopScope(
 		/* All done with this scope state structure */
 
 		AcpiUtDeleteGenericState(Scope);
-	}
-	else
-	{
+	} else {
 		/* Empty parse stack, prepare to fetch next opcode */
 
 		*Op = NULL;
@@ -349,7 +339,7 @@ AcpiPsPopScope(
 
 void
 AcpiPsCleanupScope(
-    ACPI_PARSE_STATE        *ParserState)
+        ACPI_PARSE_STATE        *ParserState)
 {
 	ACPI_GENERIC_STATE      *Scope;
 
@@ -358,14 +348,11 @@ AcpiPsCleanupScope(
 
 
 	if (!ParserState)
-	{
 		return_VOID;
-	}
 
 	/* Delete anything on the scope stack */
 
-	while (ParserState->Scope)
-	{
+	while (ParserState->Scope) {
 		Scope = AcpiUtPopGenericState(&ParserState->Scope);
 		AcpiUtDeleteGenericState(Scope);
 	}

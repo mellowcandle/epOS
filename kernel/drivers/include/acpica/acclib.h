@@ -167,124 +167,124 @@ extern const UINT8 AcpiGbl_Ctypes[];
 
 char *
 strcat(
-    char                    *DstString,
-    const char              *SrcString);
+        char                    *DstString,
+        const char              *SrcString);
 
 char *
 strchr(
-    const char              *String,
-    int                     ch);
+        const char              *String,
+        int                     ch);
 
 char *
 strcpy(
-    char                    *DstString,
-    const char              *SrcString);
+        char                    *DstString,
+        const char              *SrcString);
 
 int
 strcmp(
-    const char              *String1,
-    const char              *String2);
+        const char              *String1,
+        const char              *String2);
 
 ACPI_SIZE
 strlen(
-    const char              *String);
+        const char              *String);
 
 char *
 strncat(
-    char                    *DstString,
-    const char              *SrcString,
-    ACPI_SIZE               Count);
+        char                    *DstString,
+        const char              *SrcString,
+        ACPI_SIZE               Count);
 
 int
 strncmp(
-    const char              *String1,
-    const char              *String2,
-    ACPI_SIZE               Count);
+        const char              *String1,
+        const char              *String2,
+        ACPI_SIZE               Count);
 
 char *
 strncpy(
-    char                    *DstString,
-    const char              *SrcString,
-    ACPI_SIZE               Count);
+        char                    *DstString,
+        const char              *SrcString,
+        ACPI_SIZE               Count);
 
 char *
 strstr(
-    char                    *String1,
-    char                    *String2);
+        char                    *String1,
+        char                    *String2);
 
 
 /* Conversion */
 
 UINT32
 strtoul(
-    const char              *String,
-    char                    **Terminator,
-    UINT32                  Base);
+        const char              *String,
+        char                    **Terminator,
+        UINT32                  Base);
 
 
 /* Memory */
 
 int
 memcmp(
-    void                    *Buffer1,
-    void                    *Buffer2,
-    ACPI_SIZE               Count);
+        void                    *Buffer1,
+        void                    *Buffer2,
+        ACPI_SIZE               Count);
 
 void *
 memcpy(
-    void                    *Dest,
-    const void              *Src,
-    ACPI_SIZE               Count);
+        void                    *Dest,
+        const void              *Src,
+        ACPI_SIZE               Count);
 
 void *
 memset(
-    void                    *Dest,
-    int                     Value,
-    ACPI_SIZE               Count);
+        void                    *Dest,
+        int                     Value,
+        ACPI_SIZE               Count);
 
 
 /* upper/lower case */
 
 int
 tolower(
-    int                     c);
+        int                     c);
 
 int
 toupper(
-    int                     c);
+        int                     c);
 
 /*
  * utprint - printf/vprintf output functions
  */
 const char *
 AcpiUtScanNumber(
-    const char              *String,
-    UINT64                  *NumberPtr);
+        const char              *String,
+        UINT64                  *NumberPtr);
 
 const char *
 AcpiUtPrintNumber(
-    char                    *String,
-    UINT64                  Number);
+        char                    *String,
+        UINT64                  Number);
 
 int
 vsnprintf(
-    char                    *String,
-    ACPI_SIZE               Size,
-    const char              *Format,
-    va_list                 Args);
+        char                    *String,
+        ACPI_SIZE               Size,
+        const char              *Format,
+        va_list                 Args);
 
 int
 snprintf(
-    char                    *String,
-    ACPI_SIZE               Size,
-    const char              *Format,
-    ...);
+        char                    *String,
+        ACPI_SIZE               Size,
+        const char              *Format,
+        ...);
 
 int
 sprintf(
-    char                    *String,
-    const char              *Format,
-    ...);
+        char                    *String,
+        const char              *Format,
+        ...);
 
 #ifdef ACPI_APPLICATION
 #define SEEK_SET            0
@@ -300,58 +300,58 @@ extern int errno;
 
 int
 vprintf(
-    const char              *Format,
-    va_list                 Args);
+        const char              *Format,
+        va_list                 Args);
 
 int
 printf(
-    const char              *Format,
-    ...);
+        const char              *Format,
+        ...);
 
 int
 vfprintf(
-    FILE                    *File,
-    const char              *Format,
-    va_list                 Args);
+        FILE                    *File,
+        const char              *Format,
+        va_list                 Args);
 
 int
 fprintf(
-    FILE                    *File,
-    const char              *Format,
-    ...);
+        FILE                    *File,
+        const char              *Format,
+        ...);
 
 FILE *
 fopen(
-    const char              *Path,
-    const char              *Modes);
+        const char              *Path,
+        const char              *Modes);
 
 void
 fclose(
-    FILE                    *File);
+        FILE                    *File);
 
 int
 fread(
-    void                    *Buffer,
-    ACPI_SIZE               Size,
-    ACPI_SIZE               Count,
-    FILE                    *File);
+        void                    *Buffer,
+        ACPI_SIZE               Size,
+        ACPI_SIZE               Count,
+        FILE                    *File);
 
 int
 fwrite(
-    void                    *Buffer,
-    ACPI_SIZE               Size,
-    ACPI_SIZE               Count,
-    FILE                    *File);
+        void                    *Buffer,
+        ACPI_SIZE               Size,
+        ACPI_SIZE               Count,
+        FILE                    *File);
 
 int
 fseek(
-    FILE                    *File,
-    long                    Offset,
-    int                     From);
+        FILE                    *File,
+        long                    Offset,
+        int                     From);
 
 long
 ftell(
-    FILE                    *File);
+        FILE                    *File);
 #endif
 
 #endif /* _ACCLIB_H */

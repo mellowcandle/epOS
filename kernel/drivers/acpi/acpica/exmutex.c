@@ -125,8 +125,8 @@ ACPI_MODULE_NAME("exmutex")
 
 static void
 AcpiExLinkMutex(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_THREAD_STATE       *Thread);
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_THREAD_STATE       *Thread);
 
 
 /*******************************************************************************
@@ -143,25 +143,20 @@ AcpiExLinkMutex(
 
 void
 AcpiExUnlinkMutex(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_THREAD_STATE       *Thread = ObjDesc->Mutex.OwnerThread;
 
 
 	if (!Thread)
-	{
 		return;
-	}
 
 	/* Doubly linked list */
 
 	if (ObjDesc->Mutex.Next)
-	{
 		(ObjDesc->Mutex.Next)->Mutex.Prev = ObjDesc->Mutex.Prev;
-	}
 
-	if (ObjDesc->Mutex.Prev)
-	{
+	if (ObjDesc->Mutex.Prev) {
 		(ObjDesc->Mutex.Prev)->Mutex.Next = ObjDesc->Mutex.Next;
 
 		/*
@@ -171,12 +166,9 @@ AcpiExUnlinkMutex(
 		 * at the same level, but are not released in opposite order.
 		 */
 		(ObjDesc->Mutex.Prev)->Mutex.OriginalSyncLevel =
-		    ObjDesc->Mutex.OriginalSyncLevel;
-	}
-	else
-	{
+		        ObjDesc->Mutex.OriginalSyncLevel;
+	} else
 		Thread->AcquiredMutexList = ObjDesc->Mutex.Next;
-	}
 }
 
 
@@ -195,8 +187,8 @@ AcpiExUnlinkMutex(
 
 static void
 AcpiExLinkMutex(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_THREAD_STATE       *Thread)
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_THREAD_STATE       *Thread)
 {
 	ACPI_OPERAND_OBJECT     *ListHead;
 
@@ -211,9 +203,7 @@ AcpiExLinkMutex(
 	/* Update old first object to point back to this object */
 
 	if (ListHead)
-	{
 		ListHead->Mutex.Prev = ObjDesc;
-	}
 
 	/* Update list head */
 
@@ -246,9 +236,9 @@ AcpiExLinkMutex(
 
 ACPI_STATUS
 AcpiExAcquireMutexObject(
-    UINT16                  Timeout,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_THREAD_ID          ThreadId)
+        UINT16                  Timeout,
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_THREAD_ID          ThreadId)
 {
 	ACPI_STATUS             Status;
 
@@ -257,14 +247,11 @@ AcpiExAcquireMutexObject(
 
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Support for multiple acquires by the owning thread */
 
-	if (ObjDesc->Mutex.ThreadId == ThreadId)
-	{
+	if (ObjDesc->Mutex.ThreadId == ThreadId) {
 		/*
 		 * The mutex is already owned by this thread, just increment the
 		 * acquisition depth
@@ -276,16 +263,11 @@ AcpiExAcquireMutexObject(
 	/* Acquire the mutex, wait if necessary. Special case for Global Lock */
 
 	if (ObjDesc == AcpiGbl_GlobalLockMutex)
-	{
 		Status = AcpiEvAcquireGlobalLock(Timeout);
-	}
 	else
-	{
 		Status = AcpiExSystemWaitMutex(ObjDesc->Mutex.OsMutex, Timeout);
-	}
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		/* Includes failure from a timeout on TimeDesc */
 
 		return_ACPI_STATUS(Status);
@@ -318,9 +300,9 @@ AcpiExAcquireMutexObject(
 
 ACPI_STATUS
 AcpiExAcquireMutex(
-    ACPI_OPERAND_OBJECT     *TimeDesc,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *TimeDesc,
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status;
 
@@ -329,14 +311,11 @@ AcpiExAcquireMutex(
 
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Must have a valid thread state struct */
 
-	if (!WalkState->Thread)
-	{
+	if (!WalkState->Thread) {
 		ACPI_ERROR((AE_INFO,
 		            "Cannot acquire Mutex [%4.4s], null thread info",
 		            AcpiUtGetNodeName(ObjDesc->Mutex.Node)));
@@ -347,8 +326,7 @@ AcpiExAcquireMutex(
 	 * Current sync level must be less than or equal to the sync level
 	 * of the mutex. This mechanism provides some deadlock prevention.
 	 */
-	if (WalkState->Thread->CurrentSyncLevel > ObjDesc->Mutex.SyncLevel)
-	{
+	if (WalkState->Thread->CurrentSyncLevel > ObjDesc->Mutex.SyncLevel) {
 		ACPI_ERROR((AE_INFO,
 		            "Cannot acquire Mutex [%4.4s], "
 		            "current SyncLevel is too large (%u)",
@@ -366,15 +344,14 @@ AcpiExAcquireMutex(
 	Status = AcpiExAcquireMutexObject((UINT16) TimeDesc->Integer.Value,
 	                                  ObjDesc, WalkState->Thread->ThreadId);
 
-	if (ACPI_SUCCESS(Status) && ObjDesc->Mutex.AcquisitionDepth == 1)
-	{
+	if (ACPI_SUCCESS(Status) && ObjDesc->Mutex.AcquisitionDepth == 1) {
 		/* Save Thread object, original/current sync levels */
 
 		ObjDesc->Mutex.OwnerThread = WalkState->Thread;
 		ObjDesc->Mutex.OriginalSyncLevel =
-		    WalkState->Thread->CurrentSyncLevel;
+		        WalkState->Thread->CurrentSyncLevel;
 		WalkState->Thread->CurrentSyncLevel =
-		    ObjDesc->Mutex.SyncLevel;
+		        ObjDesc->Mutex.SyncLevel;
 
 		/* Link the mutex to the current thread for force-unlock at method exit */
 
@@ -414,7 +391,7 @@ AcpiExAcquireMutex(
 
 ACPI_STATUS
 AcpiExReleaseMutexObject(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -423,23 +400,19 @@ AcpiExReleaseMutexObject(
 
 
 	if (ObjDesc->Mutex.AcquisitionDepth == 0)
-	{
 		return_ACPI_STATUS(AE_NOT_ACQUIRED);
-	}
 
 	/* Match multiple Acquires with multiple Releases */
 
 	ObjDesc->Mutex.AcquisitionDepth--;
 
-	if (ObjDesc->Mutex.AcquisitionDepth != 0)
-	{
+	if (ObjDesc->Mutex.AcquisitionDepth != 0) {
 		/* Just decrement the depth and return */
 
 		return_ACPI_STATUS(AE_OK);
 	}
 
-	if (ObjDesc->Mutex.OwnerThread)
-	{
+	if (ObjDesc->Mutex.OwnerThread) {
 		/* Unlink the mutex from the owner's list */
 
 		AcpiExUnlinkMutex(ObjDesc);
@@ -449,13 +422,9 @@ AcpiExReleaseMutexObject(
 	/* Release the mutex, special case for Global Lock */
 
 	if (ObjDesc == AcpiGbl_GlobalLockMutex)
-	{
 		Status = AcpiEvReleaseGlobalLock();
-	}
 	else
-	{
 		AcpiOsReleaseMutex(ObjDesc->Mutex.OsMutex);
-	}
 
 	/* Clear mutex info */
 
@@ -479,8 +448,8 @@ AcpiExReleaseMutexObject(
 
 ACPI_STATUS
 AcpiExReleaseMutex(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	UINT8                   PreviousSyncLevel;
 	ACPI_THREAD_STATE       *OwnerThread;
@@ -491,16 +460,13 @@ AcpiExReleaseMutex(
 
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	OwnerThread = ObjDesc->Mutex.OwnerThread;
 
 	/* The mutex must have been previously acquired in order to release it */
 
-	if (!OwnerThread)
-	{
+	if (!OwnerThread) {
 		ACPI_ERROR((AE_INFO,
 		            "Cannot release Mutex [%4.4s], not acquired",
 		            AcpiUtGetNodeName(ObjDesc->Mutex.Node)));
@@ -509,8 +475,7 @@ AcpiExReleaseMutex(
 
 	/* Must have a valid thread ID */
 
-	if (!WalkState->Thread)
-	{
+	if (!WalkState->Thread) {
 		ACPI_ERROR((AE_INFO,
 		            "Cannot release Mutex [%4.4s], null thread info",
 		            AcpiUtGetNodeName(ObjDesc->Mutex.Node)));
@@ -522,8 +487,7 @@ AcpiExReleaseMutex(
 	 * Special case for Global Lock, any thread can release
 	 */
 	if ((OwnerThread->ThreadId != WalkState->Thread->ThreadId) &&
-	        (ObjDesc != AcpiGbl_GlobalLockMutex))
-	{
+	    (ObjDesc != AcpiGbl_GlobalLockMutex)) {
 		ACPI_ERROR((AE_INFO,
 		            "Thread %u cannot release Mutex [%4.4s] acquired by thread %u",
 		            (UINT32) WalkState->Thread->ThreadId,
@@ -539,8 +503,7 @@ AcpiExReleaseMutex(
 	 * different level can only mean that the mutex ordering rule is being
 	 * violated. This behavior is clarified in ACPI 4.0 specification.
 	 */
-	if (ObjDesc->Mutex.SyncLevel != OwnerThread->CurrentSyncLevel)
-	{
+	if (ObjDesc->Mutex.SyncLevel != OwnerThread->CurrentSyncLevel) {
 		ACPI_ERROR((AE_INFO,
 		            "Cannot release Mutex [%4.4s], SyncLevel mismatch: "
 		            "mutex %u current %u",
@@ -555,7 +518,7 @@ AcpiExReleaseMutex(
 	 * acquired, but are not released in reverse order.
 	 */
 	PreviousSyncLevel =
-	    OwnerThread->AcquiredMutexList->Mutex.OriginalSyncLevel;
+	        OwnerThread->AcquiredMutexList->Mutex.OriginalSyncLevel;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 	                  "Releasing: Object SyncLevel %u, Thread SyncLevel %u, "
@@ -567,12 +530,9 @@ AcpiExReleaseMutex(
 	Status = AcpiExReleaseMutexObject(ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (ObjDesc->Mutex.AcquisitionDepth == 0)
-	{
+	if (ObjDesc->Mutex.AcquisitionDepth == 0) {
 		/* Restore the previous SyncLevel */
 
 		OwnerThread->CurrentSyncLevel = PreviousSyncLevel;
@@ -608,7 +568,7 @@ AcpiExReleaseMutex(
 
 void
 AcpiExReleaseAllMutexes(
-    ACPI_THREAD_STATE       *Thread)
+        ACPI_THREAD_STATE       *Thread)
 {
 	ACPI_OPERAND_OBJECT     *Next = Thread->AcquiredMutexList;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -619,8 +579,7 @@ AcpiExReleaseAllMutexes(
 
 	/* Traverse the list of owned mutexes, releasing each one */
 
-	while (Next)
-	{
+	while (Next) {
 		ObjDesc = Next;
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 		                  "Mutex [%4.4s] force-release, SyncLevel %u Depth %u\n",
@@ -629,16 +588,12 @@ AcpiExReleaseAllMutexes(
 
 		/* Release the mutex, special case for Global Lock */
 
-		if (ObjDesc == AcpiGbl_GlobalLockMutex)
-		{
+		if (ObjDesc == AcpiGbl_GlobalLockMutex) {
 			/* Ignore errors */
 
 			(void) AcpiEvReleaseGlobalLock();
-		}
-		else
-		{
+		} else
 			AcpiOsReleaseMutex(ObjDesc->Mutex.OsMutex);
-		}
 
 		/* Update Thread SyncLevel (Last mutex is the important one) */
 

@@ -32,16 +32,14 @@
 #include <mem/memory.h>
 #include <lib/list.h>
 
-typedef struct
-{
+typedef struct {
 	void *v_addr;
 	addr_t p_addr;
 	int count;
 	list_t list;
 } memblock_t;
 
-typedef struct
-{
+typedef struct {
 	uint32_t eax;
 	uint32_t ebx;
 	uint32_t ecx;
@@ -56,8 +54,7 @@ typedef struct
 	uint32_t eip;
 } __attribute__((packed)) task_registers_t;
 
-typedef enum
-{
+typedef enum {
 	TASK_RUNNING = 0,
 	TASK_UNINTERRUPTABLE,
 	TASK_INTERRUPTABLE,
@@ -65,14 +62,12 @@ typedef enum
 	TASK_STOPPED
 } task_state_t;
 
-typedef enum
-{
+typedef enum {
 	TASK_KERNEL = 0,
 	TASK_USER
 } task_type_t;
 
-typedef struct __task_t
-{
+typedef struct __task_t {
 	uint32_t pid;
 	uint32_t parent_pid;
 	int32_t exit_value;
@@ -89,7 +84,7 @@ typedef struct __task_t
 	void *kernel_stack_virt_addr;
 	void *kernel_stack_pointer;
 
-	void * heap_top;
+	void *heap_top;
 	task_registers_t regs;
 	list_t mapped_memory_list;
 	list_t list;

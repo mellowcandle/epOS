@@ -138,9 +138,9 @@ ACPI_MODULE_NAME("rscreate")
 
 ACPI_STATUS
 AcpiBufferToResource(
-    UINT8                   *AmlBuffer,
-    UINT16                  AmlBufferLength,
-    ACPI_RESOURCE           **ResourcePtr)
+        UINT8                   *AmlBuffer,
+        UINT16                  AmlBufferLength,
+        ACPI_RESOURCE           **ResourcePtr)
 {
 	ACPI_STATUS             Status;
 	ACPI_SIZE               ListSizeNeeded;
@@ -159,17 +159,13 @@ AcpiBufferToResource(
 	/* Get the required length for the converted resource */
 
 	Status = AcpiRsGetListLength(
-	             AmlBuffer, AmlBufferLength, &ListSizeNeeded);
+	                 AmlBuffer, AmlBufferLength, &ListSizeNeeded);
 
 	if (Status == AE_AML_NO_RESOURCE_END_TAG)
-	{
 		Status = AE_OK;
-	}
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Allocate a buffer for the converted resource */
 
@@ -177,9 +173,7 @@ AcpiBufferToResource(
 	CurrentResourcePtr = Resource;
 
 	if (!Resource)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Perform the AML-to-Resource conversion */
 
@@ -187,18 +181,12 @@ AcpiBufferToResource(
 	                                AcpiRsConvertAmlToResources, &CurrentResourcePtr);
 
 	if (Status == AE_AML_NO_RESOURCE_END_TAG)
-	{
 		Status = AE_OK;
-	}
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_FREE(Resource);
-	}
 	else
-	{
 		*ResourcePtr = Resource;
-	}
 
 	return_ACPI_STATUS(Status);
 }
@@ -226,8 +214,8 @@ ACPI_EXPORT_SYMBOL(AcpiBufferToResource)
 
 ACPI_STATUS
 AcpiRsCreateResourceList(
-    ACPI_OPERAND_OBJECT     *AmlBuffer,
-    ACPI_BUFFER             *OutputBuffer)
+        ACPI_OPERAND_OBJECT     *AmlBuffer,
+        ACPI_BUFFER             *OutputBuffer)
 {
 
 	ACPI_STATUS             Status;
@@ -259,18 +247,14 @@ AcpiRsCreateResourceList(
 	                  Status, (UINT32) ListSizeNeeded));
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Validate/Allocate/Clear caller buffer */
 
 	Status = AcpiUtInitializeBuffer(OutputBuffer, ListSizeNeeded);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Do the conversion */
 
@@ -279,9 +263,7 @@ AcpiRsCreateResourceList(
 	                                AcpiRsConvertAmlToResources, &Resource);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO, "OutputBuffer %p Length %X\n",
 	                  OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));
@@ -312,8 +294,8 @@ AcpiRsCreateResourceList(
 
 ACPI_STATUS
 AcpiRsCreatePciRoutingTable(
-    ACPI_OPERAND_OBJECT     *PackageObject,
-    ACPI_BUFFER             *OutputBuffer)
+        ACPI_OPERAND_OBJECT     *PackageObject,
+        ACPI_BUFFER             *OutputBuffer)
 {
 	UINT8                   *Buffer;
 	ACPI_OPERAND_OBJECT     **TopObjectList;
@@ -336,12 +318,10 @@ AcpiRsCreatePciRoutingTable(
 	/* Get the required buffer length */
 
 	Status = AcpiRsGetPciRoutingTableLength(
-	             PackageObject, &BufferSizeNeeded);
+	                 PackageObject, &BufferSizeNeeded);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO, "BufferSizeNeeded = %X\n",
 	                  (UINT32) BufferSizeNeeded));
@@ -351,9 +331,7 @@ AcpiRsCreatePciRoutingTable(
 	Status = AcpiUtInitializeBuffer(OutputBuffer, BufferSizeNeeded);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Loop through the ACPI_INTERNAL_OBJECTS - Each object should be a
@@ -365,8 +343,7 @@ AcpiRsCreatePciRoutingTable(
 	Buffer = OutputBuffer->Pointer;
 	UserPrt = ACPI_CAST_PTR(ACPI_PCI_ROUTING_TABLE, Buffer);
 
-	for (Index = 0; Index < NumberOfElements; Index++)
-	{
+	for (Index = 0; Index < NumberOfElements; Index++) {
 		/*
 		 * Point UserPrt past this current structure
 		 *
@@ -385,8 +362,7 @@ AcpiRsCreatePciRoutingTable(
 
 		/* Each subpackage must be of length 4 */
 
-		if ((*TopObjectList)->Package.Count != 4)
-		{
+		if ((*TopObjectList)->Package.Count != 4) {
 			ACPI_ERROR((AE_INFO,
 			            "(PRT[%u]) Need package of length 4, found length %u",
 			            Index, (*TopObjectList)->Package.Count));
@@ -404,8 +380,7 @@ AcpiRsCreatePciRoutingTable(
 
 		ObjDesc = SubObjectList[0];
 
-		if (!ObjDesc || ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
-		{
+		if (!ObjDesc || ObjDesc->Common.Type != ACPI_TYPE_INTEGER) {
 			ACPI_ERROR((AE_INFO,
 			            "(PRT[%u].Address) Need Integer, found %s",
 			            Index, AcpiUtGetObjectTypeName(ObjDesc)));
@@ -418,8 +393,7 @@ AcpiRsCreatePciRoutingTable(
 
 		ObjDesc = SubObjectList[1];
 
-		if (!ObjDesc || ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
-		{
+		if (!ObjDesc || ObjDesc->Common.Type != ACPI_TYPE_INTEGER) {
 			ACPI_ERROR((AE_INFO, "(PRT[%u].Pin) Need Integer, found %s",
 			            Index, AcpiUtGetObjectTypeName(ObjDesc)));
 			return_ACPI_STATUS(AE_BAD_DATA);
@@ -433,14 +407,11 @@ AcpiRsCreatePciRoutingTable(
 		 */
 		ObjDesc = SubObjectList[2];
 
-		if (ObjDesc)
-		{
-			switch (ObjDesc->Common.Type)
-			{
+		if (ObjDesc) {
+			switch (ObjDesc->Common.Type) {
 			case ACPI_TYPE_LOCAL_REFERENCE:
 
-				if (ObjDesc->Reference.Class != ACPI_REFCLASS_NAME)
-				{
+				if (ObjDesc->Reference.Class != ACPI_REFCLASS_NAME) {
 					ACPI_ERROR((AE_INFO,
 					            "(PRT[%u].Source) Need name, found Reference Class 0x%X",
 					            Index, ObjDesc->Reference.Class));
@@ -457,7 +428,7 @@ AcpiRsCreatePciRoutingTable(
 				PathBuffer.Pointer = UserPrt->Source;
 
 				Status = AcpiNsHandleToPathname(
-				             (ACPI_HANDLE) Node, &PathBuffer, FALSE);
+				                 (ACPI_HANDLE) Node, &PathBuffer, FALSE);
 
 				/* +1 to include null terminator */
 
@@ -502,8 +473,7 @@ AcpiRsCreatePciRoutingTable(
 
 		ObjDesc = SubObjectList[3];
 
-		if (!ObjDesc || ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
-		{
+		if (!ObjDesc || ObjDesc->Common.Type != ACPI_TYPE_INTEGER) {
 			ACPI_ERROR((AE_INFO,
 			            "(PRT[%u].SourceIndex) Need Integer, found %s",
 			            Index, AcpiUtGetObjectTypeName(ObjDesc)));
@@ -542,8 +512,8 @@ AcpiRsCreatePciRoutingTable(
 
 ACPI_STATUS
 AcpiRsCreateAmlResources(
-    ACPI_BUFFER             *ResourceList,
-    ACPI_BUFFER             *OutputBuffer)
+        ACPI_BUFFER             *ResourceList,
+        ACPI_BUFFER             *OutputBuffer)
 {
 	ACPI_STATUS             Status;
 	ACPI_SIZE               AmlSizeNeeded = 0;
@@ -560,24 +530,20 @@ AcpiRsCreateAmlResources(
 	/* Get the buffer size needed for the AML byte stream */
 
 	Status = AcpiRsGetAmlLength(
-	             ResourceList->Pointer, ResourceList->Length, &AmlSizeNeeded);
+	                 ResourceList->Pointer, ResourceList->Length, &AmlSizeNeeded);
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO, "AmlSizeNeeded=%X, %s\n",
 	                  (UINT32) AmlSizeNeeded, AcpiFormatException(Status)));
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Validate/Allocate/Clear caller buffer */
 
 	Status = AcpiUtInitializeBuffer(OutputBuffer, AmlSizeNeeded);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Do the conversion */
 
@@ -585,9 +551,7 @@ AcpiRsCreateAmlResources(
 	                                     AmlSizeNeeded, OutputBuffer->Pointer);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO, "OutputBuffer %p Length %X\n",
 	                  OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));

@@ -128,8 +128,8 @@ ACPI_MODULE_NAME("nseval")
 
 static void
 AcpiNsExecModuleCode(
-    ACPI_OPERAND_OBJECT     *MethodObj,
-    ACPI_EVALUATE_INFO      *Info);
+        ACPI_OPERAND_OBJECT     *MethodObj,
+        ACPI_EVALUATE_INFO      *Info);
 
 
 /*******************************************************************************
@@ -160,7 +160,7 @@ AcpiNsExecModuleCode(
 
 ACPI_STATUS
 AcpiNsEvaluate(
-    ACPI_EVALUATE_INFO      *Info)
+        ACPI_EVALUATE_INFO      *Info)
 {
 	ACPI_STATUS             Status;
 
@@ -169,12 +169,9 @@ AcpiNsEvaluate(
 
 
 	if (!Info)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
-	if (!Info->Node)
-	{
+	if (!Info->Node) {
 		/*
 		 * Get the actual namespace node for the target object if we
 		 * need to. Handles these cases:
@@ -187,19 +184,16 @@ AcpiNsEvaluate(
 		                       ACPI_NS_NO_UPSEARCH, &Info->Node);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 	/*
 	 * For a method alias, we must grab the actual method node so that
 	 * proper scoping context will be established before execution.
 	 */
-	if (AcpiNsGetType(Info->Node) == ACPI_TYPE_LOCAL_METHOD_ALIAS)
-	{
+	if (AcpiNsGetType(Info->Node) == ACPI_TYPE_LOCAL_METHOD_ALIAS) {
 		Info->Node = ACPI_CAST_PTR(
-		                 ACPI_NAMESPACE_NODE, Info->Node->Object);
+		                     ACPI_NAMESPACE_NODE, Info->Node->Object);
 	}
 
 	/* Complete the info block initialization */
@@ -221,25 +215,19 @@ AcpiNsEvaluate(
 	Info->FullPathname = AcpiNsGetNormalizedPathname(Info->Node, TRUE);
 
 	if (!Info->FullPathname)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Count the number of arguments being passed in */
 
 	Info->ParamCount = 0;
 
-	if (Info->Parameters)
-	{
+	if (Info->Parameters) {
 		while (Info->Parameters[Info->ParamCount])
-		{
 			Info->ParamCount++;
-		}
 
 		/* Warn on impossible argument count */
 
-		if (Info->ParamCount > ACPI_METHOD_NUM_ARGS)
-		{
+		if (Info->ParamCount > ACPI_METHOD_NUM_ARGS) {
 			ACPI_WARN_PREDEFINED((AE_INFO, Info->FullPathname, ACPI_WARN_ALWAYS,
 			                      "Excess arguments (%u) - using only %u",
 			                      Info->ParamCount, ACPI_METHOD_NUM_ARGS));
@@ -273,8 +261,7 @@ AcpiNsEvaluate(
 	 * 2) The object is a control method -- execute it
 	 * 3) The object is not a method -- just return it's current value
 	 */
-	switch (AcpiNsGetType(Info->Node))
-	{
+	switch (AcpiNsGetType(Info->Node)) {
 	case ACPI_TYPE_DEVICE:
 	case ACPI_TYPE_EVENT:
 	case ACPI_TYPE_MUTEX:
@@ -301,8 +288,7 @@ AcpiNsEvaluate(
 
 		/* Verify that there is a method object associated with this node */
 
-		if (!Info->ObjDesc)
-		{
+		if (!Info->ObjDesc) {
 			ACPI_ERROR((AE_INFO, "%s: Method has no attached sub-object",
 			            Info->FullPathname));
 			Status = AE_NULL_OBJECT;
@@ -356,11 +342,10 @@ AcpiNsEvaluate(
 		Info->ReturnObject = ACPI_CAST_PTR(ACPI_OPERAND_OBJECT, Info->Node);
 
 		Status = AcpiExResolveNodeToValue(ACPI_CAST_INDIRECT_PTR(
-		                                      ACPI_NAMESPACE_NODE, &Info->ReturnObject), NULL);
+		                ACPI_NAMESPACE_NODE, &Info->ReturnObject), NULL);
 		AcpiExExitInterpreter();
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			Info->ReturnObject = NULL;
 			goto Cleanup;
 		}
@@ -382,12 +367,10 @@ AcpiNsEvaluate(
 
 	/* Check if there is a return value that must be dealt with */
 
-	if (Status == AE_CTRL_RETURN_VALUE)
-	{
+	if (Status == AE_CTRL_RETURN_VALUE) {
 		/* If caller does not want the return value, delete it */
 
-		if (Info->Flags & ACPI_IGNORE_RETURN_VALUE)
-		{
+		if (Info->Flags & ACPI_IGNORE_RETURN_VALUE) {
 			AcpiUtRemoveReference(Info->ReturnObject);
 			Info->ReturnObject = NULL;
 		}
@@ -428,7 +411,7 @@ Cleanup:
 
 void
 AcpiNsExecModuleCodeList(
-    void)
+        void)
 {
 	ACPI_OPERAND_OBJECT     *Prev;
 	ACPI_OPERAND_OBJECT     *Next;
@@ -444,23 +427,18 @@ AcpiNsExecModuleCodeList(
 	Next = AcpiGbl_ModuleCodeList;
 
 	if (!Next)
-	{
 		return_VOID;
-	}
 
 	/* Allocate the evaluation information block */
 
 	Info = ACPI_ALLOCATE(sizeof(ACPI_EVALUATE_INFO));
 
 	if (!Info)
-	{
 		return_VOID;
-	}
 
 	/* Walk the list, executing each "method" */
 
-	while (Next)
-	{
+	while (Next) {
 		Prev = Next;
 		Next = Next->Method.Mutex;
 
@@ -476,8 +454,8 @@ AcpiNsExecModuleCodeList(
 	}
 
 	ACPI_INFO((
-	              "Executed %u blocks of module-level executable AML code",
-	              MethodCount));
+	                  "Executed %u blocks of module-level executable AML code",
+	                  MethodCount));
 
 	ACPI_FREE(Info);
 	AcpiGbl_ModuleCodeList = NULL;
@@ -503,8 +481,8 @@ AcpiNsExecModuleCodeList(
 
 static void
 AcpiNsExecModuleCode(
-    ACPI_OPERAND_OBJECT     *MethodObj,
-    ACPI_EVALUATE_INFO      *Info)
+        ACPI_OPERAND_OBJECT     *MethodObj,
+        ACPI_EVALUATE_INFO      *Info)
 {
 	ACPI_OPERAND_OBJECT     *ParentObj;
 	ACPI_NAMESPACE_NODE     *ParentNode;
@@ -520,7 +498,7 @@ AcpiNsExecModuleCode(
 	 * of the method object descriptor.
 	 */
 	ParentNode = ACPI_CAST_PTR(
-	                 ACPI_NAMESPACE_NODE, MethodObj->Method.NextObject);
+	                     ACPI_NAMESPACE_NODE, MethodObj->Method.NextObject);
 	Type = AcpiNsGetType(ParentNode);
 
 	/*
@@ -530,10 +508,9 @@ AcpiNsExecModuleCode(
 	 * We can't do this in AcpiPsLinkModuleCode because
 	 * AcpiGbl_RootNode->Object is NULL at PASS1.
 	 */
-	if ((Type == ACPI_TYPE_DEVICE) && ParentNode->Object)
-	{
+	if ((Type == ACPI_TYPE_DEVICE) && ParentNode->Object) {
 		MethodObj->Method.Dispatch.Handler =
-		    ParentNode->Object->Device.Handler;
+		        ParentNode->Object->Device.Handler;
 	}
 
 	/* Must clear NextObject (AcpiNsAttachObject needs the field) */
@@ -553,18 +530,14 @@ AcpiNsExecModuleCode(
 	ParentObj = AcpiNsGetAttachedObject(ParentNode);
 
 	if (ParentObj)
-	{
 		AcpiUtAddReference(ParentObj);
-	}
 
 	/* Install the method (module-level code) in the parent node */
 
 	Status = AcpiNsAttachObject(ParentNode, MethodObj, ACPI_TYPE_METHOD);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Exit;
-	}
 
 	/* Execute the parent node as a control method */
 
@@ -577,9 +550,7 @@ AcpiNsExecModuleCode(
 	/* Delete a possible implicit return value (in slack mode) */
 
 	if (Info->ReturnObject)
-	{
 		AcpiUtRemoveReference(Info->ReturnObject);
-	}
 
 	/* Detach the temporary method object */
 
@@ -588,20 +559,14 @@ AcpiNsExecModuleCode(
 	/* Restore the original parent object */
 
 	if (ParentObj)
-	{
 		Status = AcpiNsAttachObject(ParentNode, ParentObj, Type);
-	}
 	else
-	{
 		ParentNode->Type = (UINT8) Type;
-	}
 
 Exit:
 
 	if (ParentObj)
-	{
 		AcpiUtRemoveReference(ParentObj);
-	}
 
 	return_VOID;
 }

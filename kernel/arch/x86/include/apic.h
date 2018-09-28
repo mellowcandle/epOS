@@ -30,8 +30,7 @@
 
 #include <lib/list.h>
 
-typedef struct
-{
+typedef struct {
 	list_t head;
 	uint8_t id;
 	addr_t p_addr;
@@ -40,8 +39,7 @@ typedef struct
 	uint8_t max_redirect;
 } ioapic_t;
 
-typedef struct
-{
+typedef struct {
 	uint8_t irq_src;
 	uint32_t global_irq;
 	uint16_t flags;

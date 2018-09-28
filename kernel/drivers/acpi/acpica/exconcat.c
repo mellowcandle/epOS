@@ -127,8 +127,8 @@ ACPI_MODULE_NAME("exconcat")
 
 static ACPI_STATUS
 AcpiExConvertToObjectTypeString(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ResultDesc);
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_OPERAND_OBJECT     **ResultDesc);
 
 
 /*******************************************************************************
@@ -156,10 +156,10 @@ AcpiExConvertToObjectTypeString(
 
 ACPI_STATUS
 AcpiExDoConcatenate(
-    ACPI_OPERAND_OBJECT     *Operand0,
-    ACPI_OPERAND_OBJECT     *Operand1,
-    ACPI_OPERAND_OBJECT     **ActualReturnDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *Operand0,
+        ACPI_OPERAND_OBJECT     *Operand1,
+        ACPI_OPERAND_OBJECT     **ActualReturnDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     *LocalOperand0 = Operand0;
 	ACPI_OPERAND_OBJECT     *LocalOperand1 = Operand1;
@@ -176,8 +176,7 @@ AcpiExDoConcatenate(
 
 	/* Operand 0 preprocessing */
 
-	switch (Operand0->Common.Type)
-	{
+	switch (Operand0->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 	case ACPI_TYPE_STRING:
 	case ACPI_TYPE_BUFFER:
@@ -190,12 +189,10 @@ AcpiExDoConcatenate(
 		/* For all other types, get the "object type" string */
 
 		Status = AcpiExConvertToObjectTypeString(
-		             Operand0, &LocalOperand0);
+		                 Operand0, &LocalOperand0);
 
 		if (ACPI_FAILURE(Status))
-		{
 			goto Cleanup;
-		}
 
 		Operand0Type = ACPI_TYPE_STRING;
 		break;
@@ -203,8 +200,7 @@ AcpiExDoConcatenate(
 
 	/* Operand 1 preprocessing */
 
-	switch (Operand1->Common.Type)
-	{
+	switch (Operand1->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 	case ACPI_TYPE_STRING:
 	case ACPI_TYPE_BUFFER:
@@ -217,12 +213,10 @@ AcpiExDoConcatenate(
 		/* For all other types, get the "object type" string */
 
 		Status = AcpiExConvertToObjectTypeString(
-		             Operand1, &LocalOperand1);
+		                 Operand1, &LocalOperand1);
 
 		if (ACPI_FAILURE(Status))
-		{
 			goto Cleanup;
-		}
 
 		Operand1Type = ACPI_TYPE_STRING;
 		break;
@@ -235,8 +229,7 @@ AcpiExDoConcatenate(
 	 * guaranteed to be either Integer/String/Buffer by the operand
 	 * resolution mechanism.
 	 */
-	switch (Operand0Type)
-	{
+	switch (Operand0Type) {
 	case ACPI_TYPE_INTEGER:
 
 		Status = AcpiExConvertToInteger(LocalOperand1, &TempOperand1,
@@ -250,8 +243,7 @@ AcpiExDoConcatenate(
 
 	case ACPI_TYPE_STRING:
 
-		switch (Operand1Type)
-		{
+		switch (Operand1Type) {
 		case ACPI_TYPE_INTEGER:
 		case ACPI_TYPE_STRING:
 		case ACPI_TYPE_BUFFER:
@@ -259,7 +251,7 @@ AcpiExDoConcatenate(
 			/* Other types have already been converted to string */
 
 			Status = AcpiExConvertToString(
-			             LocalOperand1, &TempOperand1, ACPI_IMPLICIT_CONVERT_HEX);
+			                 LocalOperand1, &TempOperand1, ACPI_IMPLICIT_CONVERT_HEX);
 			break;
 
 		default:
@@ -278,17 +270,13 @@ AcpiExDoConcatenate(
 	}
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	/* Take care with any newly created operand objects */
 
 	if ((LocalOperand1 != Operand1) &&
-	        (LocalOperand1 != TempOperand1))
-	{
+	    (LocalOperand1 != TempOperand1))
 		AcpiUtRemoveReference(LocalOperand1);
-	}
 
 	LocalOperand1 = TempOperand1;
 
@@ -303,18 +291,16 @@ AcpiExDoConcatenate(
 	 * 2) Two Strings concatenated to produce a new String
 	 * 3) Two Buffers concatenated to produce a new Buffer
 	 */
-	switch (Operand0Type)
-	{
+	switch (Operand0Type) {
 	case ACPI_TYPE_INTEGER:
 
 		/* Result of two Integers is a Buffer */
 		/* Need enough buffer space for two integers */
 
 		ReturnDesc = AcpiUtCreateBufferObject(
-		                 (ACPI_SIZE) ACPI_MUL_2(AcpiGbl_IntegerByteWidth));
+		                     (ACPI_SIZE) ACPI_MUL_2(AcpiGbl_IntegerByteWidth));
 
-		if (!ReturnDesc)
-		{
+		if (!ReturnDesc) {
 			Status = AE_NO_MEMORY;
 			goto Cleanup;
 		}
@@ -337,11 +323,10 @@ AcpiExDoConcatenate(
 		/* Result of two Strings is a String */
 
 		ReturnDesc = AcpiUtCreateStringObject(
-		                 ((ACPI_SIZE) LocalOperand0->String.Length +
-		                  LocalOperand1->String.Length));
+		                     ((ACPI_SIZE) LocalOperand0->String.Length +
+		                      LocalOperand1->String.Length));
 
-		if (!ReturnDesc)
-		{
+		if (!ReturnDesc) {
 			Status = AE_NO_MEMORY;
 			goto Cleanup;
 		}
@@ -359,11 +344,10 @@ AcpiExDoConcatenate(
 		/* Result of two Buffers is a Buffer */
 
 		ReturnDesc = AcpiUtCreateBufferObject(
-		                 ((ACPI_SIZE) Operand0->Buffer.Length +
-		                  LocalOperand1->Buffer.Length));
+		                     ((ACPI_SIZE) Operand0->Buffer.Length +
+		                      LocalOperand1->Buffer.Length));
 
-		if (!ReturnDesc)
-		{
+		if (!ReturnDesc) {
 			Status = AE_NO_MEMORY;
 			goto Cleanup;
 		}
@@ -394,14 +378,10 @@ AcpiExDoConcatenate(
 Cleanup:
 
 	if (LocalOperand0 != Operand0)
-	{
 		AcpiUtRemoveReference(LocalOperand0);
-	}
 
 	if (LocalOperand1 != Operand1)
-	{
 		AcpiUtRemoveReference(LocalOperand1);
-	}
 
 	return_ACPI_STATUS(Status);
 }
@@ -424,8 +404,8 @@ Cleanup:
 
 static ACPI_STATUS
 AcpiExConvertToObjectTypeString(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ResultDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_OPERAND_OBJECT     **ResultDesc)
 {
 	ACPI_OPERAND_OBJECT     *ReturnDesc;
 	const char              *TypeString;
@@ -434,12 +414,10 @@ AcpiExConvertToObjectTypeString(
 	TypeString = AcpiUtGetTypeName(ObjDesc->Common.Type);
 
 	ReturnDesc = AcpiUtCreateStringObject(
-	                 ((ACPI_SIZE) strlen(TypeString) + 9));  /* 9 For "[ Object]" */
+	                     ((ACPI_SIZE) strlen(TypeString) + 9));  /* 9 For "[ Object]" */
 
 	if (!ReturnDesc)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	strcpy(ReturnDesc->String.Pointer, "[");
 	strcat(ReturnDesc->String.Pointer, TypeString);
@@ -467,10 +445,10 @@ AcpiExConvertToObjectTypeString(
 
 ACPI_STATUS
 AcpiExConcatTemplate(
-    ACPI_OPERAND_OBJECT     *Operand0,
-    ACPI_OPERAND_OBJECT     *Operand1,
-    ACPI_OPERAND_OBJECT     **ActualReturnDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *Operand0,
+        ACPI_OPERAND_OBJECT     *Operand1,
+        ACPI_OPERAND_OBJECT     **ActualReturnDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *ReturnDesc;
@@ -495,9 +473,7 @@ AcpiExConcatTemplate(
 	Status = AcpiUtGetResourceEndTag(Operand0, &EndTag);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Length0 = ACPI_PTR_DIFF(EndTag, Operand0->Buffer.Pointer);
 
@@ -506,9 +482,7 @@ AcpiExConcatTemplate(
 	Status = AcpiUtGetResourceEndTag(Operand1, &EndTag);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Length1 = ACPI_PTR_DIFF(EndTag, Operand1->Buffer.Pointer);
 
@@ -521,9 +495,7 @@ AcpiExConcatTemplate(
 	ReturnDesc = AcpiUtCreateBufferObject(NewLength);
 
 	if (!ReturnDesc)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/*
 	 * Copy the templates to the new buffer, 0 first, then 1 follows. One

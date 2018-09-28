@@ -126,11 +126,11 @@ ACPI_MODULE_NAME("dswstate")
 
 static ACPI_STATUS
 AcpiDsResultStackPush(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 static ACPI_STATUS
 AcpiDsResultStackPop(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*******************************************************************************
@@ -148,8 +148,8 @@ AcpiDsResultStackPop(
 
 ACPI_STATUS
 AcpiDsResultPop(
-    ACPI_OPERAND_OBJECT     **Object,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     **Object,
+        ACPI_WALK_STATE         *WalkState)
 {
 	UINT32                  Index;
 	ACPI_GENERIC_STATE      *State;
@@ -163,22 +163,19 @@ AcpiDsResultPop(
 
 	/* Incorrect state of result stack */
 
-	if (State && !WalkState->ResultCount)
-	{
+	if (State && !WalkState->ResultCount) {
 		ACPI_ERROR((AE_INFO, "No results on result stack"));
 		return (AE_AML_INTERNAL);
 	}
 
-	if (!State && WalkState->ResultCount)
-	{
+	if (!State && WalkState->ResultCount) {
 		ACPI_ERROR((AE_INFO, "No result state for result stack"));
 		return (AE_AML_INTERNAL);
 	}
 
 	/* Empty result stack */
 
-	if (!State)
-	{
+	if (!State) {
 		ACPI_ERROR((AE_INFO, "Result stack is empty! State=%p", WalkState));
 		return (AE_AML_NO_RETURN_VALUE);
 	}
@@ -190,8 +187,7 @@ AcpiDsResultPop(
 
 	*Object = State->Results.ObjDesc [Index];
 
-	if (!*Object)
-	{
+	if (!*Object) {
 		ACPI_ERROR((AE_INFO, "No result objects on result stack, State=%p",
 		            WalkState));
 		return (AE_AML_NO_RETURN_VALUE);
@@ -199,14 +195,11 @@ AcpiDsResultPop(
 
 	State->Results.ObjDesc [Index] = NULL;
 
-	if (Index == 0)
-	{
+	if (Index == 0) {
 		Status = AcpiDsResultStackPop(WalkState);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
@@ -233,8 +226,8 @@ AcpiDsResultPop(
 
 ACPI_STATUS
 AcpiDsResultPush(
-    ACPI_OPERAND_OBJECT     *Object,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *Object,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_GENERIC_STATE      *State;
 	ACPI_STATUS             Status;
@@ -244,40 +237,33 @@ AcpiDsResultPush(
 	ACPI_FUNCTION_NAME(DsResultPush);
 
 
-	if (WalkState->ResultCount > WalkState->ResultSize)
-	{
+	if (WalkState->ResultCount > WalkState->ResultSize) {
 		ACPI_ERROR((AE_INFO, "Result stack is full"));
 		return (AE_AML_INTERNAL);
-	}
-	else if (WalkState->ResultCount == WalkState->ResultSize)
-	{
+	} else if (WalkState->ResultCount == WalkState->ResultSize) {
 		/* Extend the result stack */
 
 		Status = AcpiDsResultStackPush(WalkState);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_ERROR((AE_INFO, "Failed to extend the result stack"));
 			return (Status);
 		}
 	}
 
-	if (!(WalkState->ResultCount < WalkState->ResultSize))
-	{
+	if (!(WalkState->ResultCount < WalkState->ResultSize)) {
 		ACPI_ERROR((AE_INFO, "No free elements in result stack"));
 		return (AE_AML_INTERNAL);
 	}
 
 	State = WalkState->Results;
 
-	if (!State)
-	{
+	if (!State) {
 		ACPI_ERROR((AE_INFO, "No result stack frame during push"));
 		return (AE_AML_INTERNAL);
 	}
 
-	if (!Object)
-	{
+	if (!Object) {
 		ACPI_ERROR((AE_INFO,
 		            "Null Object! Obj=%p State=%p Num=%u",
 		            Object, WalkState, WalkState->ResultCount));
@@ -312,7 +298,7 @@ AcpiDsResultPush(
 
 static ACPI_STATUS
 AcpiDsResultStackPush(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -323,8 +309,7 @@ AcpiDsResultStackPush(
 	/* Check for stack overflow */
 
 	if (((UINT32) WalkState->ResultSize + ACPI_RESULTS_FRAME_OBJ_NUM) >
-	        ACPI_RESULTS_OBJ_NUM_MAX)
-	{
+	    ACPI_RESULTS_OBJ_NUM_MAX) {
 		ACPI_ERROR((AE_INFO, "Result stack overflow: State=%p Num=%u",
 		            WalkState, WalkState->ResultSize));
 		return (AE_STACK_OVERFLOW);
@@ -333,9 +318,7 @@ AcpiDsResultStackPush(
 	State = AcpiUtCreateGenericState();
 
 	if (!State)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	State->Common.DescriptorType = ACPI_DESC_TYPE_STATE_RESULT;
 	AcpiUtPushGenericState(&WalkState->Results, State);
@@ -365,7 +348,7 @@ AcpiDsResultStackPush(
 
 static ACPI_STATUS
 AcpiDsResultStackPop(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -375,15 +358,13 @@ AcpiDsResultStackPop(
 
 	/* Check for stack underflow */
 
-	if (WalkState->Results == NULL)
-	{
+	if (WalkState->Results == NULL) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 		                  "Result stack underflow - State=%p\n", WalkState));
 		return (AE_AML_NO_OPERAND);
 	}
 
-	if (WalkState->ResultSize < ACPI_RESULTS_FRAME_OBJ_NUM)
-	{
+	if (WalkState->ResultSize < ACPI_RESULTS_FRAME_OBJ_NUM) {
 		ACPI_ERROR((AE_INFO, "Insufficient result stack size"));
 		return (AE_AML_INTERNAL);
 	}
@@ -418,16 +399,15 @@ AcpiDsResultStackPop(
 
 ACPI_STATUS
 AcpiDsObjStackPush(
-    void                    *Object,
-    ACPI_WALK_STATE         *WalkState)
+        void                    *Object,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_FUNCTION_NAME(DsObjStackPush);
 
 
 	/* Check for stack overflow */
 
-	if (WalkState->NumOperands >= ACPI_OBJ_NUM_OPERANDS)
-	{
+	if (WalkState->NumOperands >= ACPI_OBJ_NUM_OPERANDS) {
 		ACPI_ERROR((AE_INFO,
 		            "Object stack overflow! Obj=%p State=%p #Ops=%u",
 		            Object, WalkState, WalkState->NumOperands));
@@ -467,8 +447,8 @@ AcpiDsObjStackPush(
 
 ACPI_STATUS
 AcpiDsObjStackPop(
-    UINT32                  PopCount,
-    ACPI_WALK_STATE         *WalkState)
+        UINT32                  PopCount,
+        ACPI_WALK_STATE         *WalkState)
 {
 	UINT32                  i;
 
@@ -476,12 +456,10 @@ AcpiDsObjStackPop(
 	ACPI_FUNCTION_NAME(DsObjStackPop);
 
 
-	for (i = 0; i < PopCount; i++)
-	{
+	for (i = 0; i < PopCount; i++) {
 		/* Check for stack underflow */
 
-		if (WalkState->NumOperands == 0)
-		{
+		if (WalkState->NumOperands == 0) {
 			ACPI_ERROR((AE_INFO,
 			            "Object stack underflow! Count=%X State=%p #Ops=%u",
 			            PopCount, WalkState, WalkState->NumOperands));
@@ -517,8 +495,8 @@ AcpiDsObjStackPop(
 
 void
 AcpiDsObjStackPopAndDelete(
-    UINT32                  PopCount,
-    ACPI_WALK_STATE         *WalkState)
+        UINT32                  PopCount,
+        ACPI_WALK_STATE         *WalkState)
 {
 	INT32                   i;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -528,24 +506,18 @@ AcpiDsObjStackPopAndDelete(
 
 
 	if (PopCount == 0)
-	{
 		return;
-	}
 
-	for (i = (INT32) PopCount - 1; i >= 0; i--)
-	{
+	for (i = (INT32) PopCount - 1; i >= 0; i--) {
 		if (WalkState->NumOperands == 0)
-		{
 			return;
-		}
 
 		/* Pop the stack and delete an object if present in this stack entry */
 
 		WalkState->NumOperands--;
 		ObjDesc = WalkState->Operands [i];
 
-		if (ObjDesc)
-		{
+		if (ObjDesc) {
 			AcpiUtRemoveReference(WalkState->Operands [i]);
 			WalkState->Operands [i] = NULL;
 		}
@@ -571,15 +543,13 @@ AcpiDsObjStackPopAndDelete(
 
 ACPI_WALK_STATE *
 AcpiDsGetCurrentWalkState(
-    ACPI_THREAD_STATE       *Thread)
+        ACPI_THREAD_STATE       *Thread)
 {
 	ACPI_FUNCTION_NAME(DsGetCurrentWalkState);
 
 
 	if (!Thread)
-	{
 		return (NULL);
-	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_PARSE, "Current WalkState %p\n",
 	                  Thread->WalkStateList));
@@ -603,8 +573,8 @@ AcpiDsGetCurrentWalkState(
 
 void
 AcpiDsPushWalkState(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_THREAD_STATE       *Thread)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_THREAD_STATE       *Thread)
 {
 	ACPI_FUNCTION_TRACE(DsPushWalkState);
 
@@ -632,7 +602,7 @@ AcpiDsPushWalkState(
 
 ACPI_WALK_STATE *
 AcpiDsPopWalkState(
-    ACPI_THREAD_STATE       *Thread)
+        ACPI_THREAD_STATE       *Thread)
 {
 	ACPI_WALK_STATE         *WalkState;
 
@@ -642,8 +612,7 @@ AcpiDsPopWalkState(
 
 	WalkState = Thread->WalkStateList;
 
-	if (WalkState)
-	{
+	if (WalkState) {
 		/* Next walk state becomes the current walk state */
 
 		Thread->WalkStateList = WalkState->Next;
@@ -677,10 +646,10 @@ AcpiDsPopWalkState(
 
 ACPI_WALK_STATE *
 AcpiDsCreateWalkState(
-    ACPI_OWNER_ID           OwnerId,
-    ACPI_PARSE_OBJECT       *Origin,
-    ACPI_OPERAND_OBJECT     *MethodDesc,
-    ACPI_THREAD_STATE       *Thread)
+        ACPI_OWNER_ID           OwnerId,
+        ACPI_PARSE_OBJECT       *Origin,
+        ACPI_OPERAND_OBJECT     *MethodDesc,
+        ACPI_THREAD_STATE       *Thread)
 {
 	ACPI_WALK_STATE         *WalkState;
 
@@ -691,9 +660,7 @@ AcpiDsCreateWalkState(
 	WalkState = ACPI_ALLOCATE_ZEROED(sizeof(ACPI_WALK_STATE));
 
 	if (!WalkState)
-	{
 		return_PTR(NULL);
-	}
 
 	WalkState->DescriptorType = ACPI_DESC_TYPE_WALK;
 	WalkState->MethodDesc = MethodDesc;
@@ -712,9 +679,7 @@ AcpiDsCreateWalkState(
 	/* Put the new state at the head of the walk list */
 
 	if (Thread)
-	{
 		AcpiDsPushWalkState(WalkState, Thread);
-	}
 
 	return_PTR(WalkState);
 }
@@ -740,13 +705,13 @@ AcpiDsCreateWalkState(
 
 ACPI_STATUS
 AcpiDsInitAmlWalk(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    UINT8                   *AmlStart,
-    UINT32                  AmlLength,
-    ACPI_EVALUATE_INFO      *Info,
-    UINT8                   PassNumber)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_NAMESPACE_NODE     *MethodNode,
+        UINT8                   *AmlStart,
+        UINT32                  AmlLength,
+        ACPI_EVALUATE_INFO      *Info,
+        UINT8                   PassNumber)
 {
 	ACPI_STATUS             Status;
 	ACPI_PARSE_STATE        *ParserState = &WalkState->ParserState;
@@ -757,17 +722,16 @@ AcpiDsInitAmlWalk(
 
 
 	WalkState->ParserState.Aml =
-	    WalkState->ParserState.AmlStart = AmlStart;
+	        WalkState->ParserState.AmlStart = AmlStart;
 	WalkState->ParserState.AmlEnd =
-	    WalkState->ParserState.PkgEnd = AmlStart + AmlLength;
+	        WalkState->ParserState.PkgEnd = AmlStart + AmlLength;
 
 	/* The NextOp of the NextWalk will be the beginning of the method */
 
 	WalkState->NextOp = NULL;
 	WalkState->PassNumber = PassNumber;
 
-	if (Info)
-	{
+	if (Info) {
 		WalkState->Params = Info->Parameters;
 		WalkState->CallerReturnDesc = &Info->ReturnObject;
 	}
@@ -775,12 +739,9 @@ AcpiDsInitAmlWalk(
 	Status = AcpiPsInitScope(&WalkState->ParserState, Op);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (MethodNode)
-	{
+	if (MethodNode) {
 		WalkState->ParserState.StartNode = MethodNode;
 		WalkState->WalkType = ACPI_WALK_METHOD;
 		WalkState->MethodNode = MethodNode;
@@ -789,12 +750,10 @@ AcpiDsInitAmlWalk(
 		/* Push start scope on scope stack and make it current  */
 
 		Status = AcpiDsScopeStackPush(
-		             MethodNode, ACPI_TYPE_METHOD, WalkState);
+		                 MethodNode, ACPI_TYPE_METHOD, WalkState);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
 		/* Init the method arguments */
 
@@ -802,12 +761,8 @@ AcpiDsInitAmlWalk(
 		                                  ACPI_METHOD_NUM_ARGS, WalkState);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
-	}
-	else
-	{
+	} else {
 		/*
 		 * Setup the current scope.
 		 * Find a Named Op that has a namespace node associated with it.
@@ -817,30 +772,21 @@ AcpiDsInitAmlWalk(
 		ExtraOp = ParserState->StartOp;
 
 		while (ExtraOp && !ExtraOp->Common.Node)
-		{
 			ExtraOp = ExtraOp->Common.Parent;
-		}
 
 		if (!ExtraOp)
-		{
 			ParserState->StartNode = NULL;
-		}
 		else
-		{
 			ParserState->StartNode = ExtraOp->Common.Node;
-		}
 
-		if (ParserState->StartNode)
-		{
+		if (ParserState->StartNode) {
 			/* Push start scope on scope stack and make it current  */
 
 			Status = AcpiDsScopeStackPush(ParserState->StartNode,
 			                              ParserState->StartNode->Type, WalkState);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 		}
 	}
 
@@ -863,7 +809,7 @@ AcpiDsInitAmlWalk(
 
 void
 AcpiDsDeleteWalkState(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_GENERIC_STATE      *State;
 
@@ -872,12 +818,9 @@ AcpiDsDeleteWalkState(
 
 
 	if (!WalkState)
-	{
 		return_VOID;
-	}
 
-	if (WalkState->DescriptorType != ACPI_DESC_TYPE_WALK)
-	{
+	if (WalkState->DescriptorType != ACPI_DESC_TYPE_WALK) {
 		ACPI_ERROR((AE_INFO, "%p is not a valid walk state",
 		            WalkState));
 		return_VOID;
@@ -885,8 +828,7 @@ AcpiDsDeleteWalkState(
 
 	/* There should not be any open scopes */
 
-	if (WalkState->ParserState.Scope)
-	{
+	if (WalkState->ParserState.Scope) {
 		ACPI_ERROR((AE_INFO, "%p walk still has a scope list",
 		            WalkState));
 		AcpiPsCleanupScope(&WalkState->ParserState);
@@ -894,8 +836,7 @@ AcpiDsDeleteWalkState(
 
 	/* Always must free any linked control states */
 
-	while (WalkState->ControlState)
-	{
+	while (WalkState->ControlState) {
 		State = WalkState->ControlState;
 		WalkState->ControlState = State->Common.Next;
 
@@ -904,8 +845,7 @@ AcpiDsDeleteWalkState(
 
 	/* Always must free any linked parse states */
 
-	while (WalkState->ScopeInfo)
-	{
+	while (WalkState->ScopeInfo) {
 		State = WalkState->ScopeInfo;
 		WalkState->ScopeInfo = State->Common.Next;
 
@@ -914,8 +854,7 @@ AcpiDsDeleteWalkState(
 
 	/* Always must free any stacked result states */
 
-	while (WalkState->Results)
-	{
+	while (WalkState->Results) {
 		State = WalkState->Results;
 		WalkState->Results = State->Common.Next;
 

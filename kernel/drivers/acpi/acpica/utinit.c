@@ -125,13 +125,13 @@ ACPI_MODULE_NAME("utinit")
 /* Local prototypes */
 
 static void AcpiUtTerminate(
-    void);
+        void);
 
 #if (!ACPI_REDUCED_HARDWARE)
 
 static void
 AcpiUtFreeGpeLists(
-    void);
+        void);
 
 #else
 
@@ -154,7 +154,7 @@ AcpiUtFreeGpeLists(
 
 static void
 AcpiUtFreeGpeLists(
-    void)
+        void)
 {
 	ACPI_GPE_BLOCK_INFO     *GpeBlock;
 	ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
@@ -166,12 +166,10 @@ AcpiUtFreeGpeLists(
 
 	GpeXruptInfo = AcpiGbl_GpeXruptListHead;
 
-	while (GpeXruptInfo)
-	{
+	while (GpeXruptInfo) {
 		GpeBlock = GpeXruptInfo->GpeBlockListHead;
 
-		while (GpeBlock)
-		{
+		while (GpeBlock) {
 			NextGpeBlock = GpeBlock->Next;
 			ACPI_FREE(GpeBlock->EventInfo);
 			ACPI_FREE(GpeBlock->RegisterInfo);
@@ -204,7 +202,7 @@ AcpiUtFreeGpeLists(
 
 ACPI_STATUS
 AcpiUtInitGlobals(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 	UINT32                  i;
@@ -218,30 +216,23 @@ AcpiUtInitGlobals(
 	Status = AcpiUtCreateCaches();
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Address Range lists */
 
 	for (i = 0; i < ACPI_ADDRESS_RANGE_MAX; i++)
-	{
 		AcpiGbl_AddressRangeList[i] = NULL;
-	}
 
 	/* Mutex locked flags */
 
-	for (i = 0; i < ACPI_NUM_MUTEX; i++)
-	{
+	for (i = 0; i < ACPI_NUM_MUTEX; i++) {
 		AcpiGbl_MutexInfo[i].Mutex          = NULL;
 		AcpiGbl_MutexInfo[i].ThreadId       = ACPI_MUTEX_NOT_ACQUIRED;
 		AcpiGbl_MutexInfo[i].UseCount       = 0;
 	}
 
 	for (i = 0; i < ACPI_NUM_OWNERID_MASKS; i++)
-	{
 		AcpiGbl_OwnerIdMask[i]              = 0;
-	}
 
 	/* Last OwnerID is never valid */
 
@@ -254,9 +245,7 @@ AcpiUtInitGlobals(
 	AcpiGpeCount                        = 0;
 
 	for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
-	{
 		AcpiFixedEventCount[i]              = 0;
-	}
 
 #if (!ACPI_REDUCED_HARDWARE)
 
@@ -355,7 +344,7 @@ AcpiUtInitGlobals(
 
 static void
 AcpiUtTerminate(
-    void)
+        void)
 {
 	ACPI_FUNCTION_TRACE(UtTerminate);
 
@@ -380,15 +369,14 @@ AcpiUtTerminate(
 
 void
 AcpiUtSubsystemShutdown(
-    void)
+        void)
 {
 	ACPI_FUNCTION_TRACE(UtSubsystemShutdown);
 
 
 	/* Just exit if subsystem is already shutdown */
 
-	if (AcpiGbl_Shutdown)
-	{
+	if (AcpiGbl_Shutdown) {
 		ACPI_ERROR((AE_INFO, "ACPI Subsystem is already terminated"));
 		return_VOID;
 	}

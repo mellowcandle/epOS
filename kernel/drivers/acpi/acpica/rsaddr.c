@@ -127,8 +127,7 @@ ACPI_MODULE_NAME("rsaddr")
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertAddress16[5] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertAddress16[5] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_ADDRESS16,
 		ACPI_RS_SIZE(ACPI_RESOURCE_ADDRESS16),
@@ -175,8 +174,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertAddress16[5] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertAddress32[5] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertAddress32[5] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_ADDRESS32,
 		ACPI_RS_SIZE(ACPI_RESOURCE_ADDRESS32),
@@ -223,8 +221,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertAddress32[5] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertAddress64[5] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertAddress64[5] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_ADDRESS64,
 		ACPI_RS_SIZE(ACPI_RESOURCE_ADDRESS64),
@@ -271,8 +268,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertAddress64[5] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertExtAddress64[5] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertExtAddress64[5] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_EXTENDED_ADDRESS64,
 		ACPI_RS_SIZE(ACPI_RESOURCE_EXTENDED_ADDRESS64),
@@ -319,8 +315,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertExtAddress64[5] =
  *
  ******************************************************************************/
 
-static ACPI_RSCONVERT_INFO  AcpiRsConvertGeneralFlags[6] =
-{
+static ACPI_RSCONVERT_INFO  AcpiRsConvertGeneralFlags[6] = {
 	{
 		ACPI_RSC_FLAGINIT, 0, AML_OFFSET(Address.Flags),
 		ACPI_RSC_TABLE_SIZE(AcpiRsConvertGeneralFlags)
@@ -368,8 +363,7 @@ static ACPI_RSCONVERT_INFO  AcpiRsConvertGeneralFlags[6] =
  *
  ******************************************************************************/
 
-static ACPI_RSCONVERT_INFO  AcpiRsConvertMemFlags[5] =
-{
+static ACPI_RSCONVERT_INFO  AcpiRsConvertMemFlags[5] = {
 	{
 		ACPI_RSC_FLAGINIT, 0, AML_OFFSET(Address.SpecificFlags),
 		ACPI_RSC_TABLE_SIZE(AcpiRsConvertMemFlags)
@@ -409,8 +403,7 @@ static ACPI_RSCONVERT_INFO  AcpiRsConvertMemFlags[5] =
  *
  ******************************************************************************/
 
-static ACPI_RSCONVERT_INFO  AcpiRsConvertIoFlags[4] =
-{
+static ACPI_RSCONVERT_INFO  AcpiRsConvertIoFlags[4] = {
 	{
 		ACPI_RSC_FLAGINIT, 0, AML_OFFSET(Address.SpecificFlags),
 		ACPI_RSC_TABLE_SIZE(AcpiRsConvertIoFlags)
@@ -454,8 +447,8 @@ static ACPI_RSCONVERT_INFO  AcpiRsConvertIoFlags[4] =
 
 BOOLEAN
 AcpiRsGetAddressCommon(
-    ACPI_RESOURCE           *Resource,
-    AML_RESOURCE            *Aml)
+        ACPI_RESOURCE           *Resource,
+        AML_RESOURCE            *Aml)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -463,34 +456,27 @@ AcpiRsGetAddressCommon(
 	/* Validate the Resource Type */
 
 	if ((Aml->Address.ResourceType > 2) &&
-	        (Aml->Address.ResourceType < 0xC0))
-	{
+	    (Aml->Address.ResourceType < 0xC0))
 		return (FALSE);
-	}
 
 	/* Get the Resource Type and General Flags */
 
 	(void) AcpiRsConvertAmlToResource(
-	    Resource, Aml, AcpiRsConvertGeneralFlags);
+	        Resource, Aml, AcpiRsConvertGeneralFlags);
 
 	/* Get the Type-Specific Flags (Memory and I/O descriptors only) */
 
-	if (Resource->Data.Address.ResourceType == ACPI_MEMORY_RANGE)
-	{
+	if (Resource->Data.Address.ResourceType == ACPI_MEMORY_RANGE) {
 		(void) AcpiRsConvertAmlToResource(
-		    Resource, Aml, AcpiRsConvertMemFlags);
-	}
-	else if (Resource->Data.Address.ResourceType == ACPI_IO_RANGE)
-	{
+		        Resource, Aml, AcpiRsConvertMemFlags);
+	} else if (Resource->Data.Address.ResourceType == ACPI_IO_RANGE) {
 		(void) AcpiRsConvertAmlToResource(
-		    Resource, Aml, AcpiRsConvertIoFlags);
-	}
-	else
-	{
+		        Resource, Aml, AcpiRsConvertIoFlags);
+	} else {
 		/* Generic resource type, just grab the TypeSpecific byte */
 
 		Resource->Data.Address.Info.TypeSpecific =
-		    Aml->Address.SpecificFlags;
+		        Aml->Address.SpecificFlags;
 	}
 
 	return (TRUE);
@@ -513,8 +499,8 @@ AcpiRsGetAddressCommon(
 
 void
 AcpiRsSetAddressCommon(
-    AML_RESOURCE            *Aml,
-    ACPI_RESOURCE           *Resource)
+        AML_RESOURCE            *Aml,
+        ACPI_RESOURCE           *Resource)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -522,25 +508,20 @@ AcpiRsSetAddressCommon(
 	/* Set the Resource Type and General Flags */
 
 	(void) AcpiRsConvertResourceToAml(
-	    Resource, Aml, AcpiRsConvertGeneralFlags);
+	        Resource, Aml, AcpiRsConvertGeneralFlags);
 
 	/* Set the Type-Specific Flags (Memory and I/O descriptors only) */
 
-	if (Resource->Data.Address.ResourceType == ACPI_MEMORY_RANGE)
-	{
+	if (Resource->Data.Address.ResourceType == ACPI_MEMORY_RANGE) {
 		(void) AcpiRsConvertResourceToAml(
-		    Resource, Aml, AcpiRsConvertMemFlags);
-	}
-	else if (Resource->Data.Address.ResourceType == ACPI_IO_RANGE)
-	{
+		        Resource, Aml, AcpiRsConvertMemFlags);
+	} else if (Resource->Data.Address.ResourceType == ACPI_IO_RANGE) {
 		(void) AcpiRsConvertResourceToAml(
-		    Resource, Aml, AcpiRsConvertIoFlags);
-	}
-	else
-	{
+		        Resource, Aml, AcpiRsConvertIoFlags);
+	} else {
 		/* Generic resource type, just copy the TypeSpecific byte */
 
 		Aml->Address.SpecificFlags =
-		    Resource->Data.Address.Info.TypeSpecific;
+		        Resource->Data.Address.Info.TypeSpecific;
 	}
 }

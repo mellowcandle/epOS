@@ -38,9 +38,7 @@ static void tick_callback(registers_t *regs)
 	ticks++;
 
 	if (ticks % TASK_SWITCH_INTERVAL == 0)
-	{
 		scheduler_switch_task(regs);
-	}
 }
 
 /* Configure the HW to generate an timer interrupt every 1 ms to tick_callback */

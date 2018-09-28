@@ -223,21 +223,20 @@ extern const char                       *AcpiGbl_PtDecode[];
 
 typedef
 ACPI_STATUS(*ACPI_WALK_AML_CALLBACK)(
-    UINT8                   *Aml,
-    UINT32                  Length,
-    UINT32                  Offset,
-    UINT8                   ResourceIndex,
-    void                    **Context);
+        UINT8                   *Aml,
+        UINT32                  Length,
+        UINT32                  Offset,
+        UINT8                   ResourceIndex,
+        void                    **Context);
 
 typedef
 ACPI_STATUS(*ACPI_PKG_CALLBACK)(
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
+        UINT8                   ObjectType,
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        ACPI_GENERIC_STATE      *State,
+        void                    *Context);
 
-typedef struct acpi_pkg_info
-{
+typedef struct acpi_pkg_info {
 	UINT8                   *FreeSpace;
 	ACPI_SIZE               Length;
 	UINT32                  ObjectSpace;
@@ -263,18 +262,18 @@ typedef struct acpi_pkg_info
  */
 BOOLEAN
 AcpiUtValidNameseg(
-    char                    *Signature);
+        char                    *Signature);
 
 BOOLEAN
 AcpiUtValidNameChar(
-    char                    Character,
-    UINT32                  Position);
+        char                    Character,
+        UINT32                  Position);
 
 void
 AcpiUtCheckAndRepairAscii(
-    UINT8                   *Name,
-    char                    *RepairedName,
-    UINT32                  Count);
+        UINT8                   *Name,
+        char                    *RepairedName,
+        UINT32                  Count);
 
 
 /*
@@ -282,22 +281,22 @@ AcpiUtCheckAndRepairAscii(
  */
 void
 AcpiUtStrupr(
-    char                    *SrcString);
+        char                    *SrcString);
 
 void
 AcpiUtStrlwr(
-    char                    *SrcString);
+        char                    *SrcString);
 
 int
 AcpiUtStricmp(
-    char                    *String1,
-    char                    *String2);
+        char                    *String1,
+        char                    *String2);
 
 ACPI_STATUS
 AcpiUtStrtoul64(
-    char                    *String,
-    UINT32                  Flags,
-    UINT64                  *RetInteger);
+        char                    *String,
+        UINT32                  Flags,
+        UINT64                  *RetInteger);
 
 /*
  * Values for Flags above
@@ -313,65 +312,65 @@ AcpiUtStrtoul64(
  */
 ACPI_STATUS
 AcpiUtInitGlobals(
-    void);
+        void);
 
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 const char *
 AcpiUtGetMutexName(
-    UINT32                  MutexId);
+        UINT32                  MutexId);
 
 const char *
 AcpiUtGetNotifyName(
-    UINT32                  NotifyValue,
-    ACPI_OBJECT_TYPE        Type);
+        UINT32                  NotifyValue,
+        ACPI_OBJECT_TYPE        Type);
 #endif
 
 const char *
 AcpiUtGetTypeName(
-    ACPI_OBJECT_TYPE        Type);
+        ACPI_OBJECT_TYPE        Type);
 
 const char *
 AcpiUtGetNodeName(
-    void                    *Object);
+        void                    *Object);
 
 const char *
 AcpiUtGetDescriptorName(
-    void                    *Object);
+        void                    *Object);
 
 const char *
 AcpiUtGetReferenceName(
-    ACPI_OPERAND_OBJECT     *Object);
+        ACPI_OPERAND_OBJECT     *Object);
 
 const char *
 AcpiUtGetObjectTypeName(
-    ACPI_OPERAND_OBJECT     *ObjDesc);
+        ACPI_OPERAND_OBJECT     *ObjDesc);
 
 const char *
 AcpiUtGetRegionName(
-    UINT8                   SpaceId);
+        UINT8                   SpaceId);
 
 const char *
 AcpiUtGetEventName(
-    UINT32                  EventId);
+        UINT32                  EventId);
 
 char
 AcpiUtHexToAsciiChar(
-    UINT64                  Integer,
-    UINT32                  Position);
+        UINT64                  Integer,
+        UINT32                  Position);
 
 ACPI_STATUS
 AcpiUtAsciiToHexByte(
-    char                    *TwoAsciiChars,
-    UINT8                   *ReturnByte);
+        char                    *TwoAsciiChars,
+        UINT8                   *ReturnByte);
 
 UINT8
 AcpiUtAsciiCharToHex(
-    int                     HexChar);
+        int                     HexChar);
 
 BOOLEAN
 AcpiUtValidObjectType(
-    ACPI_OBJECT_TYPE        Type);
+        ACPI_OBJECT_TYPE        Type);
 
 
 /*
@@ -379,11 +378,11 @@ AcpiUtValidObjectType(
  */
 ACPI_STATUS
 AcpiUtHardwareInitialize(
-    void);
+        void);
 
 void
 AcpiUtSubsystemShutdown(
-    void);
+        void);
 
 
 /*
@@ -391,37 +390,37 @@ AcpiUtSubsystemShutdown(
  */
 ACPI_STATUS
 AcpiUtBuildSimpleObject(
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_OBJECT             *UserObj,
-    UINT8                   *DataSpace,
-    UINT32                  *BufferSpaceUsed);
+        ACPI_OPERAND_OBJECT     *Obj,
+        ACPI_OBJECT             *UserObj,
+        UINT8                   *DataSpace,
+        UINT32                  *BufferSpaceUsed);
 
 ACPI_STATUS
 AcpiUtBuildPackageObject(
-    ACPI_OPERAND_OBJECT     *Obj,
-    UINT8                   *Buffer,
-    UINT32                  *SpaceUsed);
+        ACPI_OPERAND_OBJECT     *Obj,
+        UINT8                   *Buffer,
+        UINT32                  *SpaceUsed);
 
 ACPI_STATUS
 AcpiUtCopyIobjectToEobject(
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_BUFFER             *RetBuffer);
+        ACPI_OPERAND_OBJECT     *Obj,
+        ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiUtCopyEobjectToIobject(
-    ACPI_OBJECT             *Obj,
-    ACPI_OPERAND_OBJECT     **InternalObj);
+        ACPI_OBJECT             *Obj,
+        ACPI_OPERAND_OBJECT     **InternalObj);
 
 ACPI_STATUS
 AcpiUtCopyISimpleToIsimple(
-    ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj);
+        ACPI_OPERAND_OBJECT     *SourceObj,
+        ACPI_OPERAND_OBJECT     *DestObj);
 
 ACPI_STATUS
 AcpiUtCopyIobjectToIobject(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     **DestDesc,
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     **DestDesc,
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -429,8 +428,8 @@ AcpiUtCopyIobjectToIobject(
  */
 ACPI_STATUS
 AcpiUtUpdateObjectReference(
-    ACPI_OPERAND_OBJECT     *Object,
-    UINT16                  Action);
+        ACPI_OPERAND_OBJECT     *Object,
+        UINT16                  Action);
 
 
 /*
@@ -438,120 +437,120 @@ AcpiUtUpdateObjectReference(
  */
 void
 AcpiUtInitStackPtrTrace(
-    void);
+        void);
 
 void
 AcpiUtTrackStackPtr(
-    void);
+        void);
 
 void
 AcpiUtTrace(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId);
 
 void
 AcpiUtTracePtr(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    const void              *Pointer);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId,
+        const void              *Pointer);
 
 void
 AcpiUtTraceU32(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    UINT32                  Integer);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId,
+        UINT32                  Integer);
 
 void
 AcpiUtTraceStr(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    const char              *String);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId,
+        const char              *String);
 
 void
 AcpiUtExit(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId);
 
 void
 AcpiUtStatusExit(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    ACPI_STATUS             Status);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId,
+        ACPI_STATUS             Status);
 
 void
 AcpiUtValueExit(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    UINT64                  Value);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId,
+        UINT64                  Value);
 
 void
 AcpiUtPtrExit(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    UINT8                   *Ptr);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId,
+        UINT8                   *Ptr);
 
 void
 AcpiUtStrExit(
-    UINT32                  LineNumber,
-    const char              *FunctionName,
-    const char              *ModuleName,
-    UINT32                  ComponentId,
-    const char              *String);
+        UINT32                  LineNumber,
+        const char              *FunctionName,
+        const char              *ModuleName,
+        UINT32                  ComponentId,
+        const char              *String);
 
 void
 AcpiUtDebugDumpBuffer(
-    UINT8                   *Buffer,
-    UINT32                  Count,
-    UINT32                  Display,
-    UINT32                  ComponentId);
+        UINT8                   *Buffer,
+        UINT32                  Count,
+        UINT32                  Display,
+        UINT32                  ComponentId);
 
 void
 AcpiUtDumpBuffer(
-    UINT8                   *Buffer,
-    UINT32                  Count,
-    UINT32                  Display,
-    UINT32                  Offset);
+        UINT8                   *Buffer,
+        UINT32                  Count,
+        UINT32                  Display,
+        UINT32                  Offset);
 
 #ifdef ACPI_APPLICATION
 void
 AcpiUtDumpBufferToFile(
-    ACPI_FILE               File,
-    UINT8                   *Buffer,
-    UINT32                  Count,
-    UINT32                  Display,
-    UINT32                  BaseOffset);
+        ACPI_FILE               File,
+        UINT8                   *Buffer,
+        UINT32                  Count,
+        UINT32                  Display,
+        UINT32                  BaseOffset);
 #endif
 
 void
 AcpiUtReportError(
-    char                    *ModuleName,
-    UINT32                  LineNumber);
+        char                    *ModuleName,
+        UINT32                  LineNumber);
 
 void
 AcpiUtReportInfo(
-    char                    *ModuleName,
-    UINT32                  LineNumber);
+        char                    *ModuleName,
+        UINT32                  LineNumber);
 
 void
 AcpiUtReportWarning(
-    char                    *ModuleName,
-    UINT32                  LineNumber);
+        char                    *ModuleName,
+        UINT32                  LineNumber);
 
 
 /*
@@ -559,23 +558,23 @@ AcpiUtReportWarning(
  */
 void
 AcpiUtAddReference(
-    ACPI_OPERAND_OBJECT     *Object);
+        ACPI_OPERAND_OBJECT     *Object);
 
 void
 AcpiUtRemoveReference(
-    ACPI_OPERAND_OBJECT     *Object);
+        ACPI_OPERAND_OBJECT     *Object);
 
 void
 AcpiUtDeleteInternalPackageObject(
-    ACPI_OPERAND_OBJECT     *Object);
+        ACPI_OPERAND_OBJECT     *Object);
 
 void
 AcpiUtDeleteInternalSimpleObject(
-    ACPI_OPERAND_OBJECT     *Object);
+        ACPI_OPERAND_OBJECT     *Object);
 
 void
 AcpiUtDeleteInternalObjectList(
-    ACPI_OPERAND_OBJECT     **ObjList);
+        ACPI_OPERAND_OBJECT     **ObjList);
 
 
 /*
@@ -583,28 +582,28 @@ AcpiUtDeleteInternalObjectList(
  */
 ACPI_STATUS
 AcpiUtEvaluateObject(
-    ACPI_NAMESPACE_NODE     *PrefixNode,
-    const char              *Path,
-    UINT32                  ExpectedReturnBtypes,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+        ACPI_NAMESPACE_NODE     *PrefixNode,
+        const char              *Path,
+        UINT32                  ExpectedReturnBtypes,
+        ACPI_OPERAND_OBJECT     **ReturnDesc);
 
 ACPI_STATUS
 AcpiUtEvaluateNumericObject(
-    const char              *ObjectName,
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT64                  *Value);
+        const char              *ObjectName,
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        UINT64                  *Value);
 
 ACPI_STATUS
 AcpiUtExecute_STA(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT32                  *StatusFlags);
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        UINT32                  *StatusFlags);
 
 ACPI_STATUS
 AcpiUtExecutePowerMethods(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    const char              **MethodNames,
-    UINT8                   MethodCount,
-    UINT8                   *OutValues);
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        const char              **MethodNames,
+        UINT8                   MethodCount,
+        UINT8                   *OutValues);
 
 
 /*
@@ -612,23 +611,23 @@ AcpiUtExecutePowerMethods(
  */
 ACPI_STATUS
 AcpiUtExecute_HID(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId);
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        ACPI_PNP_DEVICE_ID      **ReturnId);
 
 ACPI_STATUS
 AcpiUtExecute_UID(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId);
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        ACPI_PNP_DEVICE_ID      **ReturnId);
 
 ACPI_STATUS
 AcpiUtExecute_CID(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID_LIST **ReturnCidList);
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        ACPI_PNP_DEVICE_ID_LIST **ReturnCidList);
 
 ACPI_STATUS
 AcpiUtExecute_CLS(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId);
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        ACPI_PNP_DEVICE_ID      **ReturnId);
 
 
 /*
@@ -636,27 +635,27 @@ AcpiUtExecute_CLS(
  */
 ACPI_STATUS
 AcpiUtCreateRwLock(
-    ACPI_RW_LOCK            *Lock);
+        ACPI_RW_LOCK            *Lock);
 
 void
 AcpiUtDeleteRwLock(
-    ACPI_RW_LOCK            *Lock);
+        ACPI_RW_LOCK            *Lock);
 
 ACPI_STATUS
 AcpiUtAcquireReadLock(
-    ACPI_RW_LOCK            *Lock);
+        ACPI_RW_LOCK            *Lock);
 
 ACPI_STATUS
 AcpiUtReleaseReadLock(
-    ACPI_RW_LOCK            *Lock);
+        ACPI_RW_LOCK            *Lock);
 
 ACPI_STATUS
 AcpiUtAcquireWriteLock(
-    ACPI_RW_LOCK            *Lock);
+        ACPI_RW_LOCK            *Lock);
 
 void
 AcpiUtReleaseWriteLock(
-    ACPI_RW_LOCK            *Lock);
+        ACPI_RW_LOCK            *Lock);
 
 
 /*
@@ -664,48 +663,48 @@ AcpiUtReleaseWriteLock(
  */
 ACPI_OPERAND_OBJECT  *
 AcpiUtCreateInternalObjectDbg(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    ACPI_OBJECT_TYPE        Type);
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        UINT32                  ComponentId,
+        ACPI_OBJECT_TYPE        Type);
 
 void *
 AcpiUtAllocateObjectDescDbg(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId);
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        UINT32                  ComponentId);
 
 #define AcpiUtCreateInternalObject(t)   AcpiUtCreateInternalObjectDbg (_AcpiModuleName,__LINE__,_COMPONENT,t)
 #define AcpiUtAllocateObjectDesc()      AcpiUtAllocateObjectDescDbg (_AcpiModuleName,__LINE__,_COMPONENT)
 
 void
 AcpiUtDeleteObjectDesc(
-    ACPI_OPERAND_OBJECT     *Object);
+        ACPI_OPERAND_OBJECT     *Object);
 
 BOOLEAN
 AcpiUtValidInternalObject(
-    void                    *Object);
+        void                    *Object);
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreatePackageObject(
-    UINT32                  Count);
+        UINT32                  Count);
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateIntegerObject(
-    UINT64                  Value);
+        UINT64                  Value);
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateBufferObject(
-    ACPI_SIZE               BufferSize);
+        ACPI_SIZE               BufferSize);
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateStringObject(
-    ACPI_SIZE               StringSize);
+        ACPI_SIZE               StringSize);
 
 ACPI_STATUS
 AcpiUtGetObjectSize(
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_SIZE               *ObjLength);
+        ACPI_OPERAND_OBJECT     *Obj,
+        ACPI_SIZE               *ObjLength);
 
 
 /*
@@ -713,31 +712,31 @@ AcpiUtGetObjectSize(
  */
 ACPI_STATUS
 AcpiUtInitializeInterfaces(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiUtInterfaceTerminate(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiUtInstallInterface(
-    ACPI_STRING             InterfaceName);
+        ACPI_STRING             InterfaceName);
 
 ACPI_STATUS
 AcpiUtRemoveInterface(
-    ACPI_STRING             InterfaceName);
+        ACPI_STRING             InterfaceName);
 
 ACPI_STATUS
 AcpiUtUpdateInterfaces(
-    UINT8                   Action);
+        UINT8                   Action);
 
 ACPI_INTERFACE_INFO *
 AcpiUtGetInterface(
-    ACPI_STRING             InterfaceName);
+        ACPI_STRING             InterfaceName);
 
 ACPI_STATUS
 AcpiUtOsiImplementation(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -745,32 +744,32 @@ AcpiUtOsiImplementation(
  */
 const ACPI_PREDEFINED_INFO *
 AcpiUtGetNextPredefinedMethod(
-    const ACPI_PREDEFINED_INFO  *ThisName);
+        const ACPI_PREDEFINED_INFO  *ThisName);
 
 const ACPI_PREDEFINED_INFO *
 AcpiUtMatchPredefinedMethod(
-    char                        *Name);
+        char                        *Name);
 
 void
 AcpiUtGetExpectedReturnTypes(
-    char                    *Buffer,
-    UINT32                  ExpectedBtypes);
+        char                    *Buffer,
+        UINT32                  ExpectedBtypes);
 
 #if (defined ACPI_ASL_COMPILER || defined ACPI_HELP_APP)
 const ACPI_PREDEFINED_INFO *
 AcpiUtMatchResourceName(
-    char                        *Name);
+        char                        *Name);
 
 void
 AcpiUtDisplayPredefinedMethod(
-    char                        *Buffer,
-    const ACPI_PREDEFINED_INFO  *ThisName,
-    BOOLEAN                     MultiLine);
+        char                        *Buffer,
+        const ACPI_PREDEFINED_INFO  *ThisName,
+        BOOLEAN                     MultiLine);
 
 UINT32
 AcpiUtGetResourceBitWidth(
-    char                    *Buffer,
-    UINT16                  Types);
+        char                    *Buffer,
+        UINT16                  Types);
 #endif
 
 
@@ -779,46 +778,46 @@ AcpiUtGetResourceBitWidth(
  */
 void
 AcpiUtPushGenericState(
-    ACPI_GENERIC_STATE      **ListHead,
-    ACPI_GENERIC_STATE      *State);
+        ACPI_GENERIC_STATE      **ListHead,
+        ACPI_GENERIC_STATE      *State);
 
 ACPI_GENERIC_STATE *
 AcpiUtPopGenericState(
-    ACPI_GENERIC_STATE      **ListHead);
+        ACPI_GENERIC_STATE      **ListHead);
 
 
 ACPI_GENERIC_STATE *
 AcpiUtCreateGenericState(
-    void);
+        void);
 
 ACPI_THREAD_STATE *
 AcpiUtCreateThreadState(
-    void);
+        void);
 
 ACPI_GENERIC_STATE *
 AcpiUtCreateUpdateState(
-    ACPI_OPERAND_OBJECT     *Object,
-    UINT16                  Action);
+        ACPI_OPERAND_OBJECT     *Object,
+        UINT16                  Action);
 
 ACPI_GENERIC_STATE *
 AcpiUtCreatePkgState(
-    void                    *InternalObject,
-    void                    *ExternalObject,
-    UINT16                  Index);
+        void                    *InternalObject,
+        void                    *ExternalObject,
+        UINT16                  Index);
 
 ACPI_STATUS
 AcpiUtCreateUpdateStateAndPush(
-    ACPI_OPERAND_OBJECT     *Object,
-    UINT16                  Action,
-    ACPI_GENERIC_STATE      **StateList);
+        ACPI_OPERAND_OBJECT     *Object,
+        UINT16                  Action,
+        ACPI_GENERIC_STATE      **StateList);
 
 ACPI_GENERIC_STATE *
 AcpiUtCreateControlState(
-    void);
+        void);
 
 void
 AcpiUtDeleteGenericState(
-    ACPI_GENERIC_STATE      *State);
+        ACPI_GENERIC_STATE      *State);
 
 
 /*
@@ -826,17 +825,17 @@ AcpiUtDeleteGenericState(
  */
 ACPI_STATUS
 AcpiUtDivide(
-    UINT64                  InDividend,
-    UINT64                  InDivisor,
-    UINT64                  *OutQuotient,
-    UINT64                  *OutRemainder);
+        UINT64                  InDividend,
+        UINT64                  InDivisor,
+        UINT64                  *OutQuotient,
+        UINT64                  *OutRemainder);
 
 ACPI_STATUS
 AcpiUtShortDivide(
-    UINT64                  InDividend,
-    UINT32                  Divisor,
-    UINT64                  *OutQuotient,
-    UINT32                  *OutRemainder);
+        UINT64                  InDividend,
+        UINT32                  Divisor,
+        UINT64                  *OutQuotient,
+        UINT32                  *OutRemainder);
 
 
 /*
@@ -844,24 +843,24 @@ AcpiUtShortDivide(
  */
 const ACPI_EXCEPTION_INFO *
 AcpiUtValidateException(
-    ACPI_STATUS             Status);
+        ACPI_STATUS             Status);
 
 BOOLEAN
 AcpiUtIsPciRootBridge(
-    char                    *Id);
+        char                    *Id);
 
 #if (defined ACPI_ASL_COMPILER || defined ACPI_EXEC_APP || defined ACPI_NAMES_APP)
 BOOLEAN
 AcpiUtIsAmlTable(
-    ACPI_TABLE_HEADER       *Table);
+        ACPI_TABLE_HEADER       *Table);
 #endif
 
 ACPI_STATUS
 AcpiUtWalkPackageTree(
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    void                    *TargetObject,
-    ACPI_PKG_CALLBACK       WalkCallback,
-    void                    *Context);
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        void                    *TargetObject,
+        ACPI_PKG_CALLBACK       WalkCallback,
+        void                    *Context);
 
 /* Values for Base above (16=Hex, 10=Decimal) */
 
@@ -870,18 +869,18 @@ AcpiUtWalkPackageTree(
 
 UINT32
 AcpiUtDwordByteSwap(
-    UINT32                  Value);
+        UINT32                  Value);
 
 void
 AcpiUtSetIntegerWidth(
-    UINT8                   Revision);
+        UINT8                   Revision);
 
 #ifdef ACPI_DEBUG_OUTPUT
 void
 AcpiUtDisplayInitPathname(
-    UINT8                   Type,
-    ACPI_NAMESPACE_NODE     *ObjHandle,
-    const char              *Path);
+        UINT8                   Type,
+        ACPI_NAMESPACE_NODE     *ObjHandle,
+        const char              *Path);
 #endif
 
 
@@ -890,11 +889,11 @@ AcpiUtDisplayInitPathname(
  */
 ACPI_STATUS
 AcpiUtAllocateOwnerId(
-    ACPI_OWNER_ID           *OwnerId);
+        ACPI_OWNER_ID           *OwnerId);
 
 void
 AcpiUtReleaseOwnerId(
-    ACPI_OWNER_ID           *OwnerId);
+        ACPI_OWNER_ID           *OwnerId);
 
 
 /*
@@ -902,38 +901,38 @@ AcpiUtReleaseOwnerId(
  */
 ACPI_STATUS
 AcpiUtWalkAmlResources(
-    ACPI_WALK_STATE         *WalkState,
-    UINT8                   *Aml,
-    ACPI_SIZE               AmlLength,
-    ACPI_WALK_AML_CALLBACK  UserFunction,
-    void                    **Context);
+        ACPI_WALK_STATE         *WalkState,
+        UINT8                   *Aml,
+        ACPI_SIZE               AmlLength,
+        ACPI_WALK_AML_CALLBACK  UserFunction,
+        void                    **Context);
 
 ACPI_STATUS
 AcpiUtValidateResource(
-    ACPI_WALK_STATE         *WalkState,
-    void                    *Aml,
-    UINT8                   *ReturnIndex);
+        ACPI_WALK_STATE         *WalkState,
+        void                    *Aml,
+        UINT8                   *ReturnIndex);
 
 UINT32
 AcpiUtGetDescriptorLength(
-    void                    *Aml);
+        void                    *Aml);
 
 UINT16
 AcpiUtGetResourceLength(
-    void                    *Aml);
+        void                    *Aml);
 
 UINT8
 AcpiUtGetResourceHeaderLength(
-    void                    *Aml);
+        void                    *Aml);
 
 UINT8
 AcpiUtGetResourceType(
-    void                    *Aml);
+        void                    *Aml);
 
 ACPI_STATUS
 AcpiUtGetResourceEndTag(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   **EndTag);
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        UINT8                   **EndTag);
 
 
 /*
@@ -941,38 +940,38 @@ AcpiUtGetResourceEndTag(
  */
 void
 AcpiUtPrintString(
-    char                    *String,
-    UINT16                  MaxLength);
+        char                    *String,
+        UINT16                  MaxLength);
 
 #if defined ACPI_ASL_COMPILER || defined ACPI_EXEC_APP
 void
 UtConvertBackslashes(
-    char                    *Pathname);
+        char                    *Pathname);
 #endif
 
 void
 AcpiUtRepairName(
-    char                    *Name);
+        char                    *Name);
 
 #if defined (ACPI_DEBUGGER) || defined (ACPI_APPLICATION)
 BOOLEAN
 AcpiUtSafeStrcpy(
-    char                    *Dest,
-    ACPI_SIZE               DestSize,
-    char                    *Source);
+        char                    *Dest,
+        ACPI_SIZE               DestSize,
+        char                    *Source);
 
 BOOLEAN
 AcpiUtSafeStrcat(
-    char                    *Dest,
-    ACPI_SIZE               DestSize,
-    char                    *Source);
+        char                    *Dest,
+        ACPI_SIZE               DestSize,
+        char                    *Source);
 
 BOOLEAN
 AcpiUtSafeStrncat(
-    char                    *Dest,
-    ACPI_SIZE               DestSize,
-    char                    *Source,
-    ACPI_SIZE               MaxTransferLength);
+        char                    *Dest,
+        ACPI_SIZE               DestSize,
+        char                    *Source,
+        ACPI_SIZE               MaxTransferLength);
 #endif
 
 
@@ -981,19 +980,19 @@ AcpiUtSafeStrncat(
  */
 ACPI_STATUS
 AcpiUtMutexInitialize(
-    void);
+        void);
 
 void
 AcpiUtMutexTerminate(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiUtAcquireMutex(
-    ACPI_MUTEX_HANDLE       MutexId);
+        ACPI_MUTEX_HANDLE       MutexId);
 
 ACPI_STATUS
 AcpiUtReleaseMutex(
-    ACPI_MUTEX_HANDLE       MutexId);
+        ACPI_MUTEX_HANDLE       MutexId);
 
 
 /*
@@ -1001,57 +1000,57 @@ AcpiUtReleaseMutex(
  */
 ACPI_STATUS
 AcpiUtCreateCaches(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiUtDeleteCaches(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiUtValidateBuffer(
-    ACPI_BUFFER             *Buffer);
+        ACPI_BUFFER             *Buffer);
 
 ACPI_STATUS
 AcpiUtInitializeBuffer(
-    ACPI_BUFFER             *Buffer,
-    ACPI_SIZE               RequiredLength);
+        ACPI_BUFFER             *Buffer,
+        ACPI_SIZE               RequiredLength);
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 void *
 AcpiUtAllocateAndTrack(
-    ACPI_SIZE               Size,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line);
+        ACPI_SIZE               Size,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line);
 
 void *
 AcpiUtAllocateZeroedAndTrack(
-    ACPI_SIZE               Size,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line);
+        ACPI_SIZE               Size,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line);
 
 void
 AcpiUtFreeAndTrack(
-    void                    *Address,
-    UINT32                  Component,
-    const char              *Module,
-    UINT32                  Line);
+        void                    *Address,
+        UINT32                  Component,
+        const char              *Module,
+        UINT32                  Line);
 
 void
 AcpiUtDumpAllocationInfo(
-    void);
+        void);
 
 void
 AcpiUtDumpAllocations(
-    UINT32                  Component,
-    const char              *Module);
+        UINT32                  Component,
+        const char              *Module);
 
 ACPI_STATUS
 AcpiUtCreateList(
-    const char              *ListName,
-    UINT16                  ObjectSize,
-    ACPI_MEMORY_LIST        **ReturnCache);
+        const char              *ListName,
+        UINT16                  ObjectSize,
+        ACPI_MEMORY_LIST        **ReturnCache);
 
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */
 
@@ -1061,26 +1060,26 @@ AcpiUtCreateList(
  */
 ACPI_STATUS
 AcpiUtAddAddressRange(
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Length,
-    ACPI_NAMESPACE_NODE     *RegionNode);
+        ACPI_ADR_SPACE_TYPE     SpaceId,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  Length,
+        ACPI_NAMESPACE_NODE     *RegionNode);
 
 void
 AcpiUtRemoveAddressRange(
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_NAMESPACE_NODE     *RegionNode);
+        ACPI_ADR_SPACE_TYPE     SpaceId,
+        ACPI_NAMESPACE_NODE     *RegionNode);
 
 UINT32
 AcpiUtCheckAddressRange(
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Length,
-    BOOLEAN                 Warn);
+        ACPI_ADR_SPACE_TYPE     SpaceId,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  Length,
+        BOOLEAN                 Warn);
 
 void
 AcpiUtDeleteAddressLists(
-    void);
+        void);
 
 
 /*
@@ -1088,46 +1087,46 @@ AcpiUtDeleteAddressLists(
  */
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedWarning(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Pathname,
-    UINT8                   NodeFlags,
-    const char              *Format,
-    ...);
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        char                    *Pathname,
+        UINT8                   NodeFlags,
+        const char              *Format,
+        ...);
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedInfo(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Pathname,
-    UINT8                   NodeFlags,
-    const char              *Format,
-    ...);
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        char                    *Pathname,
+        UINT8                   NodeFlags,
+        const char              *Format,
+        ...);
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtPredefinedBiosError(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Pathname,
-    UINT8                   NodeFlags,
-    const char              *Format,
-    ...);
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        char                    *Pathname,
+        UINT8                   NodeFlags,
+        const char              *Format,
+        ...);
 
 void
 AcpiUtNamespaceError(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *InternalName,
-    ACPI_STATUS             LookupStatus);
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        const char              *InternalName,
+        ACPI_STATUS             LookupStatus);
 
 void
 AcpiUtMethodError(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Message,
-    ACPI_NAMESPACE_NODE     *Node,
-    const char              *Path,
-    ACPI_STATUS             LookupStatus);
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        const char              *Message,
+        ACPI_NAMESPACE_NODE     *Node,
+        const char              *Path,
+        ACPI_STATUS             LookupStatus);
 
 
 /*
@@ -1135,15 +1134,15 @@ AcpiUtMethodError(
  */
 const AH_PREDEFINED_NAME *
 AcpiAhMatchPredefinedName(
-    char                    *Nameseg);
+        char                    *Nameseg);
 
 const AH_DEVICE_ID *
 AcpiAhMatchHardwareId(
-    char                    *Hid);
+        char                    *Hid);
 
 const char *
 AcpiAhMatchUuid(
-    UINT8                   *Data);
+        UINT8                   *Data);
 
 
 /*
@@ -1152,8 +1151,8 @@ AcpiAhMatchUuid(
 #if (defined ACPI_ASL_COMPILER || defined ACPI_EXEC_APP || defined ACPI_HELP_APP)
 void
 AcpiUtConvertStringToUuid(
-    char                    *InString,
-    UINT8                   *UuidBuffer);
+        char                    *InString,
+        UINT8                   *UuidBuffer);
 #endif
 
 #endif /* _ACUTILS_H */

@@ -128,148 +128,127 @@ ACPI_MODULE_NAME("utresrc")
  * Strings used to decode resource descriptors.
  * Used by both the disassembler and the debugger resource dump routines
  */
-const char                      *AcpiGbl_BmDecode[] =
-{
+const char                      *AcpiGbl_BmDecode[] = {
 	"NotBusMaster",
 	"BusMaster"
 };
 
-const char                      *AcpiGbl_ConfigDecode[] =
-{
+const char                      *AcpiGbl_ConfigDecode[] = {
 	"0 - Good Configuration",
 	"1 - Acceptable Configuration",
 	"2 - Suboptimal Configuration",
 	"3 - ***Invalid Configuration***",
 };
 
-const char                      *AcpiGbl_ConsumeDecode[] =
-{
+const char                      *AcpiGbl_ConsumeDecode[] = {
 	"ResourceProducer",
 	"ResourceConsumer"
 };
 
-const char                      *AcpiGbl_DecDecode[] =
-{
+const char                      *AcpiGbl_DecDecode[] = {
 	"PosDecode",
 	"SubDecode"
 };
 
-const char                      *AcpiGbl_HeDecode[] =
-{
+const char                      *AcpiGbl_HeDecode[] = {
 	"Level",
 	"Edge"
 };
 
-const char                      *AcpiGbl_IoDecode[] =
-{
+const char                      *AcpiGbl_IoDecode[] = {
 	"Decode10",
 	"Decode16"
 };
 
-const char                      *AcpiGbl_LlDecode[] =
-{
+const char                      *AcpiGbl_LlDecode[] = {
 	"ActiveHigh",
 	"ActiveLow",
 	"ActiveBoth",
 	"Reserved"
 };
 
-const char                      *AcpiGbl_MaxDecode[] =
-{
+const char                      *AcpiGbl_MaxDecode[] = {
 	"MaxNotFixed",
 	"MaxFixed"
 };
 
-const char                      *AcpiGbl_MemDecode[] =
-{
+const char                      *AcpiGbl_MemDecode[] = {
 	"NonCacheable",
 	"Cacheable",
 	"WriteCombining",
 	"Prefetchable"
 };
 
-const char                      *AcpiGbl_MinDecode[] =
-{
+const char                      *AcpiGbl_MinDecode[] = {
 	"MinNotFixed",
 	"MinFixed"
 };
 
-const char                      *AcpiGbl_MtpDecode[] =
-{
+const char                      *AcpiGbl_MtpDecode[] = {
 	"AddressRangeMemory",
 	"AddressRangeReserved",
 	"AddressRangeACPI",
 	"AddressRangeNVS"
 };
 
-const char                      *AcpiGbl_RngDecode[] =
-{
+const char                      *AcpiGbl_RngDecode[] = {
 	"InvalidRanges",
 	"NonISAOnlyRanges",
 	"ISAOnlyRanges",
 	"EntireRange"
 };
 
-const char                      *AcpiGbl_RwDecode[] =
-{
+const char                      *AcpiGbl_RwDecode[] = {
 	"ReadOnly",
 	"ReadWrite"
 };
 
-const char                      *AcpiGbl_ShrDecode[] =
-{
+const char                      *AcpiGbl_ShrDecode[] = {
 	"Exclusive",
 	"Shared",
 	"ExclusiveAndWake",         /* ACPI 5.0 */
 	"SharedAndWake"             /* ACPI 5.0 */
 };
 
-const char                      *AcpiGbl_SizDecode[] =
-{
+const char                      *AcpiGbl_SizDecode[] = {
 	"Transfer8",
 	"Transfer8_16",
 	"Transfer16",
 	"InvalidSize"
 };
 
-const char                      *AcpiGbl_TrsDecode[] =
-{
+const char                      *AcpiGbl_TrsDecode[] = {
 	"DenseTranslation",
 	"SparseTranslation"
 };
 
-const char                      *AcpiGbl_TtpDecode[] =
-{
+const char                      *AcpiGbl_TtpDecode[] = {
 	"TypeStatic",
 	"TypeTranslation"
 };
 
-const char                      *AcpiGbl_TypDecode[] =
-{
+const char                      *AcpiGbl_TypDecode[] = {
 	"Compatibility",
 	"TypeA",
 	"TypeB",
 	"TypeF"
 };
 
-const char                      *AcpiGbl_PpcDecode[] =
-{
+const char                      *AcpiGbl_PpcDecode[] = {
 	"PullDefault",
 	"PullUp",
 	"PullDown",
 	"PullNone"
 };
 
-const char                      *AcpiGbl_IorDecode[] =
-{
+const char                      *AcpiGbl_IorDecode[] = {
 	"IoRestrictionNone",
 	"IoRestrictionInputOnly",
 	"IoRestrictionOutputOnly",
 	"IoRestrictionNoneAndPreserve"
 };
 
-const char                      *AcpiGbl_DtsDecode[] =
-{
+const char                      *AcpiGbl_DtsDecode[] = {
 	"Width8bit",
 	"Width16bit",
 	"Width32bit",
@@ -280,16 +259,14 @@ const char                      *AcpiGbl_DtsDecode[] =
 
 /* GPIO connection type */
 
-const char                      *AcpiGbl_CtDecode[] =
-{
+const char                      *AcpiGbl_CtDecode[] = {
 	"Interrupt",
 	"I/O"
 };
 
 /* Serial bus type */
 
-const char                      *AcpiGbl_SbtDecode[] =
-{
+const char                      *AcpiGbl_SbtDecode[] = {
 	"/* UNKNOWN serial bus type */",
 	"I2C",
 	"SPI",
@@ -298,64 +275,56 @@ const char                      *AcpiGbl_SbtDecode[] =
 
 /* I2C serial bus access mode */
 
-const char                      *AcpiGbl_AmDecode[] =
-{
+const char                      *AcpiGbl_AmDecode[] = {
 	"AddressingMode7Bit",
 	"AddressingMode10Bit"
 };
 
 /* I2C serial bus slave mode */
 
-const char                      *AcpiGbl_SmDecode[] =
-{
+const char                      *AcpiGbl_SmDecode[] = {
 	"ControllerInitiated",
 	"DeviceInitiated"
 };
 
 /* SPI serial bus wire mode */
 
-const char                      *AcpiGbl_WmDecode[] =
-{
+const char                      *AcpiGbl_WmDecode[] = {
 	"FourWireMode",
 	"ThreeWireMode"
 };
 
 /* SPI serial clock phase */
 
-const char                      *AcpiGbl_CphDecode[] =
-{
+const char                      *AcpiGbl_CphDecode[] = {
 	"ClockPhaseFirst",
 	"ClockPhaseSecond"
 };
 
 /* SPI serial bus clock polarity */
 
-const char                      *AcpiGbl_CpoDecode[] =
-{
+const char                      *AcpiGbl_CpoDecode[] = {
 	"ClockPolarityLow",
 	"ClockPolarityHigh"
 };
 
 /* SPI serial bus device polarity */
 
-const char                      *AcpiGbl_DpDecode[] =
-{
+const char                      *AcpiGbl_DpDecode[] = {
 	"PolarityLow",
 	"PolarityHigh"
 };
 
 /* UART serial bus endian */
 
-const char                      *AcpiGbl_EdDecode[] =
-{
+const char                      *AcpiGbl_EdDecode[] = {
 	"LittleEndian",
 	"BigEndian"
 };
 
 /* UART serial bus bits per byte */
 
-const char                      *AcpiGbl_BpbDecode[] =
-{
+const char                      *AcpiGbl_BpbDecode[] = {
 	"DataBitsFive",
 	"DataBitsSix",
 	"DataBitsSeven",
@@ -368,8 +337,7 @@ const char                      *AcpiGbl_BpbDecode[] =
 
 /* UART serial bus stop bits */
 
-const char                      *AcpiGbl_SbDecode[] =
-{
+const char                      *AcpiGbl_SbDecode[] = {
 	"StopBitsZero",
 	"StopBitsOne",
 	"StopBitsOnePlusHalf",
@@ -378,8 +346,7 @@ const char                      *AcpiGbl_SbDecode[] =
 
 /* UART serial bus flow control */
 
-const char                      *AcpiGbl_FcDecode[] =
-{
+const char                      *AcpiGbl_FcDecode[] = {
 	"FlowControlNone",
 	"FlowControlHardware",
 	"FlowControlXON",
@@ -388,8 +355,7 @@ const char                      *AcpiGbl_FcDecode[] =
 
 /* UART serial bus parity type */
 
-const char                      *AcpiGbl_PtDecode[] =
-{
+const char                      *AcpiGbl_PtDecode[] = {
 	"ParityTypeNone",
 	"ParityTypeEven",
 	"ParityTypeOdd",
@@ -407,8 +373,7 @@ const char                      *AcpiGbl_PtDecode[] =
  * Base sizes of the raw AML resource descriptors, indexed by resource type.
  * Zero indicates a reserved (and therefore invalid) resource type.
  */
-const UINT8                 AcpiGbl_ResourceAmlSizes[] =
-{
+const UINT8                 AcpiGbl_ResourceAmlSizes[] = {
 	/* Small descriptors */
 
 	0,
@@ -447,8 +412,7 @@ const UINT8                 AcpiGbl_ResourceAmlSizes[] =
 	ACPI_AML_SIZE_LARGE(AML_RESOURCE_COMMON_SERIALBUS),
 };
 
-const UINT8                 AcpiGbl_ResourceAmlSerialBusSizes[] =
-{
+const UINT8                 AcpiGbl_ResourceAmlSerialBusSizes[] = {
 	0,
 	ACPI_AML_SIZE_LARGE(AML_RESOURCE_I2C_SERIALBUS),
 	ACPI_AML_SIZE_LARGE(AML_RESOURCE_SPI_SERIALBUS),
@@ -462,8 +426,7 @@ const UINT8                 AcpiGbl_ResourceAmlSerialBusSizes[] =
  * lengths must meet the minimum required length, etc.
  * Zero indicates a reserved (and therefore invalid) resource type.
  */
-static const UINT8          AcpiGbl_ResourceTypes[] =
-{
+static const UINT8          AcpiGbl_ResourceTypes[] = {
 	/* Small descriptors */
 
 	0,
@@ -523,11 +486,11 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
 
 ACPI_STATUS
 AcpiUtWalkAmlResources(
-    ACPI_WALK_STATE         *WalkState,
-    UINT8                   *Aml,
-    ACPI_SIZE               AmlLength,
-    ACPI_WALK_AML_CALLBACK  UserFunction,
-    void                    **Context)
+        ACPI_WALK_STATE         *WalkState,
+        UINT8                   *Aml,
+        ACPI_SIZE               AmlLength,
+        ACPI_WALK_AML_CALLBACK  UserFunction,
+        void                    **Context)
 {
 	ACPI_STATUS             Status;
 	UINT8                   *EndAml;
@@ -543,9 +506,7 @@ AcpiUtWalkAmlResources(
 	/* The absolute minimum resource template is one EndTag descriptor */
 
 	if (AmlLength < sizeof(AML_RESOURCE_END_TAG))
-	{
 		return_ACPI_STATUS(AE_AML_NO_RESOURCE_END_TAG);
-	}
 
 	/* Point to the end of the resource template buffer */
 
@@ -553,14 +514,12 @@ AcpiUtWalkAmlResources(
 
 	/* Walk the byte list, abort on any invalid descriptor type or length */
 
-	while (Aml < EndAml)
-	{
+	while (Aml < EndAml) {
 		/* Validate the Resource Type and Resource Length */
 
 		Status = AcpiUtValidateResource(WalkState, Aml, &ResourceIndex);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			/*
 			 * Exit on failure. Cannot continue because the descriptor
 			 * length may be bogus also.
@@ -574,36 +533,28 @@ AcpiUtWalkAmlResources(
 
 		/* Invoke the user function */
 
-		if (UserFunction)
-		{
+		if (UserFunction) {
 			Status = UserFunction(
-			             Aml, Length, Offset, ResourceIndex, Context);
+			                 Aml, Length, Offset, ResourceIndex, Context);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 		}
 
 		/* An EndTag descriptor terminates this resource template */
 
-		if (AcpiUtGetResourceType(Aml) == ACPI_RESOURCE_NAME_END_TAG)
-		{
+		if (AcpiUtGetResourceType(Aml) == ACPI_RESOURCE_NAME_END_TAG) {
 			/*
 			 * There must be at least one more byte in the buffer for
 			 * the 2nd byte of the EndTag
 			 */
 			if ((Aml + 1) >= EndAml)
-			{
 				return_ACPI_STATUS(AE_AML_NO_RESOURCE_END_TAG);
-			}
 
 			/* Return the pointer to the EndTag if requested */
 
 			if (!UserFunction)
-			{
 				*Context = Aml;
-			}
 
 			/* Normal exit */
 
@@ -616,17 +567,14 @@ AcpiUtWalkAmlResources(
 
 	/* Did not find an EndTag descriptor */
 
-	if (UserFunction)
-	{
+	if (UserFunction) {
 		/* Insert an EndTag anyway. AcpiRsGetListLength always leaves room */
 
 		(void) AcpiUtValidateResource(WalkState, EndTag, &ResourceIndex);
 		Status = UserFunction(EndTag, 2, Offset, ResourceIndex, Context);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 	return_ACPI_STATUS(AE_AML_NO_RESOURCE_END_TAG);
@@ -652,9 +600,9 @@ AcpiUtWalkAmlResources(
 
 ACPI_STATUS
 AcpiUtValidateResource(
-    ACPI_WALK_STATE         *WalkState,
-    void                    *Aml,
-    UINT8                   *ReturnIndex)
+        ACPI_WALK_STATE         *WalkState,
+        void                    *Aml,
+        UINT8                   *ReturnIndex)
 {
 	AML_RESOURCE            *AmlResource;
 	UINT8                   ResourceType;
@@ -675,23 +623,18 @@ AcpiUtValidateResource(
 	 * Byte 0 contains the descriptor name (Resource Type)
 	 * Examine the large/small bit in the resource header
 	 */
-	if (ResourceType & ACPI_RESOURCE_NAME_LARGE)
-	{
+	if (ResourceType & ACPI_RESOURCE_NAME_LARGE) {
 		/* Verify the large resource type (name) against the max */
 
 		if (ResourceType > ACPI_RESOURCE_NAME_LARGE_MAX)
-		{
 			goto InvalidResource;
-		}
 
 		/*
 		 * Large Resource Type -- bits 6:0 contain the name
 		 * Translate range 0x80-0x8B to index range 0x10-0x1B
 		 */
 		ResourceIndex = (UINT8)(ResourceType - 0x70);
-	}
-	else
-	{
+	} else {
 		/*
 		 * Small Resource Type -- bits 6:3 contain the name
 		 * Shift range to index range 0x00-0x0F
@@ -705,9 +648,7 @@ AcpiUtValidateResource(
 	 * Zero indicates an invalid resource.
 	 */
 	if (!AcpiGbl_ResourceTypes[ResourceIndex])
-	{
 		goto InvalidResource;
-	}
 
 	/*
 	 * Validate the ResourceLength field. This ensures that the length
@@ -718,16 +659,13 @@ AcpiUtValidateResource(
 
 	/* Validate based upon the type of resource - fixed length or variable */
 
-	switch (AcpiGbl_ResourceTypes[ResourceIndex])
-	{
+	switch (AcpiGbl_ResourceTypes[ResourceIndex]) {
 	case ACPI_FIXED_LENGTH:
 
 		/* Fixed length resource, length must match exactly */
 
 		if (ResourceLength != MinimumResourceLength)
-		{
 			goto BadResourceLength;
-		}
 
 		break;
 
@@ -736,9 +674,7 @@ AcpiUtValidateResource(
 		/* Variable length resource, length must be at least the minimum */
 
 		if (ResourceLength < MinimumResourceLength)
-		{
 			goto BadResourceLength;
-		}
 
 		break;
 
@@ -747,10 +683,8 @@ AcpiUtValidateResource(
 		/* Small variable length resource, length can be (Min) or (Min-1) */
 
 		if ((ResourceLength > MinimumResourceLength) ||
-		        (ResourceLength < (MinimumResourceLength - 1)))
-		{
+		    (ResourceLength < (MinimumResourceLength - 1)))
 			goto BadResourceLength;
-		}
 
 		break;
 
@@ -763,15 +697,12 @@ AcpiUtValidateResource(
 
 	AmlResource = ACPI_CAST_PTR(AML_RESOURCE, Aml);
 
-	if (ResourceType == ACPI_RESOURCE_NAME_SERIAL_BUS)
-	{
+	if (ResourceType == ACPI_RESOURCE_NAME_SERIAL_BUS) {
 		/* Validate the BusType field */
 
 		if ((AmlResource->CommonSerialBus.Type == 0) ||
-		        (AmlResource->CommonSerialBus.Type > AML_RESOURCE_MAX_SERIALBUSTYPE))
-		{
-			if (WalkState)
-			{
+		    (AmlResource->CommonSerialBus.Type > AML_RESOURCE_MAX_SERIALBUSTYPE)) {
+			if (WalkState) {
 				ACPI_ERROR((AE_INFO,
 				            "Invalid/unsupported SerialBus resource descriptor: BusType 0x%2.2X",
 				            AmlResource->CommonSerialBus.Type));
@@ -784,17 +715,14 @@ AcpiUtValidateResource(
 	/* Optionally return the resource table index */
 
 	if (ReturnIndex)
-	{
 		*ReturnIndex = ResourceIndex;
-	}
 
 	return (AE_OK);
 
 
 InvalidResource:
 
-	if (WalkState)
-	{
+	if (WalkState) {
 		ACPI_ERROR((AE_INFO,
 		            "Invalid/unsupported resource descriptor: Type 0x%2.2X",
 		            ResourceType));
@@ -804,8 +732,7 @@ InvalidResource:
 
 BadResourceLength:
 
-	if (WalkState)
-	{
+	if (WalkState) {
 		ACPI_ERROR((AE_INFO,
 		            "Invalid resource descriptor length: Type "
 		            "0x%2.2X, Length 0x%4.4X, MinLength 0x%4.4X",
@@ -832,7 +759,7 @@ BadResourceLength:
 
 UINT8
 AcpiUtGetResourceType(
-    void                    *Aml)
+        void                    *Aml)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -841,14 +768,11 @@ AcpiUtGetResourceType(
 	 * Byte 0 contains the descriptor name (Resource Type)
 	 * Examine the large/small bit in the resource header
 	 */
-	if (ACPI_GET8(Aml) & ACPI_RESOURCE_NAME_LARGE)
-	{
+	if (ACPI_GET8(Aml) & ACPI_RESOURCE_NAME_LARGE) {
 		/* Large Resource Type -- bits 6:0 contain the name */
 
 		return (ACPI_GET8(Aml));
-	}
-	else
-	{
+	} else {
 		/* Small Resource Type -- bits 6:3 contain the name */
 
 		return ((UINT8)(ACPI_GET8(Aml) & ACPI_RESOURCE_NAME_SMALL_MASK));
@@ -872,7 +796,7 @@ AcpiUtGetResourceType(
 
 UINT16
 AcpiUtGetResourceLength(
-    void                    *Aml)
+        void                    *Aml)
 {
 	ACPI_RS_LENGTH          ResourceLength;
 
@@ -884,15 +808,12 @@ AcpiUtGetResourceLength(
 	 * Byte 0 contains the descriptor name (Resource Type)
 	 * Examine the large/small bit in the resource header
 	 */
-	if (ACPI_GET8(Aml) & ACPI_RESOURCE_NAME_LARGE)
-	{
+	if (ACPI_GET8(Aml) & ACPI_RESOURCE_NAME_LARGE) {
 		/* Large Resource type -- bytes 1-2 contain the 16-bit length */
 
 		ACPI_MOVE_16_TO_16(&ResourceLength, ACPI_ADD_PTR(UINT8, Aml, 1));
 
-	}
-	else
-	{
+	} else {
 		/* Small Resource type -- bits 2:0 of byte 0 contain the length */
 
 		ResourceLength = (UINT16)(ACPI_GET8(Aml) &
@@ -917,7 +838,7 @@ AcpiUtGetResourceLength(
 
 UINT8
 AcpiUtGetResourceHeaderLength(
-    void                    *Aml)
+        void                    *Aml)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -925,13 +846,9 @@ AcpiUtGetResourceHeaderLength(
 	/* Examine the large/small bit in the resource header */
 
 	if (ACPI_GET8(Aml) & ACPI_RESOURCE_NAME_LARGE)
-	{
 		return (sizeof(AML_RESOURCE_LARGE_HEADER));
-	}
 	else
-	{
 		return (sizeof(AML_RESOURCE_SMALL_HEADER));
-	}
 }
 
 
@@ -951,7 +868,7 @@ AcpiUtGetResourceHeaderLength(
 
 UINT32
 AcpiUtGetDescriptorLength(
-    void                    *Aml)
+        void                    *Aml)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -981,8 +898,8 @@ AcpiUtGetDescriptorLength(
 
 ACPI_STATUS
 AcpiUtGetResourceEndTag(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   **EndTag)
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        UINT8                   **EndTag)
 {
 	ACPI_STATUS             Status;
 
@@ -992,8 +909,7 @@ AcpiUtGetResourceEndTag(
 
 	/* Allow a buffer length of zero */
 
-	if (!ObjDesc->Buffer.Length)
-	{
+	if (!ObjDesc->Buffer.Length) {
 		*EndTag = ObjDesc->Buffer.Pointer;
 		return_ACPI_STATUS(AE_OK);
 	}

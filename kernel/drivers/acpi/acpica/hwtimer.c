@@ -137,24 +137,18 @@ ACPI_MODULE_NAME("hwtimer")
 
 ACPI_STATUS
 AcpiGetTimerResolution(
-    UINT32                  *Resolution)
+        UINT32                  *Resolution)
 {
 	ACPI_FUNCTION_TRACE(AcpiGetTimerResolution);
 
 
 	if (!Resolution)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	if ((AcpiGbl_FADT.Flags & ACPI_FADT_32BIT_TIMER) == 0)
-	{
 		*Resolution = 24;
-	}
 	else
-	{
 		*Resolution = 32;
-	}
 
 	return_ACPI_STATUS(AE_OK);
 }
@@ -176,7 +170,7 @@ ACPI_EXPORT_SYMBOL(AcpiGetTimerResolution)
 
 ACPI_STATUS
 AcpiGetTimer(
-    UINT32                  *Ticks)
+        UINT32                  *Ticks)
 {
 	ACPI_STATUS             Status;
 
@@ -185,16 +179,12 @@ AcpiGetTimer(
 
 
 	if (!Ticks)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* ACPI 5.0A: PM Timer is optional */
 
 	if (!AcpiGbl_FADT.XPmTimerBlock.Address)
-	{
 		return_ACPI_STATUS(AE_SUPPORT);
-	}
 
 	Status = AcpiHwRead(Ticks, &AcpiGbl_FADT.XPmTimerBlock);
 	return_ACPI_STATUS(Status);
@@ -234,9 +224,9 @@ ACPI_EXPORT_SYMBOL(AcpiGetTimer)
 
 ACPI_STATUS
 AcpiGetTimerDuration(
-    UINT32                  StartTicks,
-    UINT32                  EndTicks,
-    UINT32                  *TimeElapsed)
+        UINT32                  StartTicks,
+        UINT32                  EndTicks,
+        UINT32                  *TimeElapsed)
 {
 	ACPI_STATUS             Status;
 	UINT32                  DeltaTicks;
@@ -247,42 +237,30 @@ AcpiGetTimerDuration(
 
 
 	if (!TimeElapsed)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* ACPI 5.0A: PM Timer is optional */
 
 	if (!AcpiGbl_FADT.XPmTimerBlock.Address)
-	{
 		return_ACPI_STATUS(AE_SUPPORT);
-	}
 
 	/*
 	 * Compute Tick Delta:
 	 * Handle (max one) timer rollovers on 24-bit versus 32-bit timers.
 	 */
 	if (StartTicks < EndTicks)
-	{
 		DeltaTicks = EndTicks - StartTicks;
-	}
-	else if (StartTicks > EndTicks)
-	{
-		if ((AcpiGbl_FADT.Flags & ACPI_FADT_32BIT_TIMER) == 0)
-		{
+	else if (StartTicks > EndTicks) {
+		if ((AcpiGbl_FADT.Flags & ACPI_FADT_32BIT_TIMER) == 0) {
 			/* 24-bit Timer */
 
 			DeltaTicks = (((0x00FFFFFF - StartTicks) + EndTicks) & 0x00FFFFFF);
-		}
-		else
-		{
+		} else {
 			/* 32-bit Timer */
 
 			DeltaTicks = (0xFFFFFFFF - StartTicks) + EndTicks;
 		}
-	}
-	else /* StartTicks == EndTicks */
-	{
+	} else { /* StartTicks == EndTicks */
 		*TimeElapsed = 0;
 		return_ACPI_STATUS(AE_OK);
 	}

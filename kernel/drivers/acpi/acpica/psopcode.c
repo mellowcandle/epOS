@@ -257,8 +257,7 @@ ACPI_MODULE_NAME("psopcode")
  * Master Opcode information table. A summary of everything we know about each
  * opcode, all in one place.
  */
-const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
-{
+const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] = {
 	/*! [Begin] no source code translation */
 	/* Index           Name                 Parser Args               Interpreter Args                ObjectType                    Class                      Type                  Flags */
 

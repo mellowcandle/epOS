@@ -95,8 +95,7 @@
 
 extern uint32_t pdt;
 
-typedef struct
-{
+typedef struct {
 
 	uint32_t total_pages;
 	uint32_t used_pages;
@@ -131,12 +130,11 @@ void *mem_page_map_kernel(addr_t physical, int count, int flags);
 
 int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int flags);
 
-static inline int mem_pages_map_pdt_multiple(uint32_t *target_pdt, addr_t physical, void *virtual, int count, int flags)
+static inline int mem_pages_map_pdt_multiple(uint32_t *target_pdt, addr_t physical, void *virtual,
+                int count, int flags)
 {
 	for (int i = 0; i < count; i++)
-	{
 		mem_page_map_pdt(target_pdt, physical + (PAGE_SIZE * i), virtual + (PAGE_SIZE * i), flags);
-	}
 
 	return 0;
 }
@@ -146,9 +144,7 @@ void mem_page_unmap(void *virtual);
 static inline void mem_page_unmap_multiple(void *virtual, int count)
 {
 	for (int i = 0; i < count; i++)
-	{
 		mem_page_unmap(virtual + (i * PAGE_SIZE));
-	}
 }
 
 static inline int mem_identity_map(addr_t addr, int flags)
@@ -159,9 +155,7 @@ static inline int mem_identity_map(addr_t addr, int flags)
 static inline int mem_identity_map_multiple(addr_t addr, int flags, int count)
 {
 	for (int i = 0 ; i < count; i++)
-	{
 		mem_page_map(addr + (i * PAGE_SIZE), (void *) addr + (i * PAGE_SIZE), flags);
-	}
 
 	return 0;
 }
@@ -169,9 +163,7 @@ static inline int mem_identity_map_multiple(addr_t addr, int flags, int count)
 static inline int mem_map_con_pages(addr_t physical, uint32_t count, addr_t virtual, int flags)
 {
 	for (uint32_t i = 0 ; i < count; i++)
-	{
 		mem_page_map(physical + (i * PAGE_SIZE), (void *)virtual + (i * PAGE_SIZE), flags);
-	}
 
 	return 0;
 

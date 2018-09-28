@@ -136,8 +136,7 @@
 
 /* _FDE return value */
 
-typedef struct acpi_fde_info
-{
+typedef struct acpi_fde_info {
 	UINT32              Floppy0;
 	UINT32              Floppy1;
 	UINT32              Floppy2;
@@ -150,8 +149,7 @@ typedef struct acpi_fde_info
  * _GRT return value
  * _SRT input value
  */
-typedef struct acpi_grt_info
-{
+typedef struct acpi_grt_info {
 	UINT16              Year;
 	UINT8               Month;
 	UINT8               Day;
@@ -168,8 +166,7 @@ typedef struct acpi_grt_info
 
 /* _GTM return value */
 
-typedef struct acpi_gtm_info
-{
+typedef struct acpi_gtm_info {
 	UINT32              PioSpeed0;
 	UINT32              DmaSpeed0;
 	UINT32              PioSpeed1;
@@ -187,8 +184,7 @@ typedef struct acpi_gtm_info
  * Note: This structure is returned from the AcpiDecodePldBuffer
  * interface.
  */
-typedef struct acpi_pld_info
-{
+typedef struct acpi_pld_info {
 	UINT8               Revision;
 	UINT8               IgnoreColor;
 	UINT8               Red;

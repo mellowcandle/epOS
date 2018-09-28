@@ -137,7 +137,7 @@ ACPI_MODULE_NAME("hwsleep")
 
 ACPI_STATUS
 AcpiHwLegacySleep(
-    UINT8                   SleepState)
+        UINT8                   SleepState)
 {
 	ACPI_BIT_REGISTER_INFO  *SleepTypeRegInfo;
 	ACPI_BIT_REGISTER_INFO  *SleepEnableRegInfo;
@@ -159,18 +159,14 @@ AcpiHwLegacySleep(
 	                              ACPI_CLEAR_STATUS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Clear all fixed and general purpose status bits */
 
 	Status = AcpiHwClearAcpiStatus();
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * 1) Disable/Clear all GPEs
@@ -179,18 +175,14 @@ AcpiHwLegacySleep(
 	Status = AcpiHwDisableAllGpes();
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	AcpiGbl_SystemAwakeAndRunning = FALSE;
 
 	Status = AcpiHwEnableAllWakeupGpes();
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Get current value of PM1A control */
 
@@ -198,9 +190,7 @@ AcpiHwLegacySleep(
 	                            &Pm1aControl);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INIT,
 	                  "Entering sleep state [S%u]\n", SleepState));
@@ -226,9 +216,7 @@ AcpiHwLegacySleep(
 	Status = AcpiHwWritePm1Control(Pm1aControl, Pm1bControl);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Insert the sleep enable (SLP_EN) bit */
 
@@ -244,12 +232,9 @@ AcpiHwLegacySleep(
 	Status = AcpiHwWritePm1Control(Pm1aControl, Pm1bControl);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (SleepState > ACPI_STATE_S3)
-	{
+	if (SleepState > ACPI_STATE_S3) {
 		/*
 		 * We wanted to sleep > S3, but it didn't happen (by virtue of the
 		 * fact that we are still executing!)
@@ -267,24 +252,18 @@ AcpiHwLegacySleep(
 		                             SleepEnableRegInfo->AccessBitMask);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 	/* Wait for transition back to Working State */
 
-	do
-	{
+	do {
 		Status = AcpiReadBitRegister(ACPI_BITREG_WAKE_STATUS, &InValue);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
-	}
-	while (!InValue);
+	} while (!InValue);
 
 	return_ACPI_STATUS(AE_OK);
 }
@@ -306,7 +285,7 @@ AcpiHwLegacySleep(
 
 ACPI_STATUS
 AcpiHwLegacyWakePrep(
-    UINT8                   SleepState)
+        UINT8                   SleepState)
 {
 	ACPI_STATUS             Status;
 	ACPI_BIT_REGISTER_INFO  *SleepTypeRegInfo;
@@ -325,20 +304,18 @@ AcpiHwLegacyWakePrep(
 	Status = AcpiGetSleepTypeData(ACPI_STATE_S0,
 	                              &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		SleepTypeRegInfo =
-		    AcpiHwGetBitRegisterInfo(ACPI_BITREG_SLEEP_TYPE);
+		        AcpiHwGetBitRegisterInfo(ACPI_BITREG_SLEEP_TYPE);
 		SleepEnableRegInfo =
-		    AcpiHwGetBitRegisterInfo(ACPI_BITREG_SLEEP_ENABLE);
+		        AcpiHwGetBitRegisterInfo(ACPI_BITREG_SLEEP_ENABLE);
 
 		/* Get current value of PM1A control */
 
 		Status = AcpiHwRegisterRead(ACPI_REGISTER_PM1_CONTROL,
 		                            &Pm1aControl);
 
-		if (ACPI_SUCCESS(Status))
-		{
+		if (ACPI_SUCCESS(Status)) {
 			/* Clear the SLP_EN and SLP_TYP fields */
 
 			Pm1aControl &= ~(SleepTypeRegInfo->AccessBitMask |
@@ -377,7 +354,7 @@ AcpiHwLegacyWakePrep(
 
 ACPI_STATUS
 AcpiHwLegacyWake(
-    UINT8                   SleepState)
+        UINT8                   SleepState)
 {
 	ACPI_STATUS             Status;
 
@@ -401,16 +378,12 @@ AcpiHwLegacyWake(
 	Status = AcpiHwDisableAllGpes();
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiHwEnableAllRuntimeGpes();
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Now we can execute _WAK, etc. Some machines require that the GPEs
@@ -430,12 +403,12 @@ AcpiHwLegacyWake(
 	/* Enable power button */
 
 	(void) AcpiWriteBitRegister(
-	    AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
-	    ACPI_ENABLE_EVENT);
+	        AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
+	        ACPI_ENABLE_EVENT);
 
 	(void) AcpiWriteBitRegister(
-	    AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
-	    ACPI_CLEAR_STATUS);
+	        AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
+	        ACPI_CLEAR_STATUS);
 
 	AcpiHwExecuteSleepMethod(METHOD_PATHNAME__SST, ACPI_SST_WORKING);
 	return_ACPI_STATUS(Status);

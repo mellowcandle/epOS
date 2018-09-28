@@ -125,20 +125,20 @@ ACPI_MODULE_NAME("utobject")
 
 static ACPI_STATUS
 AcpiUtGetSimpleObjectSize(
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_SIZE               *ObjLength);
+        ACPI_OPERAND_OBJECT     *Obj,
+        ACPI_SIZE               *ObjLength);
 
 static ACPI_STATUS
 AcpiUtGetPackageObjectSize(
-    ACPI_OPERAND_OBJECT     *Obj,
-    ACPI_SIZE               *ObjLength);
+        ACPI_OPERAND_OBJECT     *Obj,
+        ACPI_SIZE               *ObjLength);
 
 static ACPI_STATUS
 AcpiUtGetElementLength(
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
+        UINT8                   ObjectType,
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        ACPI_GENERIC_STATE      *State,
+        void                    *Context);
 
 
 /*******************************************************************************
@@ -164,10 +164,10 @@ AcpiUtGetElementLength(
 
 ACPI_OPERAND_OBJECT  *
 AcpiUtCreateInternalObjectDbg(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId,
-    ACPI_OBJECT_TYPE        Type)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        UINT32                  ComponentId,
+        ACPI_OBJECT_TYPE        Type)
 {
 	ACPI_OPERAND_OBJECT     *Object;
 	ACPI_OPERAND_OBJECT     *SecondObject;
@@ -180,15 +180,12 @@ AcpiUtCreateInternalObjectDbg(
 	/* Allocate the raw object descriptor */
 
 	Object = AcpiUtAllocateObjectDescDbg(
-	             ModuleName, LineNumber, ComponentId);
+	                 ModuleName, LineNumber, ComponentId);
 
 	if (!Object)
-	{
 		return_PTR(NULL);
-	}
 
-	switch (Type)
-	{
+	switch (Type) {
 	case ACPI_TYPE_REGION:
 	case ACPI_TYPE_BUFFER_FIELD:
 	case ACPI_TYPE_LOCAL_BANK_FIELD:
@@ -196,10 +193,9 @@ AcpiUtCreateInternalObjectDbg(
 		/* These types require a secondary object */
 
 		SecondObject = AcpiUtAllocateObjectDescDbg(
-		                   ModuleName, LineNumber, ComponentId);
+		                       ModuleName, LineNumber, ComponentId);
 
-		if (!SecondObject)
-		{
+		if (!SecondObject) {
 			AcpiUtDeleteObjectDesc(Object);
 			return_PTR(NULL);
 		}
@@ -246,7 +242,7 @@ AcpiUtCreateInternalObjectDbg(
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreatePackageObject(
-    UINT32                  Count)
+        UINT32                  Count)
 {
 	ACPI_OPERAND_OBJECT     *PackageDesc;
 	ACPI_OPERAND_OBJECT     **PackageElements;
@@ -260,19 +256,16 @@ AcpiUtCreatePackageObject(
 	PackageDesc = AcpiUtCreateInternalObject(ACPI_TYPE_PACKAGE);
 
 	if (!PackageDesc)
-	{
 		return_PTR(NULL);
-	}
 
 	/*
 	 * Create the element array. Count+1 allows the array to be null
 	 * terminated.
 	 */
 	PackageElements = ACPI_ALLOCATE_ZEROED(
-	                      ((ACPI_SIZE) Count + 1) * sizeof(void *));
+	                          ((ACPI_SIZE) Count + 1) * sizeof(void *));
 
-	if (!PackageElements)
-	{
+	if (!PackageElements) {
 		ACPI_FREE(PackageDesc);
 		return_PTR(NULL);
 	}
@@ -297,7 +290,7 @@ AcpiUtCreatePackageObject(
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateIntegerObject(
-    UINT64                  InitialValue)
+        UINT64                  InitialValue)
 {
 	ACPI_OPERAND_OBJECT     *IntegerDesc;
 
@@ -310,9 +303,7 @@ AcpiUtCreateIntegerObject(
 	IntegerDesc = AcpiUtCreateInternalObject(ACPI_TYPE_INTEGER);
 
 	if (!IntegerDesc)
-	{
 		return_PTR(NULL);
-	}
 
 	IntegerDesc->Integer.Value = InitialValue;
 	return_PTR(IntegerDesc);
@@ -333,7 +324,7 @@ AcpiUtCreateIntegerObject(
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateBufferObject(
-    ACPI_SIZE               BufferSize)
+        ACPI_SIZE               BufferSize)
 {
 	ACPI_OPERAND_OBJECT     *BufferDesc;
 	UINT8                   *Buffer = NULL;
@@ -347,20 +338,16 @@ AcpiUtCreateBufferObject(
 	BufferDesc = AcpiUtCreateInternalObject(ACPI_TYPE_BUFFER);
 
 	if (!BufferDesc)
-	{
 		return_PTR(NULL);
-	}
 
 	/* Create an actual buffer only if size > 0 */
 
-	if (BufferSize > 0)
-	{
+	if (BufferSize > 0) {
 		/* Allocate the actual buffer */
 
 		Buffer = ACPI_ALLOCATE_ZEROED(BufferSize);
 
-		if (!Buffer)
-		{
+		if (!Buffer) {
 			ACPI_ERROR((AE_INFO, "Could not allocate size %u",
 			            (UINT32) BufferSize));
 
@@ -397,7 +384,7 @@ AcpiUtCreateBufferObject(
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateStringObject(
-    ACPI_SIZE               StringSize)
+        ACPI_SIZE               StringSize)
 {
 	ACPI_OPERAND_OBJECT     *StringDesc;
 	char                    *String;
@@ -411,9 +398,7 @@ AcpiUtCreateStringObject(
 	StringDesc = AcpiUtCreateInternalObject(ACPI_TYPE_STRING);
 
 	if (!StringDesc)
-	{
 		return_PTR(NULL);
-	}
 
 	/*
 	 * Allocate the actual string buffer -- (Size + 1) for NULL terminator.
@@ -421,8 +406,7 @@ AcpiUtCreateStringObject(
 	 */
 	String = ACPI_ALLOCATE_ZEROED(StringSize + 1);
 
-	if (!String)
-	{
+	if (!String) {
 		ACPI_ERROR((AE_INFO, "Could not allocate size %u",
 		            (UINT32) StringSize));
 
@@ -455,7 +439,7 @@ AcpiUtCreateStringObject(
 
 BOOLEAN
 AcpiUtValidInternalObject(
-    void                    *Object)
+        void                    *Object)
 {
 
 	ACPI_FUNCTION_NAME(UtValidInternalObject);
@@ -463,16 +447,14 @@ AcpiUtValidInternalObject(
 
 	/* Check for a null pointer */
 
-	if (!Object)
-	{
+	if (!Object) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "**** Null Object Ptr\n"));
 		return (FALSE);
 	}
 
 	/* Check the descriptor type field */
 
-	switch (ACPI_GET_DESCRIPTOR_TYPE(Object))
-	{
+	switch (ACPI_GET_DESCRIPTOR_TYPE(Object)) {
 	case ACPI_DESC_TYPE_OPERAND:
 
 		/* The object appears to be a valid ACPI_OPERAND_OBJECT */
@@ -508,9 +490,9 @@ AcpiUtValidInternalObject(
 
 void *
 AcpiUtAllocateObjectDescDbg(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        UINT32                  ComponentId)
 {
 	ACPI_OPERAND_OBJECT     *Object;
 
@@ -520,8 +502,7 @@ AcpiUtAllocateObjectDescDbg(
 
 	Object = AcpiOsAcquireObject(AcpiGbl_OperandCache);
 
-	if (!Object)
-	{
+	if (!Object) {
 		ACPI_ERROR((ModuleName, LineNumber,
 		            "Could not allocate an object descriptor"));
 
@@ -553,15 +534,14 @@ AcpiUtAllocateObjectDescDbg(
 
 void
 AcpiUtDeleteObjectDesc(
-    ACPI_OPERAND_OBJECT     *Object)
+        ACPI_OPERAND_OBJECT     *Object)
 {
 	ACPI_FUNCTION_TRACE_PTR(UtDeleteObjectDesc, Object);
 
 
 	/* Object must be of type ACPI_OPERAND_OBJECT */
 
-	if (ACPI_GET_DESCRIPTOR_TYPE(Object) != ACPI_DESC_TYPE_OPERAND)
-	{
+	if (ACPI_GET_DESCRIPTOR_TYPE(Object) != ACPI_DESC_TYPE_OPERAND) {
 		ACPI_ERROR((AE_INFO,
 		            "%p is not an ACPI Operand object [%s]", Object,
 		            AcpiUtGetDescriptorName(Object)));
@@ -592,8 +572,8 @@ AcpiUtDeleteObjectDesc(
 
 static ACPI_STATUS
 AcpiUtGetSimpleObjectSize(
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_SIZE               *ObjLength)
+        ACPI_OPERAND_OBJECT     *InternalObject,
+        ACPI_SIZE               *ObjLength)
 {
 	ACPI_SIZE               Length;
 	ACPI_SIZE               Size;
@@ -609,8 +589,7 @@ AcpiUtGetSimpleObjectSize(
 
 	/* A NULL object is allowed, can be a legal uninitialized package element */
 
-	if (!InternalObject)
-	{
+	if (!InternalObject) {
 		/*
 		 * Object is NULL, just return the length of ACPI_OBJECT
 		 * (A NULL ACPI_OBJECT is an object of all zeroes.)
@@ -621,8 +600,7 @@ AcpiUtGetSimpleObjectSize(
 
 	/* A Namespace Node should never appear here */
 
-	if (ACPI_GET_DESCRIPTOR_TYPE(InternalObject) == ACPI_DESC_TYPE_NAMED)
-	{
+	if (ACPI_GET_DESCRIPTOR_TYPE(InternalObject) == ACPI_DESC_TYPE_NAMED) {
 		/* A namespace node should never get here */
 
 		return_ACPI_STATUS(AE_AML_INTERNAL);
@@ -634,8 +612,7 @@ AcpiUtGetSimpleObjectSize(
 	 * must be accessed bytewise or there may be alignment problems on
 	 * certain processors
 	 */
-	switch (InternalObject->Common.Type)
-	{
+	switch (InternalObject->Common.Type) {
 	case ACPI_TYPE_STRING:
 
 		Length += (ACPI_SIZE) InternalObject->String.Length + 1;
@@ -656,8 +633,7 @@ AcpiUtGetSimpleObjectSize(
 
 	case ACPI_TYPE_LOCAL_REFERENCE:
 
-		switch (InternalObject->Reference.Class)
-		{
+		switch (InternalObject->Reference.Class) {
 		case ACPI_REFCLASS_NAME:
 			/*
 			 * Get the actual length of the full pathname to this object.
@@ -666,9 +642,7 @@ AcpiUtGetSimpleObjectSize(
 			Size = AcpiNsGetPathnameLength(InternalObject->Reference.Node);
 
 			if (!Size)
-			{
 				return_ACPI_STATUS(AE_BAD_PARAMETER);
-			}
 
 			Length += ACPI_ROUND_UP_TO_NATIVE_WORD(Size);
 			break;
@@ -724,18 +698,17 @@ AcpiUtGetSimpleObjectSize(
 
 static ACPI_STATUS
 AcpiUtGetElementLength(
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context)
+        UINT8                   ObjectType,
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        ACPI_GENERIC_STATE      *State,
+        void                    *Context)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
 	ACPI_SIZE               ObjectSpace;
 
 
-	switch (ObjectType)
-	{
+	switch (ObjectType) {
 	case ACPI_COPY_TYPE_SIMPLE:
 		/*
 		 * Simple object - just get the size (Null object/entry is handled
@@ -744,9 +717,7 @@ AcpiUtGetElementLength(
 		Status = AcpiUtGetSimpleObjectSize(SourceObject, &ObjectSpace);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
 		Info->Length += ObjectSpace;
 		break;
@@ -789,8 +760,8 @@ AcpiUtGetElementLength(
 
 static ACPI_STATUS
 AcpiUtGetPackageObjectSize(
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_SIZE               *ObjLength)
+        ACPI_OPERAND_OBJECT     *InternalObject,
+        ACPI_SIZE               *ObjLength)
 {
 	ACPI_STATUS             Status;
 	ACPI_PKG_INFO           Info;
@@ -804,12 +775,10 @@ AcpiUtGetPackageObjectSize(
 	Info.NumPackages = 1;
 
 	Status = AcpiUtWalkPackageTree(
-	             InternalObject, NULL, AcpiUtGetElementLength, &Info);
+	                 InternalObject, NULL, AcpiUtGetElementLength, &Info);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * We have handled all of the objects in all levels of the package.
@@ -817,7 +786,7 @@ AcpiUtGetPackageObjectSize(
 	 * Round up to the next machine word.
 	 */
 	Info.Length += ACPI_ROUND_UP_TO_NATIVE_WORD(
-	                   sizeof(ACPI_OBJECT)) * (ACPI_SIZE) Info.NumPackages;
+	                       sizeof(ACPI_OBJECT)) * (ACPI_SIZE) Info.NumPackages;
 
 	/* Return the total package length */
 
@@ -842,8 +811,8 @@ AcpiUtGetPackageObjectSize(
 
 ACPI_STATUS
 AcpiUtGetObjectSize(
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_SIZE               *ObjLength)
+        ACPI_OPERAND_OBJECT     *InternalObject,
+        ACPI_SIZE               *ObjLength)
 {
 	ACPI_STATUS             Status;
 
@@ -852,15 +821,11 @@ AcpiUtGetObjectSize(
 
 
 	if ((ACPI_GET_DESCRIPTOR_TYPE(InternalObject) ==
-	        ACPI_DESC_TYPE_OPERAND) &&
-	        (InternalObject->Common.Type == ACPI_TYPE_PACKAGE))
-	{
+	     ACPI_DESC_TYPE_OPERAND) &&
+	    (InternalObject->Common.Type == ACPI_TYPE_PACKAGE))
 		Status = AcpiUtGetPackageObjectSize(InternalObject, ObjLength);
-	}
 	else
-	{
 		Status = AcpiUtGetSimpleObjectSize(InternalObject, ObjLength);
-	}
 
 	return (Status);
 }

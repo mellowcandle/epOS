@@ -189,8 +189,10 @@ ACPI_GLOBAL(BOOLEAN,                   AcpiGbl_GlobalLockPending);
  * Spinlocks are used for interfaces that can be possibly called at
  * interrupt level
  */
-ACPI_GLOBAL(ACPI_SPINLOCK,             AcpiGbl_GpeLock);        /* For GPE data structs and registers */
-ACPI_GLOBAL(ACPI_SPINLOCK,             AcpiGbl_HardwareLock);   /* For ACPI H/W except GPE registers */
+ACPI_GLOBAL(ACPI_SPINLOCK,
+            AcpiGbl_GpeLock);        /* For GPE data structs and registers */
+ACPI_GLOBAL(ACPI_SPINLOCK,
+            AcpiGbl_HardwareLock);   /* For ACPI H/W except GPE registers */
 ACPI_GLOBAL(ACPI_SPINLOCK,             AcpiGbl_ReferenceCountLock);
 
 /* Mutex for _OSI support */

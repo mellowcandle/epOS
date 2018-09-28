@@ -133,31 +133,31 @@ ACPI_MODULE_NAME("utprint")
 
 static ACPI_SIZE
 AcpiUtBoundStringLength(
-    const char              *String,
-    ACPI_SIZE               Count);
+        const char              *String,
+        ACPI_SIZE               Count);
 
 static char *
 AcpiUtBoundStringOutput(
-    char                    *String,
-    const char              *End,
-    char                    c);
+        char                    *String,
+        const char              *End,
+        char                    c);
 
 static char *
 AcpiUtFormatNumber(
-    char                    *String,
-    char                    *End,
-    UINT64                  Number,
-    UINT8                   Base,
-    INT32                   Width,
-    INT32                   Precision,
-    UINT8                   Type);
+        char                    *String,
+        char                    *End,
+        UINT64                  Number,
+        UINT8                   Base,
+        INT32                   Width,
+        INT32                   Precision,
+        UINT8                   Type);
 
 static char *
 AcpiUtPutNumber(
-    char                    *String,
-    UINT64                  Number,
-    UINT8                   Base,
-    BOOLEAN                 Upper);
+        char                    *String,
+        UINT64                  Number,
+        UINT8                   Base,
+        BOOLEAN                 Upper);
 
 
 /*******************************************************************************
@@ -175,14 +175,13 @@ AcpiUtPutNumber(
 
 static ACPI_SIZE
 AcpiUtBoundStringLength(
-    const char              *String,
-    ACPI_SIZE               Count)
+        const char              *String,
+        ACPI_SIZE               Count)
 {
 	UINT32                  Length = 0;
 
 
-	while (*String && Count)
-	{
+	while (*String && Count) {
 		Length++;
 		String++;
 		Count--;
@@ -208,15 +207,13 @@ AcpiUtBoundStringLength(
 
 static char *
 AcpiUtBoundStringOutput(
-    char                    *String,
-    const char              *End,
-    char                    c)
+        char                    *String,
+        const char              *End,
+        char                    c)
 {
 
 	if (String < End)
-	{
 		*String = c;
-	}
 
 	++String;
 	return (String);
@@ -241,10 +238,10 @@ AcpiUtBoundStringOutput(
 
 static char *
 AcpiUtPutNumber(
-    char                    *String,
-    UINT64                  Number,
-    UINT8                   Base,
-    BOOLEAN                 Upper)
+        char                    *String,
+        UINT64                  Number,
+        UINT8                   Base,
+        BOOLEAN                 Upper)
 {
 	const char              *Digits;
 	UINT64                  DigitIndex;
@@ -255,13 +252,9 @@ AcpiUtPutNumber(
 	Digits = Upper ? AcpiGbl_UpperHexDigits : AcpiGbl_LowerHexDigits;
 
 	if (Number == 0)
-	{
 		*(Pos++) = '0';
-	}
-	else
-	{
-		while (Number)
-		{
+	else {
+		while (Number) {
 			(void) AcpiUtDivide(Number, Base, &Number, &DigitIndex);
 			*(Pos++) = Digits[DigitIndex];
 		}
@@ -287,14 +280,13 @@ AcpiUtPutNumber(
 
 const char *
 AcpiUtScanNumber(
-    const char              *String,
-    UINT64                  *NumberPtr)
+        const char              *String,
+        UINT64                  *NumberPtr)
 {
 	UINT64                  Number = 0;
 
 
-	while (isdigit((int) *String))
-	{
+	while (isdigit((int) *String)) {
 		Number *= 10;
 		Number += *(String++) - '0';
 	}
@@ -319,8 +311,8 @@ AcpiUtScanNumber(
 
 const char *
 AcpiUtPrintNumber(
-    char                    *String,
-    UINT64                  Number)
+        char                    *String,
+        UINT64                  Number)
 {
 	char                    AsciiString[20];
 	const char              *Pos1;
@@ -331,9 +323,7 @@ AcpiUtPrintNumber(
 	Pos2 = String;
 
 	while (Pos1 != AsciiString)
-	{
 		*(Pos2++) = *(--Pos1);
-	}
 
 	*Pos2 = 0;
 	return (String);
@@ -360,13 +350,13 @@ AcpiUtPrintNumber(
 
 static char *
 AcpiUtFormatNumber(
-    char                    *String,
-    char                    *End,
-    UINT64                  Number,
-    UINT8                   Base,
-    INT32                   Width,
-    INT32                   Precision,
-    UINT8                   Type)
+        char                    *String,
+        char                    *End,
+        UINT64                  Number,
+        UINT8                   Base,
+        INT32                   Width,
+        INT32                   Precision,
+        UINT8                   Type)
 {
 	char                    *Pos;
 	char                    Sign;
@@ -380,14 +370,10 @@ AcpiUtFormatNumber(
 	/* Parameter validation */
 
 	if (Base < 2 || Base > 16)
-	{
 		return (NULL);
-	}
 
 	if (Type & ACPI_FORMAT_LEFT)
-	{
 		Type &= ~ACPI_FORMAT_ZERO;
-	}
 
 	NeedPrefix = ((Type & ACPI_FORMAT_PREFIX) && Base != 10) ? TRUE : FALSE;
 	Upper = (Type & ACPI_FORMAT_UPPER) ? TRUE : FALSE;
@@ -397,34 +383,25 @@ AcpiUtFormatNumber(
 
 	Sign = '\0';
 
-	if (Type & ACPI_FORMAT_SIGN)
-	{
-		if ((INT64) Number < 0)
-		{
+	if (Type & ACPI_FORMAT_SIGN) {
+		if ((INT64) Number < 0) {
 			Sign = '-';
 			Number = - (INT64) Number;
 			Width--;
-		}
-		else if (Type & ACPI_FORMAT_SIGN_PLUS)
-		{
+		} else if (Type & ACPI_FORMAT_SIGN_PLUS) {
 			Sign = '+';
 			Width--;
-		}
-		else if (Type & ACPI_FORMAT_SIGN_PLUS_SPACE)
-		{
+		} else if (Type & ACPI_FORMAT_SIGN_PLUS_SPACE) {
 			Sign = ' ';
 			Width--;
 		}
 	}
 
-	if (NeedPrefix)
-	{
+	if (NeedPrefix) {
 		Width--;
 
 		if (Base == 16)
-		{
 			Width--;
-		}
 	}
 
 	/* Generate full string in reverse order */
@@ -435,61 +412,44 @@ AcpiUtFormatNumber(
 	/* Printing 100 using %2d gives "100", not "00" */
 
 	if (i > Precision)
-	{
 		Precision = i;
-	}
 
 	Width -= Precision;
 
 	/* Output the string */
 
-	if (!(Type & (ACPI_FORMAT_ZERO | ACPI_FORMAT_LEFT)))
-	{
+	if (!(Type & (ACPI_FORMAT_ZERO | ACPI_FORMAT_LEFT))) {
 		while (--Width >= 0)
-		{
 			String = AcpiUtBoundStringOutput(String, End, ' ');
-		}
 	}
 
 	if (Sign)
-	{
 		String = AcpiUtBoundStringOutput(String, End, Sign);
-	}
 
-	if (NeedPrefix)
-	{
+	if (NeedPrefix) {
 		String = AcpiUtBoundStringOutput(String, End, '0');
 
-		if (Base == 16)
-		{
+		if (Base == 16) {
 			String = AcpiUtBoundStringOutput(
-			             String, End, Upper ? 'X' : 'x');
+			                 String, End, Upper ? 'X' : 'x');
 		}
 	}
 
-	if (!(Type & ACPI_FORMAT_LEFT))
-	{
+	if (!(Type & ACPI_FORMAT_LEFT)) {
 		while (--Width >= 0)
-		{
 			String = AcpiUtBoundStringOutput(String, End, Zero);
-		}
 	}
 
 	while (i <= --Precision)
-	{
 		String = AcpiUtBoundStringOutput(String, End, '0');
-	}
 
-	while (--i >= 0)
-	{
+	while (--i >= 0) {
 		String = AcpiUtBoundStringOutput(String, End,
 		                                 ReversedString[i]);
 	}
 
 	while (--Width >= 0)
-	{
 		String = AcpiUtBoundStringOutput(String, End, ' ');
-	}
 
 	return (String);
 }
@@ -512,10 +472,10 @@ AcpiUtFormatNumber(
 
 int
 vsnprintf(
-    char                    *String,
-    ACPI_SIZE               Size,
-    const char              *Format,
-    va_list                 Args)
+        char                    *String,
+        ACPI_SIZE               Size,
+        const char              *Format,
+        va_list                 Args)
 {
 	UINT8                   Base;
 	UINT8                   Type;
@@ -535,10 +495,8 @@ vsnprintf(
 	Pos = String;
 	End = String + Size;
 
-	for (; *Format; ++Format)
-	{
-		if (*Format != '%')
-		{
+	for (; *Format; ++Format) {
+		if (*Format != '%') {
 			Pos = AcpiUtBoundStringOutput(Pos, End, *Format);
 			continue;
 		}
@@ -548,54 +506,36 @@ vsnprintf(
 
 		/* Process sign */
 
-		do
-		{
+		do {
 			++Format;
 
 			if (*Format == '#')
-			{
 				Type |= ACPI_FORMAT_PREFIX;
-			}
 			else if (*Format == '0')
-			{
 				Type |= ACPI_FORMAT_ZERO;
-			}
 			else if (*Format == '+')
-			{
 				Type |= ACPI_FORMAT_SIGN_PLUS;
-			}
 			else if (*Format == ' ')
-			{
 				Type |= ACPI_FORMAT_SIGN_PLUS_SPACE;
-			}
 			else if (*Format == '-')
-			{
 				Type |= ACPI_FORMAT_LEFT;
-			}
 			else
-			{
 				break;
-			}
 
-		}
-		while (1);
+		} while (1);
 
 		/* Process width */
 
 		Width = -1;
 
-		if (isdigit((int) *Format))
-		{
+		if (isdigit((int) *Format)) {
 			Format = AcpiUtScanNumber(Format, &Number);
 			Width = (INT32) Number;
-		}
-		else if (*Format == '*')
-		{
+		} else if (*Format == '*') {
 			++Format;
 			Width = va_arg(Args, int);
 
-			if (Width < 0)
-			{
+			if (Width < 0) {
 				Width = -Width;
 				Type |= ACPI_FORMAT_LEFT;
 			}
@@ -605,45 +545,36 @@ vsnprintf(
 
 		Precision = -1;
 
-		if (*Format == '.')
-		{
+		if (*Format == '.') {
 			++Format;
 
-			if (isdigit((int) *Format))
-			{
+			if (isdigit((int) *Format)) {
 				Format = AcpiUtScanNumber(Format, &Number);
 				Precision = (INT32) Number;
-			}
-			else if (*Format == '*')
-			{
+			} else if (*Format == '*') {
 				++Format;
 				Precision = va_arg(Args, int);
 			}
 
 			if (Precision < 0)
-			{
 				Precision = 0;
-			}
 		}
 
 		/* Process qualifier */
 
 		Qualifier = -1;
 
-		if (*Format == 'h' || *Format == 'l' || *Format == 'L')
-		{
+		if (*Format == 'h' || *Format == 'l' || *Format == 'L') {
 			Qualifier = *Format;
 			++Format;
 
-			if (Qualifier == 'l' && *Format == 'l')
-			{
+			if (Qualifier == 'l' && *Format == 'l') {
 				Qualifier = 'L';
 				++Format;
 			}
 		}
 
-		switch (*Format)
-		{
+		switch (*Format) {
 		case '%':
 
 			Pos = AcpiUtBoundStringOutput(Pos, End, '%');
@@ -651,21 +582,16 @@ vsnprintf(
 
 		case 'c':
 
-			if (!(Type & ACPI_FORMAT_LEFT))
-			{
+			if (!(Type & ACPI_FORMAT_LEFT)) {
 				while (--Width > 0)
-				{
 					Pos = AcpiUtBoundStringOutput(Pos, End, ' ');
-				}
 			}
 
 			c = (char) va_arg(Args, int);
 			Pos = AcpiUtBoundStringOutput(Pos, End, c);
 
 			while (--Width > 0)
-			{
 				Pos = AcpiUtBoundStringOutput(Pos, End, ' ');
-			}
 
 			continue;
 
@@ -674,30 +600,22 @@ vsnprintf(
 			s = va_arg(Args, char *);
 
 			if (!s)
-			{
 				s = "<NULL>";
-			}
 
 			Length = AcpiUtBoundStringLength(s, Precision);
 
-			if (!(Type & ACPI_FORMAT_LEFT))
-			{
+			if (!(Type & ACPI_FORMAT_LEFT)) {
 				while (Length < Width--)
-				{
 					Pos = AcpiUtBoundStringOutput(Pos, End, ' ');
-				}
 			}
 
-			for (i = 0; i < Length; ++i)
-			{
+			for (i = 0; i < Length; ++i) {
 				Pos = AcpiUtBoundStringOutput(Pos, End, *s);
 				++s;
 			}
 
 			while (Length < Width--)
-			{
 				Pos = AcpiUtBoundStringOutput(Pos, End, ' ');
-			}
 
 			continue;
 
@@ -726,15 +644,14 @@ vsnprintf(
 
 		case 'p':
 
-			if (Width == -1)
-			{
+			if (Width == -1) {
 				Width = 2 * sizeof(void *);
 				Type |= ACPI_FORMAT_ZERO;
 			}
 
 			p = va_arg(Args, void *);
 			Pos = AcpiUtFormatNumber(
-			          Pos, End, ACPI_TO_INTEGER(p), 16, Width, Precision, Type);
+			              Pos, End, ACPI_TO_INTEGER(p), 16, Width, Precision, Type);
 			continue;
 
 		default:
@@ -742,68 +659,44 @@ vsnprintf(
 			Pos = AcpiUtBoundStringOutput(Pos, End, '%');
 
 			if (*Format)
-			{
 				Pos = AcpiUtBoundStringOutput(Pos, End, *Format);
-			}
 			else
-			{
 				--Format;
-			}
 
 			continue;
 		}
 
-		if (Qualifier == 'L')
-		{
+		if (Qualifier == 'L') {
 			Number = va_arg(Args, UINT64);
 
 			if (Type & ACPI_FORMAT_SIGN)
-			{
 				Number = (INT64) Number;
-			}
-		}
-		else if (Qualifier == 'l')
-		{
+		} else if (Qualifier == 'l') {
 			Number = va_arg(Args, unsigned long);
 
 			if (Type & ACPI_FORMAT_SIGN)
-			{
 				Number = (INT32) Number;
-			}
-		}
-		else if (Qualifier == 'h')
-		{
+		} else if (Qualifier == 'h') {
 			Number = (UINT16) va_arg(Args, int);
 
 			if (Type & ACPI_FORMAT_SIGN)
-			{
 				Number = (INT16) Number;
-			}
-		}
-		else
-		{
+		} else {
 			Number = va_arg(Args, unsigned int);
 
 			if (Type & ACPI_FORMAT_SIGN)
-			{
 				Number = (signed int) Number;
-			}
 		}
 
 		Pos = AcpiUtFormatNumber(Pos, End, Number, Base,
 		                         Width, Precision, Type);
 	}
 
-	if (Size > 0)
-	{
+	if (Size > 0) {
 		if (Pos < End)
-		{
 			*Pos = '\0';
-		}
 		else
-		{
 			End[-1] = '\0';
-		}
 	}
 
 	return (ACPI_PTR_DIFF(Pos, String));
@@ -826,10 +719,10 @@ vsnprintf(
 
 int
 snprintf(
-    char                    *String,
-    ACPI_SIZE               Size,
-    const char              *Format,
-    ...)
+        char                    *String,
+        ACPI_SIZE               Size,
+        const char              *Format,
+        ...)
 {
 	va_list                 Args;
 	int                     Length;
@@ -858,9 +751,9 @@ snprintf(
 
 int
 sprintf(
-    char                    *String,
-    const char              *Format,
-    ...)
+        char                    *String,
+        const char              *Format,
+        ...)
 {
 	va_list                 Args;
 	int                     Length;
@@ -890,8 +783,8 @@ sprintf(
 
 int
 vprintf(
-    const char              *Format,
-    va_list                 Args)
+        const char              *Format,
+        va_list                 Args)
 {
 	ACPI_CPU_FLAGS          Flags;
 	int                     Length;
@@ -922,8 +815,8 @@ vprintf(
 
 int
 printf(
-    const char              *Format,
-    ...)
+        const char              *Format,
+        ...)
 {
 	va_list                 Args;
 	int                     Length;
@@ -953,9 +846,9 @@ printf(
 
 int
 vfprintf(
-    FILE                    *File,
-    const char              *Format,
-    va_list                 Args)
+        FILE                    *File,
+        const char              *Format,
+        va_list                 Args)
 {
 	ACPI_CPU_FLAGS          Flags;
 	int                     Length;
@@ -987,9 +880,9 @@ vfprintf(
 
 int
 fprintf(
-    FILE                    *File,
-    const char              *Format,
-    ...)
+        FILE                    *File,
+        const char              *Format,
+        ...)
 {
 	va_list                 Args;
 	int                     Length;

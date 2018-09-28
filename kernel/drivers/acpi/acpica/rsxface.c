@@ -145,14 +145,14 @@ ACPI_MODULE_NAME("rsxface")
 
 static ACPI_STATUS
 AcpiRsMatchVendorResource(
-    ACPI_RESOURCE           *Resource,
-    void                    *Context);
+        ACPI_RESOURCE           *Resource,
+        void                    *Context);
 
 static ACPI_STATUS
 AcpiRsValidateParameters(
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *Buffer,
-    ACPI_NAMESPACE_NODE     **ReturnNode);
+        ACPI_HANDLE             DeviceHandle,
+        ACPI_BUFFER             *Buffer,
+        ACPI_NAMESPACE_NODE     **ReturnNode);
 
 
 /*******************************************************************************
@@ -171,9 +171,9 @@ AcpiRsValidateParameters(
 
 static ACPI_STATUS
 AcpiRsValidateParameters(
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *Buffer,
-    ACPI_NAMESPACE_NODE     **ReturnNode)
+        ACPI_HANDLE             DeviceHandle,
+        ACPI_BUFFER             *Buffer,
+        ACPI_NAMESPACE_NODE     **ReturnNode)
 {
 	ACPI_STATUS             Status;
 	ACPI_NAMESPACE_NODE     *Node;
@@ -186,21 +186,15 @@ AcpiRsValidateParameters(
 	 * Must have a valid handle to an ACPI device
 	 */
 	if (!DeviceHandle)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	Node = AcpiNsValidateHandle(DeviceHandle);
 
 	if (!Node)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	if (Node->Type != ACPI_TYPE_DEVICE)
-	{
 		return_ACPI_STATUS(AE_TYPE);
-	}
 
 	/*
 	 * Validate the user buffer object
@@ -212,9 +206,7 @@ AcpiRsValidateParameters(
 	Status = AcpiUtValidateBuffer(Buffer);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	*ReturnNode = Node;
 	return_ACPI_STATUS(AE_OK);
@@ -246,8 +238,8 @@ AcpiRsValidateParameters(
 
 ACPI_STATUS
 AcpiGetIrqRoutingTable(
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_HANDLE             DeviceHandle,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_STATUS             Status;
 	ACPI_NAMESPACE_NODE     *Node;
@@ -261,9 +253,7 @@ AcpiGetIrqRoutingTable(
 	Status = AcpiRsValidateParameters(DeviceHandle, RetBuffer, &Node);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiRsGetPrtMethodData(Node, RetBuffer);
 	return_ACPI_STATUS(Status);
@@ -298,8 +288,8 @@ ACPI_EXPORT_SYMBOL(AcpiGetIrqRoutingTable)
 
 ACPI_STATUS
 AcpiGetCurrentResources(
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_HANDLE             DeviceHandle,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_STATUS             Status;
 	ACPI_NAMESPACE_NODE     *Node;
@@ -313,9 +303,7 @@ AcpiGetCurrentResources(
 	Status = AcpiRsValidateParameters(DeviceHandle, RetBuffer, &Node);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiRsGetCrsMethodData(Node, RetBuffer);
 	return_ACPI_STATUS(Status);
@@ -347,8 +335,8 @@ ACPI_EXPORT_SYMBOL(AcpiGetCurrentResources)
 
 ACPI_STATUS
 AcpiGetPossibleResources(
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_HANDLE             DeviceHandle,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_STATUS             Status;
 	ACPI_NAMESPACE_NODE     *Node;
@@ -362,9 +350,7 @@ AcpiGetPossibleResources(
 	Status = AcpiRsValidateParameters(DeviceHandle, RetBuffer, &Node);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiRsGetPrsMethodData(Node, RetBuffer);
 	return_ACPI_STATUS(Status);
@@ -393,8 +379,8 @@ ACPI_EXPORT_SYMBOL(AcpiGetPossibleResources)
 
 ACPI_STATUS
 AcpiSetCurrentResources(
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *InBuffer)
+        ACPI_HANDLE             DeviceHandle,
+        ACPI_BUFFER             *InBuffer)
 {
 	ACPI_STATUS             Status;
 	ACPI_NAMESPACE_NODE     *Node;
@@ -406,20 +392,16 @@ AcpiSetCurrentResources(
 	/* Validate the buffer, don't allow zero length */
 
 	if ((!InBuffer) ||
-	        (!InBuffer->Pointer) ||
-	        (!InBuffer->Length))
-	{
+	    (!InBuffer->Pointer) ||
+	    (!InBuffer->Length))
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Validate parameters then dispatch to internal routine */
 
 	Status = AcpiRsValidateParameters(DeviceHandle, InBuffer, &Node);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiRsSetSrsMethodData(Node, InBuffer);
 	return_ACPI_STATUS(Status);
@@ -449,8 +431,8 @@ ACPI_EXPORT_SYMBOL(AcpiSetCurrentResources)
 
 ACPI_STATUS
 AcpiGetEventResources(
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_HANDLE             DeviceHandle,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_STATUS             Status;
 	ACPI_NAMESPACE_NODE     *Node;
@@ -464,9 +446,7 @@ AcpiGetEventResources(
 	Status = AcpiRsValidateParameters(DeviceHandle, RetBuffer, &Node);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiRsGetAeiMethodData(Node, RetBuffer);
 	return_ACPI_STATUS(Status);
@@ -494,33 +474,30 @@ ACPI_EXPORT_SYMBOL(AcpiGetEventResources)
 
 ACPI_STATUS
 AcpiResourceToAddress64(
-    ACPI_RESOURCE               *Resource,
-    ACPI_RESOURCE_ADDRESS64     *Out)
+        ACPI_RESOURCE               *Resource,
+        ACPI_RESOURCE_ADDRESS64     *Out)
 {
 	ACPI_RESOURCE_ADDRESS16     *Address16;
 	ACPI_RESOURCE_ADDRESS32     *Address32;
 
 
 	if (!Resource || !Out)
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	/* Convert 16 or 32 address descriptor to 64 */
 
-	switch (Resource->Type)
-	{
+	switch (Resource->Type) {
 	case ACPI_RESOURCE_TYPE_ADDRESS16:
 
 		Address16 = ACPI_CAST_PTR(
-		                ACPI_RESOURCE_ADDRESS16, &Resource->Data);
+		                    ACPI_RESOURCE_ADDRESS16, &Resource->Data);
 		ACPI_COPY_ADDRESS(Out, Address16);
 		break;
 
 	case ACPI_RESOURCE_TYPE_ADDRESS32:
 
 		Address32 = ACPI_CAST_PTR(
-		                ACPI_RESOURCE_ADDRESS32, &Resource->Data);
+		                    ACPI_RESOURCE_ADDRESS32, &Resource->Data);
 		ACPI_COPY_ADDRESS(Out, Address32);
 		break;
 
@@ -563,10 +540,10 @@ ACPI_EXPORT_SYMBOL(AcpiResourceToAddress64)
 
 ACPI_STATUS
 AcpiGetVendorResource(
-    ACPI_HANDLE             DeviceHandle,
-    char                    *Name,
-    ACPI_VENDOR_UUID        *Uuid,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_HANDLE             DeviceHandle,
+        char                    *Name,
+        ACPI_VENDOR_UUID        *Uuid,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_VENDOR_WALK_INFO   Info;
 	ACPI_STATUS             Status;
@@ -575,9 +552,7 @@ AcpiGetVendorResource(
 	/* Other parameters are validated by AcpiWalkResources */
 
 	if (!Uuid || !RetBuffer)
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	Info.Uuid = Uuid;
 	Info.Buffer = RetBuffer;
@@ -586,12 +561,10 @@ AcpiGetVendorResource(
 	/* Walk the _CRS or _PRS resource list for this device */
 
 	Status = AcpiWalkResources(
-	             DeviceHandle, Name, AcpiRsMatchVendorResource, &Info);
+	                 DeviceHandle, Name, AcpiRsMatchVendorResource, &Info);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	return (Info.Status);
 }
@@ -613,8 +586,8 @@ ACPI_EXPORT_SYMBOL(AcpiGetVendorResource)
 
 static ACPI_STATUS
 AcpiRsMatchVendorResource(
-    ACPI_RESOURCE           *Resource,
-    void                    *Context)
+        ACPI_RESOURCE           *Resource,
+        void                    *Context)
 {
 	ACPI_VENDOR_WALK_INFO       *Info = Context;
 	ACPI_RESOURCE_VENDOR_TYPED  *Vendor;
@@ -625,9 +598,7 @@ AcpiRsMatchVendorResource(
 	/* Ignore all descriptors except Vendor */
 
 	if (Resource->Type != ACPI_RESOURCE_TYPE_VENDOR)
-	{
 		return (AE_OK);
-	}
 
 	Vendor = &Resource->Data.VendorTyped;
 
@@ -639,11 +610,9 @@ AcpiRsMatchVendorResource(
 	 * 3) The UUID data must match
 	 */
 	if ((Vendor->ByteLength < (ACPI_UUID_LENGTH + 1)) ||
-	        (Vendor->UuidSubtype != Info->Uuid->Subtype)  ||
-	        (memcmp(Vendor->Uuid, Info->Uuid->Data, ACPI_UUID_LENGTH)))
-	{
+	    (Vendor->UuidSubtype != Info->Uuid->Subtype)  ||
+	    (memcmp(Vendor->Uuid, Info->Uuid->Data, ACPI_UUID_LENGTH)))
 		return (AE_OK);
-	}
 
 	/* Validate/Allocate/Clear caller buffer */
 
@@ -651,9 +620,7 @@ AcpiRsMatchVendorResource(
 	Status = AcpiUtInitializeBuffer(Buffer, Resource->Length);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/* Found the correct resource, copy and return it */
 
@@ -685,9 +652,9 @@ AcpiRsMatchVendorResource(
 
 ACPI_STATUS
 AcpiWalkResourceBuffer(
-    ACPI_BUFFER                 *Buffer,
-    ACPI_WALK_RESOURCE_CALLBACK UserFunction,
-    void                        *Context)
+        ACPI_BUFFER                 *Buffer,
+        ACPI_WALK_RESOURCE_CALLBACK UserFunction,
+        void                        *Context)
 {
 	ACPI_STATUS                 Status = AE_OK;
 	ACPI_RESOURCE               *Resource;
@@ -700,24 +667,20 @@ AcpiWalkResourceBuffer(
 	/* Parameter validation */
 
 	if (!Buffer || !Buffer->Pointer || !UserFunction)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Buffer contains the resource list and length */
 
 	Resource = ACPI_CAST_PTR(ACPI_RESOURCE, Buffer->Pointer);
 	ResourceEnd = ACPI_ADD_PTR(
-	                  ACPI_RESOURCE, Buffer->Pointer, Buffer->Length);
+	                      ACPI_RESOURCE, Buffer->Pointer, Buffer->Length);
 
 	/* Walk the resource list until the EndTag is found (or buffer end) */
 
-	while (Resource < ResourceEnd)
-	{
+	while (Resource < ResourceEnd) {
 		/* Sanity check the resource type */
 
-		if (Resource->Type > ACPI_RESOURCE_TYPE_MAX)
-		{
+		if (Resource->Type > ACPI_RESOURCE_TYPE_MAX) {
 			Status = AE_AML_INVALID_RESOURCE_TYPE;
 			break;
 		}
@@ -725,18 +688,14 @@ AcpiWalkResourceBuffer(
 		/* Sanity check the length. It must not be zero, or we loop forever */
 
 		if (!Resource->Length)
-		{
 			return_ACPI_STATUS(AE_AML_BAD_RESOURCE_LENGTH);
-		}
 
 		/* Invoke the user function, abort on any error returned */
 
 		Status = UserFunction(Resource, Context);
 
-		if (ACPI_FAILURE(Status))
-		{
-			if (Status == AE_CTRL_TERMINATE)
-			{
+		if (ACPI_FAILURE(Status)) {
+			if (Status == AE_CTRL_TERMINATE) {
 				/* This is an OK termination by the user function */
 
 				Status = AE_OK;
@@ -748,9 +707,7 @@ AcpiWalkResourceBuffer(
 		/* EndTag indicates end-of-list */
 
 		if (Resource->Type == ACPI_RESOURCE_TYPE_END_TAG)
-		{
 			break;
-		}
 
 		/* Get the next resource descriptor */
 
@@ -785,10 +742,10 @@ ACPI_EXPORT_SYMBOL(AcpiWalkResourceBuffer)
 
 ACPI_STATUS
 AcpiWalkResources(
-    ACPI_HANDLE                 DeviceHandle,
-    char                        *Name,
-    ACPI_WALK_RESOURCE_CALLBACK UserFunction,
-    void                        *Context)
+        ACPI_HANDLE                 DeviceHandle,
+        char                        *Name,
+        ACPI_WALK_RESOURCE_CALLBACK UserFunction,
+        void                        *Context)
 {
 	ACPI_STATUS                 Status;
 	ACPI_BUFFER                 Buffer;
@@ -800,12 +757,10 @@ AcpiWalkResources(
 	/* Parameter validation */
 
 	if (!DeviceHandle || !UserFunction || !Name ||
-	        (!ACPI_COMPARE_NAME(Name, METHOD_NAME__CRS) &&
-	         !ACPI_COMPARE_NAME(Name, METHOD_NAME__PRS) &&
-	         !ACPI_COMPARE_NAME(Name, METHOD_NAME__AEI)))
-	{
+	    (!ACPI_COMPARE_NAME(Name, METHOD_NAME__CRS) &&
+	     !ACPI_COMPARE_NAME(Name, METHOD_NAME__PRS) &&
+	     !ACPI_COMPARE_NAME(Name, METHOD_NAME__AEI)))
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Get the _CRS/_PRS/_AEI resource list */
 
@@ -813,9 +768,7 @@ AcpiWalkResources(
 	Status = AcpiRsGetMethodData(DeviceHandle, Name, &Buffer);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Walk the resource list and cleanup */
 

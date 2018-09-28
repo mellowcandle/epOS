@@ -53,8 +53,7 @@ void kmain(void)
 	init_serial();
 	printk("EP-OS by Ramon Fried, all rights reservered.\r\n");
 
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
-	{
+	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
 		/* Something went not according to specs. Print an error */
 		/* message and halt, but do *not* rely on the multiboot */
 		/* data structure. */
@@ -74,8 +73,7 @@ void kmain(void)
 	enable_irq();
 	ticks_init();
 
-	if (kbd_8042_avail())
-	{
+	if (kbd_8042_avail()) {
 		pr_info("8042 keyboard detected\r\n");
 		kbd_8042_init();
 	}

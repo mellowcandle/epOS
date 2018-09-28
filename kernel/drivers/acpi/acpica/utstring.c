@@ -139,26 +139,23 @@ ACPI_MODULE_NAME("utstring")
 
 void
 AcpiUtPrintString(
-    char                    *String,
-    UINT16                  MaxLength)
+        char                    *String,
+        UINT16                  MaxLength)
 {
 	UINT32                  i;
 
 
-	if (!String)
-	{
+	if (!String) {
 		AcpiOsPrintf("<\"NULL STRING PTR\">");
 		return;
 	}
 
 	AcpiOsPrintf("\"");
 
-	for (i = 0; (i < MaxLength) && String[i]; i++)
-	{
+	for (i = 0; (i < MaxLength) && String[i]; i++) {
 		/* Escape sequences */
 
-		switch (String[i])
-		{
+		switch (String[i]) {
 		case 0x07:
 
 			AcpiOsPrintf("\\a");        /* BELL */
@@ -205,14 +202,11 @@ AcpiUtPrintString(
 
 			/* Check for printable character or hex escape */
 
-			if (isprint((int) String[i]))
-			{
+			if (isprint((int) String[i])) {
 				/* This is a normal character */
 
 				AcpiOsPrintf("%c", (int) String[i]);
-			}
-			else
-			{
+			} else {
 				/* All others will be Hex escapes */
 
 				AcpiOsPrintf("\\x%2.2X", (INT32) String[i]);
@@ -225,9 +219,7 @@ AcpiUtPrintString(
 	AcpiOsPrintf("\"");
 
 	if (i == MaxLength && String[i])
-	{
 		AcpiOsPrintf("...");
-	}
 }
 
 
@@ -255,7 +247,7 @@ AcpiUtPrintString(
 
 void
 AcpiUtRepairName(
-    char                    *Name)
+        char                    *Name)
 {
 	UINT32                  i;
 	BOOLEAN                 FoundBadChar = FALSE;
@@ -270,20 +262,15 @@ AcpiUtRepairName(
 	 * error during the execution of module-level code.
 	 */
 	if (ACPI_COMPARE_NAME(Name, "\\___"))
-	{
 		return;
-	}
 
 	ACPI_MOVE_NAME(&OriginalName, Name);
 
 	/* Check each character in the name */
 
-	for (i = 0; i < ACPI_NAME_SIZE; i++)
-	{
+	for (i = 0; i < ACPI_NAME_SIZE; i++) {
 		if (AcpiUtValidNameChar(Name[i], i))
-		{
 			continue;
-		}
 
 		/*
 		 * Replace a bad character with something printable, yet technically
@@ -294,18 +281,14 @@ AcpiUtRepairName(
 		FoundBadChar = TRUE;
 	}
 
-	if (FoundBadChar)
-	{
+	if (FoundBadChar) {
 		/* Report warning only if in strict mode or debug mode */
 
-		if (!AcpiGbl_EnableInterpreterSlack)
-		{
+		if (!AcpiGbl_EnableInterpreterSlack) {
 			ACPI_WARNING((AE_INFO,
 			              "Invalid character(s) in name (0x%.8X), repaired: [%4.4s]",
 			              OriginalName, Name));
-		}
-		else
-		{
+		} else {
 			ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 			                  "Invalid character(s) in name (0x%.8X), repaired: [%4.4s]",
 			                  OriginalName, Name));
@@ -330,20 +313,15 @@ AcpiUtRepairName(
 
 void
 UtConvertBackslashes(
-    char                    *Pathname)
+        char                    *Pathname)
 {
 
 	if (!Pathname)
-	{
 		return;
-	}
 
-	while (*Pathname)
-	{
+	while (*Pathname) {
 		if (*Pathname == '\\')
-		{
 			*Pathname = '/';
-		}
 
 		Pathname++;
 	}

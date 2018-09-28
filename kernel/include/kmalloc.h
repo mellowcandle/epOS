@@ -34,8 +34,7 @@
  * used to identify valid memory blocks that the
  * application is trying to free.
  */
-struct	boundary_tag
-{
+struct	boundary_tag {
 	unsigned int magic;			//< It's a kind of ...
 	unsigned int size; 			//< Requested size.
 	unsigned int real_size;		//< Actual size.

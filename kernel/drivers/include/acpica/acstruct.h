@@ -142,15 +142,15 @@
 #define ACPI_WALK_METHOD_RESTART    0x02
 
 
-typedef struct acpi_walk_state
-{
+typedef struct acpi_walk_state {
 	struct acpi_walk_state          *Next;              /* Next WalkState in list */
 	UINT8                           DescriptorType;     /* To differentiate various internal objs */
 	UINT8                           WalkType;
 	UINT16                          Opcode;             /* Current AML opcode */
 	UINT8                           NextOpInfo;         /* Info about NextOp */
 	UINT8                           NumOperands;        /* Stack pointer for Operands[] array */
-	UINT8                           OperandIndex;       /* Index into operand stack, to be used by AcpiDsObjStackPush */
+	UINT8
+	OperandIndex;       /* Index into operand stack, to be used by AcpiDsObjStackPush */
 	ACPI_OWNER_ID                   OwnerId;            /* Owner of objects created during the walk */
 	BOOLEAN                         LastPredicate;      /* Result of last predicate */
 	UINT8                           CurrentResult;
@@ -159,7 +159,8 @@ typedef struct acpi_walk_state
 	UINT8                           PassNumber;         /* Parse pass during table load */
 	BOOLEAN                         NamespaceOverride;  /* Override existing objects */
 	UINT8                           ResultSize;         /* Total elements for the result stack */
-	UINT8                           ResultCount;        /* Current number of occupied elements of result stack */
+	UINT8
+	ResultCount;        /* Current number of occupied elements of result stack */
 	UINT8                           *Aml;
 	UINT32                          ArgTypes;
 	UINT32                          MethodBreakpoint;   /* For single stepping */
@@ -170,9 +171,11 @@ typedef struct acpi_walk_state
 	UINT32                          PrevArgTypes;
 	UINT32                          ArgCount;           /* push for fixed or var args */
 
-	struct acpi_namespace_node      Arguments[ACPI_METHOD_NUM_ARGS];        /* Control method arguments */
+	struct acpi_namespace_node
+		Arguments[ACPI_METHOD_NUM_ARGS];        /* Control method arguments */
 	struct acpi_namespace_node      LocalVariables[ACPI_METHOD_NUM_LOCALS]; /* Control method locals */
-	union acpi_operand_object       *Operands[ACPI_OBJ_NUM_OPERANDS + 1];   /* Operands passed to the interpreter (+1 for NULL terminator) */
+	union acpi_operand_object       *Operands[ACPI_OBJ_NUM_OPERANDS +
+		                                      1];   /* Operands passed to the interpreter (+1 for NULL terminator) */
 	union acpi_operand_object       **Params;
 
 	UINT8                           *AmlLastWhile;
@@ -202,8 +205,7 @@ typedef struct acpi_walk_state
 
 /* Info used by AcpiNsInitializeObjects and AcpiDsInitializeObjects */
 
-typedef struct acpi_init_walk_info
-{
+typedef struct acpi_init_walk_info {
 	UINT32                          TableIndex;
 	UINT32                          ObjectCount;
 	UINT32                          MethodCount;
@@ -224,8 +226,7 @@ typedef struct acpi_init_walk_info
 } ACPI_INIT_WALK_INFO;
 
 
-typedef struct acpi_get_devices_info
-{
+typedef struct acpi_get_devices_info {
 	ACPI_WALK_CALLBACK              UserFunction;
 	void                            *Context;
 	char                            *Hid;
@@ -233,28 +234,24 @@ typedef struct acpi_get_devices_info
 } ACPI_GET_DEVICES_INFO;
 
 
-typedef union acpi_aml_operands
-{
+typedef union acpi_aml_operands {
 	ACPI_OPERAND_OBJECT             *Operands[7];
 
-	struct
-	{
+	struct {
 		ACPI_OBJECT_INTEGER             *Type;
 		ACPI_OBJECT_INTEGER             *Code;
 		ACPI_OBJECT_INTEGER             *Argument;
 
 	} Fatal;
 
-	struct
-	{
+	struct {
 		ACPI_OPERAND_OBJECT             *Source;
 		ACPI_OBJECT_INTEGER             *Index;
 		ACPI_OPERAND_OBJECT             *Target;
 
 	} Index;
 
-	struct
-	{
+	struct {
 		ACPI_OPERAND_OBJECT             *Source;
 		ACPI_OBJECT_INTEGER             *Index;
 		ACPI_OBJECT_INTEGER             *Length;
@@ -269,15 +266,15 @@ typedef union acpi_aml_operands
  * Structure used to pass object evaluation information and parameters.
  * Purpose is to reduce CPU stack use.
  */
-typedef struct acpi_evaluate_info
-{
+typedef struct acpi_evaluate_info {
 	/* The first 3 elements are passed by the caller to AcpiNsEvaluate */
 
 	ACPI_NAMESPACE_NODE             *PrefixNode;        /* Input: starting node */
 	const char                      *RelativePathname;  /* Input: path relative to PrefixNode */
 	ACPI_OPERAND_OBJECT             **Parameters;       /* Input: argument list */
 
-	ACPI_NAMESPACE_NODE             *Node;              /* Resolved node (PrefixNode:RelativePathname) */
+	ACPI_NAMESPACE_NODE
+	*Node;              /* Resolved node (PrefixNode:RelativePathname) */
 	ACPI_OPERAND_OBJECT             *ObjDesc;           /* Object attached to the resolved node */
 	char                            *FullPathname;      /* Full pathname of the resolved node */
 
@@ -307,8 +304,7 @@ typedef struct acpi_evaluate_info
 
 /* Info used by AcpiNsInitializeDevices */
 
-typedef struct acpi_device_walk_info
-{
+typedef struct acpi_device_walk_info {
 	ACPI_TABLE_DESC                 *TableDesc;
 	ACPI_EVALUATE_INFO              *EvaluateInfo;
 	UINT32                          DeviceCount;
@@ -320,8 +316,7 @@ typedef struct acpi_device_walk_info
 
 /* TBD: [Restructure] Merge with struct above */
 
-typedef struct acpi_walk_info
-{
+typedef struct acpi_walk_info {
 	UINT32                          DebugLevel;
 	UINT32                          Count;
 	ACPI_OWNER_ID                   OwnerId;

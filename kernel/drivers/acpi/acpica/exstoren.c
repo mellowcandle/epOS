@@ -141,9 +141,9 @@ ACPI_MODULE_NAME("exstoren")
 
 ACPI_STATUS
 AcpiExResolveObject(
-    ACPI_OPERAND_OBJECT     **SourceDescPtr,
-    ACPI_OBJECT_TYPE        TargetType,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     **SourceDescPtr,
+        ACPI_OBJECT_TYPE        TargetType,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     *SourceDesc = *SourceDescPtr;
 	ACPI_STATUS             Status = AE_OK;
@@ -154,8 +154,7 @@ AcpiExResolveObject(
 
 	/* Ensure we have a Target that can be stored to */
 
-	switch (TargetType)
-	{
+	switch (TargetType) {
 	case ACPI_TYPE_BUFFER_FIELD:
 	case ACPI_TYPE_LOCAL_REGION_FIELD:
 	case ACPI_TYPE_LOCAL_BANK_FIELD:
@@ -174,33 +173,27 @@ AcpiExResolveObject(
 		 * are all essentially the same. This case handles the
 		 * "interchangeable" types Integer, String, and Buffer.
 		 */
-		if (SourceDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE)
-		{
+		if (SourceDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) {
 			/* Resolve a reference object first */
 
 			Status = AcpiExResolveToValue(SourceDescPtr, WalkState);
 
 			if (ACPI_FAILURE(Status))
-			{
 				break;
-			}
 		}
 
 		/* For CopyObject, no further validation necessary */
 
 		if (WalkState->Opcode == AML_COPY_OP)
-		{
 			break;
-		}
 
 		/* Must have a Integer, Buffer, or String */
 
 		if ((SourceDesc->Common.Type != ACPI_TYPE_INTEGER)    &&
-		        (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)     &&
-		        (SourceDesc->Common.Type != ACPI_TYPE_STRING)     &&
-		        !((SourceDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
-		          (SourceDesc->Reference.Class == ACPI_REFCLASS_TABLE)))
-		{
+		    (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)     &&
+		    (SourceDesc->Common.Type != ACPI_TYPE_STRING)     &&
+		    !((SourceDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
+		      (SourceDesc->Reference.Class == ACPI_REFCLASS_TABLE))) {
 			/* Conversion successful but still not a valid type */
 
 			ACPI_ERROR((AE_INFO,
@@ -273,10 +266,10 @@ AcpiExResolveObject(
 
 ACPI_STATUS
 AcpiExStoreObjectToObject(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_OPERAND_OBJECT     **NewDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     *DestDesc,
+        ACPI_OPERAND_OBJECT     **NewDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     *ActualSrcDesc;
 	ACPI_STATUS             Status = AE_OK;
@@ -287,8 +280,7 @@ AcpiExStoreObjectToObject(
 
 	ActualSrcDesc = SourceDesc;
 
-	if (!DestDesc)
-	{
+	if (!DestDesc) {
 		/*
 		 * There is no destination object (An uninitialized node or
 		 * package element), so we can simply copy the source object
@@ -298,8 +290,7 @@ AcpiExStoreObjectToObject(
 		return_ACPI_STATUS(Status);
 	}
 
-	if (SourceDesc->Common.Type != DestDesc->Common.Type)
-	{
+	if (SourceDesc->Common.Type != DestDesc->Common.Type) {
 		/*
 		 * The source type does not match the type of the destination.
 		 * Perform the "implicit conversion" of the source to the current type
@@ -313,12 +304,9 @@ AcpiExStoreObjectToObject(
 		                                   SourceDesc, &ActualSrcDesc, WalkState);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
-		if (SourceDesc == ActualSrcDesc)
-		{
+		if (SourceDesc == ActualSrcDesc) {
 			/*
 			 * No conversion was performed. Return the SourceDesc as the
 			 * new object.
@@ -332,8 +320,7 @@ AcpiExStoreObjectToObject(
 	 * We now have two objects of identical types, and we can perform a
 	 * copy of the *value* of the source object.
 	 */
-	switch (DestDesc->Common.Type)
-	{
+	switch (DestDesc->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 
 		DestDesc->Integer.Value = ActualSrcDesc->Integer.Value;
@@ -370,8 +357,7 @@ AcpiExStoreObjectToObject(
 		break;
 	}
 
-	if (ActualSrcDesc != SourceDesc)
-	{
+	if (ActualSrcDesc != SourceDesc) {
 		/* Delete the intermediate (temporary) source object */
 
 		AcpiUtRemoveReference(ActualSrcDesc);

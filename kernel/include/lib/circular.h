@@ -27,8 +27,7 @@
 
 #include <types.h>
 
-typedef struct
-{
+typedef struct {
 	size_t size;
 	uint8_t *buffer;
 	uint32_t read_idx;

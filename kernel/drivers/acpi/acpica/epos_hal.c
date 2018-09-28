@@ -14,8 +14,7 @@ ACPI_STATUS AcpiOsInitialize()
 	FUNC_ENTER();
 	static bool init_done = false;
 
-	if (!init_done)
-	{
+	if (!init_done) {
 		mem_heap_init(&acpi_heap, 0xE0000000, 0x1000000);
 		init_done = true;
 	}
@@ -40,7 +39,8 @@ ACPI_PHYSICAL_ADDRESS AcpiOsGetRootPointer()
 	return Ret;
 }
 
-ACPI_STATUS AcpiOsPredefinedOverride(const ACPI_PREDEFINED_NAMES *PredefinedObject, ACPI_STRING *NewValue)
+ACPI_STATUS AcpiOsPredefinedOverride(const ACPI_PREDEFINED_NAMES *PredefinedObject,
+                                     ACPI_STRING *NewValue)
 {
 	FUNC_ENTER();
 	*NewValue = NULL;
@@ -54,7 +54,8 @@ ACPI_STATUS AcpiOsTableOverride(ACPI_TABLE_HEADER *ExistingTable, ACPI_TABLE_HEA
 	*NewTable = NULL;
 	return 0;
 }
-ACPI_STATUS AcpiOsPhysicalTableOverride(ACPI_TABLE_HEADER *ExistingTable, ACPI_PHYSICAL_ADDRESS *NewAddress, UINT32 *NewTableLength)
+ACPI_STATUS AcpiOsPhysicalTableOverride(ACPI_TABLE_HEADER *ExistingTable,
+                                        ACPI_PHYSICAL_ADDRESS *NewAddress, UINT32 *NewTableLength)
 {
 	FUNC_ENTER();
 	*NewAddress = 0;
@@ -84,8 +85,8 @@ void AcpiOsUnmapMemory(void *where, ACPI_SIZE length)
 }
 
 ACPI_STATUS AcpiOsGetPhysicalAddress(
-    void                    *LogicalAddress,
-    ACPI_PHYSICAL_ADDRESS   *PhysicalAddress)
+        void                    *LogicalAddress,
+        ACPI_PHYSICAL_ADDRESS   *PhysicalAddress)
 {
 	FUNC_ENTER();
 	*PhysicalAddress = 	virt_to_phys(LogicalAddress);
@@ -189,7 +190,8 @@ void AcpiOsReleaseLock(ACPI_SPINLOCK Handle, ACPI_CPU_FLAGS Flags)
 {
 	FUNC_ENTER();
 }
-ACPI_STATUS AcpiOsInstallInterruptHandler(UINT32 InterruptLevel, ACPI_OSD_HANDLER Handler, void *Context)
+ACPI_STATUS AcpiOsInstallInterruptHandler(UINT32 InterruptLevel, ACPI_OSD_HANDLER Handler,
+                void *Context)
 {
 	FUNC_ENTER();
 	return 0;
@@ -222,8 +224,7 @@ AcpiOsReadPort(ACPI_IO_ADDRESS Address, UINT32 *Value, UINT32 Width)
 {
 	FUNC_ENTER();
 
-	switch (Width)
-	{
+	switch (Width) {
 	case 8:
 		*Value = inb(Address);
 		break;
@@ -246,8 +247,7 @@ AcpiOsWritePort(ACPI_IO_ADDRESS Address, UINT32 Value, UINT32 Width)
 {
 	FUNC_ENTER();
 
-	switch (Width)
-	{
+	switch (Width) {
 	case 8:
 		outb(Address, Value);
 		break;
@@ -267,28 +267,31 @@ AcpiOsWritePort(ACPI_IO_ADDRESS Address, UINT32 Value, UINT32 Width)
 
 ACPI_STATUS
 AcpiOsReadMemory(
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT64                  *Value,
-    UINT32                  Width)
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT64                  *Value,
+        UINT32                  Width)
 {
 	FUNC_ENTER();
 	return 0;
 }
 
-ACPI_STATUS AcpiOsWriteMemory(ACPI_PHYSICAL_ADDRESS   Address,    UINT64                  Value,    UINT32                  Width)
+ACPI_STATUS AcpiOsWriteMemory(ACPI_PHYSICAL_ADDRESS   Address,    UINT64                  Value,
+                              UINT32                  Width)
 {
 	FUNC_ENTER();
 	return 0;
 }
 
 
-ACPI_STATUS AcpiOsReadPciConfiguration(ACPI_PCI_ID             *PciId,    UINT32                  Reg,    UINT64                  *Value,    UINT32                  Width)
+ACPI_STATUS AcpiOsReadPciConfiguration(ACPI_PCI_ID             *PciId,
+                                       UINT32                  Reg,    UINT64                  *Value,    UINT32                  Width)
 {
 	FUNC_ENTER();
 	return 0;
 }
 
-ACPI_STATUS AcpiOsWritePciConfiguration(ACPI_PCI_ID             *PciId,    UINT32                  Reg,    UINT64                  Value,    UINT32                  Width)
+ACPI_STATUS AcpiOsWritePciConfiguration(ACPI_PCI_ID             *PciId,
+                                        UINT32                  Reg,    UINT64                  Value,    UINT32                  Width)
 {
 	FUNC_ENTER();
 	return 0;

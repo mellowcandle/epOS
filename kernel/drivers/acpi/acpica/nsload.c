@@ -129,11 +129,11 @@ ACPI_MODULE_NAME("nsload")
 #ifdef ACPI_FUTURE_IMPLEMENTATION
 ACPI_STATUS
 AcpiNsUnloadNamespace(
-    ACPI_HANDLE             Handle);
+        ACPI_HANDLE             Handle);
 
 static ACPI_STATUS
 AcpiNsDeleteSubtree(
-    ACPI_HANDLE             StartHandle);
+        ACPI_HANDLE             StartHandle);
 #endif
 
 
@@ -153,8 +153,8 @@ AcpiNsDeleteSubtree(
 
 ACPI_STATUS
 AcpiNsLoadTable(
-    UINT32                  TableIndex,
-    ACPI_NAMESPACE_NODE     *Node)
+        UINT32                  TableIndex,
+        ACPI_NAMESPACE_NODE     *Node)
 {
 	ACPI_STATUS             Status;
 
@@ -164,8 +164,7 @@ AcpiNsLoadTable(
 
 	/* If table already loaded into namespace, just return */
 
-	if (AcpiTbIsTableLoaded(TableIndex))
-	{
+	if (AcpiTbIsTableLoaded(TableIndex)) {
 		Status = AE_ALREADY_EXISTS;
 		goto Unlock;
 	}
@@ -176,9 +175,7 @@ AcpiNsLoadTable(
 	Status = AcpiTbAllocateOwnerId(TableIndex);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Unlock;
-	}
 
 	/*
 	 * Parse the table and load the namespace with all named
@@ -192,11 +189,8 @@ AcpiNsLoadTable(
 	Status = AcpiNsParseTable(TableIndex, Node);
 
 	if (ACPI_SUCCESS(Status))
-	{
 		AcpiTbSetTableLoadedFlag(TableIndex, TRUE);
-	}
-	else
-	{
+	else {
 		/*
 		 * On error, delete any namespace objects created by this table.
 		 * We cannot initialize these objects, so delete them. There are
@@ -207,7 +201,7 @@ AcpiNsLoadTable(
 		 * namespace, as per the ACPI specification.
 		 */
 		AcpiNsDeleteNamespaceByOwner(
-		    AcpiGbl_RootTableList.Tables[TableIndex].OwnerId);
+		        AcpiGbl_RootTableList.Tables[TableIndex].OwnerId);
 
 		AcpiTbReleaseOwnerId(TableIndex);
 		return_ACPI_STATUS(Status);
@@ -216,9 +210,7 @@ AcpiNsLoadTable(
 Unlock:
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Now we can parse the control methods. We always parse
@@ -248,9 +240,7 @@ Unlock:
 	 * until later, see AcpiInitializeObjects.
 	 */
 	if (!AcpiGbl_ParseTableAsTermList && !AcpiGbl_GroupModuleLevelCode)
-	{
 		AcpiNsExecModuleCodeList();
-	}
 
 	return_ACPI_STATUS(Status);
 }
@@ -272,7 +262,7 @@ Unlock:
 
 ACPI_STATUS
 AcpiNsLoadNamespace(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 
@@ -282,8 +272,7 @@ AcpiNsLoadNamespace(
 
 	/* There must be at least a DSDT installed */
 
-	if (AcpiGbl_DSDT == NULL)
-	{
+	if (AcpiGbl_DSDT == NULL) {
 		ACPI_ERROR((AE_INFO, "DSDT is not in memory"));
 		return_ACPI_STATUS(AE_NO_ACPI_TABLES);
 	}
@@ -295,9 +284,7 @@ AcpiNsLoadNamespace(
 	Status = AcpiNsLoadTableByType(ACPI_TABLE_ID_DSDT);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Ignore exceptions from these */
 
@@ -331,7 +318,7 @@ AcpiNsLoadNamespace(
 
 static ACPI_STATUS
 AcpiNsDeleteSubtree(
-    ACPI_HANDLE             StartHandle)
+        ACPI_HANDLE             StartHandle)
 {
 	ACPI_STATUS             Status;
 	ACPI_HANDLE             ChildHandle;
@@ -352,8 +339,7 @@ AcpiNsDeleteSubtree(
 	 * Traverse the tree of objects until we bubble back up
 	 * to where we started.
 	 */
-	while (Level > 0)
-	{
+	while (Level > 0) {
 		/* Attempt to get the next object in this scope */
 
 		Status = AcpiGetNextObject(ACPI_TYPE_ANY, ParentHandle,
@@ -363,13 +349,11 @@ AcpiNsDeleteSubtree(
 
 		/* Did we get a new object? */
 
-		if (ACPI_SUCCESS(Status))
-		{
+		if (ACPI_SUCCESS(Status)) {
 			/* Check if this object has any children */
 
 			if (ACPI_SUCCESS(AcpiGetNextObject(ACPI_TYPE_ANY, ChildHandle,
-			                                   NULL, &Dummy)))
-			{
+			                                   NULL, &Dummy))) {
 				/*
 				 * There is at least one child of this object,
 				 * visit the object
@@ -378,9 +362,7 @@ AcpiNsDeleteSubtree(
 				ParentHandle = ChildHandle;
 				ChildHandle  = NULL;
 			}
-		}
-		else
-		{
+		} else {
 			/*
 			 * No more children in this object, go back up to
 			 * the object's parent
@@ -395,9 +377,7 @@ AcpiNsDeleteSubtree(
 			Status = AcpiGetParent(ParentHandle, &ParentHandle);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 		}
 	}
 
@@ -424,7 +404,7 @@ AcpiNsDeleteSubtree(
 
 ACPI_STATUS
 AcpiNsUnloadNamespace(
-    ACPI_HANDLE             Handle)
+        ACPI_HANDLE             Handle)
 {
 	ACPI_STATUS             Status;
 
@@ -435,14 +415,10 @@ AcpiNsUnloadNamespace(
 	/* Parameter validation */
 
 	if (!AcpiGbl_RootNode)
-	{
 		return_ACPI_STATUS(AE_NO_NAMESPACE);
-	}
 
 	if (!Handle)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* This function does the real work */
 

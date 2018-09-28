@@ -144,8 +144,7 @@
  * Exception info table. The "Description" field is used only by the
  * ACPICA help application (acpihelp).
  */
-typedef struct acpi_exception_info
-{
+typedef struct acpi_exception_info {
 	char                *Name;
 
 #ifdef ACPI_HELP_APP
@@ -304,8 +303,7 @@ typedef struct acpi_exception_info
  * String versions of the exception codes above
  * These strings must match the corresponding defines exactly
  */
-static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Env[] =
-{
+static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Env[] = {
 	EXCEP_TXT("AE_OK",                         "No error"),
 	EXCEP_TXT("AE_ERROR",                      "Unspecified error"),
 	EXCEP_TXT("AE_NO_ACPI_TABLES",             "ACPI tables could not be found"),
@@ -339,8 +337,7 @@ static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Env[] =
 	EXCEP_TXT("AE_IO_ERROR",                   "An I/O error occurred")
 };
 
-static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Pgm[] =
-{
+static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Pgm[] = {
 	EXCEP_TXT(NULL, NULL),
 	EXCEP_TXT("AE_BAD_PARAMETER",              "A parameter is out of range or invalid"),
 	EXCEP_TXT("AE_BAD_CHARACTER",              "An invalid character was found in a name"),
@@ -353,8 +350,7 @@ static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Pgm[] =
 	EXCEP_TXT("AE_BAD_ADDRESS",                "An illegal null I/O address")
 };
 
-static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Tbl[] =
-{
+static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Tbl[] = {
 	EXCEP_TXT(NULL, NULL),
 	EXCEP_TXT("AE_BAD_SIGNATURE",              "An ACPI table has an invalid signature"),
 	EXCEP_TXT("AE_BAD_HEADER",                 "Invalid field in an ACPI table header"),
@@ -363,8 +359,7 @@ static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Tbl[] =
 	EXCEP_TXT("AE_INVALID_TABLE_LENGTH",       "The FADT or FACS has improper length")
 };
 
-static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Aml[] =
-{
+static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Aml[] = {
 	EXCEP_TXT(NULL, NULL),
 	EXCEP_TXT("AE_AML_BAD_OPCODE",             "Invalid AML opcode encountered"),
 	EXCEP_TXT("AE_AML_NO_OPERAND",             "A required operand is missing"),
@@ -403,8 +398,7 @@ static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Aml[] =
 	EXCEP_TXT("AE_AML_TARGET_TYPE",            "A target operand of an incorrect type was encountered")
 };
 
-static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Ctrl[] =
-{
+static const ACPI_EXCEPTION_INFO    AcpiGbl_ExceptionNames_Ctrl[] = {
 	EXCEP_TXT(NULL, NULL),
 	EXCEP_TXT("AE_CTRL_RETURN_VALUE",          "A Method returned a value"),
 	EXCEP_TXT("AE_CTRL_PENDING",               "Method is calling another method"),

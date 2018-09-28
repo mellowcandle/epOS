@@ -162,9 +162,9 @@ ACPI_MODULE_NAME("nsrepair")
 
 static const ACPI_SIMPLE_REPAIR_INFO *
 AcpiNsMatchSimpleRepair(
-    ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  ReturnBtype,
-    UINT32                  PackageIndex);
+        ACPI_NAMESPACE_NODE     *Node,
+        UINT32                  ReturnBtype,
+        UINT32                  PackageIndex);
 
 
 /*
@@ -172,8 +172,7 @@ AcpiNsMatchSimpleRepair(
  *
  * 2nd argument: Unexpected types that can be repaired
  */
-static const ACPI_SIMPLE_REPAIR_INFO    AcpiObjectRepairInfo[] =
-{
+static const ACPI_SIMPLE_REPAIR_INFO    AcpiObjectRepairInfo[] = {
 	/* Resource descriptor conversions */
 
 	{
@@ -235,10 +234,10 @@ static const ACPI_SIMPLE_REPAIR_INFO    AcpiObjectRepairInfo[] =
 
 ACPI_STATUS
 AcpiNsSimpleRepair(
-    ACPI_EVALUATE_INFO      *Info,
-    UINT32                  ExpectedBtypes,
-    UINT32                  PackageIndex,
-    ACPI_OPERAND_OBJECT     **ReturnObjectPtr)
+        ACPI_EVALUATE_INFO      *Info,
+        UINT32                  ExpectedBtypes,
+        UINT32                  PackageIndex,
+        ACPI_OPERAND_OBJECT     **ReturnObjectPtr)
 {
 	ACPI_OPERAND_OBJECT     *ReturnObject = *ReturnObjectPtr;
 	ACPI_OPERAND_OBJECT     *NewObject = NULL;
@@ -256,10 +255,8 @@ AcpiNsSimpleRepair(
 	Predefined = AcpiNsMatchSimpleRepair(Info->Node,
 	                                     Info->ReturnBtype, PackageIndex);
 
-	if (Predefined)
-	{
-		if (!ReturnObject)
-		{
+	if (Predefined) {
+		if (!ReturnObject) {
 			ACPI_WARN_PREDEFINED((AE_INFO, Info->FullPathname,
 			                      ACPI_WARN_ALWAYS, "Missing expected return value"));
 		}
@@ -267,8 +264,7 @@ AcpiNsSimpleRepair(
 		Status = Predefined->ObjectConverter(Info->Node, ReturnObject,
 		                                     &NewObject);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			/* A fatal error occurred during a conversion */
 
 			ACPI_EXCEPTION((AE_INFO, Status,
@@ -277,9 +273,7 @@ AcpiNsSimpleRepair(
 		}
 
 		if (NewObject)
-		{
 			goto ObjectRepaired;
-		}
 	}
 
 	/*
@@ -287,9 +281,7 @@ AcpiNsSimpleRepair(
 	 * expected.
 	 */
 	if (Info->ReturnBtype & ExpectedBtypes)
-	{
 		return (AE_OK);
-	}
 
 	/*
 	 * At this point, we know that the type of the returned object was not
@@ -305,25 +297,19 @@ AcpiNsSimpleRepair(
 	 *
 	 * Try to fix if there was no return object. Warning if failed to fix.
 	 */
-	if (!ReturnObject)
-	{
-		if (ExpectedBtypes && (!(ExpectedBtypes & ACPI_RTYPE_NONE)))
-		{
-			if (PackageIndex != ACPI_NOT_PACKAGE_ELEMENT)
-			{
+	if (!ReturnObject) {
+		if (ExpectedBtypes && (!(ExpectedBtypes & ACPI_RTYPE_NONE))) {
+			if (PackageIndex != ACPI_NOT_PACKAGE_ELEMENT) {
 				ACPI_WARN_PREDEFINED((AE_INFO, Info->FullPathname,
 				                      ACPI_WARN_ALWAYS, "Found unexpected NULL package element"));
 
 				Status = AcpiNsRepairNullElement(Info, ExpectedBtypes,
 				                                 PackageIndex, ReturnObjectPtr);
 
-				if (ACPI_SUCCESS(Status))
-				{
+				if (ACPI_SUCCESS(Status)) {
 					return (AE_OK); /* Repair was successful */
 				}
-			}
-			else
-			{
+			} else {
 				ACPI_WARN_PREDEFINED((AE_INFO, Info->FullPathname,
 				                      ACPI_WARN_ALWAYS, "Missing expected return value"));
 			}
@@ -332,38 +318,28 @@ AcpiNsSimpleRepair(
 		}
 	}
 
-	if (ExpectedBtypes & ACPI_RTYPE_INTEGER)
-	{
+	if (ExpectedBtypes & ACPI_RTYPE_INTEGER) {
 		Status = AcpiNsConvertToInteger(ReturnObject, &NewObject);
 
 		if (ACPI_SUCCESS(Status))
-		{
 			goto ObjectRepaired;
-		}
 	}
 
-	if (ExpectedBtypes & ACPI_RTYPE_STRING)
-	{
+	if (ExpectedBtypes & ACPI_RTYPE_STRING) {
 		Status = AcpiNsConvertToString(ReturnObject, &NewObject);
 
 		if (ACPI_SUCCESS(Status))
-		{
 			goto ObjectRepaired;
-		}
 	}
 
-	if (ExpectedBtypes & ACPI_RTYPE_BUFFER)
-	{
+	if (ExpectedBtypes & ACPI_RTYPE_BUFFER) {
 		Status = AcpiNsConvertToBuffer(ReturnObject, &NewObject);
 
 		if (ACPI_SUCCESS(Status))
-		{
 			goto ObjectRepaired;
-		}
 	}
 
-	if (ExpectedBtypes & ACPI_RTYPE_PACKAGE)
-	{
+	if (ExpectedBtypes & ACPI_RTYPE_PACKAGE) {
 		/*
 		 * A package is expected. We will wrap the existing object with a
 		 * new package object. It is often the case that if a variable-length
@@ -374,8 +350,7 @@ AcpiNsSimpleRepair(
 		 */
 		Status = AcpiNsWrapWithPackage(Info, ReturnObject, &NewObject);
 
-		if (ACPI_SUCCESS(Status))
-		{
+		if (ACPI_SUCCESS(Status)) {
 			/*
 			 * The original object just had its reference count
 			 * incremented for being inserted into the new package.
@@ -395,8 +370,7 @@ ObjectRepaired:
 
 	/* Object was successfully repaired */
 
-	if (PackageIndex != ACPI_NOT_PACKAGE_ELEMENT)
-	{
+	if (PackageIndex != ACPI_NOT_PACKAGE_ELEMENT) {
 		/*
 		 * The original object is a package element. We need to
 		 * decrement the reference count of the original object,
@@ -406,24 +380,19 @@ ObjectRepaired:
 		 * package object as part of the repair, we don't need to
 		 * change the reference count.
 		 */
-		if (!(Info->ReturnFlags & ACPI_OBJECT_WRAPPED))
-		{
+		if (!(Info->ReturnFlags & ACPI_OBJECT_WRAPPED)) {
 			NewObject->Common.ReferenceCount =
-			    ReturnObject->Common.ReferenceCount;
+			        ReturnObject->Common.ReferenceCount;
 
 			if (ReturnObject->Common.ReferenceCount > 1)
-			{
 				ReturnObject->Common.ReferenceCount--;
-			}
 		}
 
 		ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 		                  "%s: Converted %s to expected %s at Package index %u\n",
 		                  Info->FullPathname, AcpiUtGetObjectTypeName(ReturnObject),
 		                  AcpiUtGetObjectTypeName(NewObject), PackageIndex));
-	}
-	else
-	{
+	} else {
 		ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 		                  "%s: Converted %s to expected %s\n",
 		                  Info->FullPathname, AcpiUtGetObjectTypeName(ReturnObject),
@@ -457,9 +426,9 @@ ObjectRepaired:
 
 static const ACPI_SIMPLE_REPAIR_INFO *
 AcpiNsMatchSimpleRepair(
-    ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  ReturnBtype,
-    UINT32                  PackageIndex)
+        ACPI_NAMESPACE_NODE     *Node,
+        UINT32                  ReturnBtype,
+        UINT32                  PackageIndex)
 {
 	const ACPI_SIMPLE_REPAIR_INFO   *ThisName;
 
@@ -468,18 +437,14 @@ AcpiNsMatchSimpleRepair(
 
 	ThisName = AcpiObjectRepairInfo;
 
-	while (ThisName->ObjectConverter)
-	{
-		if (ACPI_COMPARE_NAME(Node->Name.Ascii, ThisName->Name))
-		{
+	while (ThisName->ObjectConverter) {
+		if (ACPI_COMPARE_NAME(Node->Name.Ascii, ThisName->Name)) {
 			/* Check if we can actually repair this name/type combination */
 
 			if ((ReturnBtype & ThisName->UnexpectedBtypes) &&
-			        (ThisName->PackageIndex == ACPI_ALL_PACKAGE_ELEMENTS ||
-			         PackageIndex == ThisName->PackageIndex))
-			{
+			    (ThisName->PackageIndex == ACPI_ALL_PACKAGE_ELEMENTS ||
+			     PackageIndex == ThisName->PackageIndex))
 				return (ThisName);
-			}
 
 			return (NULL);
 		}
@@ -511,10 +476,10 @@ AcpiNsMatchSimpleRepair(
 
 ACPI_STATUS
 AcpiNsRepairNullElement(
-    ACPI_EVALUATE_INFO      *Info,
-    UINT32                  ExpectedBtypes,
-    UINT32                  PackageIndex,
-    ACPI_OPERAND_OBJECT     **ReturnObjectPtr)
+        ACPI_EVALUATE_INFO      *Info,
+        UINT32                  ExpectedBtypes,
+        UINT32                  PackageIndex,
+        ACPI_OPERAND_OBJECT     **ReturnObjectPtr)
 {
 	ACPI_OPERAND_OBJECT     *ReturnObject = *ReturnObjectPtr;
 	ACPI_OPERAND_OBJECT     *NewObject;
@@ -526,9 +491,7 @@ AcpiNsRepairNullElement(
 	/* No repair needed if return object is non-NULL */
 
 	if (ReturnObject)
-	{
 		return (AE_OK);
-	}
 
 	/*
 	 * Attempt to repair a NULL element of a Package object. This applies to
@@ -536,40 +499,31 @@ AcpiNsRepairNullElement(
 	 * is required. It does not apply to variable-length packages where NULL
 	 * elements are allowed, especially at the end of the package.
 	 */
-	if (ExpectedBtypes & ACPI_RTYPE_INTEGER)
-	{
+	if (ExpectedBtypes & ACPI_RTYPE_INTEGER) {
 		/* Need an Integer - create a zero-value integer */
 
 		NewObject = AcpiUtCreateIntegerObject((UINT64) 0);
-	}
-	else if (ExpectedBtypes & ACPI_RTYPE_STRING)
-	{
+	} else if (ExpectedBtypes & ACPI_RTYPE_STRING) {
 		/* Need a String - create a NULL string */
 
 		NewObject = AcpiUtCreateStringObject(0);
-	}
-	else if (ExpectedBtypes & ACPI_RTYPE_BUFFER)
-	{
+	} else if (ExpectedBtypes & ACPI_RTYPE_BUFFER) {
 		/* Need a Buffer - create a zero-length buffer */
 
 		NewObject = AcpiUtCreateBufferObject(0);
-	}
-	else
-	{
+	} else {
 		/* Error for all other expected types */
 
 		return (AE_AML_OPERAND_TYPE);
 	}
 
 	if (!NewObject)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	/* Set the reference count according to the parent Package object */
 
 	NewObject->Common.ReferenceCount =
-	    Info->ParentPackage->Common.ReferenceCount;
+	        Info->ParentPackage->Common.ReferenceCount;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 	                  "%s: Converted NULL package element to expected %s at index %u\n",
@@ -600,9 +554,9 @@ AcpiNsRepairNullElement(
 
 void
 AcpiNsRemoveNullElements(
-    ACPI_EVALUATE_INFO      *Info,
-    UINT8                   PackageType,
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_EVALUATE_INFO      *Info,
+        UINT8                   PackageType,
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_OPERAND_OBJECT     **Source;
 	ACPI_OPERAND_OBJECT     **Dest;
@@ -619,8 +573,7 @@ AcpiNsRemoveNullElements(
 	 * PTYPE1_VAR packages contain a variable number of simple data types.
 	 * PTYPE2 packages contain a variable number of subpackages.
 	 */
-	switch (PackageType)
-	{
+	switch (PackageType) {
 	case ACPI_PTYPE1_VAR:
 	case ACPI_PTYPE2:
 	case ACPI_PTYPE2_COUNT:
@@ -646,14 +599,10 @@ AcpiNsRemoveNullElements(
 
 	/* Examine all elements of the package object, remove nulls */
 
-	for (i = 0; i < Count; i++)
-	{
+	for (i = 0; i < Count; i++) {
 		if (!*Source)
-		{
 			NewCount--;
-		}
-		else
-		{
+		else {
 			*Dest = *Source;
 			Dest++;
 		}
@@ -663,8 +612,7 @@ AcpiNsRemoveNullElements(
 
 	/* Update parent package if any null elements were removed */
 
-	if (NewCount < Count)
-	{
+	if (NewCount < Count) {
 		ACPI_DEBUG_PRINT((ACPI_DB_REPAIR,
 		                  "%s: Found and removed %u NULL elements\n",
 		                  Info->FullPathname, (Count - NewCount)));
@@ -703,9 +651,9 @@ AcpiNsRemoveNullElements(
 
 ACPI_STATUS
 AcpiNsWrapWithPackage(
-    ACPI_EVALUATE_INFO      *Info,
-    ACPI_OPERAND_OBJECT     *OriginalObject,
-    ACPI_OPERAND_OBJECT     **ObjDescPtr)
+        ACPI_EVALUATE_INFO      *Info,
+        ACPI_OPERAND_OBJECT     *OriginalObject,
+        ACPI_OPERAND_OBJECT     **ObjDescPtr)
 {
 	ACPI_OPERAND_OBJECT     *PkgObjDesc;
 
@@ -720,9 +668,7 @@ AcpiNsWrapWithPackage(
 	PkgObjDesc = AcpiUtCreatePackageObject(1);
 
 	if (!PkgObjDesc)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	PkgObjDesc->Package.Elements[0] = OriginalObject;
 

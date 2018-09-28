@@ -128,15 +128,15 @@ ACPI_MODULE_NAME("exstore")
 
 static ACPI_STATUS
 AcpiExStoreObjectToIndex(
-    ACPI_OPERAND_OBJECT     *ValDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_OPERAND_OBJECT     *ValDesc,
+        ACPI_OPERAND_OBJECT     *DestDesc,
+        ACPI_WALK_STATE         *WalkState);
 
 static ACPI_STATUS
 AcpiExStoreDirectToNode(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*******************************************************************************
@@ -161,9 +161,9 @@ AcpiExStoreDirectToNode(
 
 ACPI_STATUS
 AcpiExStore(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     *DestDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_OPERAND_OBJECT     *RefDesc = DestDesc;
@@ -174,16 +174,14 @@ AcpiExStore(
 
 	/* Validate parameters */
 
-	if (!SourceDesc || !DestDesc)
-	{
+	if (!SourceDesc || !DestDesc) {
 		ACPI_ERROR((AE_INFO, "Null parameter"));
 		return_ACPI_STATUS(AE_AML_NO_OPERAND);
 	}
 
 	/* DestDesc can be either a namespace node or an ACPI object */
 
-	if (ACPI_GET_DESCRIPTOR_TYPE(DestDesc) == ACPI_DESC_TYPE_NAMED)
-	{
+	if (ACPI_GET_DESCRIPTOR_TYPE(DestDesc) == ACPI_DESC_TYPE_NAMED) {
 		/*
 		 * Dest is a namespace node,
 		 * Storing an object into a Named node.
@@ -197,8 +195,7 @@ AcpiExStore(
 
 	/* Destination object must be a Reference or a Constant object */
 
-	switch (DestDesc->Common.Type)
-	{
+	switch (DestDesc->Common.Type) {
 	case ACPI_TYPE_LOCAL_REFERENCE:
 
 		break;
@@ -208,9 +205,7 @@ AcpiExStore(
 		/* Allow stores to Constants -- a Noop as per ACPI spec */
 
 		if (DestDesc->Common.Flags & AOPOBJ_AML_CONSTANT)
-		{
 			return_ACPI_STATUS(AE_OK);
-		}
 
 	/*lint -fallthrough */
 
@@ -233,8 +228,7 @@ AcpiExStore(
 	 * 3) Store to a Method Local or Arg
 	 * 4) Store to the debug object
 	 */
-	switch (RefDesc->Reference.Class)
-	{
+	switch (RefDesc->Reference.Class) {
 	case ACPI_REFCLASS_REFOF:
 
 		/* Storing an object into a Name "container" */
@@ -302,9 +296,9 @@ AcpiExStore(
 
 static ACPI_STATUS
 AcpiExStoreObjectToIndex(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *IndexDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     *IndexDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -320,8 +314,7 @@ AcpiExStoreObjectToIndex(
 	 * Destination must be a reference pointer, and
 	 * must point to either a buffer or a package
 	 */
-	switch (IndexDesc->Reference.TargetType)
-	{
+	switch (IndexDesc->Reference.TargetType) {
 	case ACPI_TYPE_PACKAGE:
 		/*
 		 * Storing to a package element. Copy the object and replace
@@ -335,37 +328,29 @@ AcpiExStoreObjectToIndex(
 		ObjDesc = *(IndexDesc->Reference.Where);
 
 		if (SourceDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE &&
-		        SourceDesc->Reference.Class == ACPI_REFCLASS_TABLE)
-		{
+		    SourceDesc->Reference.Class == ACPI_REFCLASS_TABLE) {
 			/* This is a DDBHandle, just add a reference to it */
 
 			AcpiUtAddReference(SourceDesc);
 			NewDesc = SourceDesc;
-		}
-		else
-		{
+		} else {
 			/* Normal object, copy it */
 
 			Status = AcpiUtCopyIobjectToIobject(
-			             SourceDesc, &NewDesc, WalkState);
+			                 SourceDesc, &NewDesc, WalkState);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 		}
 
-		if (ObjDesc)
-		{
+		if (ObjDesc) {
 			/* Decrement reference count by the ref count of the parent package */
 
 			for (i = 0;
-			        i < ((ACPI_OPERAND_OBJECT *)
-			             IndexDesc->Reference.Object)->Common.ReferenceCount;
-			        i++)
-			{
+			     i < ((ACPI_OPERAND_OBJECT *)
+			          IndexDesc->Reference.Object)->Common.ReferenceCount;
+			     i++)
 				AcpiUtRemoveReference(ObjDesc);
-			}
 		}
 
 		*(IndexDesc->Reference.Where) = NewDesc;
@@ -373,12 +358,10 @@ AcpiExStoreObjectToIndex(
 		/* Increment ref count by the ref count of the parent package-1 */
 
 		for (i = 1;
-		        i < ((ACPI_OPERAND_OBJECT *)
-		             IndexDesc->Reference.Object)->Common.ReferenceCount;
-		        i++)
-		{
+		     i < ((ACPI_OPERAND_OBJECT *)
+		          IndexDesc->Reference.Object)->Common.ReferenceCount;
+		     i++)
 			AcpiUtAddReference(NewDesc);
-		}
 
 		break;
 
@@ -400,17 +383,14 @@ AcpiExStoreObjectToIndex(
 		ObjDesc = IndexDesc->Reference.Object;
 
 		if ((ObjDesc->Common.Type != ACPI_TYPE_BUFFER) &&
-		        (ObjDesc->Common.Type != ACPI_TYPE_STRING))
-		{
+		    (ObjDesc->Common.Type != ACPI_TYPE_STRING))
 			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
-		}
 
 		/*
 		 * The assignment of the individual elements will be slightly
 		 * different for each source type.
 		 */
-		switch (SourceDesc->Common.Type)
-		{
+		switch (SourceDesc->Common.Type) {
 		case ACPI_TYPE_INTEGER:
 
 			/* Use the least-significant byte of the integer */
@@ -484,10 +464,10 @@ AcpiExStoreObjectToIndex(
 
 ACPI_STATUS
 AcpiExStoreObjectToNode(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_WALK_STATE         *WalkState,
-    UINT8                   ImplicitConversion)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_WALK_STATE         *WalkState,
+        UINT8                   ImplicitConversion)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_OPERAND_OBJECT     *TargetDesc;
@@ -509,8 +489,7 @@ AcpiExStoreObjectToNode(
 
 	/* Only limited target types possible for everything except CopyObject */
 
-	if (WalkState->Opcode != AML_COPY_OP)
-	{
+	if (WalkState->Opcode != AML_COPY_OP) {
 		/*
 		 * Only CopyObject allows all object types to be overwritten. For
 		 * TargetRef(s), there are restrictions on the object types that
@@ -529,8 +508,7 @@ AcpiExStoreObjectToNode(
 		 *      String      --> Integer or Buffer (Named)
 		 *      Buffer      --> Integer or String (Named)
 		 */
-		switch (TargetType)
-		{
+		switch (TargetType) {
 		case ACPI_TYPE_PACKAGE:
 
 			/*
@@ -538,10 +516,8 @@ AcpiExStoreObjectToNode(
 			 * Storing a package to a Local/Arg is OK, and handled
 			 * elsewhere.
 			 */
-			if (WalkState->Opcode == AML_STORE_OP)
-			{
-				if (SourceDesc->Common.Type != ACPI_TYPE_PACKAGE)
-				{
+			if (WalkState->Opcode == AML_STORE_OP) {
+				if (SourceDesc->Common.Type != ACPI_TYPE_PACKAGE) {
 					ACPI_ERROR((AE_INFO,
 					            "Cannot assign type [%s] to [Package] "
 					            "(source must be type Pkg)",
@@ -582,14 +558,11 @@ AcpiExStoreObjectToNode(
 	Status = AcpiExResolveObject(&SourceDesc, TargetType, WalkState);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Do the actual store operation */
 
-	switch (TargetType)
-	{
+	switch (TargetType) {
 	/*
 	 * The simple data types all support implicit source operand
 	 * conversion before the store.
@@ -599,8 +572,7 @@ AcpiExStoreObjectToNode(
 	case ACPI_TYPE_BUFFER:
 
 		if ((WalkState->Opcode == AML_COPY_OP) ||
-		        !ImplicitConversion)
-		{
+		    !ImplicitConversion) {
 			/*
 			 * However, CopyObject and Stores to ArgX do not perform
 			 * an implicit conversion, as per the ACPI specification.
@@ -616,12 +588,9 @@ AcpiExStoreObjectToNode(
 		                                   &NewDesc, WalkState);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
-		if (NewDesc != TargetDesc)
-		{
+		if (NewDesc != TargetDesc) {
 			/*
 			 * Store the new NewDesc as the new value of the Name, and set
 			 * the Name's type to that of the value being stored in it.
@@ -632,7 +601,7 @@ AcpiExStoreObjectToNode(
 			 * has been changed.
 			 */
 			Status = AcpiNsAttachObject(
-			             Node, NewDesc, NewDesc->Common.Type);
+			                 Node, NewDesc, NewDesc->Common.Type);
 
 			ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 			                  "Store type [%s] into [%s] via Convert/Attach\n",
@@ -690,9 +659,9 @@ AcpiExStoreObjectToNode(
 
 static ACPI_STATUS
 AcpiExStoreDirectToNode(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *NewDesc;
@@ -712,9 +681,7 @@ AcpiExStoreDirectToNode(
 	Status = AcpiUtCopyIobjectToIobject(SourceDesc, &NewDesc, WalkState);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Attach the new object to the node */
 

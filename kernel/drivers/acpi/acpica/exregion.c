@@ -142,12 +142,12 @@ ACPI_MODULE_NAME("exregion")
 
 ACPI_STATUS
 AcpiExSystemMemorySpaceHandler(
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext)
+        UINT32                  Function,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  BitWidth,
+        UINT64                  *Value,
+        void                    *HandlerContext,
+        void                    *RegionContext)
 {
 	ACPI_STATUS             Status = AE_OK;
 	void                    *LogicalAddrPtr = NULL;
@@ -165,8 +165,7 @@ AcpiExSystemMemorySpaceHandler(
 
 	/* Validate and translate the bit width */
 
-	switch (BitWidth)
-	{
+	switch (BitWidth) {
 	case 8:
 
 		Length = 1;
@@ -202,9 +201,7 @@ AcpiExSystemMemorySpaceHandler(
 	(void) AcpiUtShortDivide((UINT64) Address, Length, NULL, &Remainder);
 
 	if (Remainder != 0)
-	{
 		return_ACPI_STATUS(AE_AML_ALIGNMENT);
-	}
 
 #endif
 
@@ -214,16 +211,14 @@ AcpiExSystemMemorySpaceHandler(
 	 *    2) Address beyond the current mapping?
 	 */
 	if ((Address < MemInfo->MappedPhysicalAddress) ||
-	        (((UINT64) Address + Length) >
-	         ((UINT64)
-	          MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
-	{
+	    (((UINT64) Address + Length) >
+	     ((UINT64)
+	      MemInfo->MappedPhysicalAddress + MemInfo->MappedLength))) {
 		/*
 		 * The request cannot be resolved by the current memory mapping;
 		 * Delete the existing mapping and create a new one.
 		 */
-		if (MemInfo->MappedLength)
-		{
+		if (MemInfo->MappedLength) {
 			/* Valid mapping, delete it */
 
 			AcpiOsUnmapMemory(MemInfo->MappedLogicalAddress,
@@ -253,21 +248,16 @@ AcpiExSystemMemorySpaceHandler(
 		                        (ACPI_ROUND_UP(Address, ACPI_DEFAULT_PAGE_SIZE) - Address);
 
 		if (PageBoundaryMapLength == 0)
-		{
 			PageBoundaryMapLength = ACPI_DEFAULT_PAGE_SIZE;
-		}
 
 		if (MapLength > PageBoundaryMapLength)
-		{
 			MapLength = PageBoundaryMapLength;
-		}
 
 		/* Create a new mapping starting at the address given */
 
 		MemInfo->MappedLogicalAddress = AcpiOsMapMemory(Address, MapLength);
 
-		if (!MemInfo->MappedLogicalAddress)
-		{
+		if (!MemInfo->MappedLogicalAddress) {
 			ACPI_ERROR((AE_INFO,
 			            "Could not map memory at 0x%8.8X%8.8X, size %u",
 			            ACPI_FORMAT_UINT64(Address), (UINT32) MapLength));
@@ -300,14 +290,12 @@ AcpiExSystemMemorySpaceHandler(
 	 * transfer up into smaller (byte-size) chunks because the AML specifically
 	 * asked for a transfer width that the hardware may require.
 	 */
-	switch (Function)
-	{
+	switch (Function) {
 	case ACPI_READ:
 
 		*Value = 0;
 
-		switch (BitWidth)
-		{
+		switch (BitWidth) {
 		case 8:
 
 			*Value = (UINT64) ACPI_GET8(LogicalAddrPtr);
@@ -339,8 +327,7 @@ AcpiExSystemMemorySpaceHandler(
 
 	case ACPI_WRITE:
 
-		switch (BitWidth)
-		{
+		switch (BitWidth) {
 		case 8:
 
 			ACPI_SET8(LogicalAddrPtr, *Value);
@@ -400,12 +387,12 @@ AcpiExSystemMemorySpaceHandler(
 
 ACPI_STATUS
 AcpiExSystemIoSpaceHandler(
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext)
+        UINT32                  Function,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  BitWidth,
+        UINT64                  *Value,
+        void                    *HandlerContext,
+        void                    *RegionContext)
 {
 	ACPI_STATUS             Status = AE_OK;
 	UINT32                  Value32;
@@ -420,8 +407,7 @@ AcpiExSystemIoSpaceHandler(
 
 	/* Decode the function parameter */
 
-	switch (Function)
-	{
+	switch (Function) {
 	case ACPI_READ:
 
 		Status = AcpiHwReadPort((ACPI_IO_ADDRESS) Address,
@@ -465,12 +451,12 @@ AcpiExSystemIoSpaceHandler(
 
 ACPI_STATUS
 AcpiExPciConfigSpaceHandler(
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext)
+        UINT32                  Function,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  BitWidth,
+        UINT64                  *Value,
+        void                    *HandlerContext,
+        void                    *RegionContext)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_PCI_ID             *PciId;
@@ -501,19 +487,18 @@ AcpiExPciConfigSpaceHandler(
 	                  Function, BitWidth, PciId->Segment, PciId->Bus, PciId->Device,
 	                  PciId->Function, PciRegister));
 
-	switch (Function)
-	{
+	switch (Function) {
 	case ACPI_READ:
 
 		*Value = 0;
 		Status = AcpiOsReadPciConfiguration(
-		             PciId, PciRegister, Value, BitWidth);
+		                 PciId, PciRegister, Value, BitWidth);
 		break;
 
 	case ACPI_WRITE:
 
 		Status = AcpiOsWritePciConfiguration(
-		             PciId, PciRegister, *Value, BitWidth);
+		                 PciId, PciRegister, *Value, BitWidth);
 		break;
 
 	default:
@@ -546,12 +531,12 @@ AcpiExPciConfigSpaceHandler(
 
 ACPI_STATUS
 AcpiExCmosSpaceHandler(
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext)
+        UINT32                  Function,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  BitWidth,
+        UINT64                  *Value,
+        void                    *HandlerContext,
+        void                    *RegionContext)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -583,12 +568,12 @@ AcpiExCmosSpaceHandler(
 
 ACPI_STATUS
 AcpiExPciBarSpaceHandler(
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext)
+        UINT32                  Function,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  BitWidth,
+        UINT64                  *Value,
+        void                    *HandlerContext,
+        void                    *RegionContext)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -620,12 +605,12 @@ AcpiExPciBarSpaceHandler(
 
 ACPI_STATUS
 AcpiExDataTableSpaceHandler(
-    UINT32                  Function,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  BitWidth,
-    UINT64                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext)
+        UINT32                  Function,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  BitWidth,
+        UINT64                  *Value,
+        void                    *HandlerContext,
+        void                    *RegionContext)
 {
 	ACPI_FUNCTION_TRACE(ExDataTableSpaceHandler);
 
@@ -634,8 +619,7 @@ AcpiExDataTableSpaceHandler(
 	 * Perform the memory read or write. The BitWidth was already
 	 * validated.
 	 */
-	switch (Function)
-	{
+	switch (Function) {
 	case ACPI_READ:
 
 		memcpy(ACPI_CAST_PTR(char, Value), ACPI_PHYSADDR_TO_PTR(Address),

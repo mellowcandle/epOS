@@ -127,8 +127,7 @@ ACPI_MODULE_NAME("rsmemory")
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertMemory24[4] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertMemory24[4] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_MEMORY24,
 		ACPI_RS_SIZE(ACPI_RESOURCE_MEMORY24),
@@ -169,8 +168,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertMemory24[4] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertMemory32[4] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertMemory32[4] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_MEMORY32,
 		ACPI_RS_SIZE(ACPI_RESOURCE_MEMORY32),
@@ -211,8 +209,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertMemory32[4] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertFixedMemory32[4] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertFixedMemory32[4] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_FIXED_MEMORY32,
 		ACPI_RS_SIZE(ACPI_RESOURCE_FIXED_MEMORY32),
@@ -251,8 +248,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertFixedMemory32[4] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsGetVendorSmall[3] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsGetVendorSmall[3] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_VENDOR,
 		ACPI_RS_SIZE(ACPI_RESOURCE_VENDOR),
@@ -283,8 +279,7 @@ ACPI_RSCONVERT_INFO     AcpiRsGetVendorSmall[3] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsGetVendorLarge[3] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsGetVendorLarge[3] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_VENDOR,
 		ACPI_RS_SIZE(ACPI_RESOURCE_VENDOR),
@@ -315,8 +310,7 @@ ACPI_RSCONVERT_INFO     AcpiRsGetVendorLarge[3] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsSetVendor[7] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsSetVendor[7] = {
 	/* Default is a small vendor descriptor */
 
 	{

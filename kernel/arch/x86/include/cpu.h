@@ -32,8 +32,7 @@
 
 #define CPUID_VENDOR_INTEL        "GenuineIntel"
 
-enum
-{
+enum {
 	CPUID_FEAT_ECX_SSE3         = 1 << 0,
 	CPUID_FEAT_ECX_PCLMUL       = 1 << 1,
 	CPUID_FEAT_ECX_DTES64       = 1 << 2,
@@ -92,8 +91,7 @@ enum
 	CPUID_FEAT_EDX_PBE          = 1 << 31
 };
 
-enum cpuid_requests
-{
+enum cpuid_requests {
 	CPUID_GETVENDORSTRING,
 	CPUID_GETFEATURES,
 	CPUID_GETTLB,

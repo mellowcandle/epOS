@@ -148,10 +148,10 @@ ACPI_MODULE_NAME("utaddress")
 
 ACPI_STATUS
 AcpiUtAddAddressRange(
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Length,
-    ACPI_NAMESPACE_NODE     *RegionNode)
+        ACPI_ADR_SPACE_TYPE     SpaceId,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  Length,
+        ACPI_NAMESPACE_NODE     *RegionNode)
 {
 	ACPI_ADDRESS_RANGE      *RangeInfo;
 
@@ -160,19 +160,15 @@ AcpiUtAddAddressRange(
 
 
 	if ((SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
-	        (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
-	{
+	    (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Allocate/init a new info block, add it to the appropriate list */
 
 	RangeInfo = ACPI_ALLOCATE(sizeof(ACPI_ADDRESS_RANGE));
 
 	if (!RangeInfo)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	RangeInfo->StartAddress = Address;
 	RangeInfo->EndAddress = (Address + Length - 1);
@@ -210,8 +206,8 @@ AcpiUtAddAddressRange(
 
 void
 AcpiUtRemoveAddressRange(
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_NAMESPACE_NODE     *RegionNode)
+        ACPI_ADR_SPACE_TYPE     SpaceId,
+        ACPI_NAMESPACE_NODE     *RegionNode)
 {
 	ACPI_ADDRESS_RANGE      *RangeInfo;
 	ACPI_ADDRESS_RANGE      *Prev;
@@ -221,27 +217,19 @@ AcpiUtRemoveAddressRange(
 
 
 	if ((SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
-	        (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
-	{
+	    (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
 		return_VOID;
-	}
 
 	/* Get the appropriate list head and check the list */
 
 	RangeInfo = Prev = AcpiGbl_AddressRangeList[SpaceId];
 
-	while (RangeInfo)
-	{
-		if (RangeInfo->RegionNode == RegionNode)
-		{
+	while (RangeInfo) {
+		if (RangeInfo->RegionNode == RegionNode) {
 			if (RangeInfo == Prev) /* Found at list head */
-			{
 				AcpiGbl_AddressRangeList[SpaceId] = RangeInfo->Next;
-			}
 			else
-			{
 				Prev->Next = RangeInfo->Next;
-			}
 
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 			                  "\nRemoved [%4.4s] address range: 0x%8.8X%8.8X-0x%8.8X%8.8X\n",
@@ -283,10 +271,10 @@ AcpiUtRemoveAddressRange(
 
 UINT32
 AcpiUtCheckAddressRange(
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Length,
-    BOOLEAN                 Warn)
+        ACPI_ADR_SPACE_TYPE     SpaceId,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT32                  Length,
+        BOOLEAN                 Warn)
 {
 	ACPI_ADDRESS_RANGE      *RangeInfo;
 	ACPI_PHYSICAL_ADDRESS   EndAddress;
@@ -298,18 +286,15 @@ AcpiUtCheckAddressRange(
 
 
 	if ((SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
-	        (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
-	{
+	    (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
 		return_UINT32(0);
-	}
 
 	RangeInfo = AcpiGbl_AddressRangeList[SpaceId];
 	EndAddress = Address + Length - 1;
 
 	/* Check entire list for all possible conflicts */
 
-	while (RangeInfo)
-	{
+	while (RangeInfo) {
 		/*
 		 * Check if the requested address/length overlaps this
 		 * address range. There are four cases to consider:
@@ -321,14 +306,12 @@ AcpiUtCheckAddressRange(
 		 * 4) Input address/length completely encompasses the range
 		 */
 		if ((Address <= RangeInfo->EndAddress) &&
-		        (EndAddress >= RangeInfo->StartAddress))
-		{
+		    (EndAddress >= RangeInfo->StartAddress)) {
 			/* Found an address range overlap */
 
 			OverlapCount++;
 
-			if (Warn)   /* Optional warning message */
-			{
+			if (Warn) { /* Optional warning message */
 				Pathname = AcpiNsGetNormalizedPathname(RangeInfo->RegionNode, TRUE);
 
 				ACPI_WARNING((AE_INFO,
@@ -365,7 +348,7 @@ AcpiUtCheckAddressRange(
 
 void
 AcpiUtDeleteAddressLists(
-    void)
+        void)
 {
 	ACPI_ADDRESS_RANGE      *Next;
 	ACPI_ADDRESS_RANGE      *RangeInfo;
@@ -374,12 +357,10 @@ AcpiUtDeleteAddressLists(
 
 	/* Delete all elements in all address range lists */
 
-	for (i = 0; i < ACPI_ADDRESS_RANGE_MAX; i++)
-	{
+	for (i = 0; i < ACPI_ADDRESS_RANGE_MAX; i++) {
 		Next = AcpiGbl_AddressRangeList[i];
 
-		while (Next)
-		{
+		while (Next) {
 			RangeInfo = Next;
 			Next = RangeInfo->Next;
 			ACPI_FREE(RangeInfo);

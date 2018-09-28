@@ -127,7 +127,7 @@ ACPI_MODULE_NAME("evglock")
 
 static UINT32
 AcpiEvGlobalLockHandler(
-    void                    *Context);
+        void                    *Context);
 
 
 /*******************************************************************************
@@ -144,7 +144,7 @@ AcpiEvGlobalLockHandler(
 
 ACPI_STATUS
 AcpiEvInitGlobalLockHandler(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 
@@ -155,9 +155,7 @@ AcpiEvInitGlobalLockHandler(
 	/* If Hardware Reduced flag is set, there is no global lock */
 
 	if (AcpiGbl_ReducedHardware)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Attempt installation of the global lock handler */
 
@@ -172,8 +170,7 @@ AcpiEvInitGlobalLockHandler(
 	 */
 	AcpiGbl_GlobalLockPresent = FALSE;
 
-	if (Status == AE_NO_HARDWARE_RESPONSE)
-	{
+	if (Status == AE_NO_HARDWARE_RESPONSE) {
 		ACPI_ERROR((AE_INFO,
 		            "No response from Global Lock hardware, disabling lock"));
 
@@ -183,9 +180,7 @@ AcpiEvInitGlobalLockHandler(
 	Status = AcpiOsCreateLock(&AcpiGbl_GlobalLockPendingLock);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	AcpiGbl_GlobalLockPending = FALSE;
 	AcpiGbl_GlobalLockPresent = TRUE;
@@ -207,7 +202,7 @@ AcpiEvInitGlobalLockHandler(
 
 ACPI_STATUS
 AcpiEvRemoveGlobalLockHandler(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 
@@ -240,7 +235,7 @@ AcpiEvRemoveGlobalLockHandler(
 
 static UINT32
 AcpiEvGlobalLockHandler(
-    void                    *Context)
+        void                    *Context)
 {
 	ACPI_STATUS             Status;
 	ACPI_CPU_FLAGS          Flags;
@@ -254,9 +249,7 @@ AcpiEvGlobalLockHandler(
 	 * which are possible (and have been seen) with bad BIOSs.
 	 */
 	if (!AcpiGbl_GlobalLockPending)
-	{
 		goto CleanupAndExit;
-	}
 
 	/*
 	 * Send a unit to the global lock semaphore. The actual acquisition
@@ -265,9 +258,7 @@ AcpiEvGlobalLockHandler(
 	Status = AcpiOsSignalSemaphore(AcpiGbl_GlobalLockSemaphore, 1);
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_ERROR((AE_INFO, "Could not signal Global Lock semaphore"));
-	}
 
 	AcpiGbl_GlobalLockPending = FALSE;
 
@@ -303,7 +294,7 @@ CleanupAndExit:
 
 ACPI_STATUS
 AcpiEvAcquireGlobalLock(
-    UINT16                  Timeout)
+        UINT16                  Timeout)
 {
 	ACPI_CPU_FLAGS          Flags;
 	ACPI_STATUS             Status;
@@ -321,9 +312,7 @@ AcpiEvAcquireGlobalLock(
 	                               Timeout);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Update the global lock handle and check for wraparound. The handle is
@@ -336,30 +325,25 @@ AcpiEvAcquireGlobalLock(
 	AcpiGbl_GlobalLockHandle++;
 
 	if (AcpiGbl_GlobalLockHandle == 0)
-	{
 		AcpiGbl_GlobalLockHandle = 1;
-	}
 
 	/*
 	 * Make sure that a global lock actually exists. If not, just
 	 * treat the lock as a standard mutex.
 	 */
-	if (!AcpiGbl_GlobalLockPresent)
-	{
+	if (!AcpiGbl_GlobalLockPresent) {
 		AcpiGbl_GlobalLockAcquired = TRUE;
 		return_ACPI_STATUS(AE_OK);
 	}
 
 	Flags = AcpiOsAcquireLock(AcpiGbl_GlobalLockPendingLock);
 
-	do
-	{
+	do {
 		/* Attempt to acquire the actual hardware lock */
 
 		ACPI_ACQUIRE_GLOBAL_LOCK(AcpiGbl_FACS, Acquired);
 
-		if (Acquired)
-		{
+		if (Acquired) {
 			AcpiGbl_GlobalLockAcquired = TRUE;
 			ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 			                  "Acquired hardware Global Lock\n"));
@@ -382,12 +366,11 @@ AcpiEvAcquireGlobalLock(
 		 * This interface releases the interpreter if we must wait.
 		 */
 		Status = AcpiExSystemWaitSemaphore(
-		             AcpiGbl_GlobalLockSemaphore, ACPI_WAIT_FOREVER);
+		                 AcpiGbl_GlobalLockSemaphore, ACPI_WAIT_FOREVER);
 
 		Flags = AcpiOsAcquireLock(AcpiGbl_GlobalLockPendingLock);
 
-	}
-	while (ACPI_SUCCESS(Status));
+	} while (ACPI_SUCCESS(Status));
 
 	AcpiGbl_GlobalLockPending = FALSE;
 	AcpiOsReleaseLock(AcpiGbl_GlobalLockPendingLock, Flags);
@@ -410,7 +393,7 @@ AcpiEvAcquireGlobalLock(
 
 ACPI_STATUS
 AcpiEvReleaseGlobalLock(
-    void)
+        void)
 {
 	BOOLEAN                 Pending = FALSE;
 	ACPI_STATUS             Status = AE_OK;
@@ -421,15 +404,13 @@ AcpiEvReleaseGlobalLock(
 
 	/* Lock must be already acquired */
 
-	if (!AcpiGbl_GlobalLockAcquired)
-	{
+	if (!AcpiGbl_GlobalLockAcquired) {
 		ACPI_WARNING((AE_INFO,
 		              "Cannot release the ACPI Global Lock, it has not been acquired"));
 		return_ACPI_STATUS(AE_NOT_ACQUIRED);
 	}
 
-	if (AcpiGbl_GlobalLockPresent)
-	{
+	if (AcpiGbl_GlobalLockPresent) {
 		/* Allow any thread to release the lock */
 
 		ACPI_RELEASE_GLOBAL_LOCK(AcpiGbl_FACS, Pending);
@@ -438,10 +419,9 @@ AcpiEvReleaseGlobalLock(
 		 * If the pending bit was set, we must write GBL_RLS to the control
 		 * register
 		 */
-		if (Pending)
-		{
+		if (Pending) {
 			Status = AcpiWriteBitRegister(
-			             ACPI_BITREG_GLOBAL_LOCK_RELEASE, ACPI_ENABLE_EVENT);
+			                 ACPI_BITREG_GLOBAL_LOCK_RELEASE, ACPI_ENABLE_EVENT);
 		}
 
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Released hardware Global Lock\n"));

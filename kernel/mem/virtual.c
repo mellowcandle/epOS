@@ -87,14 +87,10 @@ addr_t virt_to_phys(void *addr)
 
 	assert(IS_PAGE_ALIGNED(addr));
 
-	if (current_pdt[pde_idx] & PDT_PRESENT)
-	{
+	if (current_pdt[pde_idx] & PDT_PRESENT) {
 		if (current_pdt[pde_idx] & PDT_HUGE_PAGE)
-		{
 			return (current_pdt[pde_idx] & PAGE_MASK) + ((addr_t)addr & HUGE_PAGE_MASK);
-		}
-		else
-		{
+		else {
 			pte = (uint32_t *)(PDE_MIRROR_BASE + (pde_idx * 0x1000));
 			pte += pte_idx; // int pointer aritmethics here.
 			return (*pte & PAGE_MASK);
@@ -132,24 +128,17 @@ void dump_pdt()
 	char *ptr;
 	addr_t virtual_pos;
 
-	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++)
-	{
-		if (current_pdt[i] & PDT_PRESENT) // exists
-		{
+	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++) {
+		if (current_pdt[i] & PDT_PRESENT) { // exists
 			printk("PDE: %u value: 0x%x\r\n", i, current_pdt[i]);
 
 			if (current_pdt[i] & PDT_HUGE_PAGE)
-			{
 				printk("Maps 4MB page from 0x%x to 0x%x\r\n", PDE_INDEX_TO_ADDR(i), PDE_INDEX_TO_ADDR(i + 1));
-			}
-			else
-			{
+			else {
 				ptr = (char *) PDE_MIRROR_BASE + (i * 0x1000);
 
-				for (int j = 0; j < PAGE_TABLE_SIZE; j++)
-				{
-					if (* ((uint32_t *)ptr) & PTE_PRESENT)
-					{
+				for (int j = 0; j < PAGE_TABLE_SIZE; j++) {
+					if (* ((uint32_t *)ptr) & PTE_PRESENT) {
 						virtual_pos = PDE_INDEX_TO_ADDR(i) + (j * PAGE_SIZE);
 						printk("\tPTE: %u value: 0x%x maps 4K page from 0x%x to 0x%x\r\n", j, * (uint32_t *) ptr,
 						       virtual_pos, virtual_pos + PAGE_SIZE);
@@ -170,24 +159,17 @@ void dump_pdt_indirect(uint32_t *target_pdt)
 	uint32_t *temp;
 	printk("Dumping PDT: mapped to: 0x%x\r\n", (uint32_t) target_pdt);
 
-	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++)
-	{
-		if (target_pdt[i] & PDT_PRESENT) // exists
-		{
+	for (int i = 0; i < PAGE_DIRECTORY_SIZE; i++) {
+		if (target_pdt[i] & PDT_PRESENT) { // exists
 			printk("PDE: %u value: 0x%x\r\n", i, current_pdt[i]);
 
 			if (target_pdt[i] & PDT_HUGE_PAGE)
-			{
 				printk("Maps 4MB page from 0x%x to 0x%x\r\n", PDE_INDEX_TO_ADDR(i), PDE_INDEX_TO_ADDR(i + 1));
-			}
-			else
-			{
+			else {
 				temp = mem_page_map_kernel_single(target_pdt[i] & PAGE_MASK, READ_ONLY_KERNEL);
 
-				for (int j = 0; j < PAGE_TABLE_SIZE; j++)
-				{
-					if (*temp & PTE_PRESENT)
-					{
+				for (int j = 0; j < PAGE_TABLE_SIZE; j++) {
+					if (*temp & PTE_PRESENT) {
 						virtual_pos = PDE_INDEX_TO_ADDR(i) + (j * PAGE_SIZE);
 						printk("\tPTE: %u value: 0x%x maps 4K page from 0x%x to 0x%x\r\n", j, *temp,
 						       virtual_pos, virtual_pos + PAGE_SIZE);
@@ -206,12 +188,9 @@ void *mem_page_map_kernel(addr_t physical, int count, int flags)
 {
 	void *addr = mem_find_kernel_place(count);
 
-	if (addr)
-	{
+	if (addr) {
 		for (int i = 0 ; i < count; i++)
-		{
 			mem_page_map(physical + (i * PAGE_SIZE), addr + (i * PAGE_SIZE), flags);
-		}
 
 		return (void *) addr;
 	}
@@ -236,59 +215,42 @@ void *mem_find_kernel_place(int count)
 	 *  When we find the first empty page, we mark the pos in start_i and start_j and set begin to true.
 	 *  If we manage to count N consecutive pages we return the address sucessfuly */
 
-	for (uint32_t i = FRAME_TO_PDE_INDEX(KERNEL_VIRTUAL_BASE); i < PAGE_DIRECTORY_SIZE; i++)
-	{
-		if (current_pdt[i] & PDT_PRESENT) // exists
-		{
-			if (current_pdt[i] & PDT_HUGE_PAGE)
-			{
-				if (begin)
-				{
+	for (uint32_t i = FRAME_TO_PDE_INDEX(KERNEL_VIRTUAL_BASE); i < PAGE_DIRECTORY_SIZE; i++) {
+		if (current_pdt[i] & PDT_PRESENT) { // exists
+			if (current_pdt[i] & PDT_HUGE_PAGE) {
+				if (begin) {
 					begin = false;
 					n = 0;
 				}
 
 				continue;
-			}
-			else
-			{
+			} else {
 				ptr = (char *) PDE_MIRROR_BASE + (i * 0x1000);
 
-				for (uint32_t j = 0; j < PAGE_TABLE_SIZE; j++, ptr += 4)
-				{
-					if (* ((uint32_t *)ptr) & PTE_PRESENT)
-					{
-						if (begin)
-						{
+				for (uint32_t j = 0; j < PAGE_TABLE_SIZE; j++, ptr += 4) {
+					if (* ((uint32_t *)ptr) & PTE_PRESENT) {
+						if (begin) {
 							begin = false;
 							n = 0;
 						}
 
 						continue;
-					}
-					else
-					{
-						if (!begin)
-						{
+					} else {
+						if (!begin) {
 							start_i = i;
 							start_j = j;
 							begin = true;
 						}
 
 						if (++n >= count)
-						{
 							break;
-						}
 					}
 				}
 
 			}
-		}
-		else
-		{
+		} else {
 			// PDE is not maped in, this means we have 1024 empty entries in here.
-			if (!begin)
-			{
+			if (!begin) {
 				start_i = i;
 				begin = true;
 				start_j = 0;
@@ -297,8 +259,7 @@ void *mem_find_kernel_place(int count)
 			n += 1024;
 		}
 
-		if (n >= count)
-		{
+		if (n >= count) {
 			addr = (void *) PDE_INDEX_TO_ADDR(start_i) + (start_j * PAGE_SIZE);
 			pr_debug("Found place for %u pages starting from 0x%x!\r\n", count, (int) addr);
 			return addr;
@@ -324,12 +285,10 @@ void mem_init(multiboot_info_t *mbi)
 
 	multiboot_memory_map_t *mmap = (multiboot_memory_map_t *)(mbi->mmap_addr + KERNEL_VIRTUAL_BASE);
 
-	while ((uint32_t) mmap < (mbi->mmap_addr + KERNEL_VIRTUAL_BASE +  mbi->mmap_length))
-	{
+	while ((uint32_t) mmap < (mbi->mmap_addr + KERNEL_VIRTUAL_BASE +  mbi->mmap_length)) {
 		mmap = (multiboot_memory_map_t *)((unsigned int)mmap + mmap->size + sizeof(unsigned int));
 
-		if (mmap->size == 0)
-		{
+		if (mmap->size == 0) {
 			// That's the end of the list
 			break;
 		}
@@ -339,18 +298,14 @@ void mem_init(multiboot_info_t *mbi)
 
 		// We only support one zone, we'll take the biggest.
 		//
-		if (mmap->type == 1)
-		{
+		if (mmap->type == 1) {
 			if (mmap->len > total_memory)
-			{
 				total_memory = mmap->len;
-			}
 		}
 
 	}
 
-	if (total_memory == 0)
-	{
+	if (total_memory == 0) {
 		pr_fatal("No physical memory!\r\n");
 		panic();
 	}
@@ -358,7 +313,8 @@ void mem_init(multiboot_info_t *mbi)
 	kernel_size = ((uint32_t) &kernel_end - (uint32_t) &kernel_start);
 	required_kernel_pages = (kernel_size / PAGE_SIZE) + 1;
 
-	pr_debug("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start, (uint32_t) &kernel_end);
+	pr_debug("Kernel start: 0x%x, kernel end: 0x%x\r\n", (uint32_t) &kernel_start,
+	         (uint32_t) &kernel_end);
 	pr_debug("Kernel occupies 0x%x bytes, consuming %u pages\r\n", kernel_size, required_kernel_pages);
 
 	physical_start = ((uint32_t) &kernel_start) - KERNEL_VIRTUAL_BASE;
@@ -390,31 +346,19 @@ void page_fault_handler(registers_t *regs)
 	__asm__ volatile("mov %%cr2, %0" : "=r"(cr2));
 
 	if (err_code & 1)
-	{
 		page_present = true;
-	}
 	else
-	{
 		page_present = false;
-	}
 
 	if (err_code & (1 << 1))
-	{
 		page_read = false;
-	}
 	else
-	{
 		page_read = true;
-	}
 
 	if (err_code & (1 << 2))
-	{
 		page_user = true;
-	}
 	else
-	{
 		page_user = false;
-	}
 
 
 	printk("Page fault: linear address: 0x%x\r\n", cr2);
@@ -439,9 +383,7 @@ int mem_page_map(addr_t physical, void *virtual, int flags)
 
 
 	if ((uint32_t) virtual < 0xC0000000)
-	{
 		pr_warn("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, virtual, flags);
-	}
 
 	assert(IS_PAGE_ALIGNED(physical));
 
@@ -449,8 +391,7 @@ int mem_page_map(addr_t physical, void *virtual, int flags)
 
 
 	// Check if the PDT exists
-	if (!(current_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PDT_PRESENT))
-	{
+	if (!(current_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PDT_PRESENT)) {
 		pr_debug("mem_map_page: PDT missing, creating and mapping\r\n");
 		page = mem_get_page();
 
@@ -467,18 +408,14 @@ int mem_page_map(addr_t physical, void *virtual, int flags)
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX((addr_t)virtual) * sizeof(uint32_t)));
 
-	if (*pte & PTE_PRESENT)
-	{
-		if ((*pte & PTE_ADDR_MASK) != physical)
-		{
-			pr_fatal("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, (addr_t)virtual, flags);
+	if (*pte & PTE_PRESENT) {
+		if ((*pte & PTE_ADDR_MASK) != physical) {
+			pr_fatal("+mem_page_map physical: 0x%x virtual 0x%x flags %X\r\n", physical, (addr_t)virtual,
+			         flags);
 
 			while (1);
-		}
-		else
-		{
+		} else
 			pr_warn("Identical mapping detected\r\n");
-		}
 	}
 
 	*pte = physical | flags;
@@ -501,8 +438,7 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 	assert(IS_PAGE_ALIGNED(physical));
 
 	// Check if the PDT exists
-	if (!(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PDT_PRESENT))
-	{
+	if (!(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PDT_PRESENT)) {
 		page = mem_get_page();
 
 		mem_assert(page != 0);
@@ -514,31 +450,26 @@ int mem_page_map_pdt(uint32_t *target_pdt, addr_t physical, void *virtual, int f
 		// Temporary map the page
 		access_ptr = mem_page_map_kernel(page, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 		memset(access_ptr, 0, PAGE_SIZE);
-	}
-	else
-	{
+	} else {
 		target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] |= flags;
-		access_ptr = mem_page_map_kernel(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PAGE_MASK, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
+		access_ptr = mem_page_map_kernel(target_pdt[FRAME_TO_PDE_INDEX((addr_t)virtual)] & PAGE_MASK, 1,
+		                                 READ_WRITE_KERNEL | PTE_TEMPORARY);
 	}
 
 	// Insert the PTE.
 	pte = (uint32_t *)(access_ptr + (FRAME_TO_PTE_INDEX((addr_t)virtual) * sizeof(uint32_t)));
 
-	if (*pte & PTE_PRESENT)
-	{
-		if ((*pte & PTE_ADDR_MASK) != physical)
-		{
-			pr_fatal("+mem_page_map virtual: 0x%x existing physical 0x%x physical: 0x%x flags %X\r\n", (addr_t)virtual, *pte & PTE_ADDR_MASK, physical, flags);
+	if (*pte & PTE_PRESENT) {
+		if ((*pte & PTE_ADDR_MASK) != physical) {
+			pr_fatal("+mem_page_map virtual: 0x%x existing physical 0x%x physical: 0x%x flags %X\r\n",
+			         (addr_t)virtual, *pte & PTE_ADDR_MASK, physical, flags);
 
 			printk("Dumping PDT\r\n------------------\r\n");
 			dump_pdt_indirect(target_pdt);
 
 			while (1);
-		}
-		else
-		{
+		} else
 			pr_warn("Identical mapping detected\r\n");
-		}
 	}
 
 	*pte = physical | flags;
@@ -582,33 +513,25 @@ static int clone_pt(void *source, void *dest)
 
 	FUNC_ENTER();
 
-	for (i = 0; i < PAGE_TABLE_SIZE; i++)
-	{
+	for (i = 0; i < PAGE_TABLE_SIZE; i++) {
 		/* Skip if nothing there */
 		if (!(src_pte[i] & PTE_PRESENT))
-		{
 			continue;
-		}
-		else
-		{
+		else {
 			if (src_pte[i] & PTE_TEMPORARY)
-			{
 				continue;
-			}
 
 			/* User page, copy that */
 			phy_page = mem_get_page();
 
-			if (!phy_page)
-			{
+			if (!phy_page) {
 				pr_error("Can't allocate page\r\n");
 				return -1;
 			}
 
 			dest_virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 
-			if (!dest_virt_page)
-			{
+			if (!dest_virt_page) {
 				pr_error("Can't allocate page\r\n");
 				mem_free_page(phy_page);
 				return -1;
@@ -616,8 +539,7 @@ static int clone_pt(void *source, void *dest)
 
 			src_virt_page = mem_page_map_kernel(src_pte[i] & PAGE_MASK, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 
-			if (!src_virt_page)
-			{
+			if (!src_virt_page) {
 				pr_error("Can't allocate page\r\n");
 				mem_page_unmap(dest_virt_page);
 				mem_free_page(phy_page);
@@ -630,14 +552,10 @@ static int clone_pt(void *source, void *dest)
 			flags = PTE_PRESENT;
 
 			if (src_pte[i] & PTE_USER_PAGE)
-			{
 				flags |= PTE_USER_PAGE;
-			}
 
 			if (src_pte[i] & PTE_ALLOW_WRITE)
-			{
 				flags |= PTE_ALLOW_WRITE;
-			}
 
 			dest_pte[i] = phy_page | flags;
 
@@ -666,34 +584,25 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 	assert((v_source) && (v_dest));
 
 
-	for (i = 0; i < PAGE_DIRECTORY_SIZE - 1; i++)
-	{
+	for (i = 0; i < PAGE_DIRECTORY_SIZE - 1; i++) {
 		/* Skip if nothing there */
 
 		//pr_debug("i=%u src_pdt = %x\r\n", i, src_pdt[i]);
 
 		if (!(src_pdt[i] & PDT_PRESENT))
-		{
 			continue;
-		}
-		else
-		{
-			if ((src_pdt[i] & PDT_HUGE_PAGE))
-			{
+		else {
+			if ((src_pdt[i] & PDT_HUGE_PAGE)) {
 				//Huge pages are for kernel, we allow write on these
 				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE | PDT_HUGE_PAGE;
-			}
-			else if ((!(src_pdt[i] & PDT_USER_PAGE)) && (i >= FRAME_TO_PDE_INDEX((addr_t) KERNEL_VIRTUAL_BASE)))
-			{
+			} else if ((!(src_pdt[i] & PDT_USER_PAGE))
+			           && (i >= FRAME_TO_PDE_INDEX((addr_t) KERNEL_VIRTUAL_BASE)))
 				dest_pdt[i] = (src_pdt[i] & PAGE_MASK) | PDT_PRESENT | PDT_ALLOW_WRITE;
-			}
-			else
-			{
+			else {
 				/* User page, copy that */
 				phy_page = mem_get_page();
 
-				if (!phy_page)
-				{
+				if (!phy_page) {
 					pr_error("Can't allocate page\r\n");
 					return -1;
 				}
@@ -701,8 +610,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				//Temporary map
 				src_virt_page = mem_page_map_kernel(src_pdt[i] & PAGE_MASK, 1, READ_ONLY_KERNEL | PTE_TEMPORARY);
 
-				if (!src_virt_page)
-				{
+				if (!src_virt_page) {
 					pr_error("Can't allocate page\r\n");
 					mem_free_page(phy_page);
 					return -1;
@@ -711,8 +619,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				//Temporary map
 				dest_virt_page = mem_page_map_kernel(phy_page, 1, READ_WRITE_KERNEL | PTE_TEMPORARY);
 
-				if (!dest_virt_page)
-				{
+				if (!dest_virt_page) {
 					pr_error("Can't allocate page\r\n");
 					mem_page_unmap(src_virt_page);
 					mem_free_page(phy_page);
@@ -725,14 +632,10 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				flags = PDT_PRESENT;
 
 				if (src_pdt[i] & PDT_USER_PAGE)
-				{
 					flags |= PDT_USER_PAGE;
-				}
 
 				if (src_pdt[i] & PDT_ALLOW_WRITE)
-				{
 					flags |= PDT_ALLOW_WRITE;
-				}
 
 				dest_pdt[i] = phy_page | flags;
 
@@ -743,8 +646,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 				mem_page_unmap(src_virt_page);
 				mem_page_unmap(dest_virt_page);
 
-				if (ret)
-				{
+				if (ret) {
 					pr_error("page table clone failed\r\n");
 					mem_free_page(phy_page);
 					return -1;
@@ -761,8 +663,7 @@ int clone_pdt(void *v_source, void *v_dest, addr_t p_dest)
 void *mem_calloc_pdt(addr_t *p_addr)
 {
 
-	if (!p_addr)
-	{
+	if (!p_addr) {
 		pr_error("NULL ptr\r\n");
 		return NULL;
 	}
@@ -770,16 +671,14 @@ void *mem_calloc_pdt(addr_t *p_addr)
 	*p_addr = mem_get_page();
 	void *v_addr;
 
-	if (!*p_addr)
-	{
+	if (!*p_addr) {
 		pr_error("No more physical space\r\n");
 		return NULL;
 	}
 
 	v_addr = mem_page_map_kernel(*p_addr, 1, READ_WRITE_USER);
 
-	if (!v_addr)
-	{
+	if (!v_addr) {
 		pr_error("No more virtual space\r\n");
 		mem_free_page(*p_addr);
 		return NULL;
@@ -797,9 +696,7 @@ void mem_free_pdt(void *pdt)
 void mem_release_pdt(addr_t p_addr, void *v_addr)
 {
 	if ((!p_addr) || (!v_addr))
-	{
 		pr_error("NULL ptr\r\n");
-	}
 
 	mem_free_page(p_addr);
 	mem_page_unmap(v_addr);

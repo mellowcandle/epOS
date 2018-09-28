@@ -130,12 +130,12 @@ ACPI_MODULE_NAME("evxface")
 
 static ACPI_STATUS
 AcpiEvInstallGpeHandler(
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Type,
-    BOOLEAN                 IsRawHandler,
-    ACPI_GPE_HANDLER        Address,
-    void                    *Context);
+        ACPI_HANDLE             GpeDevice,
+        UINT32                  GpeNumber,
+        UINT32                  Type,
+        BOOLEAN                 IsRawHandler,
+        ACPI_GPE_HANDLER        Address,
+        void                    *Context);
 
 #endif
 
@@ -166,10 +166,10 @@ AcpiEvInstallGpeHandler(
 
 ACPI_STATUS
 AcpiInstallNotifyHandler(
-    ACPI_HANDLE             Device,
-    UINT32                  HandlerType,
-    ACPI_NOTIFY_HANDLER     Handler,
-    void                    *Context)
+        ACPI_HANDLE             Device,
+        UINT32                  HandlerType,
+        ACPI_NOTIFY_HANDLER     Handler,
+        void                    *Context)
 {
 	ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR(ACPI_NAMESPACE_NODE, Device);
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -184,17 +184,13 @@ AcpiInstallNotifyHandler(
 	/* Parameter validation */
 
 	if ((!Device) || (!Handler) || (!HandlerType) ||
-	        (HandlerType > ACPI_MAX_NOTIFY_HANDLER_TYPE))
-	{
+	    (HandlerType > ACPI_MAX_NOTIFY_HANDLER_TYPE))
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Root Object:
@@ -203,14 +199,10 @@ AcpiInstallNotifyHandler(
 	 * only one global handler can be registered per notify type.
 	 * Ensure that a handler is not already installed.
 	 */
-	if (Device == ACPI_ROOT_OBJECT)
-	{
-		for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++)
-		{
-			if (HandlerType & (i + 1))
-			{
-				if (AcpiGbl_GlobalNotify[i].Handler)
-				{
+	if (Device == ACPI_ROOT_OBJECT) {
+		for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+			if (HandlerType & (i + 1)) {
+				if (AcpiGbl_GlobalNotify[i].Handler) {
 					Status = AE_ALREADY_EXISTS;
 					goto UnlockAndExit;
 				}
@@ -232,8 +224,7 @@ AcpiInstallNotifyHandler(
 
 	/* Are Notifies allowed on this object? */
 
-	if (!AcpiEvIsNotifyObject(Node))
-	{
+	if (!AcpiEvIsNotifyObject(Node)) {
 		Status = AE_TYPE;
 		goto UnlockAndExit;
 	}
@@ -242,14 +233,12 @@ AcpiInstallNotifyHandler(
 
 	ObjDesc = AcpiNsGetAttachedObject(Node);
 
-	if (!ObjDesc)
-	{
+	if (!ObjDesc) {
 		/* Create a new object */
 
 		ObjDesc = AcpiUtCreateInternalObject(Node->Type);
 
-		if (!ObjDesc)
-		{
+		if (!ObjDesc) {
 			Status = AE_NO_MEMORY;
 			goto UnlockAndExit;
 		}
@@ -260,23 +249,17 @@ AcpiInstallNotifyHandler(
 		AcpiUtRemoveReference(ObjDesc);
 
 		if (ACPI_FAILURE(Status))
-		{
 			goto UnlockAndExit;
-		}
 	}
 
 	/* Ensure that the handler is not already installed in the lists */
 
-	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++)
-	{
-		if (HandlerType & (i + 1))
-		{
+	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+		if (HandlerType & (i + 1)) {
 			HandlerObj = ObjDesc->CommonNotify.NotifyList[i];
 
-			while (HandlerObj)
-			{
-				if (HandlerObj->Notify.Handler == Handler)
-				{
+			while (HandlerObj) {
+				if (HandlerObj->Notify.Handler == Handler) {
 					Status = AE_ALREADY_EXISTS;
 					goto UnlockAndExit;
 				}
@@ -290,8 +273,7 @@ AcpiInstallNotifyHandler(
 
 	HandlerObj = AcpiUtCreateInternalObject(ACPI_TYPE_LOCAL_NOTIFY);
 
-	if (!HandlerObj)
-	{
+	if (!HandlerObj) {
 		Status = AE_NO_MEMORY;
 		goto UnlockAndExit;
 	}
@@ -303,12 +285,10 @@ AcpiInstallNotifyHandler(
 
 	/* Install the handler at the list head(s) */
 
-	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++)
-	{
-		if (HandlerType & (i + 1))
-		{
+	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+		if (HandlerType & (i + 1)) {
 			HandlerObj->Notify.Next[i] =
-			    ObjDesc->CommonNotify.NotifyList[i];
+			        ObjDesc->CommonNotify.NotifyList[i];
 
 			ObjDesc->CommonNotify.NotifyList[i] = HandlerObj;
 		}
@@ -317,9 +297,7 @@ AcpiInstallNotifyHandler(
 	/* Add an extra reference if handler was installed in both lists */
 
 	if (HandlerType == ACPI_ALL_NOTIFY)
-	{
 		AcpiUtAddReference(HandlerObj);
-	}
 
 
 UnlockAndExit:
@@ -349,9 +327,9 @@ ACPI_EXPORT_SYMBOL(AcpiInstallNotifyHandler)
 
 ACPI_STATUS
 AcpiRemoveNotifyHandler(
-    ACPI_HANDLE             Device,
-    UINT32                  HandlerType,
-    ACPI_NOTIFY_HANDLER     Handler)
+        ACPI_HANDLE             Device,
+        UINT32                  HandlerType,
+        ACPI_NOTIFY_HANDLER     Handler)
 {
 	ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR(ACPI_NAMESPACE_NODE, Device);
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -367,29 +345,21 @@ AcpiRemoveNotifyHandler(
 	/* Parameter validation */
 
 	if ((!Device) || (!Handler) || (!HandlerType) ||
-	        (HandlerType > ACPI_MAX_NOTIFY_HANDLER_TYPE))
-	{
+	    (HandlerType > ACPI_MAX_NOTIFY_HANDLER_TYPE))
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Root Object. Global handlers are removed here */
 
-	if (Device == ACPI_ROOT_OBJECT)
-	{
-		for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++)
-		{
-			if (HandlerType & (i + 1))
-			{
+	if (Device == ACPI_ROOT_OBJECT) {
+		for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+			if (HandlerType & (i + 1)) {
 				Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 				if (ACPI_FAILURE(Status))
-				{
 					return_ACPI_STATUS(Status);
-				}
 
 				if (!AcpiGbl_GlobalNotify[i].Handler ||
-				        (AcpiGbl_GlobalNotify[i].Handler != Handler))
-				{
+				    (AcpiGbl_GlobalNotify[i].Handler != Handler)) {
 					Status = AE_NOT_EXIST;
 					goto UnlockAndExit;
 				}
@@ -414,31 +384,23 @@ AcpiRemoveNotifyHandler(
 	/* All other objects: Are Notifies allowed on this object? */
 
 	if (!AcpiEvIsNotifyObject(Node))
-	{
 		return_ACPI_STATUS(AE_TYPE);
-	}
 
 	/* Must have an existing internal object */
 
 	ObjDesc = AcpiNsGetAttachedObject(Node);
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_NOT_EXIST);
-	}
 
 	/* Internal object exists. Find the handler and remove it */
 
-	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++)
-	{
-		if (HandlerType & (i + 1))
-		{
+	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+		if (HandlerType & (i + 1)) {
 			Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 
 			HandlerObj = ObjDesc->CommonNotify.NotifyList[i];
 			PreviousHandlerObj = NULL;
@@ -446,29 +408,24 @@ AcpiRemoveNotifyHandler(
 			/* Attempt to find the handler in the handler list */
 
 			while (HandlerObj &&
-			        (HandlerObj->Notify.Handler != Handler))
-			{
+			       (HandlerObj->Notify.Handler != Handler)) {
 				PreviousHandlerObj = HandlerObj;
 				HandlerObj = HandlerObj->Notify.Next[i];
 			}
 
-			if (!HandlerObj)
-			{
+			if (!HandlerObj) {
 				Status = AE_NOT_EXIST;
 				goto UnlockAndExit;
 			}
 
 			/* Remove the handler object from the list */
 
-			if (PreviousHandlerObj) /* Handler is not at the list head */
-			{
+			if (PreviousHandlerObj) { /* Handler is not at the list head */
 				PreviousHandlerObj->Notify.Next[i] =
-				    HandlerObj->Notify.Next[i];
-			}
-			else /* Handler is at the list head */
-			{
+				        HandlerObj->Notify.Next[i];
+			} else { /* Handler is at the list head */
 				ObjDesc->CommonNotify.NotifyList[i] =
-				    HandlerObj->Notify.Next[i];
+				        HandlerObj->Notify.Next[i];
 			}
 
 			(void) AcpiUtReleaseMutex(ACPI_MTX_NAMESPACE);
@@ -506,7 +463,7 @@ ACPI_EXPORT_SYMBOL(AcpiRemoveNotifyHandler)
 
 ACPI_STATUS
 AcpiInstallExceptionHandler(
-    ACPI_EXCEPTION_HANDLER  Handler)
+        ACPI_EXCEPTION_HANDLER  Handler)
 {
 	ACPI_STATUS             Status;
 
@@ -517,14 +474,11 @@ AcpiInstallExceptionHandler(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_EVENTS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Don't allow two handlers. */
 
-	if (AcpiGbl_ExceptionHandler)
-	{
+	if (AcpiGbl_ExceptionHandler) {
 		Status = AE_ALREADY_EXISTS;
 		goto Cleanup;
 	}
@@ -557,8 +511,8 @@ ACPI_EXPORT_SYMBOL(AcpiInstallExceptionHandler)
 
 ACPI_STATUS
 AcpiInstallSciHandler(
-    ACPI_SCI_HANDLER        Address,
-    void                    *Context)
+        ACPI_SCI_HANDLER        Address,
+        void                    *Context)
 {
 	ACPI_SCI_HANDLER_INFO   *NewSciHandler;
 	ACPI_SCI_HANDLER_INFO   *SciHandler;
@@ -570,18 +524,14 @@ AcpiInstallSciHandler(
 
 
 	if (!Address)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Allocate and init a handler object */
 
 	NewSciHandler = ACPI_ALLOCATE(sizeof(ACPI_SCI_HANDLER_INFO));
 
 	if (!NewSciHandler)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	NewSciHandler->Address = Address;
 	NewSciHandler->Context = Context;
@@ -589,9 +539,7 @@ AcpiInstallSciHandler(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_EVENTS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Exit;
-	}
 
 	/* Lock list during installation */
 
@@ -600,10 +548,8 @@ AcpiInstallSciHandler(
 
 	/* Ensure handler does not already exist */
 
-	while (SciHandler)
-	{
-		if (Address == SciHandler->Address)
-		{
+	while (SciHandler) {
+		if (Address == SciHandler->Address) {
 			Status = AE_ALREADY_EXISTS;
 			goto UnlockAndExit;
 		}
@@ -625,9 +571,7 @@ UnlockAndExit:
 Exit:
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_FREE(NewSciHandler);
-	}
 
 	return_ACPI_STATUS(Status);
 }
@@ -649,7 +593,7 @@ ACPI_EXPORT_SYMBOL(AcpiInstallSciHandler)
 
 ACPI_STATUS
 AcpiRemoveSciHandler(
-    ACPI_SCI_HANDLER        Address)
+        ACPI_SCI_HANDLER        Address)
 {
 	ACPI_SCI_HANDLER_INFO   *PrevSciHandler;
 	ACPI_SCI_HANDLER_INFO   *NextSciHandler;
@@ -661,16 +605,12 @@ AcpiRemoveSciHandler(
 
 
 	if (!Address)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_EVENTS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Remove the SCI handler with lock */
 
@@ -679,20 +619,14 @@ AcpiRemoveSciHandler(
 	PrevSciHandler = NULL;
 	NextSciHandler = AcpiGbl_SciHandlerList;
 
-	while (NextSciHandler)
-	{
-		if (NextSciHandler->Address == Address)
-		{
+	while (NextSciHandler) {
+		if (NextSciHandler->Address == Address) {
 			/* Unlink and free the SCI handler info block */
 
 			if (PrevSciHandler)
-			{
 				PrevSciHandler->Next = NextSciHandler->Next;
-			}
 			else
-			{
 				AcpiGbl_SciHandlerList = NextSciHandler->Next;
-			}
 
 			AcpiOsReleaseLock(AcpiGbl_GpeLock, Flags);
 			ACPI_FREE(NextSciHandler);
@@ -733,8 +667,8 @@ ACPI_EXPORT_SYMBOL(AcpiRemoveSciHandler)
 
 ACPI_STATUS
 AcpiInstallGlobalEventHandler(
-    ACPI_GBL_EVENT_HANDLER  Handler,
-    void                    *Context)
+        ACPI_GBL_EVENT_HANDLER  Handler,
+        void                    *Context)
 {
 	ACPI_STATUS             Status;
 
@@ -745,21 +679,16 @@ AcpiInstallGlobalEventHandler(
 	/* Parameter validation */
 
 	if (!Handler)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_EVENTS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Don't allow two handlers. */
 
-	if (AcpiGbl_GlobalEventHandler)
-	{
+	if (AcpiGbl_GlobalEventHandler) {
 		Status = AE_ALREADY_EXISTS;
 		goto Cleanup;
 	}
@@ -794,9 +723,9 @@ ACPI_EXPORT_SYMBOL(AcpiInstallGlobalEventHandler)
 
 ACPI_STATUS
 AcpiInstallFixedEventHandler(
-    UINT32                  Event,
-    ACPI_EVENT_HANDLER      Handler,
-    void                    *Context)
+        UINT32                  Event,
+        ACPI_EVENT_HANDLER      Handler,
+        void                    *Context)
 {
 	ACPI_STATUS             Status;
 
@@ -807,21 +736,16 @@ AcpiInstallFixedEventHandler(
 	/* Parameter validation */
 
 	if (Event > ACPI_EVENT_MAX)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_EVENTS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Do not allow multiple handlers */
 
-	if (AcpiGbl_FixedEventHandlers[Event].Handler)
-	{
+	if (AcpiGbl_FixedEventHandlers[Event].Handler) {
 		Status = AE_ALREADY_EXISTS;
 		goto Cleanup;
 	}
@@ -833,8 +757,7 @@ AcpiInstallFixedEventHandler(
 
 	Status = AcpiEnableEvent(Event, 0);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_WARNING((AE_INFO,
 		              "Could not enable fixed event - %s (%u)",
 		              AcpiUtGetEventName(Event), Event));
@@ -843,9 +766,7 @@ AcpiInstallFixedEventHandler(
 
 		AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
 		AcpiGbl_FixedEventHandlers[Event].Context = NULL;
-	}
-	else
-	{
+	} else {
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 		                  "Enabled fixed event %s (%X), Handler=%p\n",
 		                  AcpiUtGetEventName(Event), Event, Handler));
@@ -875,8 +796,8 @@ ACPI_EXPORT_SYMBOL(AcpiInstallFixedEventHandler)
 
 ACPI_STATUS
 AcpiRemoveFixedEventHandler(
-    UINT32                  Event,
-    ACPI_EVENT_HANDLER      Handler)
+        UINT32                  Event,
+        ACPI_EVENT_HANDLER      Handler)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -887,16 +808,12 @@ AcpiRemoveFixedEventHandler(
 	/* Parameter validation */
 
 	if (Event > ACPI_EVENT_MAX)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_EVENTS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Disable the event before removing the handler */
 
@@ -907,14 +824,11 @@ AcpiRemoveFixedEventHandler(
 	AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
 	AcpiGbl_FixedEventHandlers[Event].Context = NULL;
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_WARNING((AE_INFO,
 		              "Could not disable fixed event - %s (%u)",
 		              AcpiUtGetEventName(Event), Event));
-	}
-	else
-	{
+	} else {
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 		                  "Disabled fixed event - %s (%X)\n",
 		                  AcpiUtGetEventName(Event), Event));
@@ -950,12 +864,12 @@ ACPI_EXPORT_SYMBOL(AcpiRemoveFixedEventHandler)
 
 static ACPI_STATUS
 AcpiEvInstallGpeHandler(
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Type,
-    BOOLEAN                 IsRawHandler,
-    ACPI_GPE_HANDLER        Address,
-    void                    *Context)
+        ACPI_HANDLE             GpeDevice,
+        UINT32                  GpeNumber,
+        UINT32                  Type,
+        BOOLEAN                 IsRawHandler,
+        ACPI_GPE_HANDLER        Address,
+        void                    *Context)
 {
 	ACPI_GPE_EVENT_INFO     *GpeEventInfo;
 	ACPI_GPE_HANDLER_INFO   *Handler;
@@ -969,23 +883,18 @@ AcpiEvInstallGpeHandler(
 	/* Parameter validation */
 
 	if ((!Address) || (Type & ~ACPI_GPE_XRUPT_TYPE_MASK))
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_EVENTS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Allocate and init handler object (before lock) */
 
 	Handler = ACPI_ALLOCATE_ZEROED(sizeof(ACPI_GPE_HANDLER_INFO));
 
-	if (!Handler)
-	{
+	if (!Handler) {
 		Status = AE_NO_MEMORY;
 		goto UnlockAndExit;
 	}
@@ -996,8 +905,7 @@ AcpiEvInstallGpeHandler(
 
 	GpeEventInfo = AcpiEvGetGpeEventInfo(GpeDevice, GpeNumber);
 
-	if (!GpeEventInfo)
-	{
+	if (!GpeEventInfo) {
 		Status = AE_BAD_PARAMETER;
 		goto FreeAndExit;
 	}
@@ -1005,10 +913,9 @@ AcpiEvInstallGpeHandler(
 	/* Make sure that there isn't a handler there already */
 
 	if ((ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
-	        ACPI_GPE_DISPATCH_HANDLER) ||
-	        (ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
-	         ACPI_GPE_DISPATCH_RAW_HANDLER))
-	{
+	     ACPI_GPE_DISPATCH_HANDLER) ||
+	    (ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
+	     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
 		Status = AE_ALREADY_EXISTS;
 		goto FreeAndExit;
 	}
@@ -1025,20 +932,17 @@ AcpiEvInstallGpeHandler(
 	 * disabled now to avoid spurious execution of the handler.
 	 */
 	if (((ACPI_GPE_DISPATCH_TYPE(Handler->OriginalFlags) ==
-	        ACPI_GPE_DISPATCH_METHOD) ||
-	        (ACPI_GPE_DISPATCH_TYPE(Handler->OriginalFlags) ==
-	         ACPI_GPE_DISPATCH_NOTIFY)) &&
-	        GpeEventInfo->RuntimeCount)
-	{
+	      ACPI_GPE_DISPATCH_METHOD) ||
+	     (ACPI_GPE_DISPATCH_TYPE(Handler->OriginalFlags) ==
+	      ACPI_GPE_DISPATCH_NOTIFY)) &&
+	    GpeEventInfo->RuntimeCount) {
 		Handler->OriginallyEnabled = TRUE;
 		(void) AcpiEvRemoveGpeReference(GpeEventInfo);
 
 		/* Sanity check of original type against new type */
 
 		if (Type != (UINT32)(GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK))
-		{
 			ACPI_WARNING((AE_INFO, "GPE type mismatch (level/edge)"));
-		}
 	}
 
 	/* Install the handler */
@@ -1085,11 +989,11 @@ FreeAndExit:
 
 ACPI_STATUS
 AcpiInstallGpeHandler(
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Type,
-    ACPI_GPE_HANDLER        Address,
-    void                    *Context)
+        ACPI_HANDLE             GpeDevice,
+        UINT32                  GpeNumber,
+        UINT32                  Type,
+        ACPI_GPE_HANDLER        Address,
+        void                    *Context)
 {
 	ACPI_STATUS             Status;
 
@@ -1126,11 +1030,11 @@ ACPI_EXPORT_SYMBOL(AcpiInstallGpeHandler)
 
 ACPI_STATUS
 AcpiInstallGpeRawHandler(
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    UINT32                  Type,
-    ACPI_GPE_HANDLER        Address,
-    void                    *Context)
+        ACPI_HANDLE             GpeDevice,
+        UINT32                  GpeNumber,
+        UINT32                  Type,
+        ACPI_GPE_HANDLER        Address,
+        void                    *Context)
 {
 	ACPI_STATUS             Status;
 
@@ -1164,9 +1068,9 @@ ACPI_EXPORT_SYMBOL(AcpiInstallGpeRawHandler)
 
 ACPI_STATUS
 AcpiRemoveGpeHandler(
-    ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber,
-    ACPI_GPE_HANDLER        Address)
+        ACPI_HANDLE             GpeDevice,
+        UINT32                  GpeNumber,
+        ACPI_GPE_HANDLER        Address)
 {
 	ACPI_GPE_EVENT_INFO     *GpeEventInfo;
 	ACPI_GPE_HANDLER_INFO   *Handler;
@@ -1180,16 +1084,12 @@ AcpiRemoveGpeHandler(
 	/* Parameter validation */
 
 	if (!Address)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_EVENTS);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Flags = AcpiOsAcquireLock(AcpiGbl_GpeLock);
 
@@ -1197,8 +1097,7 @@ AcpiRemoveGpeHandler(
 
 	GpeEventInfo = AcpiEvGetGpeEventInfo(GpeDevice, GpeNumber);
 
-	if (!GpeEventInfo)
-	{
+	if (!GpeEventInfo) {
 		Status = AE_BAD_PARAMETER;
 		goto UnlockAndExit;
 	}
@@ -1206,18 +1105,16 @@ AcpiRemoveGpeHandler(
 	/* Make sure that a handler is indeed installed */
 
 	if ((ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) !=
-	        ACPI_GPE_DISPATCH_HANDLER) &&
-	        (ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) !=
-	         ACPI_GPE_DISPATCH_RAW_HANDLER))
-	{
+	     ACPI_GPE_DISPATCH_HANDLER) &&
+	    (ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) !=
+	     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
 		Status = AE_NOT_EXIST;
 		goto UnlockAndExit;
 	}
 
 	/* Make sure that the installed handler is the same */
 
-	if (GpeEventInfo->Dispatch.Handler->Address != Address)
-	{
+	if (GpeEventInfo->Dispatch.Handler->Address != Address) {
 		Status = AE_BAD_PARAMETER;
 		goto UnlockAndExit;
 	}
@@ -1231,7 +1128,7 @@ AcpiRemoveGpeHandler(
 
 	GpeEventInfo->Dispatch.MethodNode = Handler->MethodNode;
 	GpeEventInfo->Flags &=
-	    ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
+	        ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
 	GpeEventInfo->Flags |= Handler->OriginalFlags;
 
 	/*
@@ -1240,13 +1137,11 @@ AcpiRemoveGpeHandler(
 	 * post-initialization configuration.
 	 */
 	if (((ACPI_GPE_DISPATCH_TYPE(Handler->OriginalFlags) ==
-	        ACPI_GPE_DISPATCH_METHOD) ||
-	        (ACPI_GPE_DISPATCH_TYPE(Handler->OriginalFlags) ==
-	         ACPI_GPE_DISPATCH_NOTIFY)) &&
-	        Handler->OriginallyEnabled)
-	{
+	      ACPI_GPE_DISPATCH_METHOD) ||
+	     (ACPI_GPE_DISPATCH_TYPE(Handler->OriginalFlags) ==
+	      ACPI_GPE_DISPATCH_NOTIFY)) &&
+	    Handler->OriginallyEnabled)
 		(void) AcpiEvAddGpeReference(GpeEventInfo);
-	}
 
 	AcpiOsReleaseLock(AcpiGbl_GpeLock, Flags);
 	(void) AcpiUtReleaseMutex(ACPI_MTX_EVENTS);
@@ -1291,16 +1186,14 @@ ACPI_EXPORT_SYMBOL(AcpiRemoveGpeHandler)
 
 ACPI_STATUS
 AcpiAcquireGlobalLock(
-    UINT16                  Timeout,
-    UINT32                  *Handle)
+        UINT16                  Timeout,
+        UINT32                  *Handle)
 {
 	ACPI_STATUS             Status;
 
 
 	if (!Handle)
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	/* Must lock interpreter to prevent race conditions */
 
@@ -1309,8 +1202,7 @@ AcpiAcquireGlobalLock(
 	Status = AcpiExAcquireMutexObject(Timeout,
 	                                  AcpiGbl_GlobalLockMutex, AcpiOsGetThreadId());
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		/* Return the global lock handle (updated in AcpiEvAcquireGlobalLock) */
 
 		*Handle = AcpiGbl_GlobalLockHandle;
@@ -1337,15 +1229,13 @@ ACPI_EXPORT_SYMBOL(AcpiAcquireGlobalLock)
 
 ACPI_STATUS
 AcpiReleaseGlobalLock(
-    UINT32                  Handle)
+        UINT32                  Handle)
 {
 	ACPI_STATUS             Status;
 
 
 	if (!Handle || (Handle != AcpiGbl_GlobalLockHandle))
-	{
 		return (AE_NOT_ACQUIRED);
-	}
 
 	Status = AcpiExReleaseMutexObject(AcpiGbl_GlobalLockMutex);
 	return (Status);

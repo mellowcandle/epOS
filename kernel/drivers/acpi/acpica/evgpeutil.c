@@ -137,8 +137,8 @@ ACPI_MODULE_NAME("evgpeutil")
 
 ACPI_STATUS
 AcpiEvWalkGpeList(
-    ACPI_GPE_CALLBACK       GpeWalkCallback,
-    void                    *Context)
+        ACPI_GPE_CALLBACK       GpeWalkCallback,
+        void                    *Context)
 {
 	ACPI_GPE_BLOCK_INFO     *GpeBlock;
 	ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
@@ -155,24 +155,19 @@ AcpiEvWalkGpeList(
 
 	GpeXruptInfo = AcpiGbl_GpeXruptListHead;
 
-	while (GpeXruptInfo)
-	{
+	while (GpeXruptInfo) {
 		/* Walk all Gpe Blocks attached to this interrupt level */
 
 		GpeBlock = GpeXruptInfo->GpeBlockListHead;
 
-		while (GpeBlock)
-		{
+		while (GpeBlock) {
 			/* One callback per GPE block */
 
 			Status = GpeWalkCallback(GpeXruptInfo, GpeBlock, Context);
 
-			if (ACPI_FAILURE(Status))
-			{
+			if (ACPI_FAILURE(Status)) {
 				if (Status == AE_CTRL_END) /* Callback abort */
-				{
 					Status = AE_OK;
-				}
 
 				goto UnlockAndExit;
 			}
@@ -204,9 +199,9 @@ UnlockAndExit:
 
 ACPI_STATUS
 AcpiEvGetGpeDevice(
-    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
-    void                    *Context)
+        ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+        ACPI_GPE_BLOCK_INFO     *GpeBlock,
+        void                    *Context)
 {
 	ACPI_GPE_DEVICE_INFO    *Info = Context;
 
@@ -215,16 +210,13 @@ AcpiEvGetGpeDevice(
 
 	Info->NextBlockBaseIndex += GpeBlock->GpeCount;
 
-	if (Info->Index < Info->NextBlockBaseIndex)
-	{
+	if (Info->Index < Info->NextBlockBaseIndex) {
 		/*
 		 * The GPE index is within this block, get the node. Leave the node
 		 * NULL for the FADT-defined GPEs
 		 */
 		if ((GpeBlock->Node)->Type == ACPI_TYPE_DEVICE)
-		{
 			Info->GpeDevice = GpeBlock->Node;
-		}
 
 		Info->Status = AE_OK;
 		return (AE_CTRL_END);
@@ -252,8 +244,8 @@ AcpiEvGetGpeDevice(
 
 ACPI_STATUS
 AcpiEvGetGpeXruptBlock(
-    UINT32                  InterruptNumber,
-    ACPI_GPE_XRUPT_INFO     **GpeXruptBlock)
+        UINT32                  InterruptNumber,
+        ACPI_GPE_XRUPT_INFO     **GpeXruptBlock)
 {
 	ACPI_GPE_XRUPT_INFO     *NextGpeXrupt;
 	ACPI_GPE_XRUPT_INFO     *GpeXrupt;
@@ -268,10 +260,8 @@ AcpiEvGetGpeXruptBlock(
 
 	NextGpeXrupt = AcpiGbl_GpeXruptListHead;
 
-	while (NextGpeXrupt)
-	{
-		if (NextGpeXrupt->InterruptNumber == InterruptNumber)
-		{
+	while (NextGpeXrupt) {
+		if (NextGpeXrupt->InterruptNumber == InterruptNumber) {
 			*GpeXruptBlock = NextGpeXrupt;
 			return_ACPI_STATUS(AE_OK);
 		}
@@ -284,9 +274,7 @@ AcpiEvGetGpeXruptBlock(
 	GpeXrupt = ACPI_ALLOCATE_ZEROED(sizeof(ACPI_GPE_XRUPT_INFO));
 
 	if (!GpeXrupt)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	GpeXrupt->InterruptNumber = InterruptNumber;
 
@@ -294,34 +282,26 @@ AcpiEvGetGpeXruptBlock(
 
 	Flags = AcpiOsAcquireLock(AcpiGbl_GpeLock);
 
-	if (AcpiGbl_GpeXruptListHead)
-	{
+	if (AcpiGbl_GpeXruptListHead) {
 		NextGpeXrupt = AcpiGbl_GpeXruptListHead;
 
 		while (NextGpeXrupt->Next)
-		{
 			NextGpeXrupt = NextGpeXrupt->Next;
-		}
 
 		NextGpeXrupt->Next = GpeXrupt;
 		GpeXrupt->Previous = NextGpeXrupt;
-	}
-	else
-	{
+	} else
 		AcpiGbl_GpeXruptListHead = GpeXrupt;
-	}
 
 	AcpiOsReleaseLock(AcpiGbl_GpeLock, Flags);
 
 	/* Install new interrupt handler if not SCI_INT */
 
-	if (InterruptNumber != AcpiGbl_FADT.SciInterrupt)
-	{
+	if (InterruptNumber != AcpiGbl_FADT.SciInterrupt) {
 		Status = AcpiOsInstallInterruptHandler(InterruptNumber,
 		                                       AcpiEvGpeXruptHandler, GpeXrupt);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_EXCEPTION((AE_INFO, Status,
 			                "Could not install GPE interrupt handler at level 0x%X",
 			                InterruptNumber));
@@ -349,7 +329,7 @@ AcpiEvGetGpeXruptBlock(
 
 ACPI_STATUS
 AcpiEvDeleteGpeXrupt(
-    ACPI_GPE_XRUPT_INFO     *GpeXrupt)
+        ACPI_GPE_XRUPT_INFO     *GpeXrupt)
 {
 	ACPI_STATUS             Status;
 	ACPI_CPU_FLAGS          Flags;
@@ -360,8 +340,7 @@ AcpiEvDeleteGpeXrupt(
 
 	/* We never want to remove the SCI interrupt handler */
 
-	if (GpeXrupt->InterruptNumber == AcpiGbl_FADT.SciInterrupt)
-	{
+	if (GpeXrupt->InterruptNumber == AcpiGbl_FADT.SciInterrupt) {
 		GpeXrupt->GpeBlockListHead = NULL;
 		return_ACPI_STATUS(AE_OK);
 	}
@@ -369,32 +348,25 @@ AcpiEvDeleteGpeXrupt(
 	/* Disable this interrupt */
 
 	Status = AcpiOsRemoveInterruptHandler(
-	             GpeXrupt->InterruptNumber, AcpiEvGpeXruptHandler);
+	                 GpeXrupt->InterruptNumber, AcpiEvGpeXruptHandler);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Unlink the interrupt block with lock */
 
 	Flags = AcpiOsAcquireLock(AcpiGbl_GpeLock);
 
 	if (GpeXrupt->Previous)
-	{
 		GpeXrupt->Previous->Next = GpeXrupt->Next;
-	}
-	else
-	{
+	else {
 		/* No previous, update list head */
 
 		AcpiGbl_GpeXruptListHead = GpeXrupt->Next;
 	}
 
 	if (GpeXrupt->Next)
-	{
 		GpeXrupt->Next->Previous = GpeXrupt->Previous;
-	}
 
 	AcpiOsReleaseLock(AcpiGbl_GpeLock, Flags);
 
@@ -421,9 +393,9 @@ AcpiEvDeleteGpeXrupt(
 
 ACPI_STATUS
 AcpiEvDeleteGpeHandlers(
-    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
-    void                    *Context)
+        ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+        ACPI_GPE_BLOCK_INFO     *GpeBlock,
+        void                    *Context)
 {
 	ACPI_GPE_EVENT_INFO     *GpeEventInfo;
 	ACPI_GPE_NOTIFY_INFO    *Notify;
@@ -437,35 +409,29 @@ AcpiEvDeleteGpeHandlers(
 
 	/* Examine each GPE Register within the block */
 
-	for (i = 0; i < GpeBlock->RegisterCount; i++)
-	{
+	for (i = 0; i < GpeBlock->RegisterCount; i++) {
 		/* Now look at the individual GPEs in this byte register */
 
-		for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
-		{
+		for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++) {
 			GpeEventInfo = &GpeBlock->EventInfo[((ACPI_SIZE) i *
 			                                                  ACPI_GPE_REGISTER_WIDTH) + j];
 
 			if ((ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
-			        ACPI_GPE_DISPATCH_HANDLER) ||
-			        (ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
-			         ACPI_GPE_DISPATCH_RAW_HANDLER))
-			{
+			     ACPI_GPE_DISPATCH_HANDLER) ||
+			    (ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
+			     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
 				/* Delete an installed handler block */
 
 				ACPI_FREE(GpeEventInfo->Dispatch.Handler);
 				GpeEventInfo->Dispatch.Handler = NULL;
 				GpeEventInfo->Flags &= ~ACPI_GPE_DISPATCH_MASK;
-			}
-			else if (ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
-			         ACPI_GPE_DISPATCH_NOTIFY)
-			{
+			} else if (ACPI_GPE_DISPATCH_TYPE(GpeEventInfo->Flags) ==
+			           ACPI_GPE_DISPATCH_NOTIFY) {
 				/* Delete the implicit notification device list */
 
 				Notify = GpeEventInfo->Dispatch.NotifyList;
 
-				while (Notify)
-				{
+				while (Notify) {
 					Next = Notify->Next;
 					ACPI_FREE(Notify);
 					Notify = Next;

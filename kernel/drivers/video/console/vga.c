@@ -66,23 +66,18 @@ static void scroll()
 	uint16_t blank = 0x20 /* space */ | (attributeByte << 8);
 
 	// Row 25 is the end, this means we need to scroll up
-	if (cursor_y >= 25)
-	{
+	if (cursor_y >= 25) {
 		// Move the current text chunk that makes up the screen
 		// back in the buffer by a line
 		int i;
 
 		for (i = 0 * 80; i < 24 * 80; i++)
-		{
 			video_memory[i] = video_memory[i + 80];
-		}
 
 		// The last line should now be blank. Do this by writing
 		// 80 spaces to it.
 		for (i = 24 * 80; i < 25 * 80; i++)
-		{
 			video_memory[i] = blank;
-		}
 
 		// The cursor should now be on the last line.
 		cursor_y = 24;
@@ -107,34 +102,26 @@ void vga_print_char(uint8_t c)
 
 	// Handle a backspace, by moving the cursor back one space
 	if (c == 0x08 && cursor_x)
-	{
 		cursor_x--;
-	}
 
 	// Handle a tab by increasing the cursor's X, but only to a point
 	// where it is divisible by 8.
 	else if (c == 0x09)
-	{
 		cursor_x = (cursor_x + TAB_SIZE) & ~(TAB_SIZE - 1);
-	}
 
 	// Handle carriage return
 	else if (c == '\r')
-	{
 		cursor_x = 0;
-	}
 
 	// Handle newline by moving cursor back to left and increasing the row
-	else if (c == '\n')
-	{
+	else if (c == '\n') {
 		cursor_x = 0;
 		cursor_y++;
 	}
 
 
 	// Handle any other printable character.
-	else if (c >= ' ')
-	{
+	else if (c >= ' ') {
 		location = video_memory + (cursor_y * 80 + cursor_x);
 		*location = c | attribute;
 		cursor_x++;
@@ -142,8 +129,7 @@ void vga_print_char(uint8_t c)
 
 	// Check if we need to insert a new line because we have reached the end
 	// of the screen.
-	if (cursor_x >= 80)
-	{
+	if (cursor_x >= 80) {
 		cursor_x = 0;
 		cursor_y ++;
 	}
@@ -157,8 +143,7 @@ void vga_print_char(uint8_t c)
 
 void vga_print_string(const char *string)
 {
-	while (*string)
-	{
+	while (*string) {
 		vga_print_char(*string);
 		string++;
 	}
@@ -179,9 +164,7 @@ void vga_clear_screen(void)
 	uint16_t blank = 0x20 /* space */ | (attributeByte << 8);
 
 	for (int i = 0; i < 80 * 25; i++)
-	{
 		video_memory[i] = blank;
-	}
 
 	// Move the hardware cursor back to the start.
 	cursor_x = 0;

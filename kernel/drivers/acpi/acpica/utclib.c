@@ -182,16 +182,15 @@ ACPI_MODULE_NAME("utclib")
 
 int
 memcmp(
-    void                    *VBuffer1,
-    void                    *VBuffer2,
-    ACPI_SIZE               Count)
+        void                    *VBuffer1,
+        void                    *VBuffer2,
+        ACPI_SIZE               Count)
 {
 	char                    *Buffer1 = (char *) VBuffer1;
 	char                    *Buffer2 = (char *) VBuffer2;
 
 
-	for (; Count-- && (*Buffer1 == *Buffer2); Buffer1++, Buffer2++)
-	{
+	for (; Count-- && (*Buffer1 == *Buffer2); Buffer1++, Buffer2++) {
 	}
 
 	return ((Count == ACPI_SIZE_MAX) ? 0 : ((unsigned char) * Buffer1 -
@@ -215,16 +214,15 @@ memcmp(
 
 void *
 memcpy(
-    void                    *Dest,
-    const void              *Src,
-    ACPI_SIZE               Count)
+        void                    *Dest,
+        const void              *Src,
+        ACPI_SIZE               Count)
 {
 	char                    *New = (char *) Dest;
 	char                    *Old = (char *) Src;
 
 
-	while (Count)
-	{
+	while (Count) {
 		*New = *Old;
 		New++;
 		Old++;
@@ -251,15 +249,14 @@ memcpy(
 
 void *
 memset(
-    void                    *Dest,
-    int                     Value,
-    ACPI_SIZE               Count)
+        void                    *Dest,
+        int                     Value,
+        ACPI_SIZE               Count)
 {
 	char                    *New = (char *) Dest;
 
 
-	while (Count)
-	{
+	while (Count) {
 		*New = (char) Value;
 		New++;
 		Count--;
@@ -284,15 +281,14 @@ memset(
 
 ACPI_SIZE
 strlen(
-    const char              *String)
+        const char              *String)
 {
 	UINT32                  Length = 0;
 
 
 	/* Count the string until a null is encountered */
 
-	while (*String)
-	{
+	while (*String) {
 		Length++;
 		String++;
 	}
@@ -316,16 +312,15 @@ strlen(
 
 char *
 strcpy(
-    char                    *DstString,
-    const char              *SrcString)
+        char                    *DstString,
+        const char              *SrcString)
 {
 	char                    *String = DstString;
 
 
 	/* Move bytes brute force */
 
-	while (*SrcString)
-	{
+	while (*SrcString) {
 		*String = *SrcString;
 
 		String++;
@@ -355,9 +350,9 @@ strcpy(
 
 char *
 strncpy(
-    char                    *DstString,
-    const char              *SrcString,
-    ACPI_SIZE               Count)
+        char                    *DstString,
+        const char              *SrcString,
+        ACPI_SIZE               Count)
 {
 	char                    *String = DstString;
 
@@ -365,15 +360,12 @@ strncpy(
 	/* Copy the string */
 
 	for (String = DstString;
-	        Count && (Count--, (*String++ = *SrcString++));)
-	{
+	     Count && (Count--, (*String++ = *SrcString++));)
 		;
-	}
 
 	/* Pad with nulls if necessary */
 
-	while (Count--)
-	{
+	while (Count--) {
 		*String = 0;
 		String++;
 	}
@@ -399,17 +391,14 @@ strncpy(
 
 int
 strcmp(
-    const char              *String1,
-    const char              *String2)
+        const char              *String1,
+        const char              *String2)
 {
 
 
-	for (; (*String1 == *String2); String2++)
-	{
+	for (; (*String1 == *String2); String2++) {
 		if (!*String1++)
-		{
 			return (0);
-		}
 	}
 
 	return ((unsigned char) * String1 - (unsigned char) * String2);
@@ -431,17 +420,14 @@ strcmp(
 
 char *
 strchr(
-    const char              *String,
-    int                     ch)
+        const char              *String,
+        int                     ch)
 {
 
 
-	for (; (*String); String++)
-	{
+	for (; (*String); String++) {
 		if ((*String) == (char) ch)
-		{
 			return ((char *) String);
-		}
 	}
 
 	return (NULL);
@@ -464,18 +450,15 @@ strchr(
 
 int
 strncmp(
-    const char              *String1,
-    const char              *String2,
-    ACPI_SIZE               Count)
+        const char              *String1,
+        const char              *String2,
+        ACPI_SIZE               Count)
 {
 
 
-	for (; Count-- && (*String1 == *String2); String2++)
-	{
+	for (; Count-- && (*String1 == *String2); String2++) {
 		if (!*String1++)
-		{
 			return (0);
-		}
 	}
 
 	return ((Count == ACPI_SIZE_MAX) ? 0 : ((unsigned char) * String1 -
@@ -498,8 +481,8 @@ strncmp(
 
 char *
 strcat(
-    char                    *DstString,
-    const char              *SrcString)
+        char                    *DstString,
+        const char              *SrcString)
 {
 	char                    *String;
 
@@ -507,16 +490,12 @@ strcat(
 	/* Find end of the destination string */
 
 	for (String = DstString; *String++;)
-	{
 		;
-	}
 
 	/* Concatenate the string */
 
 	for (--String; (*String++ = *SrcString++);)
-	{
 		;
-	}
 
 	return (DstString);
 }
@@ -539,35 +518,28 @@ strcat(
 
 char *
 strncat(
-    char                    *DstString,
-    const char              *SrcString,
-    ACPI_SIZE               Count)
+        char                    *DstString,
+        const char              *SrcString,
+        ACPI_SIZE               Count)
 {
 	char                    *String;
 
 
-	if (Count)
-	{
+	if (Count) {
 		/* Find end of the destination string */
 
 		for (String = DstString; *String++;)
-		{
 			;
-		}
 
 		/* Concatenate the string */
 
 		for (--String; (*String++ = *SrcString++) && --Count;)
-		{
 			;
-		}
 
 		/* Null terminate if necessary */
 
 		if (!Count)
-		{
 			*String = 0;
-		}
 	}
 
 	return (DstString);
@@ -591,8 +563,8 @@ strncat(
 
 char *
 strstr(
-    char                    *String1,
-    char                    *String2)
+        char                    *String1,
+        char                    *String2)
 {
 	UINT32                  Length;
 
@@ -600,16 +572,11 @@ strstr(
 	Length = strlen(String2);
 
 	if (!Length)
-	{
 		return (String1);
-	}
 
-	while (strlen(String1) >= Length)
-	{
+	while (strlen(String1) >= Length) {
 		if (memcmp(String1, String2, Length) == 0)
-		{
 			return (String1);
-		}
 
 		String1++;
 	}
@@ -636,9 +603,9 @@ strstr(
 
 UINT32
 strtoul(
-    const char              *String,
-    char                    **Terminator,
-    UINT32                  Base)
+        const char              *String,
+        char                    **Terminator,
+        UINT32                  Base)
 {
 	UINT32                  converted = 0;
 	UINT32                  index;
@@ -656,54 +623,35 @@ strtoul(
 	StringStart = String;
 
 	while (isspace(*String) || *String == '\t')
-	{
 		++String;
-	}
 
 	/*
 	 * The buffer may contain an optional plus or minus sign.
 	 * If it does, then skip over it but remember what is was:
 	 */
-	if (*String == '-')
-	{
+	if (*String == '-') {
 		sign = ACPI_SIGN_NEGATIVE;
 		++String;
-	}
-	else if (*String == '+')
-	{
+	} else if (*String == '+') {
 		++String;
 		sign = ACPI_SIGN_POSITIVE;
-	}
-	else
-	{
+	} else
 		sign = ACPI_SIGN_POSITIVE;
-	}
 
 	/*
 	 * If the input parameter Base is zero, then we need to
 	 * determine if it is octal, decimal, or hexadecimal:
 	 */
-	if (Base == 0)
-	{
-		if (*String == '0')
-		{
-			if (tolower(*(++String)) == 'x')
-			{
+	if (Base == 0) {
+		if (*String == '0') {
+			if (tolower(*(++String)) == 'x') {
 				Base = 16;
 				++String;
-			}
-			else
-			{
+			} else
 				Base = 8;
-			}
-		}
-		else
-		{
+		} else
 			Base = 10;
-		}
-	}
-	else if (Base < 2 || Base > 36)
-	{
+	} else if (Base < 2 || Base > 36) {
 		/*
 		 * The specified Base parameter is not in the domain of
 		 * this function:
@@ -716,57 +664,40 @@ strtoul(
 	 * 0 or 0x, if they are present.
 	 */
 	if (Base == 8 && *String == '0')
-	{
 		String++;
-	}
 
 	if (Base == 16 &&
-	        *String == '0' &&
-	        tolower(*(++String)) == 'x')
-	{
+	    *String == '0' &&
+	    tolower(*(++String)) == 'x')
 		String++;
-	}
 
 	/*
 	 * Main loop: convert the string to an unsigned long:
 	 */
-	while (*String)
-	{
+	while (*String) {
 		if (isdigit(*String))
-		{
 			index = (UINT32)((UINT8) * String - '0');
-		}
-		else
-		{
+		else {
 			index = (UINT32) toupper(*String);
 
 			if (isupper(index))
-			{
 				index = index - 'A' + 10;
-			}
 			else
-			{
 				goto done;
-			}
 		}
 
 		if (index >= Base)
-		{
 			goto done;
-		}
 
 		/*
 		 * Check to see if value is out of range:
 		 */
 
 		if (ReturnValue > ((ACPI_UINT32_MAX - (UINT32) index) /
-		                   (UINT32) Base))
-		{
+		                   (UINT32) Base)) {
 			Status = AE_ERROR;
 			ReturnValue = 0;           /* reset */
-		}
-		else
-		{
+		} else {
 			ReturnValue *= Base;
 			ReturnValue += index;
 			converted = 1;
@@ -781,30 +712,21 @@ done:
 	 * If appropriate, update the caller's pointer to the next
 	 * unconverted character in the buffer.
 	 */
-	if (Terminator)
-	{
+	if (Terminator) {
 		if (converted == 0 && ReturnValue == 0 && String != NULL)
-		{
 			*Terminator = (char *) StringStart;
-		}
 		else
-		{
 			*Terminator = (char *) String;
-		}
 	}
 
 	if (Status == AE_ERROR)
-	{
 		ReturnValue = ACPI_UINT32_MAX;
-	}
 
 	/*
 	 * If a minus sign was present, then "the conversion is negated":
 	 */
 	if (sign == ACPI_SIGN_NEGATIVE)
-	{
 		ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
-	}
 
 	return (ReturnValue);
 }
@@ -824,7 +746,7 @@ done:
 
 int
 toupper(
-    int                     c)
+        int                     c)
 {
 
 	return (islower(c) ? ((c) - 0x20) : (c));
@@ -845,7 +767,7 @@ toupper(
 
 int
 tolower(
-    int                     c)
+        int                     c)
 {
 
 	return (isupper(c) ? ((c) + 0x20) : (c));
@@ -860,8 +782,7 @@ tolower(
  *
  ******************************************************************************/
 
-const UINT8 AcpiGbl_Ctypes[257] =
-{
+const UINT8 AcpiGbl_Ctypes[257] = {
 	_ACPI_CN,            /* 0x00     0 NUL */
 	_ACPI_CN,            /* 0x01     1 SOH */
 	_ACPI_CN,            /* 0x02     2 STX */

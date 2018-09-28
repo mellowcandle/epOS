@@ -37,24 +37,21 @@ circ_buffer_t *create_circ_buffer(size_t size)
 {
 	circ_buffer_t *tmp;
 
-	if (!is_power_of_2(size))
-	{
+	if (!is_power_of_2(size)) {
 		pr_error("Circular buffer size must be a power of 2");
 		return NULL;
 	}
 
 	tmp = kmalloc(sizeof(circ_buffer_t));
 
-	if (!tmp)
-	{
+	if (!tmp) {
 		pr_error("circular buffer allocation failed\r\n");
 		return NULL;
 	}
 
 	tmp->buffer = kmalloc(size);
 
-	if (!tmp->buffer)
-	{
+	if (!tmp->buffer) {
 		pr_error("circular buffer allocation failed\r\n");
 		kfree(tmp);
 		return NULL;
@@ -71,8 +68,7 @@ int read_circ_buffer(circ_buffer_t *buffer, size_t max_len, void *to)
 	size_t actual_read = buffer->size - _circ_buffer_space_left(buffer);
 	actual_read = MIN(max_len, actual_read);
 
-	for (size_t i = 0; i < actual_read; i++)
-	{
+	for (size_t i = 0; i < actual_read; i++) {
 		((char *)to)[i] = buffer->buffer[buffer->read_idx % buffer->size];
 		buffer->read_idx = (buffer->read_idx + 1) % buffer->size;
 	}
@@ -84,8 +80,7 @@ int write_circ_buffer(circ_buffer_t *buffer, size_t max_len, void *from)
 {
 	size_t actual_write = MIN(max_len, _circ_buffer_space_left(buffer));
 
-	for (size_t i = 0; i < actual_write; i++)
-	{
+	for (size_t i = 0; i < actual_write; i++) {
 		buffer->buffer[buffer->write_idx % buffer->size] = ((char *)from)[i];
 		buffer->write_idx = (buffer->write_idx + 1) % buffer->size;
 	}
@@ -95,8 +90,7 @@ int write_circ_buffer(circ_buffer_t *buffer, size_t max_len, void *from)
 
 bool circ_buffer_is_empty(circ_buffer_t *buffer)
 {
-	if (!buffer)
-	{
+	if (!buffer) {
 		pr_error("buffer parameter is null");
 		panic();
 	}
@@ -106,8 +100,7 @@ bool circ_buffer_is_empty(circ_buffer_t *buffer)
 
 bool circ_buffer_is_full(circ_buffer_t *buffer)
 {
-	if (!buffer)
-	{
+	if (!buffer) {
 		pr_error("buffer parameter is null");
 		panic();
 	}
@@ -119,23 +112,16 @@ static size_t _circ_buffer_space_left(circ_buffer_t *buffer)
 {
 
 	if (buffer->read_idx == buffer->write_idx)
-	{
 		return buffer->size - 1;
-	}
 	else if (buffer->read_idx > buffer->write_idx)
-	{
 		return (buffer->read_idx - buffer->write_idx);
-	}
 	else
-	{
 		return (buffer->size - 1 - (buffer->write_idx - buffer->read_idx));
-	}
 }
 
 void destroy_circ_buffer(circ_buffer_t *buf)
 {
-	if (!buf)
-	{
+	if (!buf) {
 		pr_error("buffer parameter is null");
 		panic();
 	}

@@ -131,13 +131,13 @@ ACPI_MODULE_NAME("utstrtoul64")
 
 static UINT64
 AcpiUtStrtoulBase10(
-    char                    *String,
-    UINT32                  Flags);
+        char                    *String,
+        UINT32                  Flags);
 
 static UINT64
 AcpiUtStrtoulBase16(
-    char                    *String,
-    UINT32                  Flags);
+        char                    *String,
+        UINT32                  Flags);
 
 
 /*******************************************************************************
@@ -246,9 +246,9 @@ AcpiUtStrtoulBase16(
 
 ACPI_STATUS
 AcpiUtStrtoul64(
-    char                    *String,
-    UINT32                  Flags,
-    UINT64                  *ReturnValue)
+        char                    *String,
+        UINT32                  Flags,
+        UINT64                  *ReturnValue)
 {
 	ACPI_STATUS             Status = AE_OK;
 	UINT32                  Base;
@@ -260,32 +260,24 @@ AcpiUtStrtoul64(
 	/* Parameter validation */
 
 	if (!String || !ReturnValue)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	*ReturnValue = 0;
 
 	/* Check for zero-length string, returns 0 */
 
 	if (*String == 0)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Skip over any white space at start of string */
 
 	while (isspace((int) *String))
-	{
 		String++;
-	}
 
 	/* End of string? return 0 */
 
 	if (*String == 0)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/*
 	 * 1) The "0x" prefix indicates base 16. Per the ACPI specification,
@@ -293,12 +285,10 @@ AcpiUtStrtoul64(
 	 * However, we always allow it for compatibility with older ACPICA.
 	 */
 	if ((*String == ACPI_ASCII_ZERO) &&
-	        (tolower((int) * (String + 1)) == 'x'))
-	{
+	    (tolower((int) * (String + 1)) == 'x')) {
 		String += 2;    /* Go past the 0x */
 
-		if (*String == 0)
-		{
+		if (*String == 0) {
 			return_ACPI_STATUS(AE_OK);      /* Return value 0 */
 		}
 
@@ -308,25 +298,19 @@ AcpiUtStrtoul64(
 	/* 2) Force to base 16 (implicit conversion case) */
 
 	else if (Flags & ACPI_STRTOUL_BASE16)
-	{
 		Base = 16;
-	}
 
 	/* 3) Default fallback is to Base 10 */
 
 	else
-	{
 		Base = 10;
-	}
 
 	/* Skip all leading zeros */
 
-	while (*String == ACPI_ASCII_ZERO)
-	{
+	while (*String == ACPI_ASCII_ZERO) {
 		String++;
 
-		if (*String == 0)
-		{
+		if (*String == 0) {
 			return_ACPI_STATUS(AE_OK);      /* Return value 0 */
 		}
 	}
@@ -334,13 +318,9 @@ AcpiUtStrtoul64(
 	/* Perform the base 16 or 10 conversion */
 
 	if (Base == 16)
-	{
 		*ReturnValue = AcpiUtStrtoulBase16(String, Flags);
-	}
 	else
-	{
 		*ReturnValue = AcpiUtStrtoulBase10(String, Flags);
-	}
 
 	return_ACPI_STATUS(Status);
 }
@@ -363,8 +343,8 @@ AcpiUtStrtoul64(
 
 static UINT64
 AcpiUtStrtoulBase10(
-    char                    *String,
-    UINT32                  Flags)
+        char                    *String,
+        UINT32                  Flags)
 {
 	int                     AsciiDigit;
 	UINT64                  NextValue;
@@ -373,12 +353,10 @@ AcpiUtStrtoulBase10(
 
 	/* Main loop: convert each ASCII byte in the input string */
 
-	while (*String)
-	{
+	while (*String) {
 		AsciiDigit = *String;
 
-		if (!isdigit(AsciiDigit))
-		{
+		if (!isdigit(AsciiDigit)) {
 			/* Not ASCII 0-9, terminate */
 
 			goto Exit;
@@ -387,15 +365,13 @@ AcpiUtStrtoulBase10(
 		/* Convert and insert (add) the decimal digit */
 
 		NextValue =
-		    (ReturnValue * 10) + (AsciiDigit - ACPI_ASCII_ZERO);
+		        (ReturnValue * 10) + (AsciiDigit - ACPI_ASCII_ZERO);
 
 		/* Check for overflow (32 or 64 bit) - return current converted value */
 
 		if (((Flags & ACPI_STRTOUL_32BIT) && (NextValue > ACPI_UINT32_MAX)) ||
-		        (NextValue < ReturnValue)) /* 64-bit overflow case */
-		{
+		    (NextValue < ReturnValue)) /* 64-bit overflow case */
 			goto Exit;
-		}
 
 		ReturnValue = NextValue;
 		String++;
@@ -423,8 +399,8 @@ Exit:
 
 static UINT64
 AcpiUtStrtoulBase16(
-    char                    *String,
-    UINT32                  Flags)
+        char                    *String,
+        UINT32                  Flags)
 {
 	int                     AsciiDigit;
 	UINT32                  ValidDigits = 1;
@@ -433,20 +409,16 @@ AcpiUtStrtoulBase16(
 
 	/* Main loop: convert each ASCII byte in the input string */
 
-	while (*String)
-	{
+	while (*String) {
 		/* Check for overflow (32 or 64 bit) - return current converted value */
 
 		if ((ValidDigits > 16) ||
-		        ((ValidDigits > 8) && (Flags & ACPI_STRTOUL_32BIT)))
-		{
+		    ((ValidDigits > 8) && (Flags & ACPI_STRTOUL_32BIT)))
 			goto Exit;
-		}
 
 		AsciiDigit = *String;
 
-		if (!isxdigit(AsciiDigit))
-		{
+		if (!isxdigit(AsciiDigit)) {
 			/* Not Hex ASCII A-F, a-f, or 0-9, terminate */
 
 			goto Exit;
@@ -455,7 +427,7 @@ AcpiUtStrtoulBase16(
 		/* Convert and insert the hex digit */
 
 		ReturnValue =
-		    (ReturnValue << 4) | AcpiUtAsciiCharToHex(AsciiDigit);
+		        (ReturnValue << 4) | AcpiUtAsciiCharToHex(AsciiDigit);
 
 		String++;
 		ValidDigits++;

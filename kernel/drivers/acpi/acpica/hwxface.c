@@ -139,7 +139,7 @@ ACPI_MODULE_NAME("hwxface")
 
 ACPI_STATUS
 AcpiReset(
-    void)
+        void)
 {
 	ACPI_GENERIC_ADDRESS    *ResetReg;
 	ACPI_STATUS             Status;
@@ -153,13 +153,10 @@ AcpiReset(
 	/* Check if the reset register is supported */
 
 	if (!(AcpiGbl_FADT.Flags & ACPI_FADT_RESET_REGISTER) ||
-	        !ResetReg->Address)
-	{
+	    !ResetReg->Address)
 		return_ACPI_STATUS(AE_NOT_EXIST);
-	}
 
-	if (ResetReg->SpaceId == ACPI_ADR_SPACE_SYSTEM_IO)
-	{
+	if (ResetReg->SpaceId == ACPI_ADR_SPACE_SYSTEM_IO) {
 		/*
 		 * For I/O space, write directly to the OSL. This bypasses the port
 		 * validation mechanism, which may block a valid write to the reset
@@ -173,9 +170,7 @@ AcpiReset(
 		 */
 		Status = AcpiOsWritePort((ACPI_IO_ADDRESS) ResetReg->Address,
 		                         AcpiGbl_FADT.ResetValue, ACPI_RESET_REGISTER_WIDTH);
-	}
-	else
-	{
+	} else {
 		/* Write the reset value to the reset register */
 
 		Status = AcpiHwWrite(AcpiGbl_FADT.ResetValue, ResetReg);
@@ -208,8 +203,8 @@ ACPI_EXPORT_SYMBOL(AcpiReset)
 
 ACPI_STATUS
 AcpiRead(
-    UINT64                  *ReturnValue,
-    ACPI_GENERIC_ADDRESS    *Reg)
+        UINT64                  *ReturnValue,
+        ACPI_GENERIC_ADDRESS    *Reg)
 {
 	UINT32                  ValueLo;
 	UINT32                  ValueHi;
@@ -222,42 +217,32 @@ AcpiRead(
 
 
 	if (!ReturnValue)
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	/* Validate contents of the GAS register. Allow 64-bit transfers */
 
 	Status = AcpiHwValidateRegister(Reg, 64, &Address);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/*
 	 * Two address spaces supported: Memory or I/O. PCI_Config is
 	 * not supported here because the GAS structure is insufficient
 	 */
-	if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
-	{
+	if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
 		Status = AcpiOsReadMemory((ACPI_PHYSICAL_ADDRESS)
 		                          Address, ReturnValue, Reg->BitWidth);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
-	}
-	else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
-	{
+	} else { /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
 		ValueLo = 0;
 		ValueHi = 0;
 
 		Width = Reg->BitWidth;
 
-		if (Width == 64)
-		{
+		if (Width == 64) {
 			Width = 32; /* Break into two 32-bit transfers */
 		}
 
@@ -265,21 +250,16 @@ AcpiRead(
 		                        Address, &ValueLo, Width);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
-		if (Reg->BitWidth == 64)
-		{
+		if (Reg->BitWidth == 64) {
 			/* Read the top 32 bits */
 
 			Status = AcpiHwReadPort((ACPI_IO_ADDRESS)
 			                        (Address + 4), &ValueHi, 32);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return (Status);
-			}
 		}
 
 		/* Set the return value only if status is AE_OK */
@@ -314,8 +294,8 @@ ACPI_EXPORT_SYMBOL(AcpiRead)
 
 ACPI_STATUS
 AcpiWrite(
-    UINT64                  Value,
-    ACPI_GENERIC_ADDRESS    *Reg)
+        UINT64                  Value,
+        ACPI_GENERIC_ADDRESS    *Reg)
 {
 	UINT32                  Width;
 	UINT64                  Address;
@@ -330,30 +310,22 @@ AcpiWrite(
 	Status = AcpiHwValidateRegister(Reg, 64, &Address);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/*
 	 * Two address spaces supported: Memory or IO. PCI_Config is
 	 * not supported here because the GAS structure is insufficient
 	 */
-	if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY)
-	{
+	if (Reg->SpaceId == ACPI_ADR_SPACE_SYSTEM_MEMORY) {
 		Status = AcpiOsWriteMemory((ACPI_PHYSICAL_ADDRESS)
 		                           Address, Value, Reg->BitWidth);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
-	}
-	else /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
-	{
+	} else { /* ACPI_ADR_SPACE_SYSTEM_IO, validated earlier */
 		Width = Reg->BitWidth;
 
-		if (Width == 64)
-		{
+		if (Width == 64) {
 			Width = 32; /* Break into two 32-bit transfers */
 		}
 
@@ -361,19 +333,14 @@ AcpiWrite(
 		                         Address, ACPI_LODWORD(Value), Width);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
-		if (Reg->BitWidth == 64)
-		{
+		if (Reg->BitWidth == 64) {
 			Status = AcpiHwWritePort((ACPI_IO_ADDRESS)
 			                         (Address + 4), ACPI_HIDWORD(Value), 32);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return (Status);
-			}
 		}
 	}
 
@@ -417,8 +384,8 @@ ACPI_EXPORT_SYMBOL(AcpiWrite)
 
 ACPI_STATUS
 AcpiReadBitRegister(
-    UINT32                  RegisterId,
-    UINT32                  *ReturnValue)
+        UINT32                  RegisterId,
+        UINT32                  *ReturnValue)
 {
 	ACPI_BIT_REGISTER_INFO  *BitRegInfo;
 	UINT32                  RegisterValue;
@@ -434,9 +401,7 @@ AcpiReadBitRegister(
 	BitRegInfo = AcpiHwGetBitRegisterInfo(RegisterId);
 
 	if (!BitRegInfo)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Read the entire parent register */
 
@@ -444,9 +409,7 @@ AcpiReadBitRegister(
 	                            &RegisterValue);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Normalize the value that was read, mask off other bits */
 
@@ -488,8 +451,8 @@ ACPI_EXPORT_SYMBOL(AcpiReadBitRegister)
 
 ACPI_STATUS
 AcpiWriteBitRegister(
-    UINT32                  RegisterId,
-    UINT32                  Value)
+        UINT32                  RegisterId,
+        UINT32                  Value)
 {
 	ACPI_BIT_REGISTER_INFO  *BitRegInfo;
 	ACPI_CPU_FLAGS          LockFlags;
@@ -505,9 +468,7 @@ AcpiWriteBitRegister(
 	BitRegInfo = AcpiHwGetBitRegisterInfo(RegisterId);
 
 	if (!BitRegInfo)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	LockFlags = AcpiOsAcquireLock(AcpiGbl_HardwareLock);
 
@@ -515,8 +476,7 @@ AcpiWriteBitRegister(
 	 * At this point, we know that the parent register is one of the
 	 * following: PM1 Status, PM1 Enable, PM1 Control, or PM2 Control
 	 */
-	if (BitRegInfo->ParentRegister != ACPI_REGISTER_PM1_STATUS)
-	{
+	if (BitRegInfo->ParentRegister != ACPI_REGISTER_PM1_STATUS) {
 		/*
 		 * 1) Case for PM1 Enable, PM1 Control, and PM2 Control
 		 *
@@ -527,9 +487,7 @@ AcpiWriteBitRegister(
 		                            &RegisterValue);
 
 		if (ACPI_FAILURE(Status))
-		{
 			goto UnlockAndExit;
-		}
 
 		/*
 		 * Insert the input bit into the value that was just read
@@ -540,9 +498,7 @@ AcpiWriteBitRegister(
 
 		Status = AcpiHwRegisterWrite(BitRegInfo->ParentRegister,
 		                             RegisterValue);
-	}
-	else
-	{
+	} else {
 		/*
 		 * 2) Case for PM1 Status
 		 *
@@ -556,8 +512,7 @@ AcpiWriteBitRegister(
 
 		/* No need to write the register if value is all zeros */
 
-		if (RegisterValue)
-		{
+		if (RegisterValue) {
 			Status = AcpiHwRegisterWrite(ACPI_REGISTER_PM1_STATUS,
 			                             RegisterValue);
 		}
@@ -619,9 +574,9 @@ ACPI_EXPORT_SYMBOL(AcpiWriteBitRegister)
 
 ACPI_STATUS
 AcpiGetSleepTypeData(
-    UINT8                   SleepState,
-    UINT8                   *SleepTypeA,
-    UINT8                   *SleepTypeB)
+        UINT8                   SleepState,
+        UINT8                   *SleepTypeA,
+        UINT8                   *SleepTypeB)
 {
 	ACPI_STATUS             Status;
 	ACPI_EVALUATE_INFO      *Info;
@@ -634,19 +589,15 @@ AcpiGetSleepTypeData(
 	/* Validate parameters */
 
 	if ((SleepState > ACPI_S_STATES_MAX) ||
-	        !SleepTypeA || !SleepTypeB)
-	{
+	    !SleepTypeA || !SleepTypeB)
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Allocate the evaluation information block */
 
 	Info = ACPI_ALLOCATE_ZEROED(sizeof(ACPI_EVALUATE_INFO));
 
 	if (!Info)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/*
 	 * Evaluate the \_Sx namespace object containing the register values
@@ -656,10 +607,8 @@ AcpiGetSleepTypeData(
 
 	Status = AcpiNsEvaluate(Info);
 
-	if (ACPI_FAILURE(Status))
-	{
-		if (Status == AE_NOT_FOUND)
-		{
+	if (ACPI_FAILURE(Status)) {
+		if (Status == AE_NOT_FOUND) {
 			/* The _Sx states are optional, ignore NOT_FOUND */
 
 			goto FinalCleanup;
@@ -670,8 +619,7 @@ AcpiGetSleepTypeData(
 
 	/* Must have a return object */
 
-	if (!Info->ReturnObject)
-	{
+	if (!Info->ReturnObject) {
 		ACPI_ERROR((AE_INFO, "No Sleep State object returned from [%s]",
 		            Info->RelativePathname));
 		Status = AE_AML_NO_RETURN_VALUE;
@@ -680,8 +628,7 @@ AcpiGetSleepTypeData(
 
 	/* Return object must be of type Package */
 
-	if (Info->ReturnObject->Common.Type != ACPI_TYPE_PACKAGE)
-	{
+	if (Info->ReturnObject->Common.Type != ACPI_TYPE_PACKAGE) {
 		ACPI_ERROR((AE_INFO, "Sleep State return object is not a Package"));
 		Status = AE_AML_OPERAND_TYPE;
 		goto ReturnValueCleanup;
@@ -694,8 +641,7 @@ AcpiGetSleepTypeData(
 	 */
 	Elements = Info->ReturnObject->Package.Elements;
 
-	switch (Info->ReturnObject->Package.Count)
-	{
+	switch (Info->ReturnObject->Package.Count) {
 	case 0:
 
 		Status = AE_AML_PACKAGE_LIMIT;
@@ -703,8 +649,7 @@ AcpiGetSleepTypeData(
 
 	case 1:
 
-		if (Elements[0]->Common.Type != ACPI_TYPE_INTEGER)
-		{
+		if (Elements[0]->Common.Type != ACPI_TYPE_INTEGER) {
 			Status = AE_AML_OPERAND_TYPE;
 			break;
 		}
@@ -719,8 +664,7 @@ AcpiGetSleepTypeData(
 	default:
 
 		if ((Elements[0]->Common.Type != ACPI_TYPE_INTEGER) ||
-		        (Elements[1]->Common.Type != ACPI_TYPE_INTEGER))
-		{
+		    (Elements[1]->Common.Type != ACPI_TYPE_INTEGER)) {
 			Status = AE_AML_OPERAND_TYPE;
 			break;
 		}
@@ -737,8 +681,7 @@ ReturnValueCleanup:
 
 WarningCleanup:
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status,
 		                "While evaluating Sleep State [%s]",
 		                Info->RelativePathname));

@@ -140,10 +140,10 @@ ACPI_MODULE_NAME("tbdata")
 
 void
 AcpiTbInitTableDescriptor(
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags,
-    ACPI_TABLE_HEADER       *Table)
+        ACPI_TABLE_DESC         *TableDesc,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT8                   Flags,
+        ACPI_TABLE_HEADER       *Table)
 {
 
 	/*
@@ -176,16 +176,15 @@ AcpiTbInitTableDescriptor(
 
 ACPI_STATUS
 AcpiTbAcquireTable(
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_TABLE_HEADER       **TablePtr,
-    UINT32                  *TableLength,
-    UINT8                   *TableFlags)
+        ACPI_TABLE_DESC         *TableDesc,
+        ACPI_TABLE_HEADER       **TablePtr,
+        UINT32                  *TableLength,
+        UINT8                   *TableFlags)
 {
 	ACPI_TABLE_HEADER       *Table = NULL;
 
 
-	switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
-	{
+	switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) {
 	case ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL:
 
 		Table = AcpiOsMapMemory(TableDesc->Address, TableDesc->Length);
@@ -206,9 +205,7 @@ AcpiTbAcquireTable(
 	/* Table is not valid yet */
 
 	if (!Table)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	/* Fill the return values */
 
@@ -235,13 +232,12 @@ AcpiTbAcquireTable(
 
 void
 AcpiTbReleaseTable(
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  TableLength,
-    UINT8                   TableFlags)
+        ACPI_TABLE_HEADER       *Table,
+        UINT32                  TableLength,
+        UINT8                   TableFlags)
 {
 
-	switch (TableFlags & ACPI_TABLE_ORIGIN_MASK)
-	{
+	switch (TableFlags & ACPI_TABLE_ORIGIN_MASK) {
 	case ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL:
 
 		AcpiOsUnmapMemory(Table, TableLength);
@@ -275,15 +271,14 @@ AcpiTbReleaseTable(
 
 ACPI_STATUS
 AcpiTbAcquireTempTable(
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags)
+        ACPI_TABLE_DESC         *TableDesc,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT8                   Flags)
 {
 	ACPI_TABLE_HEADER       *TableHeader;
 
 
-	switch (Flags & ACPI_TABLE_ORIGIN_MASK)
-	{
+	switch (Flags & ACPI_TABLE_ORIGIN_MASK) {
 	case ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL:
 
 		/* Get the length of the full table from the header */
@@ -291,9 +286,7 @@ AcpiTbAcquireTempTable(
 		TableHeader = AcpiOsMapMemory(Address, sizeof(ACPI_TABLE_HEADER));
 
 		if (!TableHeader)
-		{
 			return (AE_NO_MEMORY);
-		}
 
 		AcpiTbInitTableDescriptor(TableDesc, Address, Flags, TableHeader);
 		AcpiOsUnmapMemory(TableHeader, sizeof(ACPI_TABLE_HEADER));
@@ -306,9 +299,7 @@ AcpiTbAcquireTempTable(
 		                            ACPI_PHYSADDR_TO_PTR(Address));
 
 		if (!TableHeader)
-		{
 			return (AE_NO_MEMORY);
-		}
 
 		AcpiTbInitTableDescriptor(TableDesc, Address, Flags, TableHeader);
 		return (AE_OK);
@@ -338,7 +329,7 @@ AcpiTbAcquireTempTable(
 
 void
 AcpiTbReleaseTempTable(
-    ACPI_TABLE_DESC         *TableDesc)
+        ACPI_TABLE_DESC         *TableDesc)
 {
 
 	/*
@@ -365,7 +356,7 @@ AcpiTbReleaseTempTable(
 
 ACPI_STATUS
 AcpiTbValidateTable(
-    ACPI_TABLE_DESC         *TableDesc)
+        ACPI_TABLE_DESC         *TableDesc)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -375,15 +366,12 @@ AcpiTbValidateTable(
 
 	/* Validate the table if necessary */
 
-	if (!TableDesc->Pointer)
-	{
+	if (!TableDesc->Pointer) {
 		Status = AcpiTbAcquireTable(TableDesc, &TableDesc->Pointer,
 		                            &TableDesc->Length, &TableDesc->Flags);
 
 		if (!TableDesc->Pointer)
-		{
 			Status = AE_NO_MEMORY;
-		}
 	}
 
 	return_ACPI_STATUS(Status);
@@ -405,7 +393,7 @@ AcpiTbValidateTable(
 
 void
 AcpiTbInvalidateTable(
-    ACPI_TABLE_DESC         *TableDesc)
+        ACPI_TABLE_DESC         *TableDesc)
 {
 
 	ACPI_FUNCTION_TRACE(TbInvalidateTable);
@@ -414,9 +402,7 @@ AcpiTbInvalidateTable(
 	/* Table must be validated */
 
 	if (!TableDesc->Pointer)
-	{
 		return_VOID;
-	}
 
 	AcpiTbReleaseTable(TableDesc->Pointer, TableDesc->Length,
 	                   TableDesc->Flags);
@@ -441,11 +427,10 @@ AcpiTbInvalidateTable(
 
 ACPI_STATUS
 AcpiTbValidateTempTable(
-    ACPI_TABLE_DESC         *TableDesc)
+        ACPI_TABLE_DESC         *TableDesc)
 {
 
-	if (!TableDesc->Pointer && !AcpiGbl_VerifyTableChecksum)
-	{
+	if (!TableDesc->Pointer && !AcpiGbl_VerifyTableChecksum) {
 		/*
 		 * Only validates the header of the table.
 		 * Note that Length contains the size of the mapping after invoking
@@ -478,8 +463,8 @@ AcpiTbValidateTempTable(
 
 ACPI_STATUS
 AcpiTbVerifyTempTable(
-    ACPI_TABLE_DESC         *TableDesc,
-    char                    *Signature)
+        ACPI_TABLE_DESC         *TableDesc,
+        char                    *Signature)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -492,15 +477,12 @@ AcpiTbVerifyTempTable(
 	Status = AcpiTbValidateTempTable(TableDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* If a particular signature is expected (DSDT/FACS), it must match */
 
 	if (Signature &&
-	        !ACPI_COMPARE_NAME(&TableDesc->Signature, Signature))
-	{
+	    !ACPI_COMPARE_NAME(&TableDesc->Signature, Signature)) {
 		ACPI_BIOS_ERROR((AE_INFO,
 		                 "Invalid signature 0x%X for ACPI table, expected [%s]",
 		                 TableDesc->Signature.Integer, Signature));
@@ -510,12 +492,10 @@ AcpiTbVerifyTempTable(
 
 	/* Verify the checksum */
 
-	if (AcpiGbl_VerifyTableChecksum)
-	{
+	if (AcpiGbl_VerifyTableChecksum) {
 		Status = AcpiTbVerifyChecksum(TableDesc->Pointer, TableDesc->Length);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_EXCEPTION((AE_INFO, AE_NO_MEMORY,
 			                "%4.4s 0x%8.8X%8.8X"
 			                " Attempted table install failed",
@@ -549,7 +529,7 @@ InvalidateAndExit:
 
 ACPI_STATUS
 AcpiTbResizeRootTableList(
-    void)
+        void)
 {
 	ACPI_TABLE_DESC         *Tables;
 	UINT32                  TableCount;
@@ -560,8 +540,7 @@ AcpiTbResizeRootTableList(
 
 	/* AllowResize flag is a parameter to AcpiInitializeTables */
 
-	if (!(AcpiGbl_RootTableList.Flags & ACPI_ROOT_ALLOW_RESIZE))
-	{
+	if (!(AcpiGbl_RootTableList.Flags & ACPI_ROOT_ALLOW_RESIZE)) {
 		ACPI_ERROR((AE_INFO, "Resize of Root Table Array is not allowed"));
 		return_ACPI_STATUS(AE_SUPPORT);
 	}
@@ -569,40 +548,32 @@ AcpiTbResizeRootTableList(
 	/* Increase the Table Array size */
 
 	if (AcpiGbl_RootTableList.Flags & ACPI_ROOT_ORIGIN_ALLOCATED)
-	{
 		TableCount = AcpiGbl_RootTableList.MaxTableCount;
-	}
 	else
-	{
 		TableCount = AcpiGbl_RootTableList.CurrentTableCount;
-	}
 
 	Tables = ACPI_ALLOCATE_ZEROED(
-	             ((ACPI_SIZE) TableCount + ACPI_ROOT_TABLE_SIZE_INCREMENT) *
-	             sizeof(ACPI_TABLE_DESC));
+	                 ((ACPI_SIZE) TableCount + ACPI_ROOT_TABLE_SIZE_INCREMENT) *
+	                 sizeof(ACPI_TABLE_DESC));
 
-	if (!Tables)
-	{
+	if (!Tables) {
 		ACPI_ERROR((AE_INFO, "Could not allocate new root table array"));
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
 
 	/* Copy and free the previous table array */
 
-	if (AcpiGbl_RootTableList.Tables)
-	{
+	if (AcpiGbl_RootTableList.Tables) {
 		memcpy(Tables, AcpiGbl_RootTableList.Tables,
 		       (ACPI_SIZE) TableCount * sizeof(ACPI_TABLE_DESC));
 
 		if (AcpiGbl_RootTableList.Flags & ACPI_ROOT_ORIGIN_ALLOCATED)
-		{
 			ACPI_FREE(AcpiGbl_RootTableList.Tables);
-		}
 	}
 
 	AcpiGbl_RootTableList.Tables = Tables;
 	AcpiGbl_RootTableList.MaxTableCount =
-	    TableCount + ACPI_ROOT_TABLE_SIZE_INCREMENT;
+	        TableCount + ACPI_ROOT_TABLE_SIZE_INCREMENT;
 	AcpiGbl_RootTableList.Flags |= ACPI_ROOT_ORIGIN_ALLOCATED;
 
 	return_ACPI_STATUS(AE_OK);
@@ -624,8 +595,8 @@ AcpiTbResizeRootTableList(
 
 ACPI_STATUS
 AcpiTbGetNextTableDescriptor(
-    UINT32                  *TableIndex,
-    ACPI_TABLE_DESC         **TableDesc)
+        UINT32                  *TableIndex,
+        ACPI_TABLE_DESC         **TableDesc)
 {
 	ACPI_STATUS             Status;
 	UINT32                  i;
@@ -634,28 +605,21 @@ AcpiTbGetNextTableDescriptor(
 	/* Ensure that there is room for the table in the Root Table List */
 
 	if (AcpiGbl_RootTableList.CurrentTableCount >=
-	        AcpiGbl_RootTableList.MaxTableCount)
-	{
+	    AcpiGbl_RootTableList.MaxTableCount) {
 		Status = AcpiTbResizeRootTableList();
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 	}
 
 	i = AcpiGbl_RootTableList.CurrentTableCount;
 	AcpiGbl_RootTableList.CurrentTableCount++;
 
 	if (TableIndex)
-	{
 		*TableIndex = i;
-	}
 
 	if (TableDesc)
-	{
 		*TableDesc = &AcpiGbl_RootTableList.Tables[i];
-	}
 
 	return (AE_OK);
 }
@@ -675,7 +639,7 @@ AcpiTbGetNextTableDescriptor(
 
 void
 AcpiTbTerminate(
-    void)
+        void)
 {
 	UINT32                  i;
 
@@ -688,18 +652,14 @@ AcpiTbTerminate(
 	/* Delete the individual tables */
 
 	for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; i++)
-	{
 		AcpiTbUninstallTable(&AcpiGbl_RootTableList.Tables[i]);
-	}
 
 	/*
 	 * Delete the root table array if allocated locally. Array cannot be
 	 * mapped, so we don't need to check for that flag.
 	 */
 	if (AcpiGbl_RootTableList.Flags & ACPI_ROOT_ORIGIN_ALLOCATED)
-	{
 		ACPI_FREE(AcpiGbl_RootTableList.Tables);
-	}
 
 	AcpiGbl_RootTableList.Tables = NULL;
 	AcpiGbl_RootTableList.Flags = 0;
@@ -726,7 +686,7 @@ AcpiTbTerminate(
 
 ACPI_STATUS
 AcpiTbDeleteNamespaceByOwner(
-    UINT32                  TableIndex)
+        UINT32                  TableIndex)
 {
 	ACPI_OWNER_ID           OwnerId;
 	ACPI_STATUS             Status;
@@ -738,12 +698,9 @@ AcpiTbDeleteNamespaceByOwner(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_TABLES);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (TableIndex >= AcpiGbl_RootTableList.CurrentTableCount)
-	{
+	if (TableIndex >= AcpiGbl_RootTableList.CurrentTableCount) {
 		/* The table index does not exist */
 
 		(void) AcpiUtReleaseMutex(ACPI_MTX_TABLES);
@@ -768,9 +725,7 @@ AcpiTbDeleteNamespaceByOwner(
 	AcpiNsDeleteNamespaceByOwner(OwnerId);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	AcpiUtReleaseWriteLock(&AcpiGbl_NamespaceRwLock);
 
@@ -793,7 +748,7 @@ AcpiTbDeleteNamespaceByOwner(
 
 ACPI_STATUS
 AcpiTbAllocateOwnerId(
-    UINT32                  TableIndex)
+        UINT32                  TableIndex)
 {
 	ACPI_STATUS             Status = AE_BAD_PARAMETER;
 
@@ -803,10 +758,9 @@ AcpiTbAllocateOwnerId(
 
 	(void) AcpiUtAcquireMutex(ACPI_MTX_TABLES);
 
-	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount)
-	{
+	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount) {
 		Status = AcpiUtAllocateOwnerId(
-		             &(AcpiGbl_RootTableList.Tables[TableIndex].OwnerId));
+		                 &(AcpiGbl_RootTableList.Tables[TableIndex].OwnerId));
 	}
 
 	(void) AcpiUtReleaseMutex(ACPI_MTX_TABLES);
@@ -828,7 +782,7 @@ AcpiTbAllocateOwnerId(
 
 ACPI_STATUS
 AcpiTbReleaseOwnerId(
-    UINT32                  TableIndex)
+        UINT32                  TableIndex)
 {
 	ACPI_STATUS             Status = AE_BAD_PARAMETER;
 
@@ -838,10 +792,9 @@ AcpiTbReleaseOwnerId(
 
 	(void) AcpiUtAcquireMutex(ACPI_MTX_TABLES);
 
-	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount)
-	{
+	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount) {
 		AcpiUtReleaseOwnerId(
-		    &(AcpiGbl_RootTableList.Tables[TableIndex].OwnerId));
+		        &(AcpiGbl_RootTableList.Tables[TableIndex].OwnerId));
 		Status = AE_OK;
 	}
 
@@ -865,8 +818,8 @@ AcpiTbReleaseOwnerId(
 
 ACPI_STATUS
 AcpiTbGetOwnerId(
-    UINT32                  TableIndex,
-    ACPI_OWNER_ID           *OwnerId)
+        UINT32                  TableIndex,
+        ACPI_OWNER_ID           *OwnerId)
 {
 	ACPI_STATUS             Status = AE_BAD_PARAMETER;
 
@@ -876,8 +829,7 @@ AcpiTbGetOwnerId(
 
 	(void) AcpiUtAcquireMutex(ACPI_MTX_TABLES);
 
-	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount)
-	{
+	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount) {
 		*OwnerId = AcpiGbl_RootTableList.Tables[TableIndex].OwnerId;
 		Status = AE_OK;
 	}
@@ -899,15 +851,14 @@ AcpiTbGetOwnerId(
 
 BOOLEAN
 AcpiTbIsTableLoaded(
-    UINT32                  TableIndex)
+        UINT32                  TableIndex)
 {
 	BOOLEAN                 IsLoaded = FALSE;
 
 
 	(void) AcpiUtAcquireMutex(ACPI_MTX_TABLES);
 
-	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount)
-	{
+	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount) {
 		IsLoaded = (BOOLEAN)
 		           (AcpiGbl_RootTableList.Tables[TableIndex].Flags &
 		            ACPI_TABLE_IS_LOADED);
@@ -933,23 +884,19 @@ AcpiTbIsTableLoaded(
 
 void
 AcpiTbSetTableLoadedFlag(
-    UINT32                  TableIndex,
-    BOOLEAN                 IsLoaded)
+        UINT32                  TableIndex,
+        BOOLEAN                 IsLoaded)
 {
 
 	(void) AcpiUtAcquireMutex(ACPI_MTX_TABLES);
 
-	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount)
-	{
-		if (IsLoaded)
-		{
+	if (TableIndex < AcpiGbl_RootTableList.CurrentTableCount) {
+		if (IsLoaded) {
 			AcpiGbl_RootTableList.Tables[TableIndex].Flags |=
-			    ACPI_TABLE_IS_LOADED;
-		}
-		else
-		{
+			        ACPI_TABLE_IS_LOADED;
+		} else {
 			AcpiGbl_RootTableList.Tables[TableIndex].Flags &=
-			    ~ACPI_TABLE_IS_LOADED;
+			        ~ACPI_TABLE_IS_LOADED;
 		}
 	}
 
@@ -972,8 +919,8 @@ AcpiTbSetTableLoadedFlag(
 
 ACPI_STATUS
 AcpiTbLoadTable(
-    UINT32                  TableIndex,
-    ACPI_NAMESPACE_NODE     *ParentNode)
+        UINT32                  TableIndex,
+        ACPI_NAMESPACE_NODE     *ParentNode)
 {
 	ACPI_TABLE_HEADER       *Table;
 	ACPI_STATUS             Status;
@@ -990,18 +937,14 @@ AcpiTbLoadTable(
 	Status = AcpiGetTableByIndex(TableIndex, &Table);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiNsLoadTable(TableIndex, ParentNode);
 
 	/* Execute any module-level code that was found in the table */
 
 	if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode)
-	{
 		AcpiNsExecModuleCodeList();
-	}
 
 	/*
 	 * Update GPEs for any new _Lxx/_Exx methods. Ignore errors. The host is
@@ -1011,14 +954,11 @@ AcpiTbLoadTable(
 	Status = AcpiTbGetOwnerId(TableIndex, &OwnerId);
 
 	if (ACPI_SUCCESS(Status))
-	{
 		AcpiEvUpdateGpes(OwnerId);
-	}
 
 	/* Invoke table handler if present */
 
-	if (AcpiGbl_TableHandler)
-	{
+	if (AcpiGbl_TableHandler) {
 		(void) AcpiGbl_TableHandler(ACPI_TABLE_EVENT_LOAD, Table,
 		                            AcpiGbl_TableHandlerContext);
 	}
@@ -1044,11 +984,11 @@ AcpiTbLoadTable(
 
 ACPI_STATUS
 AcpiTbInstallAndLoadTable(
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags,
-    BOOLEAN                 Override,
-    UINT32                  *TableIndex)
+        ACPI_TABLE_HEADER       *Table,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT8                   Flags,
+        BOOLEAN                 Override,
+        UINT32                  *TableIndex)
 {
 	ACPI_STATUS             Status;
 	UINT32                  i;
@@ -1066,9 +1006,7 @@ AcpiTbInstallAndLoadTable(
 	                                    Override, &i);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto UnlockAndExit;
-	}
 
 	/*
 	 * Note: Now table is "INSTALLED", it must be validated before
@@ -1077,9 +1015,7 @@ AcpiTbInstallAndLoadTable(
 	Status = AcpiTbValidateTable(&AcpiGbl_RootTableList.Tables[i]);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto UnlockAndExit;
-	}
 
 	(void) AcpiUtReleaseMutex(ACPI_MTX_TABLES);
 	Status = AcpiNsLoadTable(i, AcpiGbl_RootNode);
@@ -1087,9 +1023,7 @@ AcpiTbInstallAndLoadTable(
 	/* Execute any module-level code that was found in the table */
 
 	if (!AcpiGbl_ParseTableAsTermList && AcpiGbl_GroupModuleLevelCode)
-	{
 		AcpiNsExecModuleCodeList();
-	}
 
 	/*
 	 * Update GPEs for any new _Lxx/_Exx methods. Ignore errors. The host is
@@ -1099,14 +1033,11 @@ AcpiTbInstallAndLoadTable(
 	Status = AcpiTbGetOwnerId(i, &OwnerId);
 
 	if (ACPI_SUCCESS(Status))
-	{
 		AcpiEvUpdateGpes(OwnerId);
-	}
 
 	/* Invoke table handler if present */
 
-	if (AcpiGbl_TableHandler)
-	{
+	if (AcpiGbl_TableHandler) {
 		(void) AcpiGbl_TableHandler(ACPI_TABLE_EVENT_LOAD, Table,
 		                            AcpiGbl_TableHandlerContext);
 	}

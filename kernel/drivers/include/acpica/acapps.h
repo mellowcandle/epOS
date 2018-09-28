@@ -186,18 +186,18 @@
 
 ACPI_STATUS
 AcGetAllTablesFromFile(
-    char                    *Filename,
-    UINT8                   GetOnlyAmlTables,
-    ACPI_NEW_TABLE_DESC     **ReturnListHead);
+        char                    *Filename,
+        UINT8                   GetOnlyAmlTables,
+        ACPI_NEW_TABLE_DESC     **ReturnListHead);
 
 BOOLEAN
 AcIsFileBinary(
-    FILE                    *File);
+        FILE                    *File);
 
 ACPI_STATUS
 AcValidateTableHeader(
-    FILE                    *File,
-    long                    TableOffset);
+        FILE                    *File,
+        long                    TableOffset);
 
 
 /* Values for GetOnlyAmlTables */
@@ -211,14 +211,14 @@ AcValidateTableHeader(
  */
 int
 AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
+        int                     argc,
+        char                    **argv,
+        char                    *opts);
 
 int
 AcpiGetoptArgument(
-    int                     argc,
-    char                    **argv);
+        int                     argc,
+        char                    **argv);
 
 extern int                  AcpiGbl_Optind;
 extern int                  AcpiGbl_Opterr;
@@ -231,7 +231,7 @@ extern char                 *AcpiGbl_Optarg;
  */
 UINT32
 CmGetFileSize(
-    ACPI_FILE               File);
+        ACPI_FILE               File);
 
 
 /*
@@ -239,28 +239,28 @@ CmGetFileSize(
  */
 void
 AcpiDmCrossReferenceNamespace(
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
+        ACPI_PARSE_OBJECT       *ParseTreeRoot,
+        ACPI_NAMESPACE_NODE     *NamespaceRoot,
+        ACPI_OWNER_ID           OwnerId);
 
 void
 AcpiDmDumpTree(
-    ACPI_PARSE_OBJECT       *Origin);
+        ACPI_PARSE_OBJECT       *Origin);
 
 void
 AcpiDmFindOrphanMethods(
-    ACPI_PARSE_OBJECT       *Origin);
+        ACPI_PARSE_OBJECT       *Origin);
 
 void
 AcpiDmFinishNamespaceLoad(
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot,
-    ACPI_OWNER_ID           OwnerId);
+        ACPI_PARSE_OBJECT       *ParseTreeRoot,
+        ACPI_NAMESPACE_NODE     *NamespaceRoot,
+        ACPI_OWNER_ID           OwnerId);
 
 void
 AcpiDmConvertResourceIndexes(
-    ACPI_PARSE_OBJECT       *ParseTreeRoot,
-    ACPI_NAMESPACE_NODE     *NamespaceRoot);
+        ACPI_PARSE_OBJECT       *ParseTreeRoot,
+        ACPI_NAMESPACE_NODE     *NamespaceRoot);
 
 
 /*
@@ -268,29 +268,29 @@ AcpiDmConvertResourceIndexes(
  */
 ACPI_STATUS
 AdInitialize(
-    void);
+        void);
 
 char *
 FlGenerateFilename(
-    char                    *InputFilename,
-    char                    *Suffix);
+        char                    *InputFilename,
+        char                    *Suffix);
 
 ACPI_STATUS
 FlSplitInputPathname(
-    char                    *InputPath,
-    char                    **OutDirectoryPath,
-    char                    **OutFilename);
+        char                    *InputPath,
+        char                    **OutDirectoryPath,
+        char                    **OutFilename);
 
 char *
 AdGenerateFilename(
-    char                    *Prefix,
-    char                    *TableId);
+        char                    *Prefix,
+        char                    *TableId);
 
 void
 AdWriteTable(
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length,
-    char                    *TableName,
-    char                    *OemTableId);
+        ACPI_TABLE_HEADER       *Table,
+        UINT32                  Length,
+        char                    *TableName,
+        char                    *OemTableId);
 
 #endif /* _ACAPPS */

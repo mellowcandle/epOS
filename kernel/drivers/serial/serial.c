@@ -73,8 +73,6 @@ void write_serial(char a)
 void serial_write_string(const char *string)
 {
 	while (*string)
-	{
 		write_serial(*string++);
-	}
 }
 

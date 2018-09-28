@@ -125,8 +125,7 @@ ACPI_MODULE_NAME("utdecode")
  * Properties of the ACPI Object Types, both internal and external.
  * The table is indexed by values of ACPI_OBJECT_TYPE
  */
-const UINT8                     AcpiGbl_NsProperties[ACPI_NUM_NS_TYPES] =
-{
+const UINT8                     AcpiGbl_NsProperties[ACPI_NUM_NS_TYPES] = {
 	ACPI_NS_NORMAL,                     /* 00 Any              */
 	ACPI_NS_NORMAL,                     /* 01 Number           */
 	ACPI_NS_NORMAL,                     /* 02 String           */
@@ -175,8 +174,7 @@ const UINT8                     AcpiGbl_NsProperties[ACPI_NUM_NS_TYPES] =
 
 /* Region type decoding */
 
-const char        *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
-{
+const char        *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] = {
 	"SystemMemory",     /* 0x00 */
 	"SystemIO",         /* 0x01 */
 	"PCI_Config",       /* 0x02 */
@@ -193,25 +191,17 @@ const char        *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
 
 const char *
 AcpiUtGetRegionName(
-    UINT8                   SpaceId)
+        UINT8                   SpaceId)
 {
 
 	if (SpaceId >= ACPI_USER_REGION_BEGIN)
-	{
 		return ("UserDefinedRegion");
-	}
 	else if (SpaceId == ACPI_ADR_SPACE_DATA_TABLE)
-	{
 		return ("DataTable");
-	}
 	else if (SpaceId == ACPI_ADR_SPACE_FIXED_HARDWARE)
-	{
 		return ("FunctionalFixedHW");
-	}
 	else if (SpaceId >= ACPI_NUM_PREDEFINED_REGIONS)
-	{
 		return ("InvalidSpaceId");
-	}
 
 	return (AcpiGbl_RegionTypes[SpaceId]);
 }
@@ -231,8 +221,7 @@ AcpiUtGetRegionName(
 
 /* Event type decoding */
 
-static const char        *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
-{
+static const char        *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] = {
 	"PM_Timer",
 	"GlobalLock",
 	"PowerButton",
@@ -243,13 +232,11 @@ static const char        *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
 
 const char *
 AcpiUtGetEventName(
-    UINT32                  EventId)
+        UINT32                  EventId)
 {
 
 	if (EventId > ACPI_EVENT_MAX)
-	{
 		return ("InvalidEventID");
-	}
 
 	return (AcpiGbl_EventTypes[EventId]);
 }
@@ -280,8 +267,7 @@ static const char           AcpiGbl_BadType[] = "UNDEFINED";
 
 /* Printable names of the ACPI object types */
 
-static const char           *AcpiGbl_NsTypeNames[] =
-{
+static const char           *AcpiGbl_NsTypeNames[] = {
 	/* 00 */ "Untyped",
 	/* 01 */ "Integer",
 	/* 02 */ "String",
@@ -318,13 +304,11 @@ static const char           *AcpiGbl_NsTypeNames[] =
 
 const char *
 AcpiUtGetTypeName(
-    ACPI_OBJECT_TYPE        Type)
+        ACPI_OBJECT_TYPE        Type)
 {
 
 	if (Type > ACPI_TYPE_INVALID)
-	{
 		return (AcpiGbl_BadType);
-	}
 
 	return (AcpiGbl_NsTypeNames[Type]);
 }
@@ -332,13 +316,12 @@ AcpiUtGetTypeName(
 
 const char *
 AcpiUtGetObjectTypeName(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_FUNCTION_TRACE(UtGetObjectTypeName);
 
 
-	if (!ObjDesc)
-	{
+	if (!ObjDesc) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Null Object Descriptor\n"));
 		return_PTR("[NULL Object Descriptor]");
 	}
@@ -346,8 +329,7 @@ AcpiUtGetObjectTypeName(
 	/* These descriptor types share a common area */
 
 	if ((ACPI_GET_DESCRIPTOR_TYPE(ObjDesc) != ACPI_DESC_TYPE_OPERAND) &&
-	        (ACPI_GET_DESCRIPTOR_TYPE(ObjDesc) != ACPI_DESC_TYPE_NAMED))
-	{
+	    (ACPI_GET_DESCRIPTOR_TYPE(ObjDesc) != ACPI_DESC_TYPE_NAMED)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 		                  "Invalid object descriptor type: 0x%2.2X [%s] (%p)\n",
 		                  ACPI_GET_DESCRIPTOR_TYPE(ObjDesc),
@@ -374,7 +356,7 @@ AcpiUtGetObjectTypeName(
 
 const char *
 AcpiUtGetNodeName(
-    void                    *Object)
+        void                    *Object)
 {
 	ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) Object;
 
@@ -382,24 +364,19 @@ AcpiUtGetNodeName(
 	/* Must return a string of exactly 4 characters == ACPI_NAME_SIZE */
 
 	if (!Object)
-	{
 		return ("NULL");
-	}
 
 	/* Check for Root node */
 
 	if ((Object == ACPI_ROOT_OBJECT) ||
-	        (Object == AcpiGbl_RootNode))
-	{
+	    (Object == AcpiGbl_RootNode)) {
 		return ("\"\\\" ");
 	}
 
 	/* Descriptor must be a namespace node */
 
 	if (ACPI_GET_DESCRIPTOR_TYPE(Node) != ACPI_DESC_TYPE_NAMED)
-	{
 		return ("####");
-	}
 
 	/*
 	 * Ensure name is valid. The name was validated/repaired when the node
@@ -427,8 +404,7 @@ AcpiUtGetNodeName(
 
 /* Printable names of object descriptor types */
 
-static const char           *AcpiGbl_DescTypeNames[] =
-{
+static const char           *AcpiGbl_DescTypeNames[] = {
 	/* 00 */ "Not a Descriptor",
 	/* 01 */ "Cached",
 	/* 02 */ "State-Generic",
@@ -450,18 +426,14 @@ static const char           *AcpiGbl_DescTypeNames[] =
 
 const char *
 AcpiUtGetDescriptorName(
-    void                    *Object)
+        void                    *Object)
 {
 
 	if (!Object)
-	{
 		return ("NULL OBJECT");
-	}
 
 	if (ACPI_GET_DESCRIPTOR_TYPE(Object) > ACPI_DESC_TYPE_MAX)
-	{
 		return ("Not a Descriptor");
-	}
 
 	return (AcpiGbl_DescTypeNames[ACPI_GET_DESCRIPTOR_TYPE(Object)]);
 }
@@ -481,8 +453,7 @@ AcpiUtGetDescriptorName(
 
 /* Printable names of reference object sub-types */
 
-static const char           *AcpiGbl_RefClassNames[] =
-{
+static const char           *AcpiGbl_RefClassNames[] = {
 	/* 00 */ "Local",
 	/* 01 */ "Argument",
 	/* 02 */ "RefOf",
@@ -494,28 +465,20 @@ static const char           *AcpiGbl_RefClassNames[] =
 
 const char *
 AcpiUtGetReferenceName(
-    ACPI_OPERAND_OBJECT     *Object)
+        ACPI_OPERAND_OBJECT     *Object)
 {
 
 	if (!Object)
-	{
 		return ("NULL Object");
-	}
 
 	if (ACPI_GET_DESCRIPTOR_TYPE(Object) != ACPI_DESC_TYPE_OPERAND)
-	{
 		return ("Not an Operand object");
-	}
 
 	if (Object->Common.Type != ACPI_TYPE_LOCAL_REFERENCE)
-	{
 		return ("Not a Reference object");
-	}
 
 	if (Object->Reference.Class > ACPI_REFCLASS_MAX)
-	{
 		return ("Unknown Reference class");
-	}
 
 	return (AcpiGbl_RefClassNames[Object->Reference.Class]);
 }
@@ -540,8 +503,7 @@ AcpiUtGetReferenceName(
 
 /* Names for internal mutex objects, used for debug output */
 
-static const char           *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
-{
+static const char           *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] = {
 	"ACPI_MTX_Interpreter",
 	"ACPI_MTX_Namespace",
 	"ACPI_MTX_Tables",
@@ -552,13 +514,11 @@ static const char           *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
 
 const char *
 AcpiUtGetMutexName(
-    UINT32                  MutexId)
+        UINT32                  MutexId)
 {
 
 	if (MutexId > ACPI_MAX_MUTEX)
-	{
 		return ("Invalid Mutex ID");
-	}
 
 	return (AcpiGbl_MutexNames[MutexId]);
 }
@@ -578,8 +538,7 @@ AcpiUtGetMutexName(
 
 /* Names for Notify() values, used for debug output */
 
-static const char           *AcpiGbl_GenericNotify[ACPI_GENERIC_NOTIFY_MAX + 1] =
-{
+static const char           *AcpiGbl_GenericNotify[ACPI_GENERIC_NOTIFY_MAX + 1] = {
 	/* 00 */ "Bus Check",
 	/* 01 */ "Device Check",
 	/* 02 */ "Device Wake",
@@ -596,8 +555,7 @@ static const char           *AcpiGbl_GenericNotify[ACPI_GENERIC_NOTIFY_MAX + 1] 
 	/* 0D */ "System Resource Affinity Update"
 };
 
-static const char           *AcpiGbl_DeviceNotify[5] =
-{
+static const char           *AcpiGbl_DeviceNotify[5] = {
 	/* 80 */ "Status Change",
 	/* 81 */ "Information Change",
 	/* 82 */ "Device-Specific Change",
@@ -605,8 +563,7 @@ static const char           *AcpiGbl_DeviceNotify[5] =
 	/* 84 */ "Reserved"
 };
 
-static const char           *AcpiGbl_ProcessorNotify[5] =
-{
+static const char           *AcpiGbl_ProcessorNotify[5] = {
 	/* 80 */ "Performance Capability Change",
 	/* 81 */ "C-State Change",
 	/* 82 */ "Throttling Capability Change",
@@ -614,8 +571,7 @@ static const char           *AcpiGbl_ProcessorNotify[5] =
 	/* 84 */ "Minimum Excursion"
 };
 
-static const char           *AcpiGbl_ThermalNotify[5] =
-{
+static const char           *AcpiGbl_ThermalNotify[5] = {
 	/* 80 */ "Thermal Status Change",
 	/* 81 */ "Thermal Trip Point Change",
 	/* 82 */ "Thermal Device List Change",
@@ -626,30 +582,24 @@ static const char           *AcpiGbl_ThermalNotify[5] =
 
 const char *
 AcpiUtGetNotifyName(
-    UINT32                  NotifyValue,
-    ACPI_OBJECT_TYPE        Type)
+        UINT32                  NotifyValue,
+        ACPI_OBJECT_TYPE        Type)
 {
 
 	/* 00 - 0D are "common to all object types" (from ACPI Spec) */
 
 	if (NotifyValue <= ACPI_GENERIC_NOTIFY_MAX)
-	{
 		return (AcpiGbl_GenericNotify[NotifyValue]);
-	}
 
 	/* 0E - 7F are reserved */
 
 	if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
-	{
 		return ("Reserved");
-	}
 
 	/* 80 - 84 are per-object-type */
 
-	if (NotifyValue <= ACPI_SPECIFIC_NOTIFY_MAX)
-	{
-		switch (Type)
-		{
+	if (NotifyValue <= ACPI_SPECIFIC_NOTIFY_MAX) {
+		switch (Type) {
 		case ACPI_TYPE_ANY:
 		case ACPI_TYPE_DEVICE:
 			return (AcpiGbl_DeviceNotify [NotifyValue - 0x80]);
@@ -668,9 +618,7 @@ AcpiUtGetNotifyName(
 	/* 84 - BF are device-specific */
 
 	if (NotifyValue <= ACPI_MAX_DEVICE_SPECIFIC_NOTIFY)
-	{
 		return ("Device-Specific");
-	}
 
 	/* C0 and above are hardware-specific */
 
@@ -693,11 +641,10 @@ AcpiUtGetNotifyName(
 
 BOOLEAN
 AcpiUtValidObjectType(
-    ACPI_OBJECT_TYPE        Type)
+        ACPI_OBJECT_TYPE        Type)
 {
 
-	if (Type > ACPI_TYPE_LOCAL_MAX)
-	{
+	if (Type > ACPI_TYPE_LOCAL_MAX) {
 		/* Note: Assumes all TYPEs are contiguous (external/local) */
 
 		return (FALSE);

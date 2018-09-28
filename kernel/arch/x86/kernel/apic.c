@@ -65,8 +65,7 @@
 #define PIC2_DATA       (PIC2 + 1)
 
 
-typedef struct
-{
+typedef struct {
 	uint8_t id;
 	addr_t p_addr;
 	void *v_addr;
@@ -88,9 +87,7 @@ ioapic_t *irq_to_ioapic(uint8_t irq)
 	list_for_each_entry(entry, &ioapic_l, head)
 
 	if (BETWEEN(irq, entry->global_irq_base, entry->global_irq_base + entry->max_redirect))
-	{
 		return entry;
-	}
 
 	return NULL;
 }
@@ -152,9 +149,7 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 	static int visited = 0;
 
 	if (visited)
-	{
 		return;
-	}
 
 	visited = 1;
 
@@ -176,8 +171,7 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 	pr_info("APIC Base mapping 0x%x -> 0x%x\r\n", lapic.p_addr, (addr_t) lapic.v_addr);
 
 	/* First thing first, disable the PIC */
-	if (flags && BIT(0))
-	{
+	if (flags && BIT(0)) {
 		pr_info("Disabling the i8259 IRQ chip\r\n");
 		disable_i8259();
 	}
@@ -200,7 +194,8 @@ void apic_configure_lapic(uint8_t id, uint8_t processor_id, uint16_t flags)
 	/* writeAPICRegister(APIC_LVT_ERROR_REGISTER, 0x10000); */
 
 	/* Set the Spourious Interrupt Vector Register bit 8 to start receiving interrupts */
-	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR, readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
+	writeAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR,
+	                  readAPICRegister(APIC_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
 }
 
 void apic_configure_ioapic(uint8_t id, addr_t address, addr_t irq_base)
@@ -248,12 +243,9 @@ irq_override_t *apic_get_override(uint8_t irq_src)
 	FUNC_ENTER();
 	irq_override_t *pos;
 
-	list_for_each_entry(pos, &irq_overrides_l, head)
-	{
+	list_for_each_entry(pos, &irq_overrides_l, head) {
 		if (pos->irq_src == irq_src)
-		{
 			return pos;
-		}
 	}
 
 	return NULL;

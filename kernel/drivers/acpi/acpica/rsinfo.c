@@ -134,8 +134,7 @@ ACPI_MODULE_NAME("rsinfo")
 
 /* Dispatch table for resource-to-AML (Set Resource) conversion functions */
 
-ACPI_RSCONVERT_INFO         *AcpiGbl_SetResourceDispatch[] =
-{
+ACPI_RSCONVERT_INFO         *AcpiGbl_SetResourceDispatch[] = {
 	AcpiRsSetIrq,                   /* 0x00, ACPI_RESOURCE_TYPE_IRQ */
 	AcpiRsConvertDma,               /* 0x01, ACPI_RESOURCE_TYPE_DMA */
 	AcpiRsSetStartDpf,              /* 0x02, ACPI_RESOURCE_TYPE_START_DEPENDENT */
@@ -160,8 +159,7 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_SetResourceDispatch[] =
 
 /* Dispatch tables for AML-to-resource (Get Resource) conversion functions */
 
-ACPI_RSCONVERT_INFO         *AcpiGbl_GetResourceDispatch[] =
-{
+ACPI_RSCONVERT_INFO         *AcpiGbl_GetResourceDispatch[] = {
 	/* Small descriptors */
 
 	NULL,                           /* 0x00, Reserved */
@@ -202,8 +200,7 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_GetResourceDispatch[] =
 
 /* Subtype table for SerialBus -- I2C, SPI, and UART */
 
-ACPI_RSCONVERT_INFO         *AcpiGbl_ConvertResourceSerialBusDispatch[] =
-{
+ACPI_RSCONVERT_INFO         *AcpiGbl_ConvertResourceSerialBusDispatch[] = {
 	NULL,
 	AcpiRsConvertI2cSerialBus,
 	AcpiRsConvertSpiSerialBus,
@@ -215,8 +212,7 @@ ACPI_RSCONVERT_INFO         *AcpiGbl_ConvertResourceSerialBusDispatch[] =
 
 /* Dispatch table for resource dump functions */
 
-ACPI_RSDUMP_INFO            *AcpiGbl_DumpResourceDispatch[] =
-{
+ACPI_RSDUMP_INFO            *AcpiGbl_DumpResourceDispatch[] = {
 	AcpiRsDumpIrq,                  /* ACPI_RESOURCE_TYPE_IRQ */
 	AcpiRsDumpDma,                  /* ACPI_RESOURCE_TYPE_DMA */
 	AcpiRsDumpStartDpf,             /* ACPI_RESOURCE_TYPE_START_DEPENDENT */
@@ -239,8 +235,7 @@ ACPI_RSDUMP_INFO            *AcpiGbl_DumpResourceDispatch[] =
 	NULL,                           /* ACPI_RESOURCE_TYPE_SERIAL_BUS */
 };
 
-ACPI_RSDUMP_INFO            *AcpiGbl_DumpSerialBusDispatch[] =
-{
+ACPI_RSDUMP_INFO            *AcpiGbl_DumpSerialBusDispatch[] = {
 	NULL,
 	AcpiRsDumpI2cSerialBus,         /* AML_RESOURCE_I2C_BUS_TYPE */
 	AcpiRsDumpSpiSerialBus,         /* AML_RESOURCE_SPI_BUS_TYPE */
@@ -254,8 +249,7 @@ ACPI_RSDUMP_INFO            *AcpiGbl_DumpSerialBusDispatch[] =
  * Includes size of the descriptor header (1 byte for small descriptors,
  * 3 bytes for large descriptors)
  */
-const UINT8                 AcpiGbl_AmlResourceSizes[] =
-{
+const UINT8                 AcpiGbl_AmlResourceSizes[] = {
 	sizeof(AML_RESOURCE_IRQ),               /* ACPI_RESOURCE_TYPE_IRQ (optional Byte 3 always created) */
 	sizeof(AML_RESOURCE_DMA),               /* ACPI_RESOURCE_TYPE_DMA */
 	sizeof(AML_RESOURCE_START_DEPENDENT),   /* ACPI_RESOURCE_TYPE_START_DEPENDENT (optional Byte 1 always created) */
@@ -279,8 +273,7 @@ const UINT8                 AcpiGbl_AmlResourceSizes[] =
 };
 
 
-const UINT8                 AcpiGbl_ResourceStructSizes[] =
-{
+const UINT8                 AcpiGbl_ResourceStructSizes[] = {
 	/* Small descriptors */
 
 	0,
@@ -318,16 +311,14 @@ const UINT8                 AcpiGbl_ResourceStructSizes[] =
 	ACPI_RS_SIZE(ACPI_RESOURCE_COMMON_SERIALBUS)
 };
 
-const UINT8                 AcpiGbl_AmlResourceSerialBusSizes[] =
-{
+const UINT8                 AcpiGbl_AmlResourceSerialBusSizes[] = {
 	0,
 	sizeof(AML_RESOURCE_I2C_SERIALBUS),
 	sizeof(AML_RESOURCE_SPI_SERIALBUS),
 	sizeof(AML_RESOURCE_UART_SERIALBUS),
 };
 
-const UINT8                 AcpiGbl_ResourceStructSerialBusSizes[] =
-{
+const UINT8                 AcpiGbl_ResourceStructSerialBusSizes[] = {
 	0,
 	ACPI_RS_SIZE(ACPI_RESOURCE_I2C_SERIALBUS),
 	ACPI_RS_SIZE(ACPI_RESOURCE_SPI_SERIALBUS),

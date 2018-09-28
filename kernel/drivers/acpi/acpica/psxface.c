@@ -129,8 +129,8 @@ ACPI_MODULE_NAME("psxface")
 
 static void
 AcpiPsUpdateParameterList(
-    ACPI_EVALUATE_INFO      *Info,
-    UINT16                  Action);
+        ACPI_EVALUATE_INFO      *Info,
+        UINT16                  Action);
 
 
 /*******************************************************************************
@@ -151,10 +151,10 @@ AcpiPsUpdateParameterList(
 
 ACPI_STATUS
 AcpiDebugTrace(
-    const char              *Name,
-    UINT32                  DebugLevel,
-    UINT32                  DebugLayer,
-    UINT32                  Flags)
+        const char              *Name,
+        UINT32                  DebugLevel,
+        UINT32                  DebugLayer,
+        UINT32                  Flags)
 {
 	ACPI_STATUS             Status;
 
@@ -162,9 +162,7 @@ AcpiDebugTrace(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	AcpiGbl_TraceMethodName = Name;
 	AcpiGbl_TraceFlags = Flags;
@@ -202,7 +200,7 @@ AcpiDebugTrace(
 
 ACPI_STATUS
 AcpiPsExecuteMethod(
-    ACPI_EVALUATE_INFO      *Info)
+        ACPI_EVALUATE_INFO      *Info)
 {
 	ACPI_STATUS             Status;
 	ACPI_PARSE_OBJECT       *Op;
@@ -219,18 +217,14 @@ AcpiPsExecuteMethod(
 	/* Validate the Info and method Node */
 
 	if (!Info || !Info->Node)
-	{
 		return_ACPI_STATUS(AE_NULL_ENTRY);
-	}
 
 	/* Init for new method, wait on concurrency semaphore */
 
 	Status = AcpiDsBeginMethodExecution(Info->Node, Info->ObjDesc, NULL);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * The caller "owns" the parameters, so give each one an extra reference
@@ -248,8 +242,7 @@ AcpiPsExecuteMethod(
 
 	Op = AcpiPsCreateScopeOp(Info->ObjDesc->Method.AmlStart);
 
-	if (!Op)
-	{
+	if (!Op) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -258,10 +251,9 @@ AcpiPsExecuteMethod(
 
 	Info->PassNumber = ACPI_IMODE_EXECUTE;
 	WalkState = AcpiDsCreateWalkState(
-	                Info->ObjDesc->Method.OwnerId, NULL, NULL, NULL);
+	                    Info->ObjDesc->Method.OwnerId, NULL, NULL, NULL);
 
-	if (!WalkState)
-	{
+	if (!WalkState) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -270,21 +262,17 @@ AcpiPsExecuteMethod(
 	                           Info->ObjDesc->Method.AmlStart,
 	                           Info->ObjDesc->Method.AmlLength, Info, Info->PassNumber);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		AcpiDsDeleteWalkState(WalkState);
 		goto Cleanup;
 	}
 
 	if (Info->ObjDesc->Method.InfoFlags & ACPI_METHOD_MODULE_LEVEL)
-	{
 		WalkState->ParseFlags |= ACPI_PARSE_MODULE_LEVEL;
-	}
 
 	/* Invoke an internal method if necessary */
 
-	if (Info->ObjDesc->Method.InfoFlags & ACPI_METHOD_INTERNAL_ONLY)
-	{
+	if (Info->ObjDesc->Method.InfoFlags & ACPI_METHOD_INTERNAL_ONLY) {
 		Status = Info->ObjDesc->Method.Dispatch.Implementation(WalkState);
 		Info->ReturnObject = WalkState->ReturnDesc;
 
@@ -301,13 +289,11 @@ AcpiPsExecuteMethod(
 	 * Start method evaluation with an implicit return of zero.
 	 * This is done for Windows compatibility.
 	 */
-	if (AcpiGbl_EnableInterpreterSlack)
-	{
+	if (AcpiGbl_EnableInterpreterSlack) {
 		WalkState->ImplicitReturnObj =
-		    AcpiUtCreateIntegerObject((UINT64) 0);
+		        AcpiUtCreateIntegerObject((UINT64) 0);
 
-		if (!WalkState->ImplicitReturnObj)
-		{
+		if (!WalkState->ImplicitReturnObj) {
 			Status = AE_NO_MEMORY;
 			AcpiDsDeleteWalkState(WalkState);
 			goto Cleanup;
@@ -330,16 +316,13 @@ Cleanup:
 	/* Exit now if error above */
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * If the method has returned an object, signal this to the caller with
 	 * a control exception code
 	 */
-	if (Info->ReturnObject)
-	{
+	if (Info->ReturnObject) {
 		ACPI_DEBUG_PRINT((ACPI_DB_PARSE, "Method returned ObjDesc=%p\n",
 		                  Info->ReturnObject));
 		ACPI_DUMP_STACK_ENTRY(Info->ReturnObject);
@@ -370,7 +353,7 @@ Cleanup:
 
 ACPI_STATUS
 AcpiPsExecuteTable(
-    ACPI_EVALUATE_INFO      *Info)
+        ACPI_EVALUATE_INFO      *Info)
 {
 	ACPI_STATUS             Status;
 	ACPI_PARSE_OBJECT       *Op = NULL;
@@ -384,8 +367,7 @@ AcpiPsExecuteTable(
 
 	Op = AcpiPsCreateScopeOp(Info->ObjDesc->Method.AmlStart);
 
-	if (!Op)
-	{
+	if (!Op) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -393,10 +375,9 @@ AcpiPsExecuteTable(
 	/* Create and initialize a new walk state */
 
 	WalkState = AcpiDsCreateWalkState(
-	                Info->ObjDesc->Method.OwnerId, NULL, NULL, NULL);
+	                    Info->ObjDesc->Method.OwnerId, NULL, NULL, NULL);
 
-	if (!WalkState)
-	{
+	if (!WalkState) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -406,14 +387,10 @@ AcpiPsExecuteTable(
 	                           Info->ObjDesc->Method.AmlLength, Info, Info->PassNumber);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	if (Info->ObjDesc->Method.InfoFlags & ACPI_METHOD_MODULE_LEVEL)
-	{
 		WalkState->ParseFlags |= ACPI_PARSE_MODULE_LEVEL;
-	}
 
 	/*
 	 * Parse the AML, WalkState will be deleted by ParseAml
@@ -426,14 +403,10 @@ AcpiPsExecuteTable(
 Cleanup:
 
 	if (WalkState)
-	{
 		AcpiDsDeleteWalkState(WalkState);
-	}
 
 	if (Op)
-	{
 		AcpiPsDeleteParseTree(Op);
-	}
 
 	return_ACPI_STATUS(Status);
 }
@@ -455,22 +428,20 @@ Cleanup:
 
 static void
 AcpiPsUpdateParameterList(
-    ACPI_EVALUATE_INFO      *Info,
-    UINT16                  Action)
+        ACPI_EVALUATE_INFO      *Info,
+        UINT16                  Action)
 {
 	UINT32                  i;
 
 
-	if (Info->Parameters)
-	{
+	if (Info->Parameters) {
 		/* Update reference count for each parameter */
 
-		for (i = 0; Info->Parameters[i]; i++)
-		{
+		for (i = 0; Info->Parameters[i]; i++) {
 			/* Ignore errors, just do them all */
 
 			(void) AcpiUtUpdateObjectReference(
-			    Info->Parameters[i], Action);
+			        Info->Parameters[i], Action);
 		}
 	}
 }

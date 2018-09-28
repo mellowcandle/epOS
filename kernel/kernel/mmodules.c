@@ -49,13 +49,13 @@ static void mmodules_run(multiboot_module_t *module)
 	void *elf_ptr;
 	uint32_t file_size;
 
-	pr_info("Module: 0x%x - 0x%x \r\n", module->mod_start, module->mod_end);//, (char *) module->cmdline);
+	pr_info("Module: 0x%x - 0x%x \r\n", module->mod_start,
+	        module->mod_end);//, (char *) module->cmdline);
 //	pages_count = module->mod_end - module->mod_start;
 //	pages_count = divide_up(pages_count, PAGE_SIZE);
 	init_ramfs(module->mod_start, module->mod_end - module->mod_start);
 
-	if (ramfs_find_node("./bin/test1", &tar_header))
-	{
+	if (ramfs_find_node("./bin/test1", &tar_header)) {
 		pr_fatal("Can't find init process...\r\n");
 
 		while (1);
@@ -76,9 +76,7 @@ void mmodules_parse(multiboot_info_t *mbi)
 	multiboot_module_t modules[mbi->mods_count];
 
 	if (!(mbi->flags & MULTIBOOT_INFO_MODS))
-	{
 		return;
-	}
 
 	pr_info("Detected %u multiboot modules, located at: 0x%x \r\n", mbi->mods_count, mbi->mods_addr);
 
@@ -88,8 +86,7 @@ void mmodules_parse(multiboot_info_t *mbi)
 	memcpy(modules, (void *) mbi->mods_addr, mbi->mods_count * sizeof(multiboot_module_t));
 	mem_page_unmap((void *)mbi->mods_addr);
 
-	for (i = 0; i < mbi->mods_count; i++)
-	{
+	for (i = 0; i < mbi->mods_count; i++) {
 		pr_info("Running module: %u\r\n", i);
 		mmodules_run(&modules[i]);
 	}

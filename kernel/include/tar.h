@@ -35,11 +35,9 @@
 #define  TUNMLEN      32
 #define  TGNMLEN      32
 
-typedef union
-{
+typedef union {
 	char	charptr[RECORDSIZE];
-	struct header
-	{
+	struct header {
 		char	name[NAMSIZ];
 		char	mode[8];
 		char	uid[8];

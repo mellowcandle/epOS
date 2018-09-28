@@ -138,8 +138,8 @@ ACPI_MODULE_NAME("exsystem")
 
 ACPI_STATUS
 AcpiExSystemWaitSemaphore(
-    ACPI_SEMAPHORE          Semaphore,
-    UINT16                  Timeout)
+        ACPI_SEMAPHORE          Semaphore,
+        UINT16                  Timeout)
 {
 	ACPI_STATUS             Status;
 
@@ -150,12 +150,9 @@ AcpiExSystemWaitSemaphore(
 	Status = AcpiOsWaitSemaphore(Semaphore, 1, ACPI_DO_NOT_WAIT);
 
 	if (ACPI_SUCCESS(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (Status == AE_TIME)
-	{
+	if (Status == AE_TIME) {
 		/* We must wait, so unlock the interpreter */
 
 		AcpiExExitInterpreter();
@@ -191,8 +188,8 @@ AcpiExSystemWaitSemaphore(
 
 ACPI_STATUS
 AcpiExSystemWaitMutex(
-    ACPI_MUTEX              Mutex,
-    UINT16                  Timeout)
+        ACPI_MUTEX              Mutex,
+        UINT16                  Timeout)
 {
 	ACPI_STATUS             Status;
 
@@ -203,12 +200,9 @@ AcpiExSystemWaitMutex(
 	Status = AcpiOsAcquireMutex(Mutex, ACPI_DO_NOT_WAIT);
 
 	if (ACPI_SUCCESS(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (Status == AE_TIME)
-	{
+	if (Status == AE_TIME) {
 		/* We must wait, so unlock the interpreter */
 
 		AcpiExExitInterpreter();
@@ -246,7 +240,7 @@ AcpiExSystemWaitMutex(
 
 ACPI_STATUS
 AcpiExSystemDoStall(
-    UINT32                  HowLong)
+        UINT32                  HowLong)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -254,8 +248,7 @@ AcpiExSystemDoStall(
 	ACPI_FUNCTION_ENTRY();
 
 
-	if (HowLong > 255) /* 255 microseconds */
-	{
+	if (HowLong > 255) { /* 255 microseconds */
 		/*
 		 * Longer than 255 usec, this is an error
 		 *
@@ -265,11 +258,8 @@ AcpiExSystemDoStall(
 		ACPI_ERROR((AE_INFO,
 		            "Time parameter is too large (%u)", HowLong));
 		Status = AE_AML_OPERAND_VALUE;
-	}
-	else
-	{
+	} else
 		AcpiOsStall(HowLong);
-	}
 
 	return (Status);
 }
@@ -290,7 +280,7 @@ AcpiExSystemDoStall(
 
 ACPI_STATUS
 AcpiExSystemDoSleep(
-    UINT64                  HowLong)
+        UINT64                  HowLong)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -304,9 +294,7 @@ AcpiExSystemDoSleep(
 	 * accidental deep sleeps, limit the sleep time to something reasonable.
 	 */
 	if (HowLong > ACPI_MAX_SLEEP)
-	{
 		HowLong = ACPI_MAX_SLEEP;
-	}
 
 	AcpiOsSleep(HowLong);
 
@@ -332,7 +320,7 @@ AcpiExSystemDoSleep(
 
 ACPI_STATUS
 AcpiExSystemSignalEvent(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -341,9 +329,7 @@ AcpiExSystemSignalEvent(
 
 
 	if (ObjDesc)
-	{
 		Status = AcpiOsSignalSemaphore(ObjDesc->Event.OsSemaphore, 1);
-	}
 
 	return_ACPI_STATUS(Status);
 }
@@ -366,8 +352,8 @@ AcpiExSystemSignalEvent(
 
 ACPI_STATUS
 AcpiExSystemWaitEvent(
-    ACPI_OPERAND_OBJECT     *TimeDesc,
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *TimeDesc,
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -375,8 +361,7 @@ AcpiExSystemWaitEvent(
 	ACPI_FUNCTION_TRACE(ExSystemWaitEvent);
 
 
-	if (ObjDesc)
-	{
+	if (ObjDesc) {
 		Status = AcpiExSystemWaitSemaphore(ObjDesc->Event.OsSemaphore,
 		                                   (UINT16) TimeDesc->Integer.Value);
 	}
@@ -399,7 +384,7 @@ AcpiExSystemWaitEvent(
 
 ACPI_STATUS
 AcpiExSystemResetEvent(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_SEMAPHORE          TempSemaphore;
@@ -414,8 +399,7 @@ AcpiExSystemResetEvent(
 	 */
 	Status = AcpiOsCreateSemaphore(ACPI_NO_UNIT_LIMIT, 0, &TempSemaphore);
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		(void) AcpiOsDeleteSemaphore(ObjDesc->Event.OsSemaphore);
 		ObjDesc->Event.OsSemaphore = TempSemaphore;
 	}

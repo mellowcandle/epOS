@@ -138,7 +138,7 @@ ACPI_MODULE_NAME("utownerid")
 
 ACPI_STATUS
 AcpiUtAllocateOwnerId(
-    ACPI_OWNER_ID           *OwnerId)
+        ACPI_OWNER_ID           *OwnerId)
 {
 	UINT32                  i;
 	UINT32                  j;
@@ -151,8 +151,7 @@ AcpiUtAllocateOwnerId(
 
 	/* Guard against multiple allocations of ID to the same location */
 
-	if (*OwnerId)
-	{
+	if (*OwnerId) {
 		ACPI_ERROR((AE_INFO,
 		            "Owner ID [0x%2.2X] already exists", *OwnerId));
 		return_ACPI_STATUS(AE_ALREADY_EXISTS);
@@ -163,9 +162,7 @@ AcpiUtAllocateOwnerId(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_CACHES);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Find a free owner ID, cycle through all possible IDs on repeated
@@ -173,25 +170,20 @@ AcpiUtAllocateOwnerId(
 	 * may have to be scanned twice.
 	 */
 	for (i = 0, j = AcpiGbl_LastOwnerIdIndex;
-	        i < (ACPI_NUM_OWNERID_MASKS + 1);
-	        i++, j++)
-	{
-		if (j >= ACPI_NUM_OWNERID_MASKS)
-		{
+	     i < (ACPI_NUM_OWNERID_MASKS + 1);
+	     i++, j++) {
+		if (j >= ACPI_NUM_OWNERID_MASKS) {
 			j = 0;  /* Wraparound to start of mask array */
 		}
 
-		for (k = AcpiGbl_NextOwnerIdOffset; k < 32; k++)
-		{
-			if (AcpiGbl_OwnerIdMask[j] == ACPI_UINT32_MAX)
-			{
+		for (k = AcpiGbl_NextOwnerIdOffset; k < 32; k++) {
+			if (AcpiGbl_OwnerIdMask[j] == ACPI_UINT32_MAX) {
 				/* There are no free IDs in this mask */
 
 				break;
 			}
 
-			if (!(AcpiGbl_OwnerIdMask[j] & (1 << k)))
-			{
+			if (!(AcpiGbl_OwnerIdMask[j] & (1 << k))) {
 				/*
 				 * Found a free ID. The actual ID is the bit index plus one,
 				 * making zero an invalid Owner ID. Save this as the last ID
@@ -255,7 +247,7 @@ Exit:
 
 void
 AcpiUtReleaseOwnerId(
-    ACPI_OWNER_ID           *OwnerIdPtr)
+        ACPI_OWNER_ID           *OwnerIdPtr)
 {
 	ACPI_OWNER_ID           OwnerId = *OwnerIdPtr;
 	ACPI_STATUS             Status;
@@ -272,8 +264,7 @@ AcpiUtReleaseOwnerId(
 
 	/* Zero is not a valid OwnerID */
 
-	if (OwnerId == 0)
-	{
+	if (OwnerId == 0) {
 		ACPI_ERROR((AE_INFO, "Invalid OwnerId: 0x%2.2X", OwnerId));
 		return_VOID;
 	}
@@ -283,9 +274,7 @@ AcpiUtReleaseOwnerId(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_CACHES);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_VOID;
-	}
 
 	/* Normalize the ID to zero */
 
@@ -299,11 +288,8 @@ AcpiUtReleaseOwnerId(
 	/* Free the owner ID only if it is valid */
 
 	if (AcpiGbl_OwnerIdMask[Index] & Bit)
-	{
 		AcpiGbl_OwnerIdMask[Index] ^= Bit;
-	}
-	else
-	{
+	else {
 		ACPI_ERROR((AE_INFO,
 		            "Release of non-allocated OwnerId: 0x%2.2X", OwnerId + 1));
 	}

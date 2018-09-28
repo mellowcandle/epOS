@@ -166,8 +166,7 @@ union acpi_parse_object;
 
 /* Lock structure for reader/writer interfaces */
 
-typedef struct acpi_rw_lock
-{
+typedef struct acpi_rw_lock {
 	ACPI_MUTEX              WriterMutex;
 	ACPI_MUTEX              ReaderMutex;
 	UINT32                  NumReaders;
@@ -200,8 +199,7 @@ typedef struct acpi_rw_lock
 
 /* Table for the global mutexes */
 
-typedef struct acpi_mutex_info
-{
+typedef struct acpi_mutex_info {
 	ACPI_MUTEX                      Mutex;
 	UINT32                          UseCount;
 	ACPI_THREAD_ID                  ThreadId;
@@ -234,8 +232,7 @@ typedef struct acpi_mutex_info
 
 /* Operational modes of the AML interpreter/scanner */
 
-typedef enum
-{
+typedef enum {
 	ACPI_IMODE_LOAD_PASS1           = 0x01,
 	ACPI_IMODE_LOAD_PASS2           = 0x02,
 	ACPI_IMODE_EXECUTE              = 0x03
@@ -254,8 +251,7 @@ typedef enum
  * position in both the ACPI_NAMESPACE_NODE and ACPI_OPERAND_OBJECT
  * structures.
  */
-typedef struct acpi_namespace_node
-{
+typedef struct acpi_namespace_node {
 	union acpi_operand_object       *Object;        /* Interpreter object */
 	UINT8                           DescriptorType; /* Differentiate object descriptor types */
 	UINT8                           Type;           /* ACPI Type associated with this name */
@@ -300,8 +296,7 @@ typedef struct acpi_namespace_node
 
 /* Internal ACPI table management - master table list */
 
-typedef struct acpi_table_list
-{
+typedef struct acpi_table_list {
 	ACPI_TABLE_DESC                 *Tables;            /* Table descriptor array */
 	UINT32                          CurrentTableCount;  /* Tables currently in the array */
 	UINT32                          MaxTableCount;      /* Max tables array will hold */
@@ -318,8 +313,7 @@ typedef struct acpi_table_list
 
 /* List to manage incoming ACPI tables */
 
-typedef struct acpi_new_table_desc
-{
+typedef struct acpi_new_table_desc {
 	ACPI_TABLE_HEADER               *Table;
 	struct acpi_new_table_desc      *Next;
 
@@ -331,8 +325,7 @@ typedef struct acpi_new_table_desc
 #define ACPI_INVALID_TABLE_INDEX        (0xFFFFFFFF)
 
 
-typedef struct acpi_find_context
-{
+typedef struct acpi_find_context {
 	char                            *SearchFor;
 	ACPI_HANDLE                     *List;
 	UINT32                          *Count;
@@ -340,8 +333,7 @@ typedef struct acpi_find_context
 } ACPI_FIND_CONTEXT;
 
 
-typedef struct acpi_ns_search_data
-{
+typedef struct acpi_ns_search_data {
 	ACPI_NAMESPACE_NODE             *Node;
 
 } ACPI_NS_SEARCH_DATA;
@@ -355,8 +347,7 @@ typedef struct acpi_ns_search_data
 
 /* Info structure used to convert external<->internal namestrings */
 
-typedef struct acpi_namestring_info
-{
+typedef struct acpi_namestring_info {
 	const char                      *ExternalName;
 	const char                      *NextExternalChar;
 	char                            *InternalName;
@@ -370,8 +361,7 @@ typedef struct acpi_namestring_info
 
 /* Field creation info */
 
-typedef struct acpi_create_field_info
-{
+typedef struct acpi_create_field_info {
 	ACPI_NAMESPACE_NODE             *RegionNode;
 	ACPI_NAMESPACE_NODE             *FieldNode;
 	ACPI_NAMESPACE_NODE             *RegisterNode;
@@ -393,7 +383,7 @@ typedef struct acpi_create_field_info
 
 typedef
 ACPI_STATUS(*ACPI_INTERNAL_METHOD)(
-    struct acpi_walk_state          *WalkState);
+        struct acpi_walk_state          *WalkState);
 
 
 /*
@@ -441,8 +431,7 @@ ACPI_STATUS(*ACPI_INTERNAL_METHOD)(
  * ParamCount           - Number of arguments to the method
  * ExpectedReturnBtypes - Allowed type(s) for the return value
  */
-typedef struct acpi_name_info
-{
+typedef struct acpi_name_info {
 	char                        Name[ACPI_NAME_SIZE];
 	UINT16                      ArgumentList;
 	UINT8                       ExpectedBtypes;
@@ -462,8 +451,7 @@ typedef struct acpi_name_info
  * ACPI_PTYPE2_MIN, ACPI_PTYPE2_PKG_COUNT, ACPI_PTYPE2_COUNT,
  * ACPI_PTYPE2_FIX_VAR
  */
-typedef struct acpi_package_info
-{
+typedef struct acpi_package_info {
 	UINT8                       Type;
 	UINT8                       ObjectType1;
 	UINT8                       Count1;
@@ -475,8 +463,7 @@ typedef struct acpi_package_info
 
 /* Used for ACPI_PTYPE2_FIXED */
 
-typedef struct acpi_package_info2
-{
+typedef struct acpi_package_info2 {
 	UINT8                       Type;
 	UINT8                       Count;
 	UINT8                       ObjectType[4];
@@ -486,8 +473,7 @@ typedef struct acpi_package_info2
 
 /* Used for ACPI_PTYPE1_OPTION */
 
-typedef struct acpi_package_info3
-{
+typedef struct acpi_package_info3 {
 	UINT8                       Type;
 	UINT8                       Count;
 	UINT8                       ObjectType[2];
@@ -496,8 +482,7 @@ typedef struct acpi_package_info3
 
 } ACPI_PACKAGE_INFO3;
 
-typedef struct acpi_package_info4
-{
+typedef struct acpi_package_info4 {
 	UINT8                       Type;
 	UINT8                       ObjectType1;
 	UINT8                       Count1;
@@ -507,8 +492,7 @@ typedef struct acpi_package_info4
 
 } ACPI_PACKAGE_INFO4;
 
-typedef union acpi_predefined_info
-{
+typedef union acpi_predefined_info {
 	ACPI_NAME_INFO              Info;
 	ACPI_PACKAGE_INFO           RetInfo;
 	ACPI_PACKAGE_INFO2          RetInfo2;
@@ -525,12 +509,11 @@ typedef union acpi_predefined_info
 /* Return object auto-repair info */
 
 typedef ACPI_STATUS(*ACPI_OBJECT_CONVERTER)(
-    struct acpi_namespace_node  *Scope,
-    union acpi_operand_object   *OriginalObject,
-    union acpi_operand_object   **ConvertedObject);
+        struct acpi_namespace_node  *Scope,
+        union acpi_operand_object   *OriginalObject,
+        union acpi_operand_object   **ConvertedObject);
 
-typedef struct acpi_simple_repair_info
-{
+typedef struct acpi_simple_repair_info {
 	char                        Name[ACPI_NAME_SIZE];
 	UINT32                      UnexpectedBtypes;
 	UINT32                      PackageIndex;
@@ -558,8 +541,7 @@ typedef struct acpi_simple_repair_info
 
 /* Info for running the _REG methods */
 
-typedef struct acpi_reg_walk_info
-{
+typedef struct acpi_reg_walk_info {
 	ACPI_ADR_SPACE_TYPE     SpaceId;
 	UINT32                  Function;
 	UINT32                  RegRunCount;
@@ -575,8 +557,7 @@ typedef struct acpi_reg_walk_info
 
 /* Dispatch info for each host-installed SCI handler */
 
-typedef struct acpi_sci_handler_info
-{
+typedef struct acpi_sci_handler_info {
 	struct acpi_sci_handler_info    *Next;
 	ACPI_SCI_HANDLER                Address;        /* Address of handler */
 	void                            *Context;       /* Context to be passed to handler */
@@ -585,8 +566,7 @@ typedef struct acpi_sci_handler_info
 
 /* Dispatch info for each GPE -- either a method or handler, cannot be both */
 
-typedef struct acpi_gpe_handler_info
-{
+typedef struct acpi_gpe_handler_info {
 	ACPI_GPE_HANDLER                Address;        /* Address of handler, if any */
 	void                            *Context;       /* Context to be passed to handler */
 	ACPI_NAMESPACE_NODE             *MethodNode;    /* Method node for this GPE level (saved) */
@@ -597,8 +577,7 @@ typedef struct acpi_gpe_handler_info
 
 /* Notify info for implicit notify, multiple device objects */
 
-typedef struct acpi_gpe_notify_info
-{
+typedef struct acpi_gpe_notify_info {
 	ACPI_NAMESPACE_NODE             *DeviceNode;    /* Device to be notified */
 	struct acpi_gpe_notify_info     *Next;
 
@@ -608,8 +587,7 @@ typedef struct acpi_gpe_notify_info
  * GPE dispatch info. At any time, the GPE can have at most one type
  * of dispatch - Method, Handler, or Implicit Notify.
  */
-typedef union acpi_gpe_dispatch_info
-{
+typedef union acpi_gpe_dispatch_info {
 	ACPI_NAMESPACE_NODE             *MethodNode;    /* Method node for this GPE level */
 	ACPI_GPE_HANDLER_INFO           *Handler;       /* Installed GPE handler */
 	ACPI_GPE_NOTIFY_INFO            *NotifyList;    /* List of _PRW devices for implicit notifies */
@@ -620,8 +598,7 @@ typedef union acpi_gpe_dispatch_info
  * Information about a GPE, one per each GPE in an array.
  * NOTE: Important to keep this struct as small as possible.
  */
-typedef struct acpi_gpe_event_info
-{
+typedef struct acpi_gpe_event_info {
 	union acpi_gpe_dispatch_info    Dispatch;           /* Either Method, Handler, or NotifyList */
 	struct acpi_gpe_register_info   *RegisterInfo;      /* Backpointer to register info */
 	UINT8                           Flags;              /* Misc info about this GPE */
@@ -633,8 +610,7 @@ typedef struct acpi_gpe_event_info
 
 /* Information about a GPE register pair, one per each status/enable pair in an array */
 
-typedef struct acpi_gpe_register_info
-{
+typedef struct acpi_gpe_register_info {
 	ACPI_GENERIC_ADDRESS            StatusAddress;  /* Address of status reg */
 	ACPI_GENERIC_ADDRESS            EnableAddress;  /* Address of enable reg */
 	UINT16                          BaseGpeNumber;  /* Base GPE number for this register */
@@ -649,8 +625,7 @@ typedef struct acpi_gpe_register_info
  * Information about a GPE register block, one per each installed block --
  * GPE0, GPE1, and one per each installed GPE Block Device.
  */
-typedef struct acpi_gpe_block_info
-{
+typedef struct acpi_gpe_block_info {
 	ACPI_NAMESPACE_NODE             *Node;
 	struct acpi_gpe_block_info      *Previous;
 	struct acpi_gpe_block_info      *Next;
@@ -668,8 +643,7 @@ typedef struct acpi_gpe_block_info
 
 /* Information about GPE interrupt handlers, one per each interrupt level used for GPEs */
 
-typedef struct acpi_gpe_xrupt_info
-{
+typedef struct acpi_gpe_xrupt_info {
 	struct acpi_gpe_xrupt_info      *Previous;
 	struct acpi_gpe_xrupt_info      *Next;
 	ACPI_GPE_BLOCK_INFO             *GpeBlockListHead;  /* List of GPE blocks for this xrupt */
@@ -677,8 +651,7 @@ typedef struct acpi_gpe_xrupt_info
 
 } ACPI_GPE_XRUPT_INFO;
 
-typedef struct acpi_gpe_walk_info
-{
+typedef struct acpi_gpe_walk_info {
 	ACPI_NAMESPACE_NODE             *GpeDevice;
 	ACPI_GPE_BLOCK_INFO             *GpeBlock;
 	UINT16                          Count;
@@ -687,8 +660,7 @@ typedef struct acpi_gpe_walk_info
 
 } ACPI_GPE_WALK_INFO;
 
-typedef struct acpi_gpe_device_info
-{
+typedef struct acpi_gpe_device_info {
 	UINT32                          Index;
 	UINT32                          NextBlockBaseIndex;
 	ACPI_STATUS                     Status;
@@ -697,22 +669,20 @@ typedef struct acpi_gpe_device_info
 } ACPI_GPE_DEVICE_INFO;
 
 typedef ACPI_STATUS(*ACPI_GPE_CALLBACK)(
-    ACPI_GPE_XRUPT_INFO             *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO             *GpeBlock,
-    void                            *Context);
+        ACPI_GPE_XRUPT_INFO             *GpeXruptInfo,
+        ACPI_GPE_BLOCK_INFO             *GpeBlock,
+        void                            *Context);
 
 
 /* Information about each particular fixed event */
 
-typedef struct acpi_fixed_event_handler
-{
+typedef struct acpi_fixed_event_handler {
 	ACPI_EVENT_HANDLER              Handler;        /* Address of handler. */
 	void                            *Context;       /* Context to be passed to handler */
 
 } ACPI_FIXED_EVENT_HANDLER;
 
-typedef struct acpi_fixed_event_info
-{
+typedef struct acpi_fixed_event_info {
 	UINT8                           StatusRegisterId;
 	UINT8                           EnableRegisterId;
 	UINT16                          StatusBitMask;
@@ -722,8 +692,7 @@ typedef struct acpi_fixed_event_info
 
 /* Information used during field processing */
 
-typedef struct acpi_field_info
-{
+typedef struct acpi_field_info {
 	UINT8                           SkipField;
 	UINT8                           FieldFlag;
 	UINT32                          PkgLength;
@@ -753,8 +722,7 @@ typedef struct acpi_field_info
 
 /* There are 2 bytes available here until the next natural alignment boundary */
 
-typedef struct acpi_common_state
-{
+typedef struct acpi_common_state {
 	ACPI_STATE_COMMON
 } ACPI_COMMON_STATE;
 
@@ -762,8 +730,7 @@ typedef struct acpi_common_state
 /*
  * Update state - used to traverse complex objects such as packages
  */
-typedef struct acpi_update_state
-{
+typedef struct acpi_update_state {
 	ACPI_STATE_COMMON
 	union acpi_operand_object       *Object;
 
@@ -773,8 +740,7 @@ typedef struct acpi_update_state
 /*
  * Pkg state - used to traverse nested package structures
  */
-typedef struct acpi_pkg_state
-{
+typedef struct acpi_pkg_state {
 	ACPI_STATE_COMMON
 	UINT16                          Index;
 	union acpi_operand_object       *SourceObject;
@@ -790,8 +756,7 @@ typedef struct acpi_pkg_state
  * Control state - one per if/else and while constructs.
  * Allows nesting of these constructs
  */
-typedef struct acpi_control_state
-{
+typedef struct acpi_control_state {
 	ACPI_STATE_COMMON
 	UINT16                          Opcode;
 	union acpi_parse_object         *PredicateOp;
@@ -805,16 +770,14 @@ typedef struct acpi_control_state
 /*
  * Scope state - current scope during namespace lookups
  */
-typedef struct acpi_scope_state
-{
+typedef struct acpi_scope_state {
 	ACPI_STATE_COMMON
 	ACPI_NAMESPACE_NODE             *Node;
 
 } ACPI_SCOPE_STATE;
 
 
-typedef struct acpi_pscope_state
-{
+typedef struct acpi_pscope_state {
 	ACPI_STATE_COMMON
 	UINT32                          ArgCount;               /* Number of fixed arguments */
 	union acpi_parse_object         *Op;                    /* Current op being parsed */
@@ -829,11 +792,11 @@ typedef struct acpi_pscope_state
  * Thread state - one per thread across multiple walk states. Multiple walk
  * states are created when there are nested control methods executing.
  */
-typedef struct acpi_thread_state
-{
+typedef struct acpi_thread_state {
 	ACPI_STATE_COMMON
 	UINT8                           CurrentSyncLevel;       /* Mutex Sync (nested acquire) level */
-	struct acpi_walk_state          *WalkStateList;         /* Head of list of WalkStates for this thread */
+	struct acpi_walk_state
+		*WalkStateList;         /* Head of list of WalkStates for this thread */
 	union acpi_operand_object       *AcquiredMutexList;     /* List of all currently acquired mutexes */
 	ACPI_THREAD_ID                  ThreadId;               /* Running thread ID */
 
@@ -844,8 +807,7 @@ typedef struct acpi_thread_state
  * Result values - used to accumulate the results of nested
  * AML arguments
  */
-typedef struct acpi_result_values
-{
+typedef struct acpi_result_values {
 	ACPI_STATE_COMMON
 	union acpi_operand_object       *ObjDesc [ACPI_RESULTS_FRAME_OBJ_NUM];
 
@@ -854,18 +816,17 @@ typedef struct acpi_result_values
 
 typedef
 ACPI_STATUS(*ACPI_PARSE_DOWNWARDS)(
-    struct acpi_walk_state          *WalkState,
-    union acpi_parse_object         **OutOp);
+        struct acpi_walk_state          *WalkState,
+        union acpi_parse_object         **OutOp);
 
 typedef
 ACPI_STATUS(*ACPI_PARSE_UPWARDS)(
-    struct acpi_walk_state          *WalkState);
+        struct acpi_walk_state          *WalkState);
 
 
 /* Global handlers for AML Notifies */
 
-typedef struct acpi_global_notify_handler
-{
+typedef struct acpi_global_notify_handler {
 	ACPI_NOTIFY_HANDLER             Handler;
 	void                            *Context;
 
@@ -875,8 +836,7 @@ typedef struct acpi_global_notify_handler
  * Notify info - used to pass info to the deferred notify
  * handler/dispatcher.
  */
-typedef struct acpi_notify_info
-{
+typedef struct acpi_notify_info {
 	ACPI_STATE_COMMON
 	UINT8                           HandlerListId;
 	ACPI_NAMESPACE_NODE             *Node;
@@ -888,8 +848,7 @@ typedef struct acpi_notify_info
 
 /* Generic state is union of structs above */
 
-typedef union acpi_generic_state
-{
+typedef union acpi_generic_state {
 	ACPI_COMMON_STATE               Common;
 	ACPI_CONTROL_STATE              Control;
 	ACPI_UPDATE_STATE               Update;
@@ -911,12 +870,11 @@ typedef union acpi_generic_state
 
 typedef
 ACPI_STATUS(*ACPI_EXECUTE_OP)(
-    struct acpi_walk_state          *WalkState);
+        struct acpi_walk_state          *WalkState);
 
 /* Address Range info block */
 
-typedef struct acpi_address_range
-{
+typedef struct acpi_address_range {
 	struct acpi_address_range   *Next;
 	ACPI_NAMESPACE_NODE         *RegionNode;
 	ACPI_PHYSICAL_ADDRESS       StartAddress;
@@ -934,8 +892,7 @@ typedef struct acpi_address_range
 /*
  * AML opcode, name, and argument layout
  */
-typedef struct acpi_opcode_info
-{
+typedef struct acpi_opcode_info {
 #if defined(ACPI_DISASSEMBLER) || defined(ACPI_DEBUG_OUTPUT)
 	char                            *Name;          /* Opcode name (disassembler/debug only) */
 #endif
@@ -950,8 +907,7 @@ typedef struct acpi_opcode_info
 
 /* Structure for Resource Tag information */
 
-typedef struct acpi_tag_info
-{
+typedef struct acpi_tag_info {
 	UINT32                          BitOffset;
 	UINT32                          BitLength;
 
@@ -959,8 +915,7 @@ typedef struct acpi_tag_info
 
 /* Value associated with the parse object */
 
-typedef union acpi_parse_value
-{
+typedef union acpi_parse_value {
 	UINT64                          Integer;        /* Integer constant (Up to 64 bits) */
 	UINT32                          Size;           /* bytelist or field size */
 	char                            *String;        /* NULL terminated string */
@@ -1013,8 +968,7 @@ typedef union acpi_parse_value
 /*
  * Generic operation (for example:  If, While, Store)
  */
-typedef struct acpi_parse_obj_common
-{
+typedef struct acpi_parse_obj_common {
 	ACPI_PARSE_COMMON
 } ACPI_PARSE_OBJ_COMMON;
 
@@ -1023,8 +977,7 @@ typedef struct acpi_parse_obj_common
  * Extended Op for named ops (Scope, Method, etc.), deferred ops (Methods and OpRegions),
  * and bytelists.
  */
-typedef struct acpi_parse_obj_named
-{
+typedef struct acpi_parse_obj_named {
 	ACPI_PARSE_COMMON
 	UINT8                           *Path;
 	UINT8                           *Data;          /* AML body or bytelist data */
@@ -1038,8 +991,7 @@ typedef struct acpi_parse_obj_named
 
 #define ACPI_MAX_PARSEOP_NAME   20
 
-typedef struct acpi_parse_obj_asl
-{
+typedef struct acpi_parse_obj_asl {
 	ACPI_PARSE_COMMON
 	union acpi_parse_object         *Child;
 	union acpi_parse_object         *ParentMethod;
@@ -1068,8 +1020,7 @@ typedef struct acpi_parse_obj_asl
 
 } ACPI_PARSE_OBJ_ASL;
 
-typedef union acpi_parse_object
-{
+typedef union acpi_parse_object {
 	ACPI_PARSE_OBJ_COMMON           Common;
 	ACPI_PARSE_OBJ_NAMED            Named;
 	ACPI_PARSE_OBJ_ASL              Asl;
@@ -1081,8 +1032,7 @@ typedef union acpi_parse_object
  * Parse state - one state per parser invocation and each control
  * method.
  */
-typedef struct acpi_parse_state
-{
+typedef struct acpi_parse_state {
 	UINT8                           *AmlStart;      /* First AML byte */
 	UINT8                           *Aml;           /* Next AML byte */
 	UINT8                           *AmlEnd;        /* (last + 1) AML byte */
@@ -1125,8 +1075,7 @@ typedef struct acpi_parse_state
  *
  ****************************************************************************/
 
-typedef struct acpi_bit_register_info
-{
+typedef struct acpi_bit_register_info {
 	UINT8                           ParentRegister;
 	UINT8                           BitPosition;
 	UINT16                          AccessBitMask;
@@ -1242,8 +1191,7 @@ typedef struct acpi_bit_register_info
 
 #define ACPI_ALWAYS_ILLEGAL             0x00
 
-typedef struct acpi_interface_info
-{
+typedef struct acpi_interface_info {
 	char                        *Name;
 	struct acpi_interface_info  *Next;
 	UINT8                       Flags;
@@ -1257,8 +1205,7 @@ typedef struct acpi_interface_info
 #define ACPI_OSI_DEFAULT_INVALID        0x08
 #define ACPI_OSI_OPTIONAL_FEATURE       (ACPI_OSI_FEATURE | ACPI_OSI_DEFAULT_INVALID | ACPI_OSI_INVALID)
 
-typedef struct acpi_port_info
-{
+typedef struct acpi_port_info {
 	char                    *Name;
 	UINT16                  Start;
 	UINT16                  End;
@@ -1341,8 +1288,7 @@ typedef struct acpi_port_info
  *
  ****************************************************************************/
 
-typedef struct acpi_external_list
-{
+typedef struct acpi_external_list {
 	char                        *Path;
 	char                        *InternalPath;
 	struct acpi_external_list   *Next;
@@ -1362,8 +1308,7 @@ typedef struct acpi_external_list
 #define ACPI_EXT_ORIGIN_FROM_OPCODE         0x10    /* External came from a External() opcode */
 
 
-typedef struct acpi_external_file
-{
+typedef struct acpi_external_file {
 	char                        *Path;
 	struct acpi_external_file   *Next;
 
@@ -1376,8 +1321,7 @@ typedef struct acpi_external_file
  *
  ****************************************************************************/
 
-typedef struct acpi_db_method_info
-{
+typedef struct acpi_db_method_info {
 	ACPI_HANDLE                     Method;
 	ACPI_HANDLE                     MainThreadGate;
 	ACPI_HANDLE                     ThreadCompleteGate;
@@ -1411,8 +1355,7 @@ typedef struct acpi_db_method_info
 
 } ACPI_DB_METHOD_INFO;
 
-typedef struct acpi_integrity_info
-{
+typedef struct acpi_integrity_info {
 	UINT32                          Nodes;
 	UINT32                          Objects;
 
@@ -1425,8 +1368,7 @@ typedef struct acpi_integrity_info
 #define ACPI_DB_DUPLICATE_OUTPUT        0x03
 
 
-typedef struct acpi_object_info
-{
+typedef struct acpi_object_info {
 	UINT32                  Types[ACPI_TOTAL_TYPES];
 
 } ACPI_OBJECT_INFO;
@@ -1453,14 +1395,12 @@ typedef struct acpi_object_info
     char                            Module[ACPI_MAX_MODULE_NAME]; \
     UINT8                           AllocType;
 
-typedef struct acpi_debug_mem_header
-{
+typedef struct acpi_debug_mem_header {
 	ACPI_COMMON_DEBUG_MEM_HEADER
 
 } ACPI_DEBUG_MEM_HEADER;
 
-typedef struct acpi_debug_mem_block
-{
+typedef struct acpi_debug_mem_block {
 	ACPI_COMMON_DEBUG_MEM_HEADER
 	UINT64                          UserSpace;
 
@@ -1479,8 +1419,7 @@ typedef struct acpi_debug_mem_block
  *
  ****************************************************************************/
 
-typedef struct ah_predefined_name
-{
+typedef struct ah_predefined_name {
 	char            *Name;
 	char            *Description;
 #ifndef ACPI_ASL_COMPILER
@@ -1489,22 +1428,19 @@ typedef struct ah_predefined_name
 
 } AH_PREDEFINED_NAME;
 
-typedef struct ah_device_id
-{
+typedef struct ah_device_id {
 	char            *Name;
 	char            *Description;
 
 } AH_DEVICE_ID;
 
-typedef struct ah_uuid
-{
+typedef struct ah_uuid {
 	char            *Description;
 	char            *String;
 
 } AH_UUID;
 
-typedef struct ah_table
-{
+typedef struct ah_table {
 	char                    *Signature;
 	char                    *Description;
 

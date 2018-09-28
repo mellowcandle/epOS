@@ -135,7 +135,7 @@ ACPI_MODULE_NAME("pswalk")
 
 void
 AcpiPsDeleteParseTree(
-    ACPI_PARSE_OBJECT       *SubtreeRoot)
+        ACPI_PARSE_OBJECT       *SubtreeRoot)
 {
 	ACPI_PARSE_OBJECT       *Op = SubtreeRoot;
 	ACPI_PARSE_OBJECT       *Next = NULL;
@@ -147,18 +147,15 @@ AcpiPsDeleteParseTree(
 
 	/* Visit all nodes in the subtree */
 
-	while (Op)
-	{
+	while (Op) {
 		/* Check if we are not ascending */
 
-		if (Op != Parent)
-		{
+		if (Op != Parent) {
 			/* Look for an argument or child of the current op */
 
 			Next = AcpiPsGetArg(Op, 0);
 
-			if (Next)
-			{
+			if (Next) {
 				/* Still going downward in tree (Op is not completed yet) */
 
 				Op = Next;
@@ -176,18 +173,12 @@ AcpiPsDeleteParseTree(
 		/* If we are back to the starting point, the walk is complete. */
 
 		if (Op == SubtreeRoot)
-		{
 			return_VOID;
-		}
 
 		if (Next)
-		{
 			Op = Next;
-		}
 		else
-		{
 			Op = Parent;
-		}
 	}
 
 	return_VOID;

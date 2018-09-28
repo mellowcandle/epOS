@@ -67,7 +67,7 @@
 
 typedef struct {
 	int state;
-	circ_buffer_t * queue;
+	circ_buffer_t *queue;
 	bool ps2_dual_channel;
 } kbd_device_t;
 
@@ -75,8 +75,7 @@ static kbd_device_t kbd;
 
 ACPI_TABLE_FADT *acpi_get_fadt();
 
-static uint8_t kbd_scan_table[128] =
-{
+static uint8_t kbd_scan_table[128] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x00 - 0x0F
 	0, 0, 0, 0, 0, 'q', '1', 0, 0, 0, 'z', 's', 'a', 'w', '2', 0, // 0x10 - 0x1F
 	0, 'c', 'x', 'd', 'e', '4', '3', 0, 0, ' ', 'v', 'f', 't', 'r', '5', 0, // 0x20 - 0x2F
@@ -86,8 +85,7 @@ static uint8_t kbd_scan_table[128] =
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
-static uint8_t kbd_scan_table_shift[128] =
-{
+static uint8_t kbd_scan_table_shift[128] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x00 - 0x0F
 	0, 0, 0, 0, 0, 'q', '!', 0, 0, 0, 'z', 's', 'a', 'w', '@', 0, // 0x10 - 0x1F
 	0, 'c', 'x', 'd', 'e', '$', '#', 0, 0, ' ', 'v', 'f', 't', 'r', '%', 0, // 0x20 - 0x2F
@@ -142,9 +140,7 @@ void kbd_irq_handler(registers_t *regs)
 {
 
 	while ((kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
-	{
 		state_machine(kbd_8042_data());
-	}
 }
 
 #define STATE_IDLE 0
@@ -156,8 +152,7 @@ static void state_machine(uint8_t scan_code)
 	static int statemachine = STATE_IDLE;
 	const uint8_t *scan_table;
 
-	switch (scan_code)
-	{
+	switch (scan_code) {
 	case 0xF0:
 		statemachine |= STATE_PRE_RELEASE;
 		break;
@@ -168,14 +163,10 @@ static void state_machine(uint8_t scan_code)
 
 	case 0x11: // alt
 		if (statemachine & STATE_PRE_RELEASE)
-		{
 			kbd.state &= (statemachine & STATE_PRE_RIGHT) ? ~state_LEFT_ALT : ~state_RIGHT_ALT;
 
-		}
 		else
-		{
 			kbd.state |= (statemachine & STATE_PRE_RIGHT) ? state_LEFT_ALT : state_RIGHT_ALT;
-		}
 
 		statemachine = STATE_IDLE;
 		break;
@@ -183,26 +174,18 @@ static void state_machine(uint8_t scan_code)
 	case 0x12: // left shift
 
 		if (statemachine & STATE_PRE_RELEASE)
-		{
 			kbd.state &=  ~state_LEFT_SHIFT;
-		}
 		else
-		{
 			kbd.state |= state_LEFT_SHIFT;
-		}
 
 		statemachine = STATE_IDLE;
 		break;
 
 	case 0x59: //right shift
 		if (statemachine & STATE_PRE_RELEASE)
-		{
 			kbd.state &=  ~state_RIGHT_SHIFT;
-		}
 		else
-		{
 			kbd.state |= state_RIGHT_SHIFT;
-		}
 
 		statemachine = STATE_IDLE;
 		break;
@@ -210,13 +193,9 @@ static void state_machine(uint8_t scan_code)
 	case 0x14: // control
 
 		if (statemachine & STATE_PRE_RELEASE)
-		{
 			kbd.state &= (statemachine & STATE_PRE_RIGHT) ? ~state_LEFT_CTRL : ~state_RIGHT_CTRL;
-		}
 		else
-		{
 			kbd.state |= (statemachine & STATE_PRE_RIGHT) ? state_LEFT_CTRL : state_RIGHT_CTRL;
-		}
 
 		statemachine = STATE_IDLE;
 		break;
@@ -224,9 +203,7 @@ static void state_machine(uint8_t scan_code)
 	case 0x58: // Caps lock
 
 		if (!(statemachine & STATE_PRE_RELEASE))
-		{
 			BIT_TOGGLE(kbd.state, CAPS_LOCK_BIT);
-		}
 
 		statemachine = STATE_IDLE;
 		break;
@@ -234,9 +211,7 @@ static void state_machine(uint8_t scan_code)
 	case 0x77: // Numlock
 
 		if (!(statemachine & STATE_PRE_RELEASE))
-		{
 			BIT_TOGGLE(kbd.state, NUM_LOCK_BIT);
-		}
 
 		statemachine = STATE_IDLE;
 		break;
@@ -244,9 +219,7 @@ static void state_machine(uint8_t scan_code)
 	case 0x7e: // Scroll lock
 
 		if (!(statemachine & STATE_PRE_RELEASE))
-		{
 			BIT_TOGGLE(kbd.state, SCROLL_LOCK_BIT);
-		}
 
 		statemachine = STATE_IDLE;
 		break;
@@ -254,24 +227,16 @@ static void state_machine(uint8_t scan_code)
 	default:
 
 		if (kbd.state & (state_LEFT_SHIFT | state_RIGHT_SHIFT))
-		{
 			scan_table = kbd_scan_table_shift;
-		}
 		else
-		{
 			scan_table = kbd_scan_table;
-		}
 
 		if (statemachine == STATE_PRE_RELEASE)
-		{
 			pr_debug("scan code %hhx  key: %c released\r\n", scan_code, (char) scan_table[scan_code]);
-		}
-		else
-		{
+		else {
 			pr_debug("scan code %hhx key %c pressed\r\n", scan_code, scan_table[scan_code]);
-			if (!write_circ_buffer(kbd.queue, 1, (void *) &scan_table[scan_code])) {
+			if (!write_circ_buffer(kbd.queue, 1, (void *) &scan_table[scan_code]))
 				pr_warn("Can't write to keyboard queue, is it full ?\n");
-			}
 		}
 
 		statemachine = STATE_IDLE;
@@ -290,15 +255,12 @@ void kbd_8042_init()
 
 	/* Flush the buffer */
 	while (kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS)
-	{
 		(void) kbd_8042_data();
-	}
 
 	config = kbd_8042_read_config();
 	pr_debug("KBD Initial Config was: %x\r\n", config);
 
-	if (BIT_CHECK(config, 5))
-	{
+	if (BIT_CHECK(config, 5)) {
 		kbd.ps2_dual_channel = true;
 		pr_info("Detected dual channel PS2 controller\r\n");
 	}
@@ -312,14 +274,10 @@ void kbd_8042_init()
 	pr_debug("KBD Config set to: %x\r\n", config);
 
 	if (kbd_8042_self_test())
-	{
 		return;
-	}
 
 	if (ps2_port_test(kbd.ps2_dual_channel))
-	{
 		return;
-	}
 
 	kbd.queue = create_circ_buffer(KBD_BUFFER_SIZE);
 	if (!kbd.queue) {
@@ -342,15 +300,10 @@ static void kbd_8042_enable(uint8_t port)
 	config = kbd_8042_read_config();
 
 	if (port == 1)
-	{
 		BIT_SET(config, 0);
-	}
 	else if (port == 2)
-	{
 		BIT_SET(config, 1);
-	}
-	else
-	{
+	else {
 		pr_error("Unknown PS2 port\r\n");
 		return;
 	}
@@ -358,28 +311,19 @@ static void kbd_8042_enable(uint8_t port)
 	kbd_8042_write_config(config);
 
 	if (port == 1)
-	{
 		kbd_8042_write_cmd(0xAE);
-	}
 	else
-	{
 		kbd_8042_write_cmd(0xA8);
-	}
 
 }
 
 static void kbd_8042_disable(uint8_t port)
 {
 	if (port == 1)
-	{
 		kbd_8042_write_cmd(0xAD);
-	}
 	else if (port == 2)
-	{
 		kbd_8042_write_cmd(0xA7);
-	}
-	else
-	{
+	else {
 		pr_error("Unknown PS2 port\r\n");
 		return;
 	}
@@ -395,8 +339,7 @@ static int kbd_8042_self_test()
 
 	data = kbd_8042_data();
 
-	if (data != 0x55)
-	{
+	if (data != 0x55) {
 		pr_error("8042 kbd self test failed\r\n");
 		return -1;
 	}
@@ -413,16 +356,13 @@ static int ps2_port_test(bool dual)
 
 	data = kbd_8042_data();
 
-	if (data)
-	{
+	if (data) {
 		pr_error("PS2 port 1 test failed\r\n");
 		return -1;
 	}
 
 	if (!dual)
-	{
 		return 0;
-	}
 
 	kbd_8042_write_cmd(0xA9);
 
@@ -431,8 +371,7 @@ static int ps2_port_test(bool dual)
 
 	data = kbd_8042_data();
 
-	if (data)
-	{
+	if (data) {
 		pr_error("PS2 port 2 test failed\r\n");
 		return -1;
 	}
@@ -444,8 +383,7 @@ static void kbd_8042_poll()
 {
 	uint8_t data;
 
-	while (1)
-	{
+	while (1) {
 
 		while (!(kbd_8042_status() & STATUS_OUTPUT_BUF_STATUS))
 			;
@@ -459,8 +397,7 @@ bool kbd_8042_avail()
 {
 	ACPI_TABLE_FADT *fadt = acpi_get_fadt();
 
-	if (fadt->Header.Revision < 2)
-	{
+	if (fadt->Header.Revision < 2) {
 		pr_debug("ACPI FADT version < 2 - Assuming 8042 availability\r\n");
 		return true;
 	}

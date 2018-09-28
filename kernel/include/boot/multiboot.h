@@ -96,8 +96,7 @@ typedef unsigned short          multiboot_uint16_t;
 typedef unsigned int            multiboot_uint32_t;
 typedef unsigned long long      multiboot_uint64_t;
 
-struct multiboot_header
-{
+struct multiboot_header {
 	/* Must be MULTIBOOT_MAGIC - see above. */
 	multiboot_uint32_t magic;
 
@@ -122,8 +121,7 @@ struct multiboot_header
 };
 
 /* The symbol table for a.out. */
-struct multiboot_aout_symbol_table
-{
+struct multiboot_aout_symbol_table {
 	multiboot_uint32_t tabsize;
 	multiboot_uint32_t strsize;
 	multiboot_uint32_t addr;
@@ -132,8 +130,7 @@ struct multiboot_aout_symbol_table
 typedef struct multiboot_aout_symbol_table multiboot_aout_symbol_table_t;
 
 /* The section header table for ELF. */
-struct multiboot_elf_section_header_table
-{
+struct multiboot_elf_section_header_table {
 	multiboot_uint32_t num;
 	multiboot_uint32_t size;
 	multiboot_uint32_t addr;
@@ -141,8 +138,7 @@ struct multiboot_elf_section_header_table
 };
 typedef struct multiboot_elf_section_header_table multiboot_elf_section_header_table_t;
 
-struct multiboot_info
-{
+struct multiboot_info {
 	/* Multiboot info version number */
 	multiboot_uint32_t flags;
 
@@ -160,8 +156,7 @@ struct multiboot_info
 	multiboot_uint32_t mods_count;
 	multiboot_uint32_t mods_addr;
 
-	union
-	{
+	union {
 		multiboot_aout_symbol_table_t aout_sym;
 		multiboot_elf_section_header_table_t elf_sec;
 	} u;
@@ -193,8 +188,7 @@ struct multiboot_info
 };
 typedef struct multiboot_info multiboot_info_t;
 
-struct multiboot_mmap_entry
-{
+struct multiboot_mmap_entry {
 	multiboot_uint32_t size;
 	multiboot_uint64_t addr;
 	multiboot_uint64_t len;
@@ -204,8 +198,7 @@ struct multiboot_mmap_entry
 } __attribute__((packed));
 typedef struct multiboot_mmap_entry multiboot_memory_map_t;
 
-struct multiboot_mod_list
-{
+struct multiboot_mod_list {
 	/* the memory used goes from bytes 'mod_start' to 'mod_end-1' inclusive */
 	multiboot_uint32_t mod_start;
 	multiboot_uint32_t mod_end;

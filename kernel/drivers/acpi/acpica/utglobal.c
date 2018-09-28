@@ -131,8 +131,7 @@ ACPI_MODULE_NAME("utglobal")
 
 /* Various state name strings */
 
-const char                  *AcpiGbl_SleepStateNames[ACPI_S_STATE_COUNT] =
-{
+const char                  *AcpiGbl_SleepStateNames[ACPI_S_STATE_COUNT] = {
 	"\\_S0_",
 	"\\_S1_",
 	"\\_S2_",
@@ -141,8 +140,7 @@ const char                  *AcpiGbl_SleepStateNames[ACPI_S_STATE_COUNT] =
 	"\\_S5_"
 };
 
-const char                  *AcpiGbl_LowestDstateNames[ACPI_NUM_SxW_METHODS] =
-{
+const char                  *AcpiGbl_LowestDstateNames[ACPI_NUM_SxW_METHODS] = {
 	"_S0W",
 	"_S1W",
 	"_S2W",
@@ -150,8 +148,7 @@ const char                  *AcpiGbl_LowestDstateNames[ACPI_NUM_SxW_METHODS] =
 	"_S4W"
 };
 
-const char                  *AcpiGbl_HighestDstateNames[ACPI_NUM_SxD_METHODS] =
-{
+const char                  *AcpiGbl_HighestDstateNames[ACPI_NUM_SxD_METHODS] = {
 	"_S1D",
 	"_S2D",
 	"_S3D",
@@ -182,8 +179,7 @@ const char                  AcpiGbl_UpperHexDigits[] = "0123456789ABCDEF";
  *    This still allows notifies, but does not confuse host code that
  *    searches for valid ThermalZone objects.
  */
-const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
-{
+const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] = {
 	{"_GPE",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
 	{"_PR_",    ACPI_TYPE_LOCAL_SCOPE,      NULL},
 	{"_SB_",    ACPI_TYPE_DEVICE,           NULL},
@@ -217,8 +213,7 @@ const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
  *
  ******************************************************************************/
 
-ACPI_BIT_REGISTER_INFO      AcpiGbl_BitRegisterInfo[ACPI_NUM_BITREG] =
-{
+ACPI_BIT_REGISTER_INFO      AcpiGbl_BitRegisterInfo[ACPI_NUM_BITREG] = {
 	/* Name                                     Parent Register             Register Bit Position                   Register Bit Mask       */
 
 	/* ACPI_BITREG_TIMER_STATUS         */   {ACPI_REGISTER_PM1_STATUS,   ACPI_BITPOSITION_TIMER_STATUS,          ACPI_BITMASK_TIMER_STATUS},
@@ -247,8 +242,7 @@ ACPI_BIT_REGISTER_INFO      AcpiGbl_BitRegisterInfo[ACPI_NUM_BITREG] =
 };
 
 
-ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS] =
-{
+ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS] = {
 	/* ACPI_EVENT_PMTIMER       */  {ACPI_BITREG_TIMER_STATUS,          ACPI_BITREG_TIMER_ENABLE,        ACPI_BITMASK_TIMER_STATUS,          ACPI_BITMASK_TIMER_ENABLE},
 	/* ACPI_EVENT_GLOBAL        */  {ACPI_BITREG_GLOBAL_LOCK_STATUS,    ACPI_BITREG_GLOBAL_LOCK_ENABLE,  ACPI_BITMASK_GLOBAL_LOCK_STATUS,    ACPI_BITMASK_GLOBAL_LOCK_ENABLE},
 	/* ACPI_EVENT_POWER_BUTTON  */  {ACPI_BITREG_POWER_BUTTON_STATUS,   ACPI_BITREG_POWER_BUTTON_ENABLE, ACPI_BITMASK_POWER_BUTTON_STATUS,   ACPI_BITMASK_POWER_BUTTON_ENABLE},
@@ -262,8 +256,7 @@ ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS] =
 
 /* ToPld macro: compile/disassemble strings */
 
-const char              *AcpiGbl_PldPanelList[] =
-{
+const char              *AcpiGbl_PldPanelList[] = {
 	"TOP",
 	"BOTTOM",
 	"LEFT",
@@ -274,24 +267,21 @@ const char              *AcpiGbl_PldPanelList[] =
 	NULL
 };
 
-const char              *AcpiGbl_PldVerticalPositionList[] =
-{
+const char              *AcpiGbl_PldVerticalPositionList[] = {
 	"UPPER",
 	"CENTER",
 	"LOWER",
 	NULL
 };
 
-const char              *AcpiGbl_PldHorizontalPositionList[] =
-{
+const char              *AcpiGbl_PldHorizontalPositionList[] = {
 	"LEFT",
 	"CENTER",
 	"RIGHT",
 	NULL
 };
 
-const char              *AcpiGbl_PldShapeList[] =
-{
+const char              *AcpiGbl_PldShapeList[] = {
 	"ROUND",
 	"OVAL",
 	"SQUARE",

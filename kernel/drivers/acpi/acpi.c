@@ -49,8 +49,7 @@ void acpi_early_init()
 
 	rv = AcpiInitializeTables(NULL, 16, FALSE);
 
-	if (ACPI_FAILURE(rv))
-	{
+	if (ACPI_FAILURE(rv)) {
 		pr_fatal("ACPI table initalization failed\r\r\n");
 		panic();
 	}
@@ -73,24 +72,21 @@ void acpi_init()
 
 	rv = AcpiInitializeSubsystem();
 
-	if (ACPI_FAILURE(rv))
-	{
+	if (ACPI_FAILURE(rv)) {
 		err_code = 1;
 		goto error;
 	}
 
 	rv = AcpiLoadTables();
 
-	if (ACPI_FAILURE(rv))
-	{
+	if (ACPI_FAILURE(rv)) {
 		err_code = 2;
 		goto error;
 	}
 
 	rv = AcpiEnableSubsystem(ACPI_FULL_INITIALIZATION);
 
-	if (ACPI_FAILURE(rv))
-	{
+	if (ACPI_FAILURE(rv)) {
 		err_code = 3;
 		goto error;
 	}
@@ -115,9 +111,7 @@ ACPI_TABLE_FADT *acpi_get_fadt()
 	ACPI_STATUS status = AcpiGetTable(ACPI_SIG_FADT, 1, &table);
 
 	if (ACPI_FAILURE(status))
-	{
 		return 0;
-	}
 
 	return (ACPI_TABLE_FADT *)table;
 }
@@ -131,9 +125,7 @@ ACPI_TABLE_MADT *acpi_get_madt()
 	ACPI_STATUS status = AcpiGetTable(ACPI_SIG_MADT, 1, &table);
 
 	if (ACPI_FAILURE(status))
-	{
 		return 0;
-	}
 
 	return (ACPI_TABLE_MADT *)table;
 }
@@ -147,9 +139,7 @@ ACPI_TABLE_HPET *acpi_get_hpet()
 	ACPI_STATUS status = AcpiGetTable(ACPI_SIG_HPET, 1, &table);
 
 	if (ACPI_FAILURE(status))
-	{
 		return 0;
-	}
 
 	return (ACPI_TABLE_HPET *)table;
 }
@@ -160,14 +150,10 @@ addr_t acpi_get_hpet_addr()
 	ACPI_TABLE_HPET *table = acpi_get_hpet();
 
 	if (!table)
-	{
 		return 0;
-	}
 
 	if (table->Address.Address)
-	{
 		pr_info("HPET detected at 0x%llx\r\n", table->Address.Address);
-	}
 
 	return table->Address.Address;
 }
@@ -205,12 +191,9 @@ void acpi_foreach_subtable(ACPI_TABLE_HEADER *table,
 	ACPI_SUBTABLE_HEADER *end = (ACPI_SUBTABLE_HEADER *)((uintptr_t)table + table->Length);
 	ACPI_SUBTABLE_HEADER *subtable_header = first;
 
-	while (subtable_header < end)
-	{
+	while (subtable_header < end) {
 		if (subtable_header->Length < sizeof(ACPI_SUBTABLE_HEADER))
-		{
 			break;
-		}
 
 		handler(subtable_header);
 
@@ -235,8 +218,7 @@ void acpi_madt_configure_apic_subtable(ACPI_SUBTABLE_HEADER *header)
 	ACPI_MADT_LOCAL_APIC_NMI *lapic_nmi;
 	ACPI_MADT_LOCAL_APIC_OVERRIDE *lapic_override;
 
-	switch (header->Type)
-	{
+	switch (header->Type) {
 	case ACPI_MADT_TYPE_LOCAL_APIC:
 		apic = (ACPI_MADT_LOCAL_APIC *)header;
 		apic_configure_lapic(apic->Id, apic->ProcessorId, apic->LapicFlags);;
@@ -289,8 +271,7 @@ static void acpi_madt_print_subtable(ACPI_SUBTABLE_HEADER *header)
 	ACPI_MADT_LOCAL_APIC_NMI *lapic_nmi;
 	ACPI_MADT_LOCAL_APIC_OVERRIDE *lapic_override;
 
-	switch (header->Type)
-	{
+	switch (header->Type) {
 	case ACPI_MADT_TYPE_LOCAL_APIC:
 		lapic = (ACPI_MADT_LOCAL_APIC *)header;
 		pr_info("LOCAL APIC Id=%d ProcessorId=%d LApicFlags=0x%x\r\n",

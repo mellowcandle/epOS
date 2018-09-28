@@ -125,51 +125,51 @@ ACPI_MODULE_NAME("utcopy")
 
 static ACPI_STATUS
 AcpiUtCopyIsimpleToEsimple(
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_OBJECT             *ExternalObject,
-    UINT8                   *DataSpace,
-    ACPI_SIZE               *BufferSpaceUsed);
+        ACPI_OPERAND_OBJECT     *InternalObject,
+        ACPI_OBJECT             *ExternalObject,
+        UINT8                   *DataSpace,
+        ACPI_SIZE               *BufferSpaceUsed);
 
 static ACPI_STATUS
 AcpiUtCopyIelementToIelement(
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
+        UINT8                   ObjectType,
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        ACPI_GENERIC_STATE      *State,
+        void                    *Context);
 
 static ACPI_STATUS
 AcpiUtCopyIpackageToEpackage(
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT8                   *Buffer,
-    ACPI_SIZE               *SpaceUsed);
+        ACPI_OPERAND_OBJECT     *InternalObject,
+        UINT8                   *Buffer,
+        ACPI_SIZE               *SpaceUsed);
 
 static ACPI_STATUS
 AcpiUtCopyEsimpleToIsimple(
-    ACPI_OBJECT             *UserObj,
-    ACPI_OPERAND_OBJECT     **ReturnObj);
+        ACPI_OBJECT             *UserObj,
+        ACPI_OPERAND_OBJECT     **ReturnObj);
 
 static ACPI_STATUS
 AcpiUtCopyEpackageToIpackage(
-    ACPI_OBJECT             *ExternalObject,
-    ACPI_OPERAND_OBJECT     **InternalObject);
+        ACPI_OBJECT             *ExternalObject,
+        ACPI_OPERAND_OBJECT     **InternalObject);
 
 static ACPI_STATUS
 AcpiUtCopySimpleObject(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc);
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     *DestDesc);
 
 static ACPI_STATUS
 AcpiUtCopyIelementToEelement(
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context);
+        UINT8                   ObjectType,
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        ACPI_GENERIC_STATE      *State,
+        void                    *Context);
 
 static ACPI_STATUS
 AcpiUtCopyIpackageToIpackage(
-    ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj,
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_OPERAND_OBJECT     *SourceObj,
+        ACPI_OPERAND_OBJECT     *DestObj,
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*******************************************************************************
@@ -194,10 +194,10 @@ AcpiUtCopyIpackageToIpackage(
 
 static ACPI_STATUS
 AcpiUtCopyIsimpleToEsimple(
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_OBJECT             *ExternalObject,
-    UINT8                   *DataSpace,
-    ACPI_SIZE               *BufferSpaceUsed)
+        ACPI_OPERAND_OBJECT     *InternalObject,
+        ACPI_OBJECT             *ExternalObject,
+        UINT8                   *DataSpace,
+        ACPI_SIZE               *BufferSpaceUsed)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -212,9 +212,7 @@ AcpiUtCopyIsimpleToEsimple(
 	 * package element)
 	 */
 	if (!InternalObject)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Always clear the external object */
 
@@ -228,14 +226,13 @@ AcpiUtCopyIsimpleToEsimple(
 
 	/* However, only a limited number of external types are supported */
 
-	switch (InternalObject->Common.Type)
-	{
+	switch (InternalObject->Common.Type) {
 	case ACPI_TYPE_STRING:
 
 		ExternalObject->String.Pointer = (char *) DataSpace;
 		ExternalObject->String.Length  = InternalObject->String.Length;
 		*BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD(
-		                       (ACPI_SIZE) InternalObject->String.Length + 1);
+		                           (ACPI_SIZE) InternalObject->String.Length + 1);
 
 		memcpy((void *) DataSpace,
 		       (void *) InternalObject->String.Pointer,
@@ -247,7 +244,7 @@ AcpiUtCopyIsimpleToEsimple(
 		ExternalObject->Buffer.Pointer = DataSpace;
 		ExternalObject->Buffer.Length  = InternalObject->Buffer.Length;
 		*BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD(
-		                       InternalObject->String.Length);
+		                           InternalObject->String.Length);
 
 		memcpy((void *) DataSpace,
 		       (void *) InternalObject->Buffer.Pointer,
@@ -263,17 +260,16 @@ AcpiUtCopyIsimpleToEsimple(
 
 		/* This is an object reference. */
 
-		switch (InternalObject->Reference.Class)
-		{
+		switch (InternalObject->Reference.Class) {
 		case ACPI_REFCLASS_NAME:
 			/*
 			 * For namepath, return the object handle ("reference")
 			 * We are referring to the namespace node
 			 */
 			ExternalObject->Reference.Handle =
-			    InternalObject->Reference.Node;
+			        InternalObject->Reference.Node;
 			ExternalObject->Reference.ActualType =
-			    AcpiNsGetType(InternalObject->Reference.Node);
+			        AcpiNsGetType(InternalObject->Reference.Node);
 			break;
 
 		default:
@@ -288,20 +284,20 @@ AcpiUtCopyIsimpleToEsimple(
 	case ACPI_TYPE_PROCESSOR:
 
 		ExternalObject->Processor.ProcId =
-		    InternalObject->Processor.ProcId;
+		        InternalObject->Processor.ProcId;
 		ExternalObject->Processor.PblkAddress =
-		    InternalObject->Processor.Address;
+		        InternalObject->Processor.Address;
 		ExternalObject->Processor.PblkLength =
-		    InternalObject->Processor.Length;
+		        InternalObject->Processor.Length;
 		break;
 
 	case ACPI_TYPE_POWER:
 
 		ExternalObject->PowerResource.SystemLevel =
-		    InternalObject->PowerResource.SystemLevel;
+		        InternalObject->PowerResource.SystemLevel;
 
 		ExternalObject->PowerResource.ResourceOrder =
-		    InternalObject->PowerResource.ResourceOrder;
+		        InternalObject->PowerResource.ResourceOrder;
 		break;
 
 	default:
@@ -333,10 +329,10 @@ AcpiUtCopyIsimpleToEsimple(
 
 static ACPI_STATUS
 AcpiUtCopyIelementToEelement(
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context)
+        UINT8                   ObjectType,
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        ACPI_GENERIC_STATE      *State,
+        void                    *Context)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_PKG_INFO           *Info = (ACPI_PKG_INFO *) Context;
@@ -352,8 +348,7 @@ AcpiUtCopyIelementToEelement(
 	TargetObject = (ACPI_OBJECT *) & ((ACPI_OBJECT *)
 	                                  (State->Pkg.DestObject))->Package.Elements[ThisIndex];
 
-	switch (ObjectType)
-	{
+	switch (ObjectType) {
 	case ACPI_COPY_TYPE_SIMPLE:
 		/*
 		 * This is a simple or null object
@@ -362,9 +357,7 @@ AcpiUtCopyIelementToEelement(
 		                                    TargetObject, Info->FreeSpace, &ObjectSpace);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
 		break;
 
@@ -375,7 +368,7 @@ AcpiUtCopyIelementToEelement(
 		TargetObject->Type = ACPI_TYPE_PACKAGE;
 		TargetObject->Package.Count = SourceObject->Package.Count;
 		TargetObject->Package.Elements =
-		    ACPI_CAST_PTR(ACPI_OBJECT, Info->FreeSpace);
+		        ACPI_CAST_PTR(ACPI_OBJECT, Info->FreeSpace);
 
 		/*
 		 * Pass the new package object back to the package walk routine
@@ -387,8 +380,8 @@ AcpiUtCopyIelementToEelement(
 		 * update the buffer length counter
 		 */
 		ObjectSpace = ACPI_ROUND_UP_TO_NATIVE_WORD(
-		                  (ACPI_SIZE) TargetObject->Package.Count *
-		                  sizeof(ACPI_OBJECT));
+		                      (ACPI_SIZE) TargetObject->Package.Count *
+		                      sizeof(ACPI_OBJECT));
 		break;
 
 	default:
@@ -423,9 +416,9 @@ AcpiUtCopyIelementToEelement(
 
 static ACPI_STATUS
 AcpiUtCopyIpackageToEpackage(
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT8                   *Buffer,
-    ACPI_SIZE               *SpaceUsed)
+        ACPI_OPERAND_OBJECT     *InternalObject,
+        UINT8                   *Buffer,
+        ACPI_SIZE               *SpaceUsed)
 {
 	ACPI_OBJECT             *ExternalObject;
 	ACPI_STATUS             Status;
@@ -452,7 +445,7 @@ AcpiUtCopyIpackageToEpackage(
 	ExternalObject->Type = InternalObject->Common.Type;
 	ExternalObject->Package.Count = InternalObject->Package.Count;
 	ExternalObject->Package.Elements =
-	    ACPI_CAST_PTR(ACPI_OBJECT, Info.FreeSpace);
+	        ACPI_CAST_PTR(ACPI_OBJECT, Info.FreeSpace);
 
 	/*
 	 * Leave room for an array of ACPI_OBJECTS in the buffer
@@ -487,8 +480,8 @@ AcpiUtCopyIpackageToEpackage(
 
 ACPI_STATUS
 AcpiUtCopyIobjectToEobject(
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_OPERAND_OBJECT     *InternalObject,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_STATUS             Status;
 
@@ -496,24 +489,21 @@ AcpiUtCopyIobjectToEobject(
 	ACPI_FUNCTION_TRACE(UtCopyIobjectToEobject);
 
 
-	if (InternalObject->Common.Type == ACPI_TYPE_PACKAGE)
-	{
+	if (InternalObject->Common.Type == ACPI_TYPE_PACKAGE) {
 		/*
 		 * Package object:  Copy all subobjects (including
 		 * nested packages)
 		 */
 		Status = AcpiUtCopyIpackageToEpackage(InternalObject,
 		                                      RetBuffer->Pointer, &RetBuffer->Length);
-	}
-	else
-	{
+	} else {
 		/*
 		 * Build a simple object (no nested objects)
 		 */
 		Status = AcpiUtCopyIsimpleToEsimple(InternalObject,
 		                                    ACPI_CAST_PTR(ACPI_OBJECT, RetBuffer->Pointer),
 		                                    ACPI_ADD_PTR(UINT8, RetBuffer->Pointer,
-		                                            ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(ACPI_OBJECT))),
+		                                                    ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(ACPI_OBJECT))),
 		                                    &RetBuffer->Length);
 		/*
 		 * build simple does not include the object size in the length
@@ -544,8 +534,8 @@ AcpiUtCopyIobjectToEobject(
 
 static ACPI_STATUS
 AcpiUtCopyEsimpleToIsimple(
-    ACPI_OBJECT             *ExternalObject,
-    ACPI_OPERAND_OBJECT     **RetInternalObject)
+        ACPI_OBJECT             *ExternalObject,
+        ACPI_OPERAND_OBJECT     **RetInternalObject)
 {
 	ACPI_OPERAND_OBJECT     *InternalObject;
 
@@ -556,20 +546,17 @@ AcpiUtCopyEsimpleToIsimple(
 	/*
 	 * Simple types supported are: String, Buffer, Integer
 	 */
-	switch (ExternalObject->Type)
-	{
+	switch (ExternalObject->Type) {
 	case ACPI_TYPE_STRING:
 	case ACPI_TYPE_BUFFER:
 	case ACPI_TYPE_INTEGER:
 	case ACPI_TYPE_LOCAL_REFERENCE:
 
 		InternalObject = AcpiUtCreateInternalObject(
-		                     (UINT8) ExternalObject->Type);
+		                         (UINT8) ExternalObject->Type);
 
 		if (!InternalObject)
-		{
 			return_ACPI_STATUS(AE_NO_MEMORY);
-		}
 
 		break;
 
@@ -592,18 +579,15 @@ AcpiUtCopyEsimpleToIsimple(
 
 	/* Must COPY string and buffer contents */
 
-	switch (ExternalObject->Type)
-	{
+	switch (ExternalObject->Type) {
 	case ACPI_TYPE_STRING:
 
 		InternalObject->String.Pointer =
-		    ACPI_ALLOCATE_ZEROED((ACPI_SIZE)
-		                         ExternalObject->String.Length + 1);
+		        ACPI_ALLOCATE_ZEROED((ACPI_SIZE)
+		                             ExternalObject->String.Length + 1);
 
 		if (!InternalObject->String.Pointer)
-		{
 			goto ErrorExit;
-		}
 
 		memcpy(InternalObject->String.Pointer,
 		       ExternalObject->String.Pointer,
@@ -615,12 +599,10 @@ AcpiUtCopyEsimpleToIsimple(
 	case ACPI_TYPE_BUFFER:
 
 		InternalObject->Buffer.Pointer =
-		    ACPI_ALLOCATE_ZEROED(ExternalObject->Buffer.Length);
+		        ACPI_ALLOCATE_ZEROED(ExternalObject->Buffer.Length);
 
 		if (!InternalObject->Buffer.Pointer)
-		{
 			goto ErrorExit;
-		}
 
 		memcpy(InternalObject->Buffer.Pointer,
 		       ExternalObject->Buffer.Pointer,
@@ -679,8 +661,8 @@ ErrorExit:
 
 static ACPI_STATUS
 AcpiUtCopyEpackageToIpackage(
-    ACPI_OBJECT             *ExternalObject,
-    ACPI_OPERAND_OBJECT     **InternalObject)
+        ACPI_OBJECT             *ExternalObject,
+        ACPI_OPERAND_OBJECT     **InternalObject)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_OPERAND_OBJECT     *PackageObject;
@@ -694,12 +676,10 @@ AcpiUtCopyEpackageToIpackage(
 	/* Create the package object */
 
 	PackageObject = AcpiUtCreatePackageObject(
-	                    ExternalObject->Package.Count);
+	                        ExternalObject->Package.Count);
 
 	if (!PackageObject)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	PackageElements = PackageObject->Package.Elements;
 
@@ -707,14 +687,12 @@ AcpiUtCopyEpackageToIpackage(
 	 * Recursive implementation. Probably ok, since nested external
 	 * packages as parameters should be very rare.
 	 */
-	for (i = 0; i < ExternalObject->Package.Count; i++)
-	{
+	for (i = 0; i < ExternalObject->Package.Count; i++) {
 		Status = AcpiUtCopyEobjectToIobject(
-		             &ExternalObject->Package.Elements[i],
-		             &PackageElements[i]);
+		                 &ExternalObject->Package.Elements[i],
+		                 &PackageElements[i]);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			/* Truncate package and delete it */
 
 			PackageObject->Package.Count = i;
@@ -748,8 +726,8 @@ AcpiUtCopyEpackageToIpackage(
 
 ACPI_STATUS
 AcpiUtCopyEobjectToIobject(
-    ACPI_OBJECT             *ExternalObject,
-    ACPI_OPERAND_OBJECT     **InternalObject)
+        ACPI_OBJECT             *ExternalObject,
+        ACPI_OPERAND_OBJECT     **InternalObject)
 {
 	ACPI_STATUS             Status;
 
@@ -757,13 +735,10 @@ AcpiUtCopyEobjectToIobject(
 	ACPI_FUNCTION_TRACE(UtCopyEobjectToIobject);
 
 
-	if (ExternalObject->Type == ACPI_TYPE_PACKAGE)
-	{
+	if (ExternalObject->Type == ACPI_TYPE_PACKAGE) {
 		Status = AcpiUtCopyEpackageToIpackage(
-		             ExternalObject, InternalObject);
-	}
-	else
-	{
+		                 ExternalObject, InternalObject);
+	} else {
 		/*
 		 * Build a simple object (no nested objects)
 		 */
@@ -791,8 +766,8 @@ AcpiUtCopyEobjectToIobject(
 
 static ACPI_STATUS
 AcpiUtCopySimpleObject(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     *DestDesc)
 {
 	UINT16                  ReferenceCount;
 	ACPI_OPERAND_OBJECT     *NextObject;
@@ -812,9 +787,7 @@ AcpiUtCopySimpleObject(
 	CopySize = sizeof(ACPI_OPERAND_OBJECT);
 
 	if (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc) == ACPI_DESC_TYPE_NAMED)
-	{
 		CopySize = sizeof(ACPI_NAMESPACE_NODE);
-	}
 
 	memcpy(ACPI_CAST_PTR(char, DestDesc),
 	       ACPI_CAST_PTR(char, SourceDesc), CopySize);
@@ -830,8 +803,7 @@ AcpiUtCopySimpleObject(
 
 	/* Handle the objects with extra data */
 
-	switch (DestDesc->Common.Type)
-	{
+	switch (DestDesc->Common.Type) {
 	case ACPI_TYPE_BUFFER:
 
 		/*
@@ -840,15 +812,12 @@ AcpiUtCopySimpleObject(
 		 * 2) The buffer has a length > 0
 		 */
 		if ((SourceDesc->Buffer.Pointer) &&
-		        (SourceDesc->Buffer.Length))
-		{
+		    (SourceDesc->Buffer.Length)) {
 			DestDesc->Buffer.Pointer =
-			    ACPI_ALLOCATE(SourceDesc->Buffer.Length);
+			        ACPI_ALLOCATE(SourceDesc->Buffer.Length);
 
 			if (!DestDesc->Buffer.Pointer)
-			{
 				return (AE_NO_MEMORY);
-			}
 
 			/* Copy the actual buffer data */
 
@@ -865,15 +834,12 @@ AcpiUtCopySimpleObject(
 		 * 1) There is a valid string pointer
 		 * (Pointer to a NULL string is allowed)
 		 */
-		if (SourceDesc->String.Pointer)
-		{
+		if (SourceDesc->String.Pointer) {
 			DestDesc->String.Pointer =
-			    ACPI_ALLOCATE((ACPI_SIZE) SourceDesc->String.Length + 1);
+			        ACPI_ALLOCATE((ACPI_SIZE) SourceDesc->String.Length + 1);
 
 			if (!DestDesc->String.Pointer)
-			{
 				return (AE_NO_MEMORY);
-			}
 
 			/* Copy the actual string data */
 
@@ -894,9 +860,7 @@ AcpiUtCopySimpleObject(
 		 * increase the reference count
 		 */
 		if (SourceDesc->Reference.Class == ACPI_REFCLASS_TABLE)
-		{
 			break;
-		}
 
 		AcpiUtAddReference(SourceDesc->Reference.Object);
 		break;
@@ -907,9 +871,7 @@ AcpiUtCopySimpleObject(
 		 * We copied the Region Handler, so we now must add a reference
 		 */
 		if (DestDesc->Region.Handler)
-		{
 			AcpiUtAddReference(DestDesc->Region.Handler);
-		}
 
 		break;
 
@@ -922,9 +884,7 @@ AcpiUtCopySimpleObject(
 		Status = AcpiOsCreateMutex(&DestDesc->Mutex.OsMutex);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
 		break;
 
@@ -934,9 +894,7 @@ AcpiUtCopySimpleObject(
 		                               &DestDesc->Event.OsSemaphore);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
 		break;
 
@@ -965,10 +923,10 @@ AcpiUtCopySimpleObject(
 
 static ACPI_STATUS
 AcpiUtCopyIelementToIelement(
-    UINT8                   ObjectType,
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    ACPI_GENERIC_STATE      *State,
-    void                    *Context)
+        UINT8                   ObjectType,
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        ACPI_GENERIC_STATE      *State,
+        void                    *Context)
 {
 	ACPI_STATUS             Status = AE_OK;
 	UINT32                  ThisIndex;
@@ -983,36 +941,28 @@ AcpiUtCopyIelementToIelement(
 	ThisTargetPtr = (ACPI_OPERAND_OBJECT **)
 	                &State->Pkg.DestObject->Package.Elements[ThisIndex];
 
-	switch (ObjectType)
-	{
+	switch (ObjectType) {
 	case ACPI_COPY_TYPE_SIMPLE:
 
 		/* A null source object indicates a (legal) null package element */
 
-		if (SourceObject)
-		{
+		if (SourceObject) {
 			/*
 			 * This is a simple object, just copy it
 			 */
 			TargetObject = AcpiUtCreateInternalObject(
-			                   SourceObject->Common.Type);
+			                       SourceObject->Common.Type);
 
 			if (!TargetObject)
-			{
 				return (AE_NO_MEMORY);
-			}
 
 			Status = AcpiUtCopySimpleObject(SourceObject, TargetObject);
 
 			if (ACPI_FAILURE(Status))
-			{
 				goto ErrorExit;
-			}
 
 			*ThisTargetPtr = TargetObject;
-		}
-		else
-		{
+		} else {
 			/* Pass through a null element */
 
 			*ThisTargetPtr = NULL;
@@ -1026,12 +976,10 @@ AcpiUtCopyIelementToIelement(
 		 * Create and build the package object
 		 */
 		TargetObject = AcpiUtCreatePackageObject(
-		                   SourceObject->Package.Count);
+		                       SourceObject->Package.Count);
 
 		if (!TargetObject)
-		{
 			return (AE_NO_MEMORY);
-		}
 
 		TargetObject->Common.Flags = SourceObject->Common.Flags;
 
@@ -1074,9 +1022,9 @@ ErrorExit:
 
 static ACPI_STATUS
 AcpiUtCopyIpackageToIpackage(
-    ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *SourceObj,
+        ACPI_OPERAND_OBJECT     *DestObj,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -1092,11 +1040,10 @@ AcpiUtCopyIpackageToIpackage(
 	 * Create the object array and walk the source package tree
 	 */
 	DestObj->Package.Elements = ACPI_ALLOCATE_ZEROED(
-	                                ((ACPI_SIZE) SourceObj->Package.Count + 1) *
-	                                sizeof(void *));
+	                                    ((ACPI_SIZE) SourceObj->Package.Count + 1) *
+	                                    sizeof(void *));
 
-	if (!DestObj->Package.Elements)
-	{
+	if (!DestObj->Package.Elements) {
 		ACPI_ERROR((AE_INFO, "Package allocation failure"));
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
@@ -1108,8 +1055,7 @@ AcpiUtCopyIpackageToIpackage(
 	Status = AcpiUtWalkPackageTree(SourceObj, DestObj,
 	                               AcpiUtCopyIelementToIelement, WalkState);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		/* On failure, delete the destination package object */
 
 		AcpiUtRemoveReference(DestObj);
@@ -1135,9 +1081,9 @@ AcpiUtCopyIpackageToIpackage(
 
 ACPI_STATUS
 AcpiUtCopyIobjectToIobject(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     **DestDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     **DestDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -1150,28 +1096,20 @@ AcpiUtCopyIobjectToIobject(
 	*DestDesc = AcpiUtCreateInternalObject(SourceDesc->Common.Type);
 
 	if (!*DestDesc)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Copy the object and possible subobjects */
 
-	if (SourceDesc->Common.Type == ACPI_TYPE_PACKAGE)
-	{
+	if (SourceDesc->Common.Type == ACPI_TYPE_PACKAGE) {
 		Status = AcpiUtCopyIpackageToIpackage(
-		             SourceDesc, *DestDesc, WalkState);
-	}
-	else
-	{
+		                 SourceDesc, *DestDesc, WalkState);
+	} else
 		Status = AcpiUtCopySimpleObject(SourceDesc, *DestDesc);
-	}
 
 	/* Delete the allocated object if copy failed */
 
 	if (ACPI_FAILURE(Status))
-	{
 		AcpiUtRemoveReference(*DestDesc);
-	}
 
 	return_ACPI_STATUS(Status);
 }

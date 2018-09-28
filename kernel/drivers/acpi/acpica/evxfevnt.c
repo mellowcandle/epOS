@@ -138,7 +138,7 @@ ACPI_MODULE_NAME("evxfevnt")
 
 ACPI_STATUS
 AcpiEnable(
-    void)
+        void)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -149,32 +149,24 @@ AcpiEnable(
 	/* ACPI tables must be present */
 
 	if (AcpiGbl_FadtIndex == ACPI_INVALID_TABLE_INDEX)
-	{
 		return_ACPI_STATUS(AE_NO_ACPI_TABLES);
-	}
 
 	/* If the Hardware Reduced flag is set, machine is always in acpi mode */
 
 	if (AcpiGbl_ReducedHardware)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Check current mode */
 
-	if (AcpiHwGetMode() == ACPI_SYS_MODE_ACPI)
-	{
+	if (AcpiHwGetMode() == ACPI_SYS_MODE_ACPI) {
 		ACPI_DEBUG_PRINT((ACPI_DB_INIT,
 		                  "System is already in ACPI mode\n"));
-	}
-	else
-	{
+	} else {
 		/* Transition to ACPI mode */
 
 		Status = AcpiHwSetMode(ACPI_SYS_MODE_ACPI);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_ERROR((AE_INFO, "Could not transition to ACPI mode"));
 			return_ACPI_STATUS(Status);
 		}
@@ -203,7 +195,7 @@ ACPI_EXPORT_SYMBOL(AcpiEnable)
 
 ACPI_STATUS
 AcpiDisable(
-    void)
+        void)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -214,23 +206,17 @@ AcpiDisable(
 	/* If the Hardware Reduced flag is set, machine is always in acpi mode */
 
 	if (AcpiGbl_ReducedHardware)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
-	if (AcpiHwGetMode() == ACPI_SYS_MODE_LEGACY)
-	{
+	if (AcpiHwGetMode() == ACPI_SYS_MODE_LEGACY) {
 		ACPI_DEBUG_PRINT((ACPI_DB_INIT,
 		                  "System is already in legacy (non-ACPI) mode\n"));
-	}
-	else
-	{
+	} else {
 		/* Transition to LEGACY mode */
 
 		Status = AcpiHwSetMode(ACPI_SYS_MODE_LEGACY);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_ERROR((AE_INFO,
 			            "Could not exit ACPI mode to legacy mode"));
 			return_ACPI_STATUS(Status);
@@ -261,8 +247,8 @@ ACPI_EXPORT_SYMBOL(AcpiDisable)
 
 ACPI_STATUS
 AcpiEnableEvent(
-    UINT32                  Event,
-    UINT32                  Flags)
+        UINT32                  Event,
+        UINT32                  Flags)
 {
 	ACPI_STATUS             Status = AE_OK;
 	UINT32                  Value;
@@ -274,35 +260,28 @@ AcpiEnableEvent(
 	/* Decode the Fixed Event */
 
 	if (Event > ACPI_EVENT_MAX)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/*
 	 * Enable the requested fixed event (by writing a one to the enable
 	 * register bit)
 	 */
 	Status = AcpiWriteBitRegister(
-	             AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-	             ACPI_ENABLE_EVENT);
+	                 AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
+	                 ACPI_ENABLE_EVENT);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Make sure that the hardware responded */
 
 	Status = AcpiReadBitRegister(
-	             AcpiGbl_FixedEventInfo[Event].EnableRegisterId, &Value);
+	                 AcpiGbl_FixedEventInfo[Event].EnableRegisterId, &Value);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (Value != 1)
-	{
+	if (Value != 1) {
 		ACPI_ERROR((AE_INFO,
 		            "Could not enable %s event", AcpiUtGetEventName(Event)));
 		return_ACPI_STATUS(AE_NO_HARDWARE_RESPONSE);
@@ -329,8 +308,8 @@ ACPI_EXPORT_SYMBOL(AcpiEnableEvent)
 
 ACPI_STATUS
 AcpiDisableEvent(
-    UINT32                  Event,
-    UINT32                  Flags)
+        UINT32                  Event,
+        UINT32                  Flags)
 {
 	ACPI_STATUS             Status = AE_OK;
 	UINT32                  Value;
@@ -342,33 +321,26 @@ AcpiDisableEvent(
 	/* Decode the Fixed Event */
 
 	if (Event > ACPI_EVENT_MAX)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/*
 	 * Disable the requested fixed event (by writing a zero to the enable
 	 * register bit)
 	 */
 	Status = AcpiWriteBitRegister(
-	             AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-	             ACPI_DISABLE_EVENT);
+	                 AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
+	                 ACPI_DISABLE_EVENT);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiReadBitRegister(
-	             AcpiGbl_FixedEventInfo[Event].EnableRegisterId, &Value);
+	                 AcpiGbl_FixedEventInfo[Event].EnableRegisterId, &Value);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (Value != 0)
-	{
+	if (Value != 0) {
 		ACPI_ERROR((AE_INFO,
 		            "Could not disable %s events", AcpiUtGetEventName(Event)));
 		return_ACPI_STATUS(AE_NO_HARDWARE_RESPONSE);
@@ -394,7 +366,7 @@ ACPI_EXPORT_SYMBOL(AcpiDisableEvent)
 
 ACPI_STATUS
 AcpiClearEvent(
-    UINT32                  Event)
+        UINT32                  Event)
 {
 	ACPI_STATUS             Status = AE_OK;
 
@@ -405,17 +377,15 @@ AcpiClearEvent(
 	/* Decode the Fixed Event */
 
 	if (Event > ACPI_EVENT_MAX)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/*
 	 * Clear the requested fixed event (By writing a one to the status
 	 * register bit)
 	 */
 	Status = AcpiWriteBitRegister(
-	             AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
-	             ACPI_CLEAR_STATUS);
+	                 AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
+	                 ACPI_CLEAR_STATUS);
 
 	return_ACPI_STATUS(Status);
 }
@@ -439,8 +409,8 @@ ACPI_EXPORT_SYMBOL(AcpiClearEvent)
 
 ACPI_STATUS
 AcpiGetEventStatus(
-    UINT32                  Event,
-    ACPI_EVENT_STATUS       *EventStatus)
+        UINT32                  Event,
+        ACPI_EVENT_STATUS       *EventStatus)
 {
 	ACPI_STATUS             Status;
 	ACPI_EVENT_STATUS       LocalEventStatus = 0;
@@ -451,54 +421,41 @@ AcpiGetEventStatus(
 
 
 	if (!EventStatus)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Decode the Fixed Event */
 
 	if (Event > ACPI_EVENT_MAX)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Fixed event currently can be dispatched? */
 
 	if (AcpiGbl_FixedEventHandlers[Event].Handler)
-	{
 		LocalEventStatus |= ACPI_EVENT_FLAG_HAS_HANDLER;
-	}
 
 	/* Fixed event currently enabled? */
 
 	Status = AcpiReadBitRegister(
-	             AcpiGbl_FixedEventInfo[Event].EnableRegisterId, &InByte);
+	                 AcpiGbl_FixedEventInfo[Event].EnableRegisterId, &InByte);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
-	if (InByte)
-	{
+	if (InByte) {
 		LocalEventStatus |=
-		    (ACPI_EVENT_FLAG_ENABLED | ACPI_EVENT_FLAG_ENABLE_SET);
+		        (ACPI_EVENT_FLAG_ENABLED | ACPI_EVENT_FLAG_ENABLE_SET);
 	}
 
 	/* Fixed event currently active? */
 
 	Status = AcpiReadBitRegister(
-	             AcpiGbl_FixedEventInfo[Event].StatusRegisterId, &InByte);
+	                 AcpiGbl_FixedEventInfo[Event].StatusRegisterId, &InByte);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	if (InByte)
-	{
 		LocalEventStatus |= ACPI_EVENT_FLAG_STATUS_SET;
-	}
 
 	(*EventStatus) = LocalEventStatus;
 	return_ACPI_STATUS(AE_OK);

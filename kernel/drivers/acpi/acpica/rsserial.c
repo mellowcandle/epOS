@@ -127,8 +127,7 @@ ACPI_MODULE_NAME("rsserial")
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertGpio[18] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertGpio[18] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_GPIO,
 		ACPI_RS_SIZE(ACPI_RESOURCE_GPIO),
@@ -261,8 +260,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertGpio[18] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertI2cSerialBus[17] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertI2cSerialBus[17] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_SERIAL_BUS,
 		ACPI_RS_SIZE(ACPI_RESOURCE_I2C_SERIALBUS),
@@ -379,8 +377,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertI2cSerialBus[17] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertSpiSerialBus[21] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertSpiSerialBus[21] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_SERIAL_BUS,
 		ACPI_RS_SIZE(ACPI_RESOURCE_SPI_SERIALBUS),
@@ -521,8 +518,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertSpiSerialBus[21] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertUartSerialBus[23] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertUartSerialBus[23] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_SERIAL_BUS,
 		ACPI_RS_SIZE(ACPI_RESOURCE_UART_SERIALBUS),

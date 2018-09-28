@@ -131,11 +131,11 @@
  */
 ACPI_STATUS
 AcpiHwSetMode(
-    UINT32                  Mode);
+        UINT32                  Mode);
 
 UINT32
 AcpiHwGetMode(
-    void);
+        void);
 
 
 /*
@@ -143,42 +143,42 @@ AcpiHwGetMode(
  */
 ACPI_STATUS
 AcpiHwValidateRegister(
-    ACPI_GENERIC_ADDRESS    *Reg,
-    UINT8                   MaxBitWidth,
-    UINT64                  *Address);
+        ACPI_GENERIC_ADDRESS    *Reg,
+        UINT8                   MaxBitWidth,
+        UINT64                  *Address);
 
 ACPI_STATUS
 AcpiHwRead(
-    UINT32                  *Value,
-    ACPI_GENERIC_ADDRESS    *Reg);
+        UINT32                  *Value,
+        ACPI_GENERIC_ADDRESS    *Reg);
 
 ACPI_STATUS
 AcpiHwWrite(
-    UINT32                  Value,
-    ACPI_GENERIC_ADDRESS    *Reg);
+        UINT32                  Value,
+        ACPI_GENERIC_ADDRESS    *Reg);
 
 ACPI_BIT_REGISTER_INFO *
 AcpiHwGetBitRegisterInfo(
-    UINT32                  RegisterId);
+        UINT32                  RegisterId);
 
 ACPI_STATUS
 AcpiHwWritePm1Control(
-    UINT32                  Pm1aControl,
-    UINT32                  Pm1bControl);
+        UINT32                  Pm1aControl,
+        UINT32                  Pm1bControl);
 
 ACPI_STATUS
 AcpiHwRegisterRead(
-    UINT32                  RegisterId,
-    UINT32                  *ReturnValue);
+        UINT32                  RegisterId,
+        UINT32                  *ReturnValue);
 
 ACPI_STATUS
 AcpiHwRegisterWrite(
-    UINT32                  RegisterId,
-    UINT32                  Value);
+        UINT32                  RegisterId,
+        UINT32                  Value);
 
 ACPI_STATUS
 AcpiHwClearAcpiStatus(
-    void);
+        void);
 
 
 /*
@@ -186,15 +186,15 @@ AcpiHwClearAcpiStatus(
  */
 ACPI_STATUS
 AcpiHwLegacySleep(
-    UINT8                   SleepState);
+        UINT8                   SleepState);
 
 ACPI_STATUS
 AcpiHwLegacyWakePrep(
-    UINT8                   SleepState);
+        UINT8                   SleepState);
 
 ACPI_STATUS
 AcpiHwLegacyWake(
-    UINT8                   SleepState);
+        UINT8                   SleepState);
 
 
 /*
@@ -202,20 +202,20 @@ AcpiHwLegacyWake(
  */
 void
 AcpiHwExecuteSleepMethod(
-    char                    *MethodName,
-    UINT32                  IntegerArgument);
+        char                    *MethodName,
+        UINT32                  IntegerArgument);
 
 ACPI_STATUS
 AcpiHwExtendedSleep(
-    UINT8                   SleepState);
+        UINT8                   SleepState);
 
 ACPI_STATUS
 AcpiHwExtendedWakePrep(
-    UINT8                   SleepState);
+        UINT8                   SleepState);
 
 ACPI_STATUS
 AcpiHwExtendedWake(
-    UINT8                   SleepState);
+        UINT8                   SleepState);
 
 
 /*
@@ -223,15 +223,15 @@ AcpiHwExtendedWake(
  */
 ACPI_STATUS
 AcpiHwReadPort(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  *Value,
-    UINT32                  Width);
+        ACPI_IO_ADDRESS         Address,
+        UINT32                  *Value,
+        UINT32                  Width);
 
 ACPI_STATUS
 AcpiHwWritePort(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  Value,
-    UINT32                  Width);
+        ACPI_IO_ADDRESS         Address,
+        UINT32                  Value,
+        UINT32                  Width);
 
 
 /*
@@ -239,51 +239,51 @@ AcpiHwWritePort(
  */
 UINT32
 AcpiHwGetGpeRegisterBit(
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+        ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiHwLowSetGpe(
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
-    UINT32                  Action);
+        ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+        UINT32                  Action);
 
 ACPI_STATUS
 AcpiHwDisableGpeBlock(
-    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
-    void                    *Context);
+        ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+        ACPI_GPE_BLOCK_INFO     *GpeBlock,
+        void                    *Context);
 
 ACPI_STATUS
 AcpiHwClearGpe(
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+        ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
 ACPI_STATUS
 AcpiHwClearGpeBlock(
-    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
-    void                    *Context);
+        ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+        ACPI_GPE_BLOCK_INFO     *GpeBlock,
+        void                    *Context);
 
 ACPI_STATUS
 AcpiHwGetGpeStatus(
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
-    ACPI_EVENT_STATUS       *EventStatus);
+        ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+        ACPI_EVENT_STATUS       *EventStatus);
 
 ACPI_STATUS
 AcpiHwDisableAllGpes(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiHwEnableAllRuntimeGpes(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiHwEnableAllWakeupGpes(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiHwEnableRuntimeGpeBlock(
-    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
-    void                    *Context);
+        ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
+        ACPI_GPE_BLOCK_INFO     *GpeBlock,
+        void                    *Context);
 
 
 /*
@@ -291,9 +291,9 @@ AcpiHwEnableRuntimeGpeBlock(
  */
 ACPI_STATUS
 AcpiHwDerivePciId(
-    ACPI_PCI_ID             *PciId,
-    ACPI_HANDLE             RootPciDevice,
-    ACPI_HANDLE             PciRegion);
+        ACPI_PCI_ID             *PciId,
+        ACPI_HANDLE             RootPciDevice,
+        ACPI_HANDLE             PciRegion);
 
 
 #endif /* __ACHWARE_H__ */

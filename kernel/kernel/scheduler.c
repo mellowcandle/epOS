@@ -40,8 +40,7 @@ static LIST(stopped_tasks);
 extern uint32_t *current_pdt;
 
 static task_t *current_task = NULL;
-static task_t idle_task =
-{
+static task_t idle_task = {
 	.pid = 0,
 	.parent_pid = 0,
 	.state = TASK_RUNNING,
@@ -57,13 +56,9 @@ static task_t *_scheduler_get_next_running_task()
 {
 
 	if (list_is_empty(&running_tasks))
-	{
 		return &idle_task;
-	}
 	else
-	{
 		return list_entry(list_remove_entry(running_tasks.next), task_t, list);
-	}
 
 }
 
@@ -76,8 +71,7 @@ void scheduler_switch_task(registers_t *regs)
 {
 	FUNC_ENTER();
 
-	if (current_task == NULL)
-	{
+	if (current_task == NULL) {
 		return;    // scheduler wasn't loaded yet
 	}
 
@@ -114,9 +108,7 @@ void scheduler_remove_task(task_t *task)
 void  idle_function()
 {
 	while (1)
-	{
 		cpu_relax();
-	}
 }
 static void prepare_idle_task()
 {
@@ -125,13 +117,13 @@ static void prepare_idle_task()
 	// Allocate kernel stack
 	idle_task.kernel_stack_phy_addr = mem_get_page();
 
-	if (!idle_task.kernel_stack_phy_addr)
-	{
+	if (!idle_task.kernel_stack_phy_addr) {
 		pr_fatal("Can't get free page\r\n");
 		panic();
 	}
 
-	idle_task.kernel_stack_virt_addr = mem_page_map_kernel(idle_task.kernel_stack_phy_addr, 1, READ_WRITE_KERNEL);
+	idle_task.kernel_stack_virt_addr = mem_page_map_kernel(idle_task.kernel_stack_phy_addr, 1,
+	                                   READ_WRITE_KERNEL);
 	idle_task.kernel_stack_pointer = idle_task.kernel_stack_virt_addr + PAGE_SIZE - 4;
 	idle_task.regs.esp = (addr_t) idle_task.kernel_stack_pointer;
 	idle_task.regs.eip = (addr_t) &idle_function;
@@ -175,11 +167,8 @@ void save_registers(task_t *current_task, registers_t *regs)
 	current_task->regs.eflags = regs->eflags;
 
 	if (current_task->type == TASK_USER)
-	{
 		current_task->regs.esp = regs->useresp;
-	}
-	else
-	{
+	else {
 		current_task->regs.esp = regs->esp + 20;
 		current_task->regs.ss = SEGSEL_KERNEL_DS;
 	}

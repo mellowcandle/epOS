@@ -132,15 +132,13 @@ ACPI_MODULE_NAME("utmath")
 
 /* Structures used only for 64-bit divide */
 
-typedef struct uint64_struct
-{
+typedef struct uint64_struct {
 	UINT32                          Lo;
 	UINT32                          Hi;
 
 } UINT64_STRUCT;
 
-typedef union uint64_overlay
-{
+typedef union uint64_overlay {
 	UINT64                          Full;
 	UINT64_STRUCT                   Part;
 
@@ -166,10 +164,10 @@ typedef union uint64_overlay
 
 ACPI_STATUS
 AcpiUtShortDivide(
-    UINT64                  Dividend,
-    UINT32                  Divisor,
-    UINT64                  *OutQuotient,
-    UINT32                  *OutRemainder)
+        UINT64                  Dividend,
+        UINT32                  Divisor,
+        UINT64                  *OutQuotient,
+        UINT32                  *OutRemainder)
 {
 	UINT64_OVERLAY          DividendOvl;
 	UINT64_OVERLAY          Quotient;
@@ -181,8 +179,7 @@ AcpiUtShortDivide(
 
 	/* Always check for a zero divisor */
 
-	if (Divisor == 0)
-	{
+	if (Divisor == 0) {
 		ACPI_ERROR((AE_INFO, "Divide by zero"));
 		return_ACPI_STATUS(AE_AML_DIVIDE_BY_ZERO);
 	}
@@ -202,14 +199,10 @@ AcpiUtShortDivide(
 	/* Return only what was requested */
 
 	if (OutQuotient)
-	{
 		*OutQuotient = Quotient.Full;
-	}
 
 	if (OutRemainder)
-	{
 		*OutRemainder = Remainder32;
-	}
 
 	return_ACPI_STATUS(AE_OK);
 }
@@ -232,10 +225,10 @@ AcpiUtShortDivide(
 
 ACPI_STATUS
 AcpiUtDivide(
-    UINT64                  InDividend,
-    UINT64                  InDivisor,
-    UINT64                  *OutQuotient,
-    UINT64                  *OutRemainder)
+        UINT64                  InDividend,
+        UINT64                  InDivisor,
+        UINT64                  *OutQuotient,
+        UINT64                  *OutRemainder)
 {
 	UINT64_OVERLAY          Dividend;
 	UINT64_OVERLAY          Divisor;
@@ -253,8 +246,7 @@ AcpiUtDivide(
 
 	/* Always check for a zero divisor */
 
-	if (InDivisor == 0)
-	{
+	if (InDivisor == 0) {
 		ACPI_ERROR((AE_INFO, "Divide by zero"));
 		return_ACPI_STATUS(AE_AML_DIVIDE_BY_ZERO);
 	}
@@ -262,8 +254,7 @@ AcpiUtDivide(
 	Divisor.Full  = InDivisor;
 	Dividend.Full = InDividend;
 
-	if (Divisor.Part.Hi == 0)
-	{
+	if (Divisor.Part.Hi == 0) {
 		/*
 		 * 1) Simplest case is where the divisor is 32 bits, we can
 		 * just do two divides
@@ -281,8 +272,7 @@ AcpiUtDivide(
 		                  Quotient.Part.Lo, Remainder.Part.Lo);
 	}
 
-	else
-	{
+	else {
 		/*
 		 * 2) The general case where the divisor is a full 64 bits
 		 * is more difficult
@@ -293,21 +283,19 @@ AcpiUtDivide(
 
 		/* Normalize the operands (shift until the divisor is < 32 bits) */
 
-		do
-		{
+		do {
 			ACPI_SHIFT_RIGHT_64(
-			    NormalizedDivisor.Part.Hi, NormalizedDivisor.Part.Lo);
+			        NormalizedDivisor.Part.Hi, NormalizedDivisor.Part.Lo);
 			ACPI_SHIFT_RIGHT_64(
-			    NormalizedDividend.Part.Hi, NormalizedDividend.Part.Lo);
+			        NormalizedDividend.Part.Hi, NormalizedDividend.Part.Lo);
 
-		}
-		while (NormalizedDivisor.Part.Hi != 0);
+		} while (NormalizedDivisor.Part.Hi != 0);
 
 		/* Partial divide */
 
 		ACPI_DIV_64_BY_32(
-		    NormalizedDividend.Part.Hi, NormalizedDividend.Part.Lo,
-		    NormalizedDivisor.Part.Lo, Quotient.Part.Lo, Partial1);
+		        NormalizedDividend.Part.Hi, NormalizedDividend.Part.Lo,
+		        NormalizedDivisor.Part.Lo, Quotient.Part.Lo, Partial1);
 
 		/*
 		 * The quotient is always 32 bits, and simply requires
@@ -320,20 +308,14 @@ AcpiUtDivide(
 		Remainder.Part.Hi = Partial3.Part.Lo;
 		Remainder.Part.Lo = Partial2.Part.Lo;
 
-		if (Partial3.Part.Hi == 0)
-		{
-			if (Partial3.Part.Lo >= Dividend.Part.Hi)
-			{
-				if (Partial3.Part.Lo == Dividend.Part.Hi)
-				{
-					if (Partial2.Part.Lo > Dividend.Part.Lo)
-					{
+		if (Partial3.Part.Hi == 0) {
+			if (Partial3.Part.Lo >= Dividend.Part.Hi) {
+				if (Partial3.Part.Lo == Dividend.Part.Hi) {
+					if (Partial2.Part.Lo > Dividend.Part.Lo) {
 						Quotient.Part.Lo--;
 						Remainder.Full -= Divisor.Full;
 					}
-				}
-				else
-				{
+				} else {
 					Quotient.Part.Lo--;
 					Remainder.Full -= Divisor.Full;
 				}
@@ -344,23 +326,17 @@ AcpiUtDivide(
 			Remainder.Part.Lo = (UINT32) - ((INT32) Remainder.Part.Lo);
 
 			if (Remainder.Part.Lo)
-			{
 				Remainder.Part.Hi--;
-			}
 		}
 	}
 
 	/* Return only what was requested */
 
 	if (OutQuotient)
-	{
 		*OutQuotient = Quotient.Full;
-	}
 
 	if (OutRemainder)
-	{
 		*OutRemainder = Remainder.Full;
-	}
 
 	return_ACPI_STATUS(AE_OK);
 }
@@ -384,10 +360,10 @@ AcpiUtDivide(
 
 ACPI_STATUS
 AcpiUtShortDivide(
-    UINT64                  InDividend,
-    UINT32                  Divisor,
-    UINT64                  *OutQuotient,
-    UINT32                  *OutRemainder)
+        UINT64                  InDividend,
+        UINT32                  Divisor,
+        UINT64                  *OutQuotient,
+        UINT32                  *OutRemainder)
 {
 
 	ACPI_FUNCTION_TRACE(UtShortDivide);
@@ -395,8 +371,7 @@ AcpiUtShortDivide(
 
 	/* Always check for a zero divisor */
 
-	if (Divisor == 0)
-	{
+	if (Divisor == 0) {
 		ACPI_ERROR((AE_INFO, "Divide by zero"));
 		return_ACPI_STATUS(AE_AML_DIVIDE_BY_ZERO);
 	}
@@ -404,32 +379,27 @@ AcpiUtShortDivide(
 	/* Return only what was requested */
 
 	if (OutQuotient)
-	{
 		*OutQuotient = InDividend / Divisor;
-	}
 
 	if (OutRemainder)
-	{
 		*OutRemainder = (UINT32)(InDividend % Divisor);
-	}
 
 	return_ACPI_STATUS(AE_OK);
 }
 
 ACPI_STATUS
 AcpiUtDivide(
-    UINT64                  InDividend,
-    UINT64                  InDivisor,
-    UINT64                  *OutQuotient,
-    UINT64                  *OutRemainder)
+        UINT64                  InDividend,
+        UINT64                  InDivisor,
+        UINT64                  *OutQuotient,
+        UINT64                  *OutRemainder)
 {
 	ACPI_FUNCTION_TRACE(UtDivide);
 
 
 	/* Always check for a zero divisor */
 
-	if (InDivisor == 0)
-	{
+	if (InDivisor == 0) {
 		ACPI_ERROR((AE_INFO, "Divide by zero"));
 		return_ACPI_STATUS(AE_AML_DIVIDE_BY_ZERO);
 	}
@@ -438,14 +408,10 @@ AcpiUtDivide(
 	/* Return only what was requested */
 
 	if (OutQuotient)
-	{
 		*OutQuotient = InDividend / InDivisor;
-	}
 
 	if (OutRemainder)
-	{
 		*OutRemainder = InDividend % InDivisor;
-	}
 
 	return_ACPI_STATUS(AE_OK);
 }

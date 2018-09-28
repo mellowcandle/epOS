@@ -137,8 +137,7 @@
 /*
  * Individual entry for the resource conversion tables
  */
-typedef const struct acpi_rsconvert_info
-{
+typedef const struct acpi_rsconvert_info {
 	UINT8                   Opcode;
 	UINT8                   ResourceOffset;
 	UINT8                   AmlOffset;
@@ -148,8 +147,7 @@ typedef const struct acpi_rsconvert_info
 
 /* Resource conversion opcodes */
 
-typedef enum
-{
+typedef enum {
 	ACPI_RSC_INITGET        = 0,
 	ACPI_RSC_INITSET,
 	ACPI_RSC_FLAGINIT,
@@ -199,8 +197,7 @@ typedef enum
 /*
  * Individual entry for the resource dump tables
  */
-typedef const struct acpi_rsdump_info
-{
+typedef const struct acpi_rsdump_info {
 	UINT8                   Opcode;
 	UINT8                   Offset;
 	const char              *Name;
@@ -210,8 +207,7 @@ typedef const struct acpi_rsdump_info
 
 /* Values for the Opcode field above */
 
-typedef enum
-{
+typedef enum {
 	ACPI_RSD_TITLE          = 0,
 	ACPI_RSD_1BITFLAG,
 	ACPI_RSD_2BITFLAG,
@@ -251,8 +247,7 @@ extern ACPI_RSCONVERT_INFO      *AcpiGbl_GetResourceDispatch[];
 
 extern ACPI_RSCONVERT_INFO      *AcpiGbl_ConvertResourceSerialBusDispatch[];
 
-typedef struct acpi_vendor_walk_info
-{
+typedef struct acpi_vendor_walk_info {
 	ACPI_VENDOR_UUID        *Uuid;
 	ACPI_BUFFER             *Buffer;
 	ACPI_STATUS             Status;
@@ -265,18 +260,18 @@ typedef struct acpi_vendor_walk_info
  */
 ACPI_STATUS
 AcpiRsCreateResourceList(
-    ACPI_OPERAND_OBJECT     *AmlBuffer,
-    ACPI_BUFFER             *OutputBuffer);
+        ACPI_OPERAND_OBJECT     *AmlBuffer,
+        ACPI_BUFFER             *OutputBuffer);
 
 ACPI_STATUS
 AcpiRsCreateAmlResources(
-    ACPI_BUFFER             *ResourceList,
-    ACPI_BUFFER             *OutputBuffer);
+        ACPI_BUFFER             *ResourceList,
+        ACPI_BUFFER             *OutputBuffer);
 
 ACPI_STATUS
 AcpiRsCreatePciRoutingTable(
-    ACPI_OPERAND_OBJECT     *PackageObject,
-    ACPI_BUFFER             *OutputBuffer);
+        ACPI_OPERAND_OBJECT     *PackageObject,
+        ACPI_BUFFER             *OutputBuffer);
 
 
 /*
@@ -284,68 +279,68 @@ AcpiRsCreatePciRoutingTable(
  */
 ACPI_STATUS
 AcpiRsGetPrtMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer);
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiRsGetCrsMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer);
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiRsGetPrsMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer);
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiRsGetMethodData(
-    ACPI_HANDLE             Handle,
-    const char              *Path,
-    ACPI_BUFFER             *RetBuffer);
+        ACPI_HANDLE             Handle,
+        const char              *Path,
+        ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiRsSetSrsMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer);
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiRsGetAeiMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer);
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer);
 
 /*
  * rscalc
  */
 ACPI_STATUS
 AcpiRsGetListLength(
-    UINT8                   *AmlBuffer,
-    UINT32                  AmlBufferLength,
-    ACPI_SIZE               *SizeNeeded);
+        UINT8                   *AmlBuffer,
+        UINT32                  AmlBufferLength,
+        ACPI_SIZE               *SizeNeeded);
 
 ACPI_STATUS
 AcpiRsGetAmlLength(
-    ACPI_RESOURCE           *ResourceList,
-    ACPI_SIZE               ResourceListSize,
-    ACPI_SIZE               *SizeNeeded);
+        ACPI_RESOURCE           *ResourceList,
+        ACPI_SIZE               ResourceListSize,
+        ACPI_SIZE               *SizeNeeded);
 
 ACPI_STATUS
 AcpiRsGetPciRoutingTableLength(
-    ACPI_OPERAND_OBJECT     *PackageObject,
-    ACPI_SIZE               *BufferSizeNeeded);
+        ACPI_OPERAND_OBJECT     *PackageObject,
+        ACPI_SIZE               *BufferSizeNeeded);
 
 ACPI_STATUS
 AcpiRsConvertAmlToResources(
-    UINT8                   *Aml,
-    UINT32                  Length,
-    UINT32                  Offset,
-    UINT8                   ResourceIndex,
-    void                    **Context);
+        UINT8                   *Aml,
+        UINT32                  Length,
+        UINT32                  Offset,
+        UINT8                   ResourceIndex,
+        void                    **Context);
 
 ACPI_STATUS
 AcpiRsConvertResourcesToAml(
-    ACPI_RESOURCE           *Resource,
-    ACPI_SIZE               AmlSizeNeeded,
-    UINT8                   *OutputBuffer);
+        ACPI_RESOURCE           *Resource,
+        ACPI_SIZE               AmlSizeNeeded,
+        UINT8                   *OutputBuffer);
 
 
 /*
@@ -353,13 +348,13 @@ AcpiRsConvertResourcesToAml(
  */
 void
 AcpiRsSetAddressCommon(
-    AML_RESOURCE            *Aml,
-    ACPI_RESOURCE           *Resource);
+        AML_RESOURCE            *Aml,
+        ACPI_RESOURCE           *Resource);
 
 BOOLEAN
 AcpiRsGetAddressCommon(
-    ACPI_RESOURCE           *Resource,
-    AML_RESOURCE            *Aml);
+        ACPI_RESOURCE           *Resource,
+        AML_RESOURCE            *Aml);
 
 
 /*
@@ -367,15 +362,15 @@ AcpiRsGetAddressCommon(
  */
 ACPI_STATUS
 AcpiRsConvertAmlToResource(
-    ACPI_RESOURCE           *Resource,
-    AML_RESOURCE            *Aml,
-    ACPI_RSCONVERT_INFO     *Info);
+        ACPI_RESOURCE           *Resource,
+        AML_RESOURCE            *Aml,
+        ACPI_RSCONVERT_INFO     *Info);
 
 ACPI_STATUS
 AcpiRsConvertResourceToAml(
-    ACPI_RESOURCE           *Resource,
-    AML_RESOURCE            *Aml,
-    ACPI_RSCONVERT_INFO     *Info);
+        ACPI_RESOURCE           *Resource,
+        AML_RESOURCE            *Aml,
+        ACPI_RSCONVERT_INFO     *Info);
 
 
 /*
@@ -383,45 +378,45 @@ AcpiRsConvertResourceToAml(
  */
 void
 AcpiRsMoveData(
-    void                    *Destination,
-    void                    *Source,
-    UINT16                  ItemCount,
-    UINT8                   MoveType);
+        void                    *Destination,
+        void                    *Source,
+        UINT16                  ItemCount,
+        UINT8                   MoveType);
 
 UINT8
 AcpiRsDecodeBitmask(
-    UINT16                  Mask,
-    UINT8                   *List);
+        UINT16                  Mask,
+        UINT8                   *List);
 
 UINT16
 AcpiRsEncodeBitmask(
-    UINT8                   *List,
-    UINT8                   Count);
+        UINT8                   *List,
+        UINT8                   Count);
 
 ACPI_RS_LENGTH
 AcpiRsGetResourceSource(
-    ACPI_RS_LENGTH          ResourceLength,
-    ACPI_RS_LENGTH          MinimumLength,
-    ACPI_RESOURCE_SOURCE    *ResourceSource,
-    AML_RESOURCE            *Aml,
-    char                    *StringPtr);
+        ACPI_RS_LENGTH          ResourceLength,
+        ACPI_RS_LENGTH          MinimumLength,
+        ACPI_RESOURCE_SOURCE    *ResourceSource,
+        AML_RESOURCE            *Aml,
+        char                    *StringPtr);
 
 ACPI_RSDESC_SIZE
 AcpiRsSetResourceSource(
-    AML_RESOURCE            *Aml,
-    ACPI_RS_LENGTH          MinimumLength,
-    ACPI_RESOURCE_SOURCE    *ResourceSource);
+        AML_RESOURCE            *Aml,
+        ACPI_RS_LENGTH          MinimumLength,
+        ACPI_RESOURCE_SOURCE    *ResourceSource);
 
 void
 AcpiRsSetResourceHeader(
-    UINT8                   DescriptorType,
-    ACPI_RSDESC_SIZE        TotalLength,
-    AML_RESOURCE            *Aml);
+        UINT8                   DescriptorType,
+        ACPI_RSDESC_SIZE        TotalLength,
+        AML_RESOURCE            *Aml);
 
 void
 AcpiRsSetResourceLength(
-    ACPI_RSDESC_SIZE        TotalLength,
-    AML_RESOURCE            *Aml);
+        ACPI_RSDESC_SIZE        TotalLength,
+        AML_RESOURCE            *Aml);
 
 
 /*
@@ -430,11 +425,11 @@ AcpiRsSetResourceLength(
 #ifdef ACPI_DEBUGGER
 void
 AcpiRsDumpResourceList(
-    ACPI_RESOURCE           *Resource);
+        ACPI_RESOURCE           *Resource);
 
 void
 AcpiRsDumpIrqList(
-    UINT8                   *RouteTable);
+        UINT8                   *RouteTable);
 #endif
 
 

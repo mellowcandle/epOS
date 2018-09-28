@@ -162,7 +162,7 @@ ACPI_MODULE_NAME("exoparg3")
 
 ACPI_STATUS
 AcpiExOpcode_3A_0T_0R(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
 	ACPI_SIGNAL_FATAL_INFO  *Fatal;
@@ -173,8 +173,7 @@ AcpiExOpcode_3A_0T_0R(
 	                        AcpiPsGetOpcodeName(WalkState->Opcode));
 
 
-	switch (WalkState->Opcode)
-	{
+	switch (WalkState->Opcode) {
 	case AML_FATAL_OP:          /* Fatal (FatalType  FatalCode  FatalArg) */
 
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
@@ -186,8 +185,7 @@ AcpiExOpcode_3A_0T_0R(
 
 		Fatal = ACPI_ALLOCATE(sizeof(ACPI_SIGNAL_FATAL_INFO));
 
-		if (Fatal)
-		{
+		if (Fatal) {
 			Fatal->Type = (UINT32) Operand[0]->Integer.Value;
 			Fatal->Code = (UINT32) Operand[1]->Integer.Value;
 			Fatal->Argument = (UINT32) Operand[2]->Integer.Value;
@@ -245,7 +243,7 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExOpcode_3A_1T_1R(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
 	ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
@@ -259,18 +257,16 @@ AcpiExOpcode_3A_1T_1R(
 	                        AcpiPsGetOpcodeName(WalkState->Opcode));
 
 
-	switch (WalkState->Opcode)
-	{
+	switch (WalkState->Opcode) {
 	case AML_MID_OP:    /* Mid (Source[0], Index[1], Length[2], Result[3]) */
 		/*
 		 * Create the return object. The Source operand is guaranteed to be
 		 * either a String or a Buffer, so just use its type.
 		 */
 		ReturnDesc = AcpiUtCreateInternalObject(
-		                 (Operand[0])->Common.Type);
+		                     (Operand[0])->Common.Type);
 
-		if (!ReturnDesc)
-		{
+		if (!ReturnDesc) {
 			Status = AE_NO_MEMORY;
 			goto Cleanup;
 		}
@@ -285,30 +281,25 @@ AcpiExOpcode_3A_1T_1R(
 		 * requested length is zero, return a zero-length String/Buffer
 		 */
 		if (Index >= Operand[0]->String.Length)
-		{
 			Length = 0;
-		}
 
 		/* Truncate request if larger than the actual String/Buffer */
 
-		else if ((Index + Length) > Operand[0]->String.Length)
-		{
+		else if ((Index + Length) > Operand[0]->String.Length) {
 			Length =
-			    (ACPI_SIZE) Operand[0]->String.Length - (ACPI_SIZE) Index;
+			        (ACPI_SIZE) Operand[0]->String.Length - (ACPI_SIZE) Index;
 		}
 
 		/* Strings always have a sub-pointer, not so for buffers */
 
-		switch ((Operand[0])->Common.Type)
-		{
+		switch ((Operand[0])->Common.Type) {
 		case ACPI_TYPE_STRING:
 
 			/* Always allocate a new buffer for the String */
 
 			Buffer = ACPI_ALLOCATE_ZEROED((ACPI_SIZE) Length + 1);
 
-			if (!Buffer)
-			{
+			if (!Buffer) {
 				Status = AE_NO_MEMORY;
 				goto Cleanup;
 			}
@@ -319,14 +310,12 @@ AcpiExOpcode_3A_1T_1R(
 
 			/* If the requested length is zero, don't allocate a buffer */
 
-			if (Length > 0)
-			{
+			if (Length > 0) {
 				/* Allocate a new buffer for the Buffer */
 
 				Buffer = ACPI_ALLOCATE_ZEROED(Length);
 
-				if (!Buffer)
-				{
+				if (!Buffer) {
 					Status = AE_NO_MEMORY;
 					goto Cleanup;
 				}
@@ -340,8 +329,7 @@ AcpiExOpcode_3A_1T_1R(
 			goto Cleanup;
 		}
 
-		if (Buffer)
-		{
+		if (Buffer) {
 			/* We have a buffer, copy the portion requested */
 
 			memcpy(Buffer,
@@ -375,13 +363,10 @@ Cleanup:
 
 	/* Delete return object on error */
 
-	if (ACPI_FAILURE(Status) || WalkState->ResultObj)
-	{
+	if (ACPI_FAILURE(Status) || WalkState->ResultObj) {
 		AcpiUtRemoveReference(ReturnDesc);
 		WalkState->ResultObj = NULL;
-	}
-	else
-	{
+	} else {
 		/* Set the return object and exit */
 
 		WalkState->ResultObj = ReturnDesc;

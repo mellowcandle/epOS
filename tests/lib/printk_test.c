@@ -350,13 +350,9 @@ int test_printk(void)
 	TEST("00EDCB5433          ",   20, "% -+0*.*X",    20, 10,  -0x1234abcdu)
 
 	if (failed == 0)
-	{
 		printk("* PASS sprintf\r\n");
-	}
 	else
-	{
 		printk("* %d tests failed, %d tests passed\r\n", failed, passed);
-	}
 
 	return 0;
 }

@@ -127,16 +127,16 @@ ACPI_MODULE_NAME("rscalc")
 
 static UINT8
 AcpiRsCountSetBits(
-    UINT16                  BitField);
+        UINT16                  BitField);
 
 static ACPI_RS_LENGTH
 AcpiRsStructOptionLength(
-    ACPI_RESOURCE_SOURCE    *ResourceSource);
+        ACPI_RESOURCE_SOURCE    *ResourceSource);
 
 static UINT32
 AcpiRsStreamOptionLength(
-    UINT32                  ResourceLength,
-    UINT32                  MinimumTotalLength);
+        UINT32                  ResourceLength,
+        UINT32                  MinimumTotalLength);
 
 
 /*******************************************************************************
@@ -154,7 +154,7 @@ AcpiRsStreamOptionLength(
 
 static UINT8
 AcpiRsCountSetBits(
-    UINT16                  BitField)
+        UINT16                  BitField)
 {
 	UINT8                   BitsSet;
 
@@ -162,8 +162,7 @@ AcpiRsCountSetBits(
 	ACPI_FUNCTION_ENTRY();
 
 
-	for (BitsSet = 0; BitField; BitsSet++)
-	{
+	for (BitsSet = 0; BitField; BitsSet++) {
 		/* Zero the least significant bit that is set */
 
 		BitField &= (UINT16)(BitField - 1);
@@ -189,7 +188,7 @@ AcpiRsCountSetBits(
 
 static ACPI_RS_LENGTH
 AcpiRsStructOptionLength(
-    ACPI_RESOURCE_SOURCE    *ResourceSource)
+        ACPI_RESOURCE_SOURCE    *ResourceSource)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -200,9 +199,7 @@ AcpiRsStructOptionLength(
 	 * ResourceSourceIndex (1).
 	 */
 	if (ResourceSource->StringPtr)
-	{
 		return ((ACPI_RS_LENGTH)(ResourceSource->StringLength + 1));
-	}
 
 	return (0);
 }
@@ -226,8 +223,8 @@ AcpiRsStructOptionLength(
 
 static UINT32
 AcpiRsStreamOptionLength(
-    UINT32                  ResourceLength,
-    UINT32                  MinimumAmlResourceLength)
+        UINT32                  ResourceLength,
+        UINT32                  MinimumAmlResourceLength)
 {
 	UINT32                  StringLength = 0;
 
@@ -248,8 +245,7 @@ AcpiRsStreamOptionLength(
 	 * minus the minimum length, minus one byte for the ResourceSourceIndex
 	 * itself.
 	 */
-	if (ResourceLength > MinimumAmlResourceLength)
-	{
+	if (ResourceLength > MinimumAmlResourceLength) {
 		/* Compute the length of the optional string */
 
 		StringLength = ResourceLength - MinimumAmlResourceLength - 1;
@@ -281,9 +277,9 @@ AcpiRsStreamOptionLength(
 
 ACPI_STATUS
 AcpiRsGetAmlLength(
-    ACPI_RESOURCE           *Resource,
-    ACPI_SIZE               ResourceListSize,
-    ACPI_SIZE               *SizeNeeded)
+        ACPI_RESOURCE           *Resource,
+        ACPI_SIZE               ResourceListSize,
+        ACPI_SIZE               *SizeNeeded)
 {
 	ACPI_SIZE               AmlSizeNeeded = 0;
 	ACPI_RESOURCE           *ResourceEnd;
@@ -297,21 +293,16 @@ AcpiRsGetAmlLength(
 
 	ResourceEnd = ACPI_ADD_PTR(ACPI_RESOURCE, Resource, ResourceListSize);
 
-	while (Resource < ResourceEnd)
-	{
+	while (Resource < ResourceEnd) {
 		/* Validate the descriptor type */
 
 		if (Resource->Type > ACPI_RESOURCE_TYPE_MAX)
-		{
 			return_ACPI_STATUS(AE_AML_INVALID_RESOURCE_TYPE);
-		}
 
 		/* Sanity check the length. It must not be zero, or we loop forever */
 
 		if (!Resource->Length)
-		{
 			return_ACPI_STATUS(AE_AML_BAD_RESOURCE_LENGTH);
-		}
 
 		/* Get the base size of the (external stream) resource descriptor */
 
@@ -321,16 +312,13 @@ AcpiRsGetAmlLength(
 		 * Augment the base size for descriptors with optional and/or
 		 * variable-length fields
 		 */
-		switch (Resource->Type)
-		{
+		switch (Resource->Type) {
 		case ACPI_RESOURCE_TYPE_IRQ:
 
 			/* Length can be 3 or 2 */
 
 			if (Resource->Data.Irq.DescriptorLength == 2)
-			{
 				TotalSize--;
-			}
 
 			break;
 
@@ -340,9 +328,7 @@ AcpiRsGetAmlLength(
 			/* Length can be 1 or 0 */
 
 			if (Resource->Data.Irq.DescriptorLength == 0)
-			{
 				TotalSize--;
-			}
 
 			break;
 
@@ -355,8 +341,7 @@ AcpiRsGetAmlLength(
 			 * it will be created as a Small Resource data type, otherwise it
 			 * is a Large Resource data type.
 			 */
-			if (Resource->Data.Vendor.ByteLength > 7)
-			{
+			if (Resource->Data.Vendor.ByteLength > 7) {
 				/* Base size of a Large resource descriptor */
 
 				TotalSize = sizeof(AML_RESOURCE_LARGE_HEADER);
@@ -388,7 +373,7 @@ AcpiRsGetAmlLength(
 			 */
 			TotalSize = (ACPI_RS_LENGTH)(TotalSize +
 			                             AcpiRsStructOptionLength(
-			                                 &Resource->Data.Address16.ResourceSource));
+			                                     &Resource->Data.Address16.ResourceSource));
 			break;
 
 
@@ -399,7 +384,7 @@ AcpiRsGetAmlLength(
 			 */
 			TotalSize = (ACPI_RS_LENGTH)(TotalSize +
 			                             AcpiRsStructOptionLength(
-			                                 &Resource->Data.Address32.ResourceSource));
+			                                     &Resource->Data.Address32.ResourceSource));
 			break;
 
 
@@ -410,7 +395,7 @@ AcpiRsGetAmlLength(
 			 */
 			TotalSize = (ACPI_RS_LENGTH)(TotalSize +
 			                             AcpiRsStructOptionLength(
-			                                 &Resource->Data.Address64.ResourceSource));
+			                                     &Resource->Data.Address64.ResourceSource));
 			break;
 
 
@@ -426,7 +411,7 @@ AcpiRsGetAmlLength(
 			                             /* Add the size of the optional ResourceSource info */
 
 			                             AcpiRsStructOptionLength(
-			                                 &Resource->Data.ExtendedIrq.ResourceSource));
+			                                     &Resource->Data.ExtendedIrq.ResourceSource));
 			break;
 
 
@@ -443,7 +428,7 @@ AcpiRsGetAmlLength(
 		case ACPI_RESOURCE_TYPE_SERIAL_BUS:
 
 			TotalSize = AcpiGbl_AmlResourceSerialBusSizes [
-			     Resource->Data.CommonSerialBus.Type];
+			Resource->Data.CommonSerialBus.Type];
 
 			TotalSize = (ACPI_RS_LENGTH)(TotalSize +
 			                             Resource->Data.I2cSerialBus.ResourceSource.StringLength +
@@ -489,9 +474,9 @@ AcpiRsGetAmlLength(
 
 ACPI_STATUS
 AcpiRsGetListLength(
-    UINT8                   *AmlBuffer,
-    UINT32                  AmlBufferLength,
-    ACPI_SIZE               *SizeNeeded)
+        UINT8                   *AmlBuffer,
+        UINT32                  AmlBufferLength,
+        ACPI_SIZE               *SizeNeeded)
 {
 	ACPI_STATUS             Status;
 	UINT8                   *EndAml;
@@ -513,14 +498,12 @@ AcpiRsGetListLength(
 
 	/* Walk the list of AML resource descriptors */
 
-	while (AmlBuffer < EndAml)
-	{
+	while (AmlBuffer < EndAml) {
 		/* Validate the Resource Type and Resource Length */
 
 		Status = AcpiUtValidateResource(NULL, AmlBuffer, &ResourceIndex);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			/*
 			 * Exit on failure. Cannot continue because the descriptor length
 			 * may be bogus also.
@@ -542,8 +525,7 @@ AcpiRsGetListLength(
 		ExtraStructBytes = 0;
 		Buffer = AmlBuffer + AcpiUtGetResourceHeaderLength(AmlBuffer);
 
-		switch (AcpiUtGetResourceType(AmlBuffer))
-		{
+		switch (AcpiUtGetResourceType(AmlBuffer)) {
 		case ACPI_RESOURCE_NAME_IRQ:
 			/*
 			 * IRQ Resource:
@@ -577,9 +559,7 @@ AcpiRsGetListLength(
 			 * subtract one from the count.
 			 */
 			if (ExtraStructBytes)
-			{
 				ExtraStructBytes--;
-			}
 
 			break;
 
@@ -599,7 +579,7 @@ AcpiRsGetListLength(
 			 * Add the size of the optional ResourceSource
 			 */
 			ExtraStructBytes = AcpiRsStreamOptionLength(
-			                       ResourceLength, MinimumAmlResourceLength);
+			                           ResourceLength, MinimumAmlResourceLength);
 			break;
 
 
@@ -615,26 +595,23 @@ AcpiRsGetListLength(
 			/* Add the size of the optional ResourceSource */
 
 			ExtraStructBytes += AcpiRsStreamOptionLength(
-			                        ResourceLength - ExtraStructBytes, MinimumAmlResourceLength);
+			                            ResourceLength - ExtraStructBytes, MinimumAmlResourceLength);
 			break;
 
 		case ACPI_RESOURCE_NAME_GPIO:
 
 			/* Vendor data is optional */
 
-			if (AmlResource->Gpio.VendorLength)
-			{
+			if (AmlResource->Gpio.VendorLength) {
 				ExtraStructBytes +=
-				    AmlResource->Gpio.VendorOffset -
-				    AmlResource->Gpio.PinTableOffset +
-				    AmlResource->Gpio.VendorLength;
-			}
-			else
-			{
+				        AmlResource->Gpio.VendorOffset -
+				        AmlResource->Gpio.PinTableOffset +
+				        AmlResource->Gpio.VendorLength;
+			} else {
 				ExtraStructBytes +=
-				    AmlResource->LargeHeader.ResourceLength +
-				    sizeof(AML_RESOURCE_LARGE_HEADER) -
-				    AmlResource->Gpio.PinTableOffset;
+				        AmlResource->LargeHeader.ResourceLength +
+				        sizeof(AML_RESOURCE_LARGE_HEADER) -
+				        AmlResource->Gpio.PinTableOffset;
 			}
 
 			break;
@@ -642,10 +619,10 @@ AcpiRsGetListLength(
 		case ACPI_RESOURCE_NAME_SERIAL_BUS:
 
 			MinimumAmlResourceLength = AcpiGbl_ResourceAmlSerialBusSizes[
-			                    AmlResource->CommonSerialBus.Type];
+			            AmlResource->CommonSerialBus.Type];
 			ExtraStructBytes +=
-			    AmlResource->CommonSerialBus.ResourceLength -
-			    MinimumAmlResourceLength;
+			        AmlResource->CommonSerialBus.ResourceLength -
+			        MinimumAmlResourceLength;
 			break;
 
 		default:
@@ -660,13 +637,10 @@ AcpiRsGetListLength(
 		 * is a requirement on IA64.
 		 */
 		if (AcpiUtGetResourceType(AmlBuffer) ==
-		        ACPI_RESOURCE_NAME_SERIAL_BUS)
-		{
+		    ACPI_RESOURCE_NAME_SERIAL_BUS) {
 			BufferSize = AcpiGbl_ResourceStructSerialBusSizes[
-			      AmlResource->CommonSerialBus.Type] + ExtraStructBytes;
-		}
-		else
-		{
+			AmlResource->CommonSerialBus.Type] + ExtraStructBytes;
+		} else {
 			BufferSize = AcpiGbl_ResourceStructSizes[ResourceIndex] +
 			             ExtraStructBytes;
 		}
@@ -711,8 +685,8 @@ AcpiRsGetListLength(
 
 ACPI_STATUS
 AcpiRsGetPciRoutingTableLength(
-    ACPI_OPERAND_OBJECT     *PackageObject,
-    ACPI_SIZE               *BufferSizeNeeded)
+        ACPI_OPERAND_OBJECT     *PackageObject,
+        ACPI_SIZE               *BufferSizeNeeded)
 {
 	UINT32                  NumberOfElements;
 	ACPI_SIZE               TempSizeNeeded = 0;
@@ -741,8 +715,7 @@ AcpiRsGetPciRoutingTableLength(
 	 */
 	TopObjectList = PackageObject->Package.Elements;
 
-	for (Index = 0; Index < NumberOfElements; Index++)
-	{
+	for (Index = 0; Index < NumberOfElements; Index++) {
 		/* Dereference the subpackage */
 
 		PackageElement = *TopObjectList;
@@ -750,10 +723,8 @@ AcpiRsGetPciRoutingTableLength(
 		/* We must have a valid Package object */
 
 		if (!PackageElement ||
-		        (PackageElement->Common.Type != ACPI_TYPE_PACKAGE))
-		{
+		    (PackageElement->Common.Type != ACPI_TYPE_PACKAGE))
 			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
-		}
 
 		/*
 		 * The SubObjectList will now point to an array of the
@@ -766,24 +737,20 @@ AcpiRsGetPciRoutingTableLength(
 		NameFound = FALSE;
 
 		for (TableIndex = 0;
-		        TableIndex < PackageElement->Package.Count && !NameFound;
-		        TableIndex++)
-		{
+		     TableIndex < PackageElement->Package.Count && !NameFound;
+		     TableIndex++) {
 			if (*SubObjectList && /* Null object allowed */
 
-			        ((ACPI_TYPE_STRING ==
-			          (*SubObjectList)->Common.Type) ||
+			    ((ACPI_TYPE_STRING ==
+			      (*SubObjectList)->Common.Type) ||
 
-			         ((ACPI_TYPE_LOCAL_REFERENCE ==
-			           (*SubObjectList)->Common.Type) &&
+			     ((ACPI_TYPE_LOCAL_REFERENCE ==
+			       (*SubObjectList)->Common.Type) &&
 
-			          ((*SubObjectList)->Reference.Class ==
-			           ACPI_REFCLASS_NAME))))
-			{
+			      ((*SubObjectList)->Reference.Class ==
+			       ACPI_REFCLASS_NAME))))
 				NameFound = TRUE;
-			}
-			else
-			{
+			else {
 				/* Look at the next element */
 
 				SubObjectList++;
@@ -794,25 +761,19 @@ AcpiRsGetPciRoutingTableLength(
 
 		/* Was a String type found? */
 
-		if (NameFound)
-		{
-			if ((*SubObjectList)->Common.Type == ACPI_TYPE_STRING)
-			{
+		if (NameFound) {
+			if ((*SubObjectList)->Common.Type == ACPI_TYPE_STRING) {
 				/*
 				 * The length String.Length field does not include the
 				 * terminating NULL, add 1
 				 */
 				TempSizeNeeded += ((ACPI_SIZE)
 				                   (*SubObjectList)->String.Length + 1);
-			}
-			else
-			{
+			} else {
 				TempSizeNeeded += AcpiNsGetPathnameLength(
-				                      (*SubObjectList)->Reference.Node);
+				                          (*SubObjectList)->Reference.Node);
 			}
-		}
-		else
-		{
+		} else {
 			/*
 			 * If no name was found, then this is a NULL, which is
 			 * translated as a UINT32 zero.

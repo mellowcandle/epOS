@@ -47,8 +47,7 @@ void isr_handler(registers_t regs)
 {
 	pr_debug("Recieved interrupt number: %u\r\n", regs.int_no);
 
-	if (interrupt_handlers[regs.int_no] != 0)
-	{
+	if (interrupt_handlers[regs.int_no] != 0) {
 		isr_t handler = interrupt_handlers[regs.int_no];
 		handler(&regs);
 	}
@@ -58,8 +57,7 @@ void isr_handler(registers_t regs)
 // This gets called from our ASM interrupt handler stub.
 void irq_handler(registers_t regs)
 {
-	if (interrupt_handlers[regs.int_no] != 0)
-	{
+	if (interrupt_handlers[regs.int_no] != 0) {
 		isr_t handler = interrupt_handlers[regs.int_no];
 		handler(&regs);
 	}

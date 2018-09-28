@@ -125,29 +125,25 @@
 
 #define ACPI_DEBUG_BUFFER_SIZE  0x4000      /* 16K buffer for return objects */
 
-typedef struct acpi_db_command_info
-{
+typedef struct acpi_db_command_info {
 	const char              *Name;          /* Command Name */
 	UINT8                   MinArgs;        /* Minimum arguments required */
 
 } ACPI_DB_COMMAND_INFO;
 
-typedef struct acpi_db_command_help
-{
+typedef struct acpi_db_command_help {
 	UINT8                   LineCount;      /* Number of help lines */
 	char                    *Invocation;    /* Command Invocation */
 	char                    *Description;   /* Command Description */
 
 } ACPI_DB_COMMAND_HELP;
 
-typedef struct acpi_db_argument_info
-{
+typedef struct acpi_db_argument_info {
 	const char              *Name;          /* Argument Name */
 
 } ACPI_DB_ARGUMENT_INFO;
 
-typedef struct acpi_db_execute_walk
-{
+typedef struct acpi_db_execute_walk {
 	UINT32                  Count;
 	UINT32                  MaxCount;
 
@@ -164,16 +160,16 @@ typedef struct acpi_db_execute_walk
  * dbxface - external debugger interfaces
  */
 ACPI_DBR_DEPENDENT_RETURN_OK(
-    ACPI_STATUS
-    AcpiDbSingleStep(
-        ACPI_WALK_STATE         *WalkState,
-        ACPI_PARSE_OBJECT       *Op,
-        UINT32                  OpType))
+        ACPI_STATUS
+        AcpiDbSingleStep(
+                ACPI_WALK_STATE         *WalkState,
+                ACPI_PARSE_OBJECT       *Op,
+                UINT32                  OpType))
 
 ACPI_DBR_DEPENDENT_RETURN_VOID(
-    void
-    AcpiDbSignalBreakPoint(
-        ACPI_WALK_STATE         *WalkState))
+        void
+        AcpiDbSignalBreakPoint(
+                ACPI_WALK_STATE         *WalkState))
 
 
 /*
@@ -181,71 +177,71 @@ ACPI_DBR_DEPENDENT_RETURN_VOID(
  */
 ACPI_NAMESPACE_NODE *
 AcpiDbConvertToNode(
-    char                    *InString);
+        char                    *InString);
 
 void
 AcpiDbDisplayTableInfo(
-    char                    *TableArg);
+        char                    *TableArg);
 
 void
 AcpiDbDisplayTemplate(
-    char                    *BufferArg);
+        char                    *BufferArg);
 
 void
 AcpiDbUnloadAcpiTable(
-    char                    *Name);
+        char                    *Name);
 
 void
 AcpiDbSendNotify(
-    char                    *Name,
-    UINT32                  Value);
+        char                    *Name,
+        UINT32                  Value);
 
 void
 AcpiDbDisplayInterfaces(
-    char                    *ActionArg,
-    char                    *InterfaceNameArg);
+        char                    *ActionArg,
+        char                    *InterfaceNameArg);
 
 ACPI_STATUS
 AcpiDbSleep(
-    char                    *ObjectArg);
+        char                    *ObjectArg);
 
 void
 AcpiDbTrace(
-    char                    *EnableArg,
-    char                    *MethodArg,
-    char                    *OnceArg);
+        char                    *EnableArg,
+        char                    *MethodArg,
+        char                    *OnceArg);
 
 void
 AcpiDbDisplayLocks(
-    void);
+        void);
 
 void
 AcpiDbDisplayResources(
-    char                    *ObjectArg);
+        char                    *ObjectArg);
 
 ACPI_HW_DEPENDENT_RETURN_VOID(
-    void
-    AcpiDbDisplayGpes(
-        void))
+        void
+        AcpiDbDisplayGpes(
+                void))
 
 void
 AcpiDbDisplayHandlers(
-    void);
+        void);
 
 ACPI_HW_DEPENDENT_RETURN_VOID(
-    void
-    AcpiDbGenerateGpe(
-        char                    *GpeArg,
-        char                    *BlockArg))
+        void
+        AcpiDbGenerateGpe(
+                char                    *GpeArg,
+                char                    *BlockArg))
 
 ACPI_HW_DEPENDENT_RETURN_VOID(
-    void
-    AcpiDbGenerateSci(
-        void))
+        void
+        AcpiDbGenerateSci(
+                void))
 
 void
 AcpiDbExecuteTest(
-    char                    *TypeArg);
+        char                    *TypeArg);
 
 
 /*
@@ -253,27 +249,27 @@ AcpiDbExecuteTest(
  */
 ACPI_STATUS
 AcpiDbHexCharToValue(
-    int                     HexChar,
-    UINT8                   *ReturnValue);
+        int                     HexChar,
+        UINT8                   *ReturnValue);
 
 ACPI_STATUS
 AcpiDbConvertToPackage(
-    char                    *String,
-    ACPI_OBJECT             *Object);
+        char                    *String,
+        ACPI_OBJECT             *Object);
 
 ACPI_STATUS
 AcpiDbConvertToObject(
-    ACPI_OBJECT_TYPE        Type,
-    char                    *String,
-    ACPI_OBJECT             *Object);
+        ACPI_OBJECT_TYPE        Type,
+        char                    *String,
+        ACPI_OBJECT             *Object);
 
 UINT8 *
 AcpiDbEncodePldBuffer(
-    ACPI_PLD_INFO           *PldInfo);
+        ACPI_PLD_INFO           *PldInfo);
 
 void
 AcpiDbDumpPldBuffer(
-    ACPI_OBJECT             *ObjDesc);
+        ACPI_OBJECT             *ObjDesc);
 
 
 /*
@@ -281,32 +277,32 @@ AcpiDbDumpPldBuffer(
  */
 void
 AcpiDbSetMethodBreakpoint(
-    char                    *Location,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
+        char                    *Location,
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbSetMethodCallBreakpoint(
-    ACPI_PARSE_OBJECT       *Op);
+        ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbSetMethodData(
-    char                    *TypeArg,
-    char                    *IndexArg,
-    char                    *ValueArg);
+        char                    *TypeArg,
+        char                    *IndexArg,
+        char                    *ValueArg);
 
 ACPI_STATUS
 AcpiDbDisassembleMethod(
-    char                    *Name);
+        char                    *Name);
 
 void
 AcpiDbDisassembleAml(
-    char                    *Statements,
-    ACPI_PARSE_OBJECT       *Op);
+        char                    *Statements,
+        ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbEvaluatePredefinedNames(
-    void);
+        void);
 
 
 /*
@@ -314,46 +310,46 @@ AcpiDbEvaluatePredefinedNames(
  */
 void
 AcpiDbSetScope(
-    char                    *Name);
+        char                    *Name);
 
 void
 AcpiDbDumpNamespace(
-    char                    *StartArg,
-    char                    *DepthArg);
+        char                    *StartArg,
+        char                    *DepthArg);
 
 void
 AcpiDbDumpNamespacePaths(
-    void);
+        void);
 
 void
 AcpiDbDumpNamespaceByOwner(
-    char                    *OwnerArg,
-    char                    *DepthArg);
+        char                    *OwnerArg,
+        char                    *DepthArg);
 
 ACPI_STATUS
 AcpiDbFindNameInNamespace(
-    char                    *NameArg);
+        char                    *NameArg);
 
 void
 AcpiDbCheckPredefinedNames(
-    void);
+        void);
 
 ACPI_STATUS
 AcpiDbDisplayObjects(
-    char                    *ObjTypeArg,
-    char                    *DisplayCountArg);
+        char                    *ObjTypeArg,
+        char                    *DisplayCountArg);
 
 void
 AcpiDbCheckIntegrity(
-    void);
+        void);
 
 void
 AcpiDbFindReferences(
-    char                    *ObjectArg);
+        char                    *ObjectArg);
 
 void
 AcpiDbGetBusInfo(
-    void);
+        void);
 
 
 /*
@@ -361,48 +357,48 @@ AcpiDbGetBusInfo(
  */
 void
 AcpiDbDisplayMethodInfo(
-    ACPI_PARSE_OBJECT       *Op);
+        ACPI_PARSE_OBJECT       *Op);
 
 void
 AcpiDbDecodeAndDisplayObject(
-    char                    *Target,
-    char                    *OutputType);
+        char                    *Target,
+        char                    *OutputType);
 
 ACPI_DBR_DEPENDENT_RETURN_VOID(
-    void
-    AcpiDbDisplayResultObject(
-        ACPI_OPERAND_OBJECT     *ObjDesc,
-        ACPI_WALK_STATE         *WalkState))
+        void
+        AcpiDbDisplayResultObject(
+                ACPI_OPERAND_OBJECT     *ObjDesc,
+                ACPI_WALK_STATE         *WalkState))
 
 ACPI_STATUS
 AcpiDbDisplayAllMethods(
-    char                    *DisplayCountArg);
+        char                    *DisplayCountArg);
 
 void
 AcpiDbDisplayArguments(
-    void);
+        void);
 
 void
 AcpiDbDisplayLocals(
-    void);
+        void);
 
 void
 AcpiDbDisplayResults(
-    void);
+        void);
 
 void
 AcpiDbDisplayCallingTree(
-    void);
+        void);
 
 void
 AcpiDbDisplayObjectType(
-    char                    *ObjectArg);
+        char                    *ObjectArg);
 
 ACPI_DBR_DEPENDENT_RETURN_VOID(
-    void
-    AcpiDbDisplayArgumentObject(
-        ACPI_OPERAND_OBJECT     *ObjDesc,
-        ACPI_WALK_STATE         *WalkState))
+        void
+        AcpiDbDisplayArgumentObject(
+                ACPI_OPERAND_OBJECT     *ObjDesc,
+                ACPI_WALK_STATE         *WalkState))
 
 
 /*
@@ -410,26 +406,26 @@ ACPI_DBR_DEPENDENT_RETURN_VOID(
  */
 void
 AcpiDbExecute(
-    char                    *Name,
-    char                    **Args,
-    ACPI_OBJECT_TYPE        *Types,
-    UINT32                  Flags);
+        char                    *Name,
+        char                    **Args,
+        ACPI_OBJECT_TYPE        *Types,
+        UINT32                  Flags);
 
 void
 AcpiDbCreateExecutionThreads(
-    char                    *NumThreadsArg,
-    char                    *NumLoopsArg,
-    char                    *MethodNameArg);
+        char                    *NumThreadsArg,
+        char                    *NumLoopsArg,
+        char                    *MethodNameArg);
 
 void
 AcpiDbDeleteObjects(
-    UINT32                  Count,
-    ACPI_OBJECT             *Objects);
+        UINT32                  Count,
+        ACPI_OBJECT             *Objects);
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 UINT32
 AcpiDbGetCacheInfo(
-    ACPI_MEMORY_LIST        *Cache);
+        ACPI_MEMORY_LIST        *Cache);
 #endif
 
 
@@ -438,24 +434,24 @@ AcpiDbGetCacheInfo(
  */
 ACPI_OBJECT_TYPE
 AcpiDbMatchArgument(
-    char                    *UserArgument,
-    ACPI_DB_ARGUMENT_INFO   *Arguments);
+        char                    *UserArgument,
+        ACPI_DB_ARGUMENT_INFO   *Arguments);
 
 void
 AcpiDbCloseDebugFile(
-    void);
+        void);
 
 void
 AcpiDbOpenDebugFile(
-    char                    *Name);
+        char                    *Name);
 
 ACPI_STATUS
 AcpiDbLoadAcpiTable(
-    char                    *Filename);
+        char                    *Filename);
 
 ACPI_STATUS
 AcpiDbLoadTables(
-    ACPI_NEW_TABLE_DESC     *ListHead);
+        ACPI_NEW_TABLE_DESC     *ListHead);
 
 
 /*
@@ -463,19 +459,19 @@ AcpiDbLoadTables(
  */
 void
 AcpiDbAddToHistory(
-    char                    *CommandLine);
+        char                    *CommandLine);
 
 void
 AcpiDbDisplayHistory(
-    void);
+        void);
 
 char *
 AcpiDbGetFromHistory(
-    char                    *CommandNumArg);
+        char                    *CommandNumArg);
 
 char *
 AcpiDbGetHistoryByIndex(
-    UINT32                  CommanddNum);
+        UINT32                  CommanddNum);
 
 
 /*
@@ -483,24 +479,24 @@ AcpiDbGetHistoryByIndex(
  */
 ACPI_STATUS
 AcpiDbCommandDispatch(
-    char                    *InputBuffer,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op);
+        char                    *InputBuffer,
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op);
 
 void ACPI_SYSTEM_XFACE
 AcpiDbExecuteThread(
-    void                    *Context);
+        void                    *Context);
 
 ACPI_STATUS
 AcpiDbUserCommands(
-    char                    Prompt,
-    ACPI_PARSE_OBJECT       *Op);
+        char                    Prompt,
+        ACPI_PARSE_OBJECT       *Op);
 
 char *
 AcpiDbGetNextToken(
-    char                    *String,
-    char                    **Next,
-    ACPI_OBJECT_TYPE        *ReturnType);
+        char                    *String,
+        char                    **Next,
+        ACPI_OBJECT_TYPE        *ReturnType);
 
 
 /*
@@ -508,25 +504,25 @@ AcpiDbGetNextToken(
  */
 void
 AcpiDbDecodeInternalObject(
-    ACPI_OPERAND_OBJECT     *ObjDesc);
+        ACPI_OPERAND_OBJECT     *ObjDesc);
 
 void
 AcpiDbDisplayInternalObject(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_WALK_STATE         *WalkState);
 
 void
 AcpiDbDecodeArguments(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 void
 AcpiDbDecodeLocals(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 void
 AcpiDbDumpMethodInfo(
-    ACPI_STATUS             Status,
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_STATUS             Status,
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -534,12 +530,12 @@ AcpiDbDumpMethodInfo(
  */
 void
 AcpiDbGenerateStatistics(
-    ACPI_PARSE_OBJECT       *Root,
-    BOOLEAN                 IsMethod);
+        ACPI_PARSE_OBJECT       *Root,
+        BOOLEAN                 IsMethod);
 
 ACPI_STATUS
 AcpiDbDisplayStatistics(
-    char                    *TypeArg);
+        char                    *TypeArg);
 
 
 /*
@@ -547,24 +543,24 @@ AcpiDbDisplayStatistics(
  */
 void
 AcpiDbSetOutputDestination(
-    UINT32                  Where);
+        UINT32                  Where);
 
 void
 AcpiDbDumpExternalObject(
-    ACPI_OBJECT             *ObjDesc,
-    UINT32                  Level);
+        ACPI_OBJECT             *ObjDesc,
+        UINT32                  Level);
 
 void
 AcpiDbPrepNamestring(
-    char                    *Name);
+        char                    *Name);
 
 ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup(
-    char                    *Name);
+        char                    *Name);
 
 void
 AcpiDbUint32ToHexString(
-    UINT32                  Value,
-    char                    *Buffer);
+        UINT32                  Value,
+        char                    *Buffer);
 
 #endif  /* __ACDEBUG_H__ */

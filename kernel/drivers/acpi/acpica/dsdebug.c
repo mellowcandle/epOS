@@ -131,8 +131,8 @@ ACPI_MODULE_NAME("dsdebug")
 
 static void
 AcpiDsPrintNodePathname(
-    ACPI_NAMESPACE_NODE     *Node,
-    const char              *Message);
+        ACPI_NAMESPACE_NODE     *Node,
+        const char              *Message);
 
 
 /*******************************************************************************
@@ -149,8 +149,8 @@ AcpiDsPrintNodePathname(
 
 static void
 AcpiDsPrintNodePathname(
-    ACPI_NAMESPACE_NODE     *Node,
-    const char              *Message)
+        ACPI_NAMESPACE_NODE     *Node,
+        const char              *Message)
 {
 	ACPI_BUFFER             Buffer;
 	ACPI_STATUS             Status;
@@ -158,8 +158,7 @@ AcpiDsPrintNodePathname(
 
 	ACPI_FUNCTION_TRACE(DsPrintNodePathname);
 
-	if (!Node)
-	{
+	if (!Node) {
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_DISPATCH, "[NULL NAME]"));
 		return_VOID;
 	}
@@ -170,12 +169,9 @@ AcpiDsPrintNodePathname(
 
 	Status = AcpiNsHandleToPathname(Node, &Buffer, TRUE);
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		if (Message)
-		{
 			ACPI_DEBUG_PRINT_RAW((ACPI_DB_DISPATCH, "%s ", Message));
-		}
 
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_DISPATCH, "[%s] (Node %p)",
 		                      (char *) Buffer.Pointer, Node));
@@ -203,9 +199,9 @@ AcpiDsPrintNodePathname(
 
 void
 AcpiDsDumpMethodStack(
-    ACPI_STATUS             Status,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
+        ACPI_STATUS             Status,
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op)
 {
 	ACPI_PARSE_OBJECT       *Next;
 	ACPI_THREAD_STATE       *Thread;
@@ -219,14 +215,11 @@ AcpiDsDumpMethodStack(
 	/* Ignore control codes, they are not errors */
 
 	if ((Status & AE_CODE_MASK) == AE_CODE_CONTROL)
-	{
 		return_VOID;
-	}
 
 	/* We may be executing a deferred opcode */
 
-	if (WalkState->DeferredNode)
-	{
+	if (WalkState->DeferredNode) {
 		ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 		                  "Executing subtree for Buffer/Package/Region\n"));
 		return_VOID;
@@ -240,9 +233,7 @@ AcpiDsDumpMethodStack(
 	Thread = WalkState->Thread;
 
 	if (!Thread)
-	{
 		return_VOID;
-	}
 
 	/* Display exception and method name */
 
@@ -260,15 +251,13 @@ AcpiDsDumpMethodStack(
 
 	/* Walk list of linked walk states */
 
-	while (NextWalkState)
-	{
+	while (NextWalkState) {
 		MethodDesc = NextWalkState->MethodDesc;
 
-		if (MethodDesc)
-		{
+		if (MethodDesc) {
 			AcpiExStopTraceMethod(
-			    (ACPI_NAMESPACE_NODE *) MethodDesc->Method.Node,
-			    MethodDesc, WalkState);
+			        (ACPI_NAMESPACE_NODE *) MethodDesc->Method.Node,
+			        MethodDesc, WalkState);
 		}
 
 		ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
@@ -277,10 +266,8 @@ AcpiDsDumpMethodStack(
 
 		/* First method is the currently executing method */
 
-		if (NextWalkState == WalkState)
-		{
-			if (Op)
-			{
+		if (NextWalkState == WalkState) {
+			if (Op) {
 				/* Display currently executing ASL statement */
 
 				Next = Op->Common.Next;
@@ -291,9 +278,7 @@ AcpiDsDumpMethodStack(
 #endif
 				Op->Common.Next = Next;
 			}
-		}
-		else
-		{
+		} else {
 			/*
 			 * This method has called another method
 			 * NOTE: the method call parse subtree is already deleted at
@@ -315,9 +300,9 @@ AcpiDsDumpMethodStack(
 
 void
 AcpiDsDumpMethodStack(
-    ACPI_STATUS             Status,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
+        ACPI_STATUS             Status,
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op)
 {
 	return;
 }

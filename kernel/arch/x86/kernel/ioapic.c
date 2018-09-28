@@ -44,10 +44,8 @@
 
 #define IOAPIC_VERSION 0x11
 
-typedef union
-{
-	struct
-	{
+typedef union {
+	struct {
 		uint32_t INTVEC : 8,
 		         DELMOD		: 3,
 		         DESTMOD		: 1,
@@ -58,11 +56,10 @@ typedef union
 		         IRQ_MASK	: 1,
 		         reserved_1	: 15;
 		uint32_t reserved_2	: 24,
-		         DESTFIELD	: 8;
+		             DESTFIELD	: 8;
 	}  __attribute__((packed));
 
-	struct
-	{
+	struct {
 		uint32_t hi;
 		uint32_t low;
 	};
@@ -111,8 +108,7 @@ static void _ioapic_irq_mask_set(ioapic_t *ioapic, uint8_t irq, bool mask)
 	FUNC_ENTER();
 	ioapic_redirect_t entry;
 
-	if (irq >= ioapic->max_redirect)
-	{
+	if (irq >= ioapic->max_redirect) {
 		pr_error("IOAPIC can't handle this irq, %u\r\n", irq);
 		return;
 	}
@@ -131,22 +127,19 @@ void ioapic_map_irq(uint8_t irq, uint8_t map)
 	ioapic_redirect_t entry;
 	irq_override_t *override = NULL;
 
-	if (ioapic == NULL)
-	{
+	if (ioapic == NULL) {
 		pr_error("Can't find matching entry in IOAPIC's for IRQ: %u\r\n", irq);
 		return;
 	}
 
 	override = apic_get_override(irq);
 
-	if (override)
-	{
+	if (override) {
 		pr_debug("IOAPIC IRQ override detected: %u\r\n", irq);
 		irq = override->global_irq;
 	}
 
-	if (irq >= ioapic->max_redirect)
-	{
+	if (irq >= ioapic->max_redirect) {
 		pr_error("IOAPIC can't handle this irq, %u\r\n", irq);
 		return;
 	}
@@ -154,10 +147,8 @@ void ioapic_map_irq(uint8_t irq, uint8_t map)
 	ioapic_read_redirect(ioapic, &entry, irq);
 	entry.INTVEC = map;
 
-	if (override && override->flags)
-	{
-		switch (override->flags & ACPI_MADT_POLARITY_MASK)
-		{
+	if (override && override->flags) {
+		switch (override->flags & ACPI_MADT_POLARITY_MASK) {
 		case ACPI_MADT_POLARITY_CONFORMS:
 			break;
 
@@ -174,8 +165,7 @@ void ioapic_map_irq(uint8_t irq, uint8_t map)
 			break;
 		}
 
-		switch (override->flags & ACPI_MADT_TRIGGER_MASK)
-		{
+		switch (override->flags & ACPI_MADT_TRIGGER_MASK) {
 		case ACPI_MADT_TRIGGER_CONFORMS:
 			break;
 
@@ -203,16 +193,14 @@ void ioapic_irq_mask(uint8_t irq)
 	irq_override_t *override = NULL;
 	ioapic_t *ioapic = irq_to_ioapic(irq);
 
-	if (ioapic == NULL)
-	{
+	if (ioapic == NULL) {
 		pr_error("Can't find matching entry in IOAPIC's for IRQ: %u\r\n", irq);
 		return;
 	}
 
 	override = apic_get_override(irq);
 
-	if (override)
-	{
+	if (override) {
 		pr_info("IOAPIC IRQ override detected: %u\r\n", irq);
 		irq = override->global_irq;
 	}
@@ -225,16 +213,14 @@ void ioapic_irq_unmask(uint8_t irq)
 	irq_override_t *override = NULL;
 	ioapic_t *ioapic = irq_to_ioapic(irq);
 
-	if (ioapic == NULL)
-	{
+	if (ioapic == NULL) {
 		pr_error("Can't find matching entry in IOAPIC's for IRQ: %u\r\n", irq);
 		return;
 	}
 
 	override = apic_get_override(irq);
 
-	if (override)
-	{
+	if (override) {
 		pr_info("IOAPIC IRQ override detected: %u\r\n", irq);
 		irq = override->global_irq;
 	}
@@ -251,9 +237,7 @@ void ioapic_santize(ioapic_t *ioapic)
 	ioapic->max_redirect = BF_GET(ver, 16, 8);
 
 	if (BF_GET(ver, 0, 7) != IOAPIC_VERSION)
-	{
 		pr_warn("IOAPIC version doesn't match: %x\r\n", BF_GET(ver, 0, 7));
-	}
 
 	pr_info("IOAPIC ID = 0x%x, Version = 0x%x Max redirect = 0x%x\r\n",
 	        BF_GET(id, 24, 4), BF_GET(ver, 0, 7), ioapic->max_redirect);
@@ -267,11 +251,11 @@ void ioapic_dump(ioapic_t *ioapic)
 {
 	ioapic_redirect_t entry;
 
-	for (int i = 0; i < ioapic->max_redirect; i++)
-	{
+	for (int i = 0; i < ioapic->max_redirect; i++) {
 		ioapic_read_redirect(ioapic, &entry, i);
 		printk("IOAPIC Entry %u intvec: %x delmod: %x destmod: %u delivs: %u intpol: %u irr: %u trigger_mode: %u irq_mask: %u destfield: %x\r\n",
-		       i, entry.INTVEC, entry.DELMOD, entry.DESTMOD, entry.DELIVS, entry.INTPOL, entry.IRR, entry.TRIGGER_MODE, entry.IRQ_MASK, entry.DESTFIELD);
+		       i, entry.INTVEC, entry.DELMOD, entry.DESTMOD, entry.DELIVS, entry.INTPOL, entry.IRR,
+		       entry.TRIGGER_MODE, entry.IRQ_MASK, entry.DESTFIELD);
 	}
 
 }

@@ -139,7 +139,7 @@ ACPI_MODULE_NAME("tbxfload")
 
 ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiLoadTables(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 
@@ -161,8 +161,7 @@ AcpiLoadTables(
 	 */
 	Status = AcpiEvInstallRegionHandlers();
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status, "During Region initialization"));
 		return_ACPI_STATUS(Status);
 	}
@@ -174,18 +173,14 @@ AcpiLoadTables(
 	/* Don't let single failures abort the load */
 
 	if (Status == AE_CTRL_TERMINATE)
-	{
 		Status = AE_OK;
-	}
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status,
 		                "While loading namespace from ACPI tables"));
 	}
 
-	if (AcpiGbl_ParseTableAsTermList || !AcpiGbl_GroupModuleLevelCode)
-	{
+	if (AcpiGbl_ParseTableAsTermList || !AcpiGbl_GroupModuleLevelCode) {
 		/*
 		 * Initialize the objects that remain uninitialized. This
 		 * runs the executable AML that may be part of the
@@ -195,9 +190,7 @@ AcpiLoadTables(
 		Status = AcpiNsInitializeObjects();
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 	AcpiGbl_NamespaceInitialized = TRUE;
@@ -222,7 +215,7 @@ ACPI_EXPORT_SYMBOL_INIT(AcpiLoadTables)
 
 ACPI_STATUS
 AcpiTbLoadNamespace(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 	UINT32                  i;
@@ -244,9 +237,8 @@ AcpiTbLoadNamespace(
 	Table = &AcpiGbl_RootTableList.Tables[AcpiGbl_DsdtIndex];
 
 	if (!AcpiGbl_RootTableList.CurrentTableCount ||
-	        !ACPI_COMPARE_NAME(Table->Signature.Ascii, ACPI_SIG_DSDT) ||
-	        ACPI_FAILURE(AcpiTbValidateTable(Table)))
-	{
+	    !ACPI_COMPARE_NAME(Table->Signature.Ascii, ACPI_SIG_DSDT) ||
+	    ACPI_FAILURE(AcpiTbValidateTable(Table))) {
 		Status = AE_NO_ACPI_TABLES;
 		goto UnlockAndExit;
 	}
@@ -265,14 +257,11 @@ AcpiTbLoadNamespace(
 	 * DSDT, creating the need for this option. Default is FALSE, do not copy
 	 * the DSDT.
 	 */
-	if (AcpiGbl_CopyDsdtLocally)
-	{
+	if (AcpiGbl_CopyDsdtLocally) {
 		NewDsdt = AcpiTbCopyDsdt(AcpiGbl_DsdtIndex);
 
 		if (NewDsdt)
-		{
 			AcpiGbl_DSDT = NewDsdt;
-		}
 	}
 
 	/*
@@ -288,30 +277,23 @@ AcpiTbLoadNamespace(
 	Status = AcpiNsLoadTable(AcpiGbl_DsdtIndex, AcpiGbl_RootNode);
 	(void) AcpiUtAcquireMutex(ACPI_MTX_TABLES);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status, "[DSDT] table load failed"));
 		TablesFailed++;
-	}
-	else
-	{
+	} else
 		TablesLoaded++;
-	}
 
 	/* Load any SSDT or PSDT tables. Note: Loop leaves tables locked */
 
-	for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i)
-	{
+	for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; ++i) {
 		Table = &AcpiGbl_RootTableList.Tables[i];
 
 		if (!AcpiGbl_RootTableList.Tables[i].Address ||
-		        (!ACPI_COMPARE_NAME(Table->Signature.Ascii, ACPI_SIG_SSDT) &&
-		         !ACPI_COMPARE_NAME(Table->Signature.Ascii, ACPI_SIG_PSDT) &&
-		         !ACPI_COMPARE_NAME(Table->Signature.Ascii, ACPI_SIG_OSDT)) ||
-		        ACPI_FAILURE(AcpiTbValidateTable(Table)))
-		{
+		    (!ACPI_COMPARE_NAME(Table->Signature.Ascii, ACPI_SIG_SSDT) &&
+		     !ACPI_COMPARE_NAME(Table->Signature.Ascii, ACPI_SIG_PSDT) &&
+		     !ACPI_COMPARE_NAME(Table->Signature.Ascii, ACPI_SIG_OSDT)) ||
+		    ACPI_FAILURE(AcpiTbValidateTable(Table)))
 			continue;
-		}
 
 		/* Ignore errors while loading tables, get as many as possible */
 
@@ -319,8 +301,7 @@ AcpiTbLoadNamespace(
 		Status =  AcpiNsLoadTable(i, AcpiGbl_RootNode);
 		(void) AcpiUtAcquireMutex(ACPI_MTX_TABLES);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_EXCEPTION((AE_INFO, Status, "(%4.4s:%8.8s) while loading table",
 			                Table->Signature.Ascii, Table->Pointer->OemTableId));
 
@@ -329,21 +310,15 @@ AcpiTbLoadNamespace(
 			ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
 			                      "Table [%4.4s:%8.8s] (id FF) - Table namespace load failed\n\n",
 			                      Table->Signature.Ascii, Table->Pointer->OemTableId));
-		}
-		else
-		{
+		} else
 			TablesLoaded++;
-		}
 	}
 
-	if (!TablesFailed)
-	{
+	if (!TablesFailed) {
 		ACPI_INFO((
-		              "%u ACPI AML tables successfully acquired and loaded",
-		              TablesLoaded));
-	}
-	else
-	{
+		                  "%u ACPI AML tables successfully acquired and loaded",
+		                  TablesLoaded));
+	} else {
 		ACPI_ERROR((AE_INFO,
 		            "%u table load failures, %u successful",
 		            TablesFailed, TablesLoaded));
@@ -382,8 +357,8 @@ UnlockAndExit:
 
 ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiInstallTable(
-    ACPI_PHYSICAL_ADDRESS   Address,
-    BOOLEAN                 Physical)
+        ACPI_PHYSICAL_ADDRESS   Address,
+        BOOLEAN                 Physical)
 {
 	ACPI_STATUS             Status;
 	UINT8                   Flags;
@@ -394,13 +369,9 @@ AcpiInstallTable(
 
 
 	if (Physical)
-	{
 		Flags = ACPI_TABLE_ORIGIN_INTERNAL_PHYSICAL;
-	}
 	else
-	{
 		Flags = ACPI_TABLE_ORIGIN_EXTERNAL_VIRTUAL;
-	}
 
 	Status = AcpiTbInstallStandardTable(Address, Flags,
 	                                    FALSE, FALSE, &TableIndex);
@@ -430,7 +401,7 @@ ACPI_EXPORT_SYMBOL_INIT(AcpiInstallTable)
 
 ACPI_STATUS
 AcpiLoadTable(
-    ACPI_TABLE_HEADER       *Table)
+        ACPI_TABLE_HEADER       *Table)
 {
 	ACPI_STATUS             Status;
 	UINT32                  TableIndex;
@@ -442,9 +413,7 @@ AcpiLoadTable(
 	/* Parameter validation */
 
 	if (!Table)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Install the table and load it into the namespace */
 
@@ -475,7 +444,7 @@ ACPI_EXPORT_SYMBOL(AcpiLoadTable)
 
 ACPI_STATUS
 AcpiUnloadParentTable(
-    ACPI_HANDLE             Object)
+        ACPI_HANDLE             Object)
 {
 	ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR(ACPI_NAMESPACE_NODE, Object);
 	ACPI_STATUS             Status = AE_NOT_EXIST;
@@ -489,9 +458,7 @@ AcpiUnloadParentTable(
 	/* Parameter validation */
 
 	if (!Object)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/*
 	 * The node OwnerId is currently the same as the parent table ID.
@@ -499,8 +466,7 @@ AcpiUnloadParentTable(
 	 */
 	OwnerId = Node->OwnerId;
 
-	if (!OwnerId)
-	{
+	if (!OwnerId) {
 		/* OwnerId==0 means DSDT is the owner. DSDT cannot be unloaded */
 
 		return_ACPI_STATUS(AE_TYPE);
@@ -511,18 +477,13 @@ AcpiUnloadParentTable(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_INTERPRETER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Find the table in the global table list */
 
-	for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; i++)
-	{
+	for (i = 0; i < AcpiGbl_RootTableList.CurrentTableCount; i++) {
 		if (OwnerId != AcpiGbl_RootTableList.Tables[i].OwnerId)
-		{
 			continue;
-		}
 
 		/*
 		 * Allow unload of SSDT and OEMx tables only. Do not allow unload
@@ -532,24 +493,21 @@ AcpiUnloadParentTable(
 		 */
 		if (ACPI_COMPARE_NAME(
 		            AcpiGbl_RootTableList.Tables[i].Signature.Ascii,
-		            ACPI_SIG_DSDT))
-		{
+		            ACPI_SIG_DSDT)) {
 			Status = AE_TYPE;
 			break;
 		}
 
 		/* Ensure the table is actually loaded */
 
-		if (!AcpiTbIsTableLoaded(i))
-		{
+		if (!AcpiTbIsTableLoaded(i)) {
 			Status = AE_NOT_EXIST;
 			break;
 		}
 
 		/* Invoke table handler if present */
 
-		if (AcpiGbl_TableHandler)
-		{
+		if (AcpiGbl_TableHandler) {
 			(void) AcpiGbl_TableHandler(ACPI_TABLE_EVENT_UNLOAD,
 			                            AcpiGbl_RootTableList.Tables[i].Pointer,
 			                            AcpiGbl_TableHandlerContext);
@@ -564,9 +522,7 @@ AcpiUnloadParentTable(
 		Status = AcpiTbDeleteNamespaceByOwner(i);
 
 		if (ACPI_FAILURE(Status))
-		{
 			break;
-		}
 
 		Status = AcpiTbReleaseOwnerId(i);
 		AcpiTbSetTableLoadedFlag(i, FALSE);

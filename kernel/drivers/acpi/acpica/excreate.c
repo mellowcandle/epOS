@@ -140,7 +140,7 @@ ACPI_MODULE_NAME("excreate")
 
 ACPI_STATUS
 AcpiExCreateAlias(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_NAMESPACE_NODE     *TargetNode;
 	ACPI_NAMESPACE_NODE     *AliasNode;
@@ -156,8 +156,7 @@ AcpiExCreateAlias(
 	TargetNode = (ACPI_NAMESPACE_NODE *) WalkState->Operands[1];
 
 	if ((TargetNode->Type == ACPI_TYPE_LOCAL_ALIAS)  ||
-	        (TargetNode->Type == ACPI_TYPE_LOCAL_METHOD_ALIAS))
-	{
+	    (TargetNode->Type == ACPI_TYPE_LOCAL_METHOD_ALIAS)) {
 		/*
 		 * Dereference an existing alias so that we don't create a chain
 		 * of aliases. With this code, we guarantee that an alias is
@@ -174,8 +173,7 @@ AcpiExCreateAlias(
 	 * Integers, buffers, etc.), we have to point the Alias node
 	 * to the original Node.
 	 */
-	switch (TargetNode->Type)
-	{
+	switch (TargetNode->Type) {
 
 	/* For these types, the sub-object can change dynamically via a Store */
 
@@ -245,7 +243,7 @@ AcpiExCreateAlias(
 
 ACPI_STATUS
 AcpiExCreateEvent(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -256,8 +254,7 @@ AcpiExCreateEvent(
 
 	ObjDesc = AcpiUtCreateInternalObject(ACPI_TYPE_EVENT);
 
-	if (!ObjDesc)
-	{
+	if (!ObjDesc) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -270,15 +267,13 @@ AcpiExCreateEvent(
 	                               &ObjDesc->Event.OsSemaphore);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	/* Attach object to the Node */
 
 	Status = AcpiNsAttachObject(
-	             (ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
-	             ObjDesc, ACPI_TYPE_EVENT);
+	                 (ACPI_NAMESPACE_NODE *) WalkState->Operands[0],
+	                 ObjDesc, ACPI_TYPE_EVENT);
 
 Cleanup:
 	/*
@@ -306,7 +301,7 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExCreateMutex(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -319,8 +314,7 @@ AcpiExCreateMutex(
 
 	ObjDesc = AcpiUtCreateInternalObject(ACPI_TYPE_MUTEX);
 
-	if (!ObjDesc)
-	{
+	if (!ObjDesc) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -330,9 +324,7 @@ AcpiExCreateMutex(
 	Status = AcpiOsCreateMutex(&ObjDesc->Mutex.OsMutex);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	/* Init object and attach to NS node */
 
@@ -340,7 +332,7 @@ AcpiExCreateMutex(
 	ObjDesc->Mutex.Node = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
 
 	Status = AcpiNsAttachObject(
-	             ObjDesc->Mutex.Node, ObjDesc, ACPI_TYPE_MUTEX);
+	                 ObjDesc->Mutex.Node, ObjDesc, ACPI_TYPE_MUTEX);
 
 
 Cleanup:
@@ -370,10 +362,10 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExCreateRegion(
-    UINT8                   *AmlStart,
-    UINT32                  AmlLength,
-    UINT8                   SpaceId,
-    ACPI_WALK_STATE         *WalkState)
+        UINT8                   *AmlStart,
+        UINT32                  AmlLength,
+        UINT8                   SpaceId,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -393,16 +385,13 @@ AcpiExCreateRegion(
 	 * just return
 	 */
 	if (AcpiNsGetAttachedObject(Node))
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/*
 	 * Space ID must be one of the predefined IDs, or in the user-defined
 	 * range
 	 */
-	if (!AcpiIsValidSpaceId(SpaceId))
-	{
+	if (!AcpiIsValidSpaceId(SpaceId)) {
 		/*
 		 * Print an error message, but continue. We don't want to abort
 		 * a table load for this exception. Instead, if the region is
@@ -419,8 +408,7 @@ AcpiExCreateRegion(
 
 	ObjDesc = AcpiUtCreateInternalObject(ACPI_TYPE_REGION);
 
-	if (!ObjDesc)
-	{
+	if (!ObjDesc) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -435,13 +423,9 @@ AcpiExCreateRegion(
 	RegionObj2->Extra.Method_REG = NULL;
 
 	if (WalkState->ScopeInfo)
-	{
 		RegionObj2->Extra.ScopeNode = WalkState->ScopeInfo->Scope.Node;
-	}
 	else
-	{
 		RegionObj2->Extra.ScopeNode = Node;
-	}
 
 	/* Init the region from the operands */
 
@@ -451,8 +435,8 @@ AcpiExCreateRegion(
 	ObjDesc->Region.Node = Node;
 	ObjDesc->Region.Handler = NULL;
 	ObjDesc->Common.Flags &=
-	    ~(AOPOBJ_SETUP_COMPLETE | AOPOBJ_REG_CONNECTED |
-	      AOPOBJ_OBJECT_INITIALIZED);
+	        ~(AOPOBJ_SETUP_COMPLETE | AOPOBJ_REG_CONNECTED |
+	          AOPOBJ_OBJECT_INITIALIZED);
 
 	/* Install the new region object in the parent Node */
 
@@ -484,7 +468,7 @@ Cleanup:
 
 ACPI_STATUS
 AcpiExCreateProcessor(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -499,9 +483,7 @@ AcpiExCreateProcessor(
 	ObjDesc = AcpiUtCreateInternalObject(ACPI_TYPE_PROCESSOR);
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Initialize the processor object from the operands */
 
@@ -537,7 +519,7 @@ AcpiExCreateProcessor(
 
 ACPI_STATUS
 AcpiExCreatePowerResource(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
 	ACPI_STATUS             Status;
@@ -552,9 +534,7 @@ AcpiExCreatePowerResource(
 	ObjDesc = AcpiUtCreateInternalObject(ACPI_TYPE_POWER);
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Initialize the power object from the operands */
 
@@ -590,9 +570,9 @@ AcpiExCreatePowerResource(
 
 ACPI_STATUS
 AcpiExCreateMethod(
-    UINT8                   *AmlStart,
-    UINT32                  AmlLength,
-    ACPI_WALK_STATE         *WalkState)
+        UINT8                   *AmlStart,
+        UINT32                  AmlLength,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -607,8 +587,7 @@ AcpiExCreateMethod(
 
 	ObjDesc = AcpiUtCreateInternalObject(ACPI_TYPE_METHOD);
 
-	if (!ObjDesc)
-	{
+	if (!ObjDesc) {
 		Status = AE_NO_MEMORY;
 		goto Exit;
 	}
@@ -631,8 +610,7 @@ AcpiExCreateMethod(
 	 * Get the SyncLevel. If method is serialized, a mutex will be
 	 * created for this method when it is parsed.
 	 */
-	if (MethodFlags & AML_METHOD_SERIALIZED)
-	{
+	if (MethodFlags & AML_METHOD_SERIALIZED) {
 		ObjDesc->Method.InfoFlags = ACPI_METHOD_SERIALIZED;
 
 		/*

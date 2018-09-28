@@ -125,13 +125,13 @@ ACPI_MODULE_NAME("tbprint")
 
 static void
 AcpiTbFixString(
-    char                    *String,
-    ACPI_SIZE               Length);
+        char                    *String,
+        ACPI_SIZE               Length);
 
 static void
 AcpiTbCleanupTableHeader(
-    ACPI_TABLE_HEADER       *OutHeader,
-    ACPI_TABLE_HEADER       *Header);
+        ACPI_TABLE_HEADER       *OutHeader,
+        ACPI_TABLE_HEADER       *Header);
 
 
 /*******************************************************************************
@@ -150,16 +150,13 @@ AcpiTbCleanupTableHeader(
 
 static void
 AcpiTbFixString(
-    char                    *String,
-    ACPI_SIZE               Length)
+        char                    *String,
+        ACPI_SIZE               Length)
 {
 
-	while (Length && *String)
-	{
+	while (Length && *String) {
 		if (!isprint((int) *String))
-		{
 			*String = '?';
-		}
 
 		String++;
 		Length--;
@@ -183,8 +180,8 @@ AcpiTbFixString(
 
 static void
 AcpiTbCleanupTableHeader(
-    ACPI_TABLE_HEADER       *OutHeader,
-    ACPI_TABLE_HEADER       *Header)
+        ACPI_TABLE_HEADER       *OutHeader,
+        ACPI_TABLE_HEADER       *Header)
 {
 
 	memcpy(OutHeader, Header, sizeof(ACPI_TABLE_HEADER));
@@ -211,22 +208,19 @@ AcpiTbCleanupTableHeader(
 
 void
 AcpiTbPrintTableHeader(
-    ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_TABLE_HEADER       *Header)
+        ACPI_PHYSICAL_ADDRESS   Address,
+        ACPI_TABLE_HEADER       *Header)
 {
 	ACPI_TABLE_HEADER       LocalHeader;
 
 
-	if (ACPI_COMPARE_NAME(Header->Signature, ACPI_SIG_FACS))
-	{
+	if (ACPI_COMPARE_NAME(Header->Signature, ACPI_SIG_FACS)) {
 		/* FACS only has signature and length fields */
 
 		ACPI_INFO(("%-4.4s 0x%8.8X%8.8X %06X",
 		           Header->Signature, ACPI_FORMAT_UINT64(Address),
 		           Header->Length));
-	}
-	else if (ACPI_VALIDATE_RSDP_SIG(Header->Signature))
-	{
+	} else if (ACPI_VALIDATE_RSDP_SIG(Header->Signature)) {
 		/* RSDP has no common fields */
 
 		memcpy(LocalHeader.OemId, ACPI_CAST_PTR(ACPI_TABLE_RSDP,
@@ -239,20 +233,18 @@ AcpiTbPrintTableHeader(
 		           ACPI_CAST_PTR(ACPI_TABLE_RSDP, Header)->Length : 20,
 		           ACPI_CAST_PTR(ACPI_TABLE_RSDP, Header)->Revision,
 		           LocalHeader.OemId));
-	}
-	else
-	{
+	} else {
 		/* Standard ACPI table with full common header */
 
 		AcpiTbCleanupTableHeader(&LocalHeader, Header);
 
 		ACPI_INFO((
-		              "%-4.4s 0x%8.8X%8.8X"
-		              " %06X (v%.2d %-6.6s %-8.8s %08X %-4.4s %08X)",
-		              LocalHeader.Signature, ACPI_FORMAT_UINT64(Address),
-		              LocalHeader.Length, LocalHeader.Revision, LocalHeader.OemId,
-		              LocalHeader.OemTableId, LocalHeader.OemRevision,
-		              LocalHeader.AslCompilerId, LocalHeader.AslCompilerRevision));
+		                  "%-4.4s 0x%8.8X%8.8X"
+		                  " %06X (v%.2d %-6.6s %-8.8s %08X %-4.4s %08X)",
+		                  LocalHeader.Signature, ACPI_FORMAT_UINT64(Address),
+		                  LocalHeader.Length, LocalHeader.Revision, LocalHeader.OemId,
+		                  LocalHeader.OemTableId, LocalHeader.OemRevision,
+		                  LocalHeader.AslCompilerId, LocalHeader.AslCompilerRevision));
 	}
 }
 
@@ -273,8 +265,8 @@ AcpiTbPrintTableHeader(
 
 ACPI_STATUS
 AcpiTbVerifyChecksum(
-    ACPI_TABLE_HEADER       *Table,
-    UINT32                  Length)
+        ACPI_TABLE_HEADER       *Table,
+        UINT32                  Length)
 {
 	UINT8                   Checksum;
 
@@ -285,10 +277,8 @@ AcpiTbVerifyChecksum(
 	 */
 
 	if (ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_S3PT) ||
-	        ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_FACS))
-	{
+	    ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_FACS))
 		return (AE_OK);
-	}
 
 	/* Compute the checksum on the table */
 
@@ -296,8 +286,7 @@ AcpiTbVerifyChecksum(
 
 	/* Checksum ok? (should be zero) */
 
-	if (Checksum)
-	{
+	if (Checksum) {
 		ACPI_BIOS_WARNING((AE_INFO,
 		                   "Incorrect checksum in table [%4.4s] - 0x%2.2X, "
 		                   "should be 0x%2.2X",
@@ -328,17 +317,15 @@ AcpiTbVerifyChecksum(
 
 UINT8
 AcpiTbChecksum(
-    UINT8                   *Buffer,
-    UINT32                  Length)
+        UINT8                   *Buffer,
+        UINT32                  Length)
 {
 	UINT8                   Sum = 0;
 	UINT8                   *End = Buffer + Length;
 
 
 	while (Buffer < End)
-	{
 		Sum = (UINT8)(Sum + * (Buffer++));
-	}
 
 	return (Sum);
 }

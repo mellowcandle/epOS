@@ -147,9 +147,9 @@ ACPI_MODULE_NAME("exdebug")
 
 void
 AcpiExDoDebugObject(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    UINT32                  Level,
-    UINT32                  Index)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        UINT32                  Level,
+        UINT32                  Index)
 {
 	UINT32                  i;
 	UINT32                  Timer;
@@ -163,21 +163,17 @@ AcpiExDoDebugObject(
 	/* Output must be enabled via the DebugObject global or the DbgLevel */
 
 	if (!AcpiGbl_EnableAmlDebugObject &&
-	        !(AcpiDbgLevel & ACPI_LV_DEBUG_OBJECT))
-	{
+	    !(AcpiDbgLevel & ACPI_LV_DEBUG_OBJECT))
 		return_VOID;
-	}
 
 	/* Null string or newline -- don't emit the line header */
 
 	if (SourceDesc &&
-	        (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc) == ACPI_DESC_TYPE_OPERAND) &&
-	        (SourceDesc->Common.Type == ACPI_TYPE_STRING))
-	{
+	    (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc) == ACPI_DESC_TYPE_OPERAND) &&
+	    (SourceDesc->Common.Type == ACPI_TYPE_STRING)) {
 		if ((SourceDesc->String.Length == 0) ||
-		        ((SourceDesc->String.Length == 1) &&
-		         (*SourceDesc->String.Pointer == '\n')))
-		{
+		    ((SourceDesc->String.Length == 1) &&
+		     (*SourceDesc->String.Pointer == '\n'))) {
 			AcpiOsPrintf("\n");
 			return_VOID;
 		}
@@ -187,10 +183,8 @@ AcpiExDoDebugObject(
 	 * Print line header as long as we are not in the middle of an
 	 * object display
 	 */
-	if (!((Level > 0) && Index == 0))
-	{
-		if (AcpiGbl_DisplayDebugTimer)
-		{
+	if (!((Level > 0) && Index == 0)) {
+		if (AcpiGbl_DisplayDebugTimer) {
 			/*
 			 * We will emit the current timer value (in microseconds) with each
 			 * debug output. Only need the lower 26 bits. This allows for 67
@@ -202,69 +196,50 @@ AcpiExDoDebugObject(
 			Timer &= 0x03FFFFFF;
 
 			AcpiOsPrintf("[ACPI Debug T=0x%8.8X] %*s", Timer, Level, " ");
-		}
-		else
-		{
+		} else
 			AcpiOsPrintf("[ACPI Debug] %*s", Level, " ");
-		}
 	}
 
 	/* Display the index for package output only */
 
 	if (Index > 0)
-	{
 		AcpiOsPrintf("(%.2u) ", Index - 1);
-	}
 
-	if (!SourceDesc)
-	{
+	if (!SourceDesc) {
 		AcpiOsPrintf("[Null Object]\n");
 		return_VOID;
 	}
 
-	if (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc) == ACPI_DESC_TYPE_OPERAND)
-	{
+	if (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc) == ACPI_DESC_TYPE_OPERAND) {
 		/* No object type prefix needed for integers and strings */
 
 		if ((SourceDesc->Common.Type != ACPI_TYPE_INTEGER) &&
-		        (SourceDesc->Common.Type != ACPI_TYPE_STRING))
-		{
+		    (SourceDesc->Common.Type != ACPI_TYPE_STRING))
 			AcpiOsPrintf("%s  ", AcpiUtGetObjectTypeName(SourceDesc));
-		}
 
-		if (!AcpiUtValidInternalObject(SourceDesc))
-		{
+		if (!AcpiUtValidInternalObject(SourceDesc)) {
 			AcpiOsPrintf("%p, Invalid Internal Object!\n", SourceDesc);
 			return_VOID;
 		}
-	}
-	else if (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc) == ACPI_DESC_TYPE_NAMED)
-	{
+	} else if (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc) == ACPI_DESC_TYPE_NAMED) {
 		AcpiOsPrintf("%s  (Node %p)\n",
 		             AcpiUtGetTypeName(((ACPI_NAMESPACE_NODE *) SourceDesc)->Type),
 		             SourceDesc);
 		return_VOID;
-	}
-	else
-	{
+	} else
 		return_VOID;
-	}
 
 	/* SourceDesc is of type ACPI_DESC_TYPE_OPERAND */
 
-	switch (SourceDesc->Common.Type)
-	{
+	switch (SourceDesc->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 
 		/* Output correct integer width */
 
-		if (AcpiGbl_IntegerByteWidth == 4)
-		{
+		if (AcpiGbl_IntegerByteWidth == 4) {
 			AcpiOsPrintf("0x%8.8X\n",
 			             (UINT32) SourceDesc->Integer.Value);
-		}
-		else
-		{
+		} else {
 			AcpiOsPrintf("0x%8.8X%8.8X\n",
 			             ACPI_FORMAT_UINT64(SourceDesc->Integer.Value));
 		}
@@ -291,8 +266,7 @@ AcpiExDoDebugObject(
 
 		/* Output the entire contents of the package */
 
-		for (i = 0; i < SourceDesc->Package.Count; i++)
-		{
+		for (i = 0; i < SourceDesc->Package.Count; i++) {
 			AcpiExDoDebugObject(SourceDesc->Package.Elements[i],
 			                    Level + 4, i + 1);
 		}
@@ -305,8 +279,7 @@ AcpiExDoDebugObject(
 
 		/* Decode the reference */
 
-		switch (SourceDesc->Reference.Class)
-		{
+		switch (SourceDesc->Reference.Class) {
 		case ACPI_REFCLASS_INDEX:
 
 			AcpiOsPrintf("0x%X\n", SourceDesc->Reference.Value);
@@ -328,21 +301,16 @@ AcpiExDoDebugObject(
 
 		/* Check for valid node first, then valid object */
 
-		if (SourceDesc->Reference.Node)
-		{
+		if (SourceDesc->Reference.Node) {
 			if (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc->Reference.Node) !=
-			        ACPI_DESC_TYPE_NAMED)
-			{
+			    ACPI_DESC_TYPE_NAMED) {
 				AcpiOsPrintf(" %p - Not a valid namespace node\n",
 				             SourceDesc->Reference.Node);
-			}
-			else
-			{
+			} else {
 				AcpiOsPrintf("Node %p [%4.4s] ", SourceDesc->Reference.Node,
 				             (SourceDesc->Reference.Node)->Name.Ascii);
 
-				switch ((SourceDesc->Reference.Node)->Type)
-				{
+				switch ((SourceDesc->Reference.Node)->Type) {
 				/* These types have no attached object */
 
 				case ACPI_TYPE_DEVICE:
@@ -360,25 +328,19 @@ AcpiExDoDebugObject(
 					break;
 				}
 			}
-		}
-		else if (SourceDesc->Reference.Object)
-		{
+		} else if (SourceDesc->Reference.Object) {
 			if (ACPI_GET_DESCRIPTOR_TYPE(SourceDesc->Reference.Object) ==
-			        ACPI_DESC_TYPE_NAMED)
-			{
+			    ACPI_DESC_TYPE_NAMED) {
 				/* Reference object is a namespace node */
 
 				AcpiExDoDebugObject(ACPI_CAST_PTR(ACPI_OPERAND_OBJECT,
 				                                  SourceDesc->Reference.Object),
 				                    Level + 4, 0);
-			}
-			else
-			{
+			} else {
 				ObjectDesc = SourceDesc->Reference.Object;
 				Value = SourceDesc->Reference.Value;
 
-				switch (ObjectDesc->Common.Type)
-				{
+				switch (ObjectDesc->Common.Type) {
 				case ACPI_TYPE_BUFFER:
 
 					AcpiOsPrintf("Buffer[%u] = 0x%2.2X\n",
@@ -397,11 +359,8 @@ AcpiExDoDebugObject(
 					AcpiOsPrintf("Package[%u] = ", Value);
 
 					if (!(*SourceDesc->Reference.Where))
-					{
 						AcpiOsPrintf("[Uninitialized Package Element]\n");
-					}
-					else
-					{
+					else {
 						AcpiExDoDebugObject(*SourceDesc->Reference.Where,
 						                    Level + 4, 0);
 					}

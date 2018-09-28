@@ -126,8 +126,7 @@ ACPI_MODULE_NAME("utpredef")
  * Names for the types that can be returned by the predefined objects.
  * Used for warning messages. Must be in the same order as the ACPI_RTYPEs
  */
-static const char   *UtRtypeNames[] =
-{
+static const char   *UtRtypeNames[] = {
 	"/Integer",
 	"/String",
 	"/Buffer",
@@ -152,7 +151,7 @@ static const char   *UtRtypeNames[] =
 
 const ACPI_PREDEFINED_INFO *
 AcpiUtGetNextPredefinedMethod(
-    const ACPI_PREDEFINED_INFO  *ThisName)
+        const ACPI_PREDEFINED_INFO  *ThisName)
 {
 
 	/*
@@ -160,10 +159,8 @@ AcpiUtGetNextPredefinedMethod(
 	 * (next entry contains the package info)
 	 */
 	if ((ThisName->Info.ExpectedBtypes & ACPI_RTYPE_PACKAGE) &&
-	        (ThisName->Info.ExpectedBtypes != ACPI_RTYPE_ALL))
-	{
+	    (ThisName->Info.ExpectedBtypes != ACPI_RTYPE_ALL))
 		ThisName++;
-	}
 
 	ThisName++;
 	return (ThisName);
@@ -184,7 +181,7 @@ AcpiUtGetNextPredefinedMethod(
 
 const ACPI_PREDEFINED_INFO *
 AcpiUtMatchPredefinedMethod(
-    char                        *Name)
+        char                        *Name)
 {
 	const ACPI_PREDEFINED_INFO  *ThisName;
 
@@ -192,20 +189,15 @@ AcpiUtMatchPredefinedMethod(
 	/* Quick check for a predefined name, first character must be underscore */
 
 	if (Name[0] != '_')
-	{
 		return (NULL);
-	}
 
 	/* Search info table for a predefined method/object name */
 
 	ThisName = AcpiGbl_PredefinedMethods;
 
-	while (ThisName->Info.Name[0])
-	{
+	while (ThisName->Info.Name[0]) {
 		if (ACPI_COMPARE_NAME(Name, ThisName->Info.Name))
-		{
 			return (ThisName);
-		}
 
 		ThisName = AcpiUtGetNextPredefinedMethod(ThisName);
 	}
@@ -229,16 +221,15 @@ AcpiUtMatchPredefinedMethod(
 
 void
 AcpiUtGetExpectedReturnTypes(
-    char                    *Buffer,
-    UINT32                  ExpectedBtypes)
+        char                    *Buffer,
+        UINT32                  ExpectedBtypes)
 {
 	UINT32                  ThisRtype;
 	UINT32                  i;
 	UINT32                  j;
 
 
-	if (!ExpectedBtypes)
-	{
+	if (!ExpectedBtypes) {
 		strcpy(Buffer, "NONE");
 		return;
 	}
@@ -247,12 +238,10 @@ AcpiUtGetExpectedReturnTypes(
 	Buffer[0] = 0;
 	ThisRtype = ACPI_RTYPE_INTEGER;
 
-	for (i = 0; i < ACPI_NUM_RTYPES; i++)
-	{
+	for (i = 0; i < ACPI_NUM_RTYPES; i++) {
 		/* If one of the expected types, concatenate the name of this type */
 
-		if (ExpectedBtypes & ThisRtype)
-		{
+		if (ExpectedBtypes & ThisRtype) {
 			strcat(Buffer, &UtRtypeNames[i][j]);
 			j = 0;              /* Use name separator from now on */
 		}
@@ -274,8 +263,8 @@ AcpiUtGetExpectedReturnTypes(
 
 static UINT32
 AcpiUtGetArgumentTypes(
-    char                    *Buffer,
-    UINT16                  ArgumentTypes);
+        char                    *Buffer,
+        UINT16                  ArgumentTypes);
 
 
 /* Types that can be returned externally by a predefined name */
@@ -291,8 +280,7 @@ static const char   *UtExternalTypeNames[] = /* Indexed by ACPI_TYPE_* */
 
 /* Bit widths for resource descriptor predefined names */
 
-static const char   *UtResourceTypeNames[] =
-{
+static const char   *UtResourceTypeNames[] = {
 	"/1",
 	"/2",
 	"/3",
@@ -320,7 +308,7 @@ static const char   *UtResourceTypeNames[] =
 
 const ACPI_PREDEFINED_INFO *
 AcpiUtMatchResourceName(
-    char                        *Name)
+        char                        *Name)
 {
 	const ACPI_PREDEFINED_INFO  *ThisName;
 
@@ -330,20 +318,15 @@ AcpiUtMatchResourceName(
 	 * be underscore
 	 */
 	if (Name[0] != '_')
-	{
 		return (NULL);
-	}
 
 	/* Search info table for a predefined method/object name */
 
 	ThisName = AcpiGbl_ResourceNames;
 
-	while (ThisName->Info.Name[0])
-	{
+	while (ThisName->Info.Name[0]) {
 		if (ACPI_COMPARE_NAME(Name, ThisName->Info.Name))
-		{
 			return (ThisName);
-		}
 
 		ThisName++;
 	}
@@ -370,9 +353,9 @@ AcpiUtMatchResourceName(
 
 void
 AcpiUtDisplayPredefinedMethod(
-    char                        *Buffer,
-    const ACPI_PREDEFINED_INFO  *ThisName,
-    BOOLEAN                     MultiLine)
+        char                        *Buffer,
+        const ACPI_PREDEFINED_INFO  *ThisName,
+        BOOLEAN                     MultiLine)
 {
 	UINT32                      ArgCount;
 
@@ -384,9 +367,7 @@ AcpiUtDisplayPredefinedMethod(
 	                                  ThisName->Info.ArgumentList);
 
 	if (MultiLine)
-	{
 		printf("      ");
-	}
 
 	printf("%4.4s    Requires %s%u argument%s",
 	       ThisName->Info.Name,
@@ -397,26 +378,18 @@ AcpiUtDisplayPredefinedMethod(
 	/* Display the types for any arguments */
 
 	if (ArgCount > 0)
-	{
 		printf(" (%s)", Buffer);
-	}
 
 	if (MultiLine)
-	{
 		printf("\n    ");
-	}
 
 	/* Get the return value type(s) allowed */
 
-	if (ThisName->Info.ExpectedBtypes)
-	{
+	if (ThisName->Info.ExpectedBtypes) {
 		AcpiUtGetExpectedReturnTypes(Buffer, ThisName->Info.ExpectedBtypes);
 		printf("  Return value types: %s\n", Buffer);
-	}
-	else
-	{
+	} else
 		printf("  No return value\n");
-	}
 }
 
 
@@ -437,8 +410,8 @@ AcpiUtDisplayPredefinedMethod(
 
 static UINT32
 AcpiUtGetArgumentTypes(
-    char                    *Buffer,
-    UINT16                  ArgumentTypes)
+        char                    *Buffer,
+        UINT16                  ArgumentTypes)
 {
 	UINT16                  ThisArgumentType;
 	UINT16                  SubIndex;
@@ -453,8 +426,7 @@ AcpiUtGetArgumentTypes(
 
 	ArgCount = METHOD_GET_ARG_COUNT(ArgumentTypes);
 
-	if (ArgCount > METHOD_PREDEF_ARGS_MAX)
-	{
+	if (ArgCount > METHOD_PREDEF_ARGS_MAX) {
 		printf("**** Invalid argument count (%u) "
 		       "in predefined info structure\n", ArgCount);
 		return (ArgCount);
@@ -462,12 +434,10 @@ AcpiUtGetArgumentTypes(
 
 	/* Get each argument from the list, convert to ascii, store to buffer */
 
-	for (i = 0; i < ArgCount; i++)
-	{
+	for (i = 0; i < ArgCount; i++) {
 		ThisArgumentType = METHOD_GET_NEXT_TYPE(ArgumentTypes);
 
-		if (!ThisArgumentType || (ThisArgumentType > METHOD_MAX_ARG_TYPE))
-		{
+		if (!ThisArgumentType || (ThisArgumentType > METHOD_MAX_ARG_TYPE)) {
 			printf("**** Invalid argument type (%u) "
 			       "in predefined info structure\n", ThisArgumentType);
 			return (ArgCount);
@@ -496,8 +466,8 @@ AcpiUtGetArgumentTypes(
 
 UINT32
 AcpiUtGetResourceBitWidth(
-    char                    *Buffer,
-    UINT16                  Types)
+        char                    *Buffer,
+        UINT16                  Types)
 {
 	UINT32                  i;
 	UINT16                  SubIndex;
@@ -508,10 +478,8 @@ AcpiUtGetResourceBitWidth(
 	SubIndex = 1;
 	Found = 0;
 
-	for (i = 0; i < NUM_RESOURCE_WIDTHS; i++)
-	{
-		if (Types & 1)
-		{
+	for (i = 0; i < NUM_RESOURCE_WIDTHS; i++) {
+		if (Types & 1) {
 			strcat(Buffer, &(UtResourceTypeNames[i][SubIndex]));
 			SubIndex = 0;
 			Found++;

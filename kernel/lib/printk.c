@@ -51,8 +51,7 @@
 
 static char buffer[256] = {0};
 
-typedef struct
-{
+typedef struct {
 	bool enabled;
 	log_func func;
 } logger_t;
@@ -61,7 +60,8 @@ typedef struct
 #define MAX_LOGGERS 5
 
 static logger_t loggers[MAX_LOGGERS] = {{0, NULL}};
-static char *itoa(unsigned long long value, char *str, int base, int width, int precision, int flags)
+static char *itoa(unsigned long long value, char *str, int base, int width, int precision,
+                  int flags)
 {
 
 	char digits[] = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
@@ -76,8 +76,7 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 	unsigned long long original = value;
 
 	// Check for supported base.
-	if (base < 2 || base > 36)
-	{
+	if (base < 2 || base > 36) {
 		*str = '\0';
 		return str;
 	}
@@ -89,22 +88,16 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 
 	// Set '-', '+' or + ' ' according to flags and sign
 
-	switch (GET_LENGTH(flags))
-	{
-	case LENGTH_HH:
-	{
-		if (flags & SIGNED)
-		{
-			if ((signed char)value < 0)
-			{
+	switch (GET_LENGTH(flags)) {
+	case LENGTH_HH: {
+		if (flags & SIGNED) {
+			if ((signed char)value < 0) {
 				sign = '-';
 				value = - (signed char) value;
 				goto negative;
 			}
 
-		}
-		else
-		{
+		} else {
 			value &= 0xFF;
 			goto negative;
 		}
@@ -113,17 +106,13 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 	break;
 
 	case LENGTH_H:
-		if (flags & SIGNED)
-		{
-			if ((signed short)value < 0)
-			{
+		if (flags & SIGNED) {
+			if ((signed short)value < 0) {
 				sign = '-';
 				value = - (signed short) value;
 				goto negative;
 			}
-		}
-		else
-		{
+		} else {
 			value &= 0xFFFF;
 			goto negative;
 		}
@@ -131,17 +120,13 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 		break;
 
 	case LENGTH_L:
-		if (flags & SIGNED)
-		{
-			if ((signed int)value < 0)
-			{
+		if (flags & SIGNED) {
+			if ((signed int)value < 0) {
 				sign = '-';
 				value = - (signed int) value;
 				goto negative;
 			}
-		}
-		else
-		{
+		} else {
 			value &= 0xFFFFFFFF;
 			goto negative;
 		}
@@ -150,10 +135,8 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 
 
 	case LENGTH_LL:
-		if (flags & SIGNED)
-		{
-			if ((signed long long)value < 0)
-			{
+		if (flags & SIGNED) {
+			if ((signed long long)value < 0) {
 				sign = '-';
 				value = - (signed long long) value;
 				goto negative;
@@ -167,13 +150,9 @@ static char *itoa(unsigned long long value, char *str, int base, int width, int 
 	}
 
 	if (flags & PLUS_MANDATORY)
-	{
 		sign = '+';
-	}
 	else if (flags & SPACE_SIGN)
-	{
 		sign = ' ';
-	}
 
 negative:
 	// Remember where the numbers start.
@@ -181,106 +160,73 @@ negative:
 
 
 	if ((value == 0) && (precision == 0))
-	{
 		goto skip_div;
-	}
 
 	// The actual conversion.
-	do
-	{
+	do {
 		// Modulo is negative for negative value. This trick makes abs() unnecessary.
 		*ptr++ = digits_ptr[35 + value % base];
 		value /= base;
-	}
-	while (value);
+	} while (value);
 
 skip_div:
 	len = ptr - low;
 
-	if (precision > len)
-	{
+	if (precision > len) {
 		precision -= len;
 
 		while (precision--)
-		{
 			*ptr++ = '0';
-		}
 	}
 
 
-	if (original && (flags & PRECEEDED_WITH) && (fill_char != '0'))
-	{
-		if (base == 16)
-		{
+	if (original && (flags & PRECEEDED_WITH) && (fill_char != '0')) {
+		if (base == 16) {
 			if (flags & CAPS)
-			{
 				*ptr++ = 'X';
-			}
 			else
-			{
 				*ptr++ = 'x';
-			}
 		}
 
 		*ptr++ = '0';
 	}
 
-	if ((sign) && (fill_char == ' '))
-	{
+	if ((sign) && (fill_char == ' ')) {
 		*ptr++ = sign;
 		sign = 0;
 	}
 
-	if (width)
-	{
+	if (width) {
 		if (width <= (ptr - low))
-		{
 			width = 0;
-		}
-		else
-		{
+		else {
 			width -= ptr - low;
 
 			if (sign)
-			{
 				width--;
-			}
 
-			if ((fill_char == '0') && (original) && (flags & PRECEEDED_WITH))
-			{
+			if ((fill_char == '0') && (original) && (flags & PRECEEDED_WITH)) {
 				width--;
 
 				if (base == 16)
-				{
 					width --;
-				}
 			}
 
 			if (!(flags & LEFT_JUSTIFY))
 				for (int i = 0; i < width; i++)
-				{
 					*ptr++ = fill_char;
-				}
 		}
 	}
 
 	if (sign)
-	{
 		*ptr++ = sign;
-	}
 
-	if (original && (flags & PRECEEDED_WITH) && (fill_char == '0'))
-	{
-		if (base == 16)
-		{
+	if (original && (flags & PRECEEDED_WITH) && (fill_char == '0')) {
+		if (base == 16) {
 			if (flags & CAPS)
-			{
 				*ptr++ = 'X';
-			}
 			else
-			{
 				*ptr++ = 'x';
-			}
 		}
 
 		*ptr++ = '0';
@@ -291,21 +237,17 @@ skip_div:
 	end = ptr + 1;
 
 	// Invert the numbers.
-	while (low < ptr)
-	{
+	while (low < ptr) {
 		char tmp = *low;
 		*low++ = *ptr;
 		*ptr-- = tmp;
 	}
 
-	if (width && (flags & LEFT_JUSTIFY))
-	{
+	if (width && (flags & LEFT_JUSTIFY)) {
 		ptr = end;
 
 		for (int i = 0; i < width; i++)
-		{
 			*ptr++ = fill_char;
-		}
 
 		*ptr-- = '\0';
 		end = ptr + 1;
@@ -319,9 +261,7 @@ static int skip_atoi(const char **string)
 	int i = 0;
 
 	while (isdigit(**string))
-	{
 		i = i * 10 + *((*string)++) - '0';
-	}
 
 	return i;
 }
@@ -336,21 +276,15 @@ int do_printk(char *buffer, const char *fmt, va_list args)
 	int base;
 	char c;
 
-	while (*fmt)
-	{
+	while (*fmt) {
 		if (*fmt != '%')
-		{
 			*buffer++ = *fmt++;
-		}
-		else // Formatting in place... :)
-		{
+		else { // Formatting in place... :)
 			fmt++;
 
-			while (1)
-			{
+			while (1) {
 				/* Check for flags */
-				switch (*fmt)
-				{
+				switch (*fmt) {
 
 				case '-':
 					flags |= LEFT_JUSTIFY;
@@ -384,70 +318,50 @@ width:
 
 			field_width = 0;
 
-			if (*fmt == '*')
-			{
+			if (*fmt == '*') {
 				field_width = va_arg(args, int);
 				fmt++;
-			}
-			else if (isdigit(*fmt))
-			{
+			} else if (isdigit(*fmt))
 				field_width = skip_atoi(&fmt);
-			}
 
 			/* Precision flags */
 			field_precision = -1;
 
-			if (*fmt == '.')
-			{
+			if (*fmt == '.') {
 				fmt++;
 
-				if (*fmt == '*')
-				{
+				if (*fmt == '*') {
 					field_precision = va_arg(args, int);
 					fmt++;
-				}
-				else if (isdigit(*fmt))
-				{
+				} else if (isdigit(*fmt))
 					field_precision = skip_atoi(&fmt);
-				}
 				else
-				{
 					field_precision = 0;
-				}
 			}
 
 
 			/* Length specs */
 
-			switch (*fmt)
-			{
+			switch (*fmt) {
 			case 'h':
 				fmt++;
 
-				if (*fmt == 'h')
-				{
+				if (*fmt == 'h') {
 					SET_LENGTH(flags, LENGTH_HH);
 					fmt++;
-				}
-				else
-				{
+				} else
 					SET_LENGTH(flags, LENGTH_H);
-				}
 
 				break;
 
 			case 'l':
 				fmt++;
 
-				if (*fmt == 'l')
-				{
+				if (*fmt == 'l') {
 					SET_LENGTH(flags, LENGTH_LL);
 					fmt++;
-				}
-				else
-				{
+				} else
 					SET_LENGTH(flags, LENGTH_L);
-				}
 
 				break;
 
@@ -457,8 +371,7 @@ width:
 			}
 
 			/* Get the specifier base and set caps */
-			switch (*fmt)
-			{
+			switch (*fmt) {
 			case 'd':
 			case 'i':
 			case 'u':
@@ -485,17 +398,13 @@ width:
 				break;
 			}
 
-			switch (*fmt)
-			{
+			switch (*fmt) {
 			case 'd':
 			case 'i':
-				if (GET_LENGTH(flags) == LENGTH_LL)
-				{
+				if (GET_LENGTH(flags) == LENGTH_LL) {
 					buffer = itoa(va_arg(args, long long), buffer, base, field_width,
 					              field_precision, flags | SIGNED);
-				}
-				else
-				{
+				} else {
 					buffer = itoa(va_arg(args, int), buffer, base, field_width,
 					              field_precision, flags | SIGNED);
 				}
@@ -508,13 +417,10 @@ width:
 			case 'X':
 			case 'p':
 			case 'b':
-				if (GET_LENGTH(flags) == LENGTH_LL)
-				{
+				if (GET_LENGTH(flags) == LENGTH_LL) {
 					buffer = itoa(va_arg(args, unsigned long long), buffer, base, field_width,
 					              field_precision, flags);
-				}
-				else
-				{
+				} else {
 					buffer = itoa(va_arg(args, unsigned int), buffer, base, field_width,
 					              field_precision, flags);
 				}
@@ -525,64 +431,45 @@ width:
 				ptr = va_arg(args, char *);
 
 				if (!ptr)
-				{
 					ptr = "<NULL>";
-				}
 
 				if (field_precision == -1)
-				{
 					field_precision = strlen(ptr);
-				}
-				else if (field_precision > (int) strlen(ptr))
-				{
+				else if (field_precision > (int) strlen(ptr)) {
 					field_precision = strlen(ptr);    // To avoid printing more than the actual string length
 				}
 
 
 				if ((field_width) && (field_width - field_precision > 0) && !(flags & LEFT_JUSTIFY))
 					for (int i = 0; i < field_width - field_precision; i++)
-					{
 						*buffer++ = ' ';
-					}
 
 				for (int i = 0; i < field_precision; i++)
-				{
 					(*buffer++ = *ptr++);
-				}
 
 				if ((field_width) && (field_width - field_precision > 0) && (flags & LEFT_JUSTIFY))
 					for (int i = 0; i < field_width - field_precision; i++)
-					{
 						*buffer++ = ' ';
-					}
 
 				break;
 
 			case 'c':
 				c = (char) va_arg(args, int);
 
-				if (!(flags & LEFT_JUSTIFY))
-				{
+				if (!(flags & LEFT_JUSTIFY)) {
 					while (--field_width > 0)
-					{
 						*buffer++ = ' ';
-					}
 				}
 
 				if (isascii(c))
-				{
 					*buffer++ = c;
-				}
 
 				while (--field_width > 0) // Left justify
-				{
 					*buffer++ = ' ';
-				}
 
 				break;
 
-			case 'n': // For completness, I don't see a reason for using this
-			{
+			case 'n': { // For completness, I don't see a reason for using this
 				int *n_ptr = va_arg(args, int *);
 				*n_ptr = buffer - begin;
 			}
@@ -612,12 +499,9 @@ void register_logger(log_func func)
 
 	for (i = 0; i < MAX_LOGGERS; i++)
 		if (!loggers[i].enabled)
-		{
 			break;
-		}
 
-	if (i == MAX_LOGGERS)
-	{
+	if (i == MAX_LOGGERS) {
 		pr_error("No place for additional logger\r\n");
 		return;
 	}
@@ -633,9 +517,7 @@ int vprintk(const char *format, va_list arg)
 
 	for (int i = 0; i < MAX_LOGGERS; i++)
 		if (loggers[i].enabled)
-		{
 			loggers[i].func(buffer);
-		}
 
 	return done;
 
@@ -651,9 +533,7 @@ int printk(const char *format, ...)
 
 	for (int i = 0; i < MAX_LOGGERS; i++)
 		if (loggers[i].enabled)
-		{
 			loggers[i].func(buffer);
-		}
 
 	return done;
 }
@@ -673,12 +553,9 @@ int sprintk(char *buf, const char *format, ...)
 
 void hex_dump(void *ptr, uint32_t len)
 {
-	for (uint32_t i = 0; i < len; i++)
-	{
+	for (uint32_t i = 0; i < len; i++) {
 		if ((i % 16 == 0) && (i != 0))
-		{
 			printk("\r\n");
-		}
 
 		printk("0x%.2hhX ", ((char *)ptr)[i]);
 

@@ -142,8 +142,8 @@ ACPI_MODULE_NAME("nsparse")
 
 ACPI_STATUS
 AcpiNsExecuteTable(
-    UINT32                  TableIndex,
-    ACPI_NAMESPACE_NODE     *StartNode)
+        UINT32                  TableIndex,
+        ACPI_NAMESPACE_NODE     *StartNode)
 {
 	ACPI_STATUS             Status;
 	ACPI_TABLE_HEADER       *Table;
@@ -160,16 +160,12 @@ AcpiNsExecuteTable(
 	Status = AcpiGetTableByIndex(TableIndex, &Table);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Table must consist of at least a complete header */
 
 	if (Table->Length < sizeof(ACPI_TABLE_HEADER))
-	{
 		return_ACPI_STATUS(AE_BAD_HEADER);
-	}
 
 	AmlStart = (UINT8 *) Table + sizeof(ACPI_TABLE_HEADER);
 	AmlLength = Table->Length - sizeof(ACPI_TABLE_HEADER);
@@ -177,25 +173,20 @@ AcpiNsExecuteTable(
 	Status = AcpiTbGetOwnerId(TableIndex, &OwnerId);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Create, initialize, and link a new temporary method object */
 
 	MethodObj = AcpiUtCreateInternalObject(ACPI_TYPE_METHOD);
 
 	if (!MethodObj)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Allocate the evaluation information block */
 
 	Info = ACPI_ALLOCATE_ZEROED(sizeof(ACPI_EVALUATE_INFO));
 
-	if (!Info)
-	{
+	if (!Info) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -214,8 +205,7 @@ AcpiNsExecuteTable(
 	Info->NodeFlags = Info->Node->Flags;
 	Info->FullPathname = AcpiNsGetNormalizedPathname(Info->Node, TRUE);
 
-	if (!Info->FullPathname)
-	{
+	if (!Info->FullPathname) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -224,8 +214,7 @@ AcpiNsExecuteTable(
 
 Cleanup:
 
-	if (Info)
-	{
+	if (Info) {
 		ACPI_FREE(Info->FullPathname);
 		Info->FullPathname = NULL;
 	}
@@ -251,9 +240,9 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsOneCompleteParse(
-    UINT32                  PassNumber,
-    UINT32                  TableIndex,
-    ACPI_NAMESPACE_NODE     *StartNode)
+        UINT32                  PassNumber,
+        UINT32                  TableIndex,
+        ACPI_NAMESPACE_NODE     *StartNode)
 {
 	ACPI_PARSE_OBJECT       *ParseRoot;
 	ACPI_STATUS             Status;
@@ -270,16 +259,12 @@ AcpiNsOneCompleteParse(
 	Status = AcpiGetTableByIndex(TableIndex, &Table);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Table must consist of at least a complete header */
 
 	if (Table->Length < sizeof(ACPI_TABLE_HEADER))
-	{
 		return_ACPI_STATUS(AE_BAD_HEADER);
-	}
 
 	AmlStart = (UINT8 *) Table + sizeof(ACPI_TABLE_HEADER);
 	AmlLength = Table->Length - sizeof(ACPI_TABLE_HEADER);
@@ -287,25 +272,20 @@ AcpiNsOneCompleteParse(
 	Status = AcpiTbGetOwnerId(TableIndex, &OwnerId);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Create and init a Root Node */
 
 	ParseRoot = AcpiPsCreateScopeOp(AmlStart);
 
 	if (!ParseRoot)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Create and initialize a new walk state */
 
 	WalkState = AcpiDsCreateWalkState(OwnerId, NULL, NULL, NULL);
 
-	if (!WalkState)
-	{
+	if (!WalkState) {
 		AcpiPsFreeOp(ParseRoot);
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
@@ -313,8 +293,7 @@ AcpiNsOneCompleteParse(
 	Status = AcpiDsInitAmlWalk(WalkState, ParseRoot, NULL,
 	                           AmlStart, AmlLength, NULL, (UINT8) PassNumber);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		AcpiDsDeleteWalkState(WalkState);
 		goto Cleanup;
 	}
@@ -322,20 +301,16 @@ AcpiNsOneCompleteParse(
 	/* Found OSDT table, enable the namespace override feature */
 
 	if (ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_OSDT) &&
-	        PassNumber == ACPI_IMODE_LOAD_PASS1)
-	{
+	    PassNumber == ACPI_IMODE_LOAD_PASS1)
 		WalkState->NamespaceOverride = TRUE;
-	}
 
 	/* StartNode is the default location to load the table  */
 
-	if (StartNode && StartNode != AcpiGbl_RootNode)
-	{
+	if (StartNode && StartNode != AcpiGbl_RootNode) {
 		Status = AcpiDsScopeStackPush(
-		             StartNode, ACPI_TYPE_METHOD, WalkState);
+		                 StartNode, ACPI_TYPE_METHOD, WalkState);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			AcpiDsDeleteWalkState(WalkState);
 			goto Cleanup;
 		}
@@ -370,8 +345,8 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsParseTable(
-    UINT32                  TableIndex,
-    ACPI_NAMESPACE_NODE     *StartNode)
+        UINT32                  TableIndex,
+        ACPI_NAMESPACE_NODE     *StartNode)
 {
 	ACPI_STATUS             Status;
 
@@ -379,19 +354,14 @@ AcpiNsParseTable(
 	ACPI_FUNCTION_TRACE(NsParseTable);
 
 
-	if (AcpiGbl_ParseTableAsTermList)
-	{
+	if (AcpiGbl_ParseTableAsTermList) {
 		ACPI_DEBUG_PRINT((ACPI_DB_PARSE, "**** Start load pass\n"));
 
 		Status = AcpiNsExecuteTable(TableIndex, StartNode);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
-	}
-	else
-	{
+	} else {
 		/*
 		 * AML Parse, pass 1
 		 *
@@ -408,9 +378,7 @@ AcpiNsParseTable(
 		                                TableIndex, StartNode);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
 		/*
 		 * AML Parse, pass 2
@@ -426,9 +394,7 @@ AcpiNsParseTable(
 		                                TableIndex, StartNode);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 	return_ACPI_STATUS(Status);

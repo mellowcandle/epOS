@@ -124,8 +124,7 @@
 
 /* Types for AcpiOsExecute */
 
-typedef enum
-{
+typedef enum {
 	OSL_GLOBAL_LOCK_HANDLER,
 	OSL_NOTIFY_HANDLER,
 	OSL_GPE_HANDLER,
@@ -145,8 +144,7 @@ typedef enum
 #define ACPI_SIGNAL_FATAL           0
 #define ACPI_SIGNAL_BREAKPOINT      1
 
-typedef struct acpi_signal_fatal_info
-{
+typedef struct acpi_signal_fatal_info {
 	UINT32                  Type;
 	UINT32                  Code;
 	UINT32                  Argument;
@@ -160,13 +158,13 @@ typedef struct acpi_signal_fatal_info
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
 ACPI_STATUS
 AcpiOsInitialize(
-    void);
+        void);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
 ACPI_STATUS
 AcpiOsTerminate(
-    void);
+        void);
 #endif
 
 
@@ -176,29 +174,29 @@ AcpiOsTerminate(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetRootPointer
 ACPI_PHYSICAL_ADDRESS
 AcpiOsGetRootPointer(
-    void);
+        void);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsPredefinedOverride
 ACPI_STATUS
 AcpiOsPredefinedOverride(
-    const ACPI_PREDEFINED_NAMES *InitVal,
-    ACPI_STRING                 *NewVal);
+        const ACPI_PREDEFINED_NAMES *InitVal,
+        ACPI_STRING                 *NewVal);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTableOverride
 ACPI_STATUS
 AcpiOsTableOverride(
-    ACPI_TABLE_HEADER       *ExistingTable,
-    ACPI_TABLE_HEADER       **NewTable);
+        ACPI_TABLE_HEADER       *ExistingTable,
+        ACPI_TABLE_HEADER       **NewTable);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsPhysicalTableOverride
 ACPI_STATUS
 AcpiOsPhysicalTableOverride(
-    ACPI_TABLE_HEADER       *ExistingTable,
-    ACPI_PHYSICAL_ADDRESS   *NewAddress,
-    UINT32                  *NewTableLength);
+        ACPI_TABLE_HEADER       *ExistingTable,
+        ACPI_PHYSICAL_ADDRESS   *NewAddress,
+        UINT32                  *NewTableLength);
 #endif
 
 
@@ -208,26 +206,26 @@ AcpiOsPhysicalTableOverride(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
 ACPI_STATUS
 AcpiOsCreateLock(
-    ACPI_SPINLOCK           *OutHandle);
+        ACPI_SPINLOCK           *OutHandle);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsDeleteLock
 void
 AcpiOsDeleteLock(
-    ACPI_SPINLOCK           Handle);
+        ACPI_SPINLOCK           Handle);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireLock
 ACPI_CPU_FLAGS
 AcpiOsAcquireLock(
-    ACPI_SPINLOCK           Handle);
+        ACPI_SPINLOCK           Handle);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReleaseLock
 void
 AcpiOsReleaseLock(
-    ACPI_SPINLOCK           Handle,
-    ACPI_CPU_FLAGS          Flags);
+        ACPI_SPINLOCK           Handle,
+        ACPI_CPU_FLAGS          Flags);
 #endif
 
 
@@ -237,30 +235,30 @@ AcpiOsReleaseLock(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateSemaphore
 ACPI_STATUS
 AcpiOsCreateSemaphore(
-    UINT32                  MaxUnits,
-    UINT32                  InitialUnits,
-    ACPI_SEMAPHORE          *OutHandle);
+        UINT32                  MaxUnits,
+        UINT32                  InitialUnits,
+        ACPI_SEMAPHORE          *OutHandle);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsDeleteSemaphore
 ACPI_STATUS
 AcpiOsDeleteSemaphore(
-    ACPI_SEMAPHORE          Handle);
+        ACPI_SEMAPHORE          Handle);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWaitSemaphore
 ACPI_STATUS
 AcpiOsWaitSemaphore(
-    ACPI_SEMAPHORE          Handle,
-    UINT32                  Units,
-    UINT16                  Timeout);
+        ACPI_SEMAPHORE          Handle,
+        UINT32                  Units,
+        UINT16                  Timeout);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsSignalSemaphore
 ACPI_STATUS
 AcpiOsSignalSemaphore(
-    ACPI_SEMAPHORE          Handle,
-    UINT32                  Units);
+        ACPI_SEMAPHORE          Handle,
+        UINT32                  Units);
 #endif
 
 
@@ -273,26 +271,26 @@ AcpiOsSignalSemaphore(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateMutex
 ACPI_STATUS
 AcpiOsCreateMutex(
-    ACPI_MUTEX              *OutHandle);
+        ACPI_MUTEX              *OutHandle);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsDeleteMutex
 void
 AcpiOsDeleteMutex(
-    ACPI_MUTEX              Handle);
+        ACPI_MUTEX              Handle);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireMutex
 ACPI_STATUS
 AcpiOsAcquireMutex(
-    ACPI_MUTEX              Handle,
-    UINT16                  Timeout);
+        ACPI_MUTEX              Handle,
+        UINT16                  Timeout);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReleaseMutex
 void
 AcpiOsReleaseMutex(
-    ACPI_MUTEX              Handle);
+        ACPI_MUTEX              Handle);
 #endif
 
 #endif
@@ -304,40 +302,40 @@ AcpiOsReleaseMutex(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
 void *
 AcpiOsAllocate(
-    ACPI_SIZE               Size);
+        ACPI_SIZE               Size);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
 void *
 AcpiOsAllocateZeroed(
-    ACPI_SIZE               Size);
+        ACPI_SIZE               Size);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
 void
 AcpiOsFree(
-    void                   *Memory);
+        void                   *Memory);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
 void *
 AcpiOsMapMemory(
-    ACPI_PHYSICAL_ADDRESS   Where,
-    ACPI_SIZE               Length);
+        ACPI_PHYSICAL_ADDRESS   Where,
+        ACPI_SIZE               Length);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
 void
 AcpiOsUnmapMemory(
-    void                    *LogicalAddress,
-    ACPI_SIZE               Size);
+        void                    *LogicalAddress,
+        ACPI_SIZE               Size);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetPhysicalAddress
 ACPI_STATUS
 AcpiOsGetPhysicalAddress(
-    void                    *LogicalAddress,
-    ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
+        void                    *LogicalAddress,
+        ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
 #endif
 
 
@@ -347,35 +345,35 @@ AcpiOsGetPhysicalAddress(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateCache
 ACPI_STATUS
 AcpiOsCreateCache(
-    char                    *CacheName,
-    UINT16                  ObjectSize,
-    UINT16                  MaxDepth,
-    ACPI_CACHE_T            **ReturnCache);
+        char                    *CacheName,
+        UINT16                  ObjectSize,
+        UINT16                  MaxDepth,
+        ACPI_CACHE_T            **ReturnCache);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsDeleteCache
 ACPI_STATUS
 AcpiOsDeleteCache(
-    ACPI_CACHE_T            *Cache);
+        ACPI_CACHE_T            *Cache);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsPurgeCache
 ACPI_STATUS
 AcpiOsPurgeCache(
-    ACPI_CACHE_T            *Cache);
+        ACPI_CACHE_T            *Cache);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
 void *
 AcpiOsAcquireObject(
-    ACPI_CACHE_T            *Cache);
+        ACPI_CACHE_T            *Cache);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReleaseObject
 ACPI_STATUS
 AcpiOsReleaseObject(
-    ACPI_CACHE_T            *Cache,
-    void                    *Object);
+        ACPI_CACHE_T            *Cache,
+        void                    *Object);
 #endif
 
 
@@ -385,16 +383,16 @@ AcpiOsReleaseObject(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInstallInterruptHandler
 ACPI_STATUS
 AcpiOsInstallInterruptHandler(
-    UINT32                  InterruptNumber,
-    ACPI_OSD_HANDLER        ServiceRoutine,
-    void                    *Context);
+        UINT32                  InterruptNumber,
+        ACPI_OSD_HANDLER        ServiceRoutine,
+        void                    *Context);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRemoveInterruptHandler
 ACPI_STATUS
 AcpiOsRemoveInterruptHandler(
-    UINT32                  InterruptNumber,
-    ACPI_OSD_HANDLER        ServiceRoutine);
+        UINT32                  InterruptNumber,
+        ACPI_OSD_HANDLER        ServiceRoutine);
 #endif
 
 
@@ -404,33 +402,33 @@ AcpiOsRemoveInterruptHandler(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
 ACPI_THREAD_ID
 AcpiOsGetThreadId(
-    void);
+        void);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsExecute
 ACPI_STATUS
 AcpiOsExecute(
-    ACPI_EXECUTE_TYPE       Type,
-    ACPI_OSD_EXEC_CALLBACK  Function,
-    void                    *Context);
+        ACPI_EXECUTE_TYPE       Type,
+        ACPI_OSD_EXEC_CALLBACK  Function,
+        void                    *Context);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWaitEventsComplete
 void
 AcpiOsWaitEventsComplete(
-    void);
+        void);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsSleep
 void
 AcpiOsSleep(
-    UINT64                  Milliseconds);
+        UINT64                  Milliseconds);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsStall
 void
 AcpiOsStall(
-    UINT32                  Microseconds);
+        UINT32                  Microseconds);
 #endif
 
 
@@ -440,17 +438,17 @@ AcpiOsStall(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadPort
 ACPI_STATUS
 AcpiOsReadPort(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  *Value,
-    UINT32                  Width);
+        ACPI_IO_ADDRESS         Address,
+        UINT32                  *Value,
+        UINT32                  Width);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritePort
 ACPI_STATUS
 AcpiOsWritePort(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  Value,
-    UINT32                  Width);
+        ACPI_IO_ADDRESS         Address,
+        UINT32                  Value,
+        UINT32                  Width);
 #endif
 
 
@@ -460,17 +458,17 @@ AcpiOsWritePort(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadMemory
 ACPI_STATUS
 AcpiOsReadMemory(
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT64                  *Value,
-    UINT32                  Width);
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT64                  *Value,
+        UINT32                  Width);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWriteMemory
 ACPI_STATUS
 AcpiOsWriteMemory(
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT64                  Value,
-    UINT32                  Width);
+        ACPI_PHYSICAL_ADDRESS   Address,
+        UINT64                  Value,
+        UINT32                  Width);
 #endif
 
 
@@ -482,19 +480,19 @@ AcpiOsWriteMemory(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadPciConfiguration
 ACPI_STATUS
 AcpiOsReadPciConfiguration(
-    ACPI_PCI_ID             *PciId,
-    UINT32                  Reg,
-    UINT64                  *Value,
-    UINT32                  Width);
+        ACPI_PCI_ID             *PciId,
+        UINT32                  Reg,
+        UINT64                  *Value,
+        UINT32                  Width);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritePciConfiguration
 ACPI_STATUS
 AcpiOsWritePciConfiguration(
-    ACPI_PCI_ID             *PciId,
-    UINT32                  Reg,
-    UINT64                  Value,
-    UINT32                  Width);
+        ACPI_PCI_ID             *PciId,
+        UINT32                  Reg,
+        UINT64                  Value,
+        UINT32                  Width);
 #endif
 
 
@@ -504,28 +502,28 @@ AcpiOsWritePciConfiguration(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
 BOOLEAN
 AcpiOsReadable(
-    void                    *Pointer,
-    ACPI_SIZE               Length);
+        void                    *Pointer,
+        ACPI_SIZE               Length);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
 BOOLEAN
 AcpiOsWritable(
-    void                    *Pointer,
-    ACPI_SIZE               Length);
+        void                    *Pointer,
+        ACPI_SIZE               Length);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTimer
 UINT64
 AcpiOsGetTimer(
-    void);
+        void);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsSignal
 ACPI_STATUS
 AcpiOsSignal(
-    UINT32                  Function,
-    void                    *Info);
+        UINT32                  Function,
+        void                    *Info);
 #endif
 
 
@@ -535,21 +533,21 @@ AcpiOsSignal(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsPrintf
 void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf(
-    const char              *Format,
-    ...);
+        const char              *Format,
+        ...);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsVprintf
 void
 AcpiOsVprintf(
-    const char              *Format,
-    va_list                 Args);
+        const char              *Format,
+        va_list                 Args);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
 void
 AcpiOsRedirectOutput(
-    void                    *Destination);
+        void                    *Destination);
 #endif
 
 
@@ -559,18 +557,18 @@ AcpiOsRedirectOutput(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetLine
 ACPI_STATUS
 AcpiOsGetLine(
-    char                    *Buffer,
-    UINT32                  BufferLength,
-    UINT32                  *BytesRead);
+        char                    *Buffer,
+        UINT32                  BufferLength,
+        UINT32                  *BytesRead);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTracePoint
 void
 AcpiOsTracePoint(
-    ACPI_TRACE_EVENT_TYPE   Type,
-    BOOLEAN                 Begin,
-    UINT8                   *Aml,
-    char                    *Pathname);
+        ACPI_TRACE_EVENT_TYPE   Type,
+        BOOLEAN                 Begin,
+        UINT8                   *Aml,
+        char                    *Pathname);
 #endif
 
 
@@ -580,26 +578,26 @@ AcpiOsTracePoint(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
 ACPI_STATUS
 AcpiOsGetTableByName(
-    char                    *Signature,
-    UINT32                  Instance,
-    ACPI_TABLE_HEADER       **Table,
-    ACPI_PHYSICAL_ADDRESS   *Address);
+        char                    *Signature,
+        UINT32                  Instance,
+        ACPI_TABLE_HEADER       **Table,
+        ACPI_PHYSICAL_ADDRESS   *Address);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
 ACPI_STATUS
 AcpiOsGetTableByIndex(
-    UINT32                  Index,
-    ACPI_TABLE_HEADER       **Table,
-    UINT32                  *Instance,
-    ACPI_PHYSICAL_ADDRESS   *Address);
+        UINT32                  Index,
+        ACPI_TABLE_HEADER       **Table,
+        UINT32                  *Instance,
+        ACPI_PHYSICAL_ADDRESS   *Address);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
 ACPI_STATUS
 AcpiOsGetTableByAddress(
-    ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_TABLE_HEADER       **Table);
+        ACPI_PHYSICAL_ADDRESS   Address,
+        ACPI_TABLE_HEADER       **Table);
 #endif
 
 
@@ -609,9 +607,9 @@ AcpiOsGetTableByAddress(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
 void *
 AcpiOsOpenDirectory(
-    char                    *Pathname,
-    char                    *WildcardSpec,
-    char                    RequestedFileType);
+        char                    *Pathname,
+        char                    *WildcardSpec,
+        char                    RequestedFileType);
 #endif
 
 /* RequesteFileType values */
@@ -623,13 +621,13 @@ AcpiOsOpenDirectory(
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
 char *
 AcpiOsGetNextFilename(
-    void                    *DirHandle);
+        void                    *DirHandle);
 #endif
 
 #ifndef ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
 void
 AcpiOsCloseDirectory(
-    void                    *DirHandle);
+        void                    *DirHandle);
 #endif
 
 

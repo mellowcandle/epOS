@@ -130,12 +130,12 @@ ACPI_MODULE_NAME("dsopcode")
 
 static ACPI_STATUS
 AcpiDsInitBufferField(
-    UINT16                  AmlOpcode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *BufferDesc,
-    ACPI_OPERAND_OBJECT     *OffsetDesc,
-    ACPI_OPERAND_OBJECT     *LengthDesc,
-    ACPI_OPERAND_OBJECT     *ResultDesc);
+        UINT16                  AmlOpcode,
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_OPERAND_OBJECT     *BufferDesc,
+        ACPI_OPERAND_OBJECT     *OffsetDesc,
+        ACPI_OPERAND_OBJECT     *LengthDesc,
+        ACPI_OPERAND_OBJECT     *ResultDesc);
 
 
 /*******************************************************************************
@@ -152,7 +152,7 @@ AcpiDsInitBufferField(
 
 ACPI_STATUS
 AcpiDsInitializeRegion(
-    ACPI_HANDLE             ObjHandle)
+        ACPI_HANDLE             ObjHandle)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -186,12 +186,12 @@ AcpiDsInitializeRegion(
 
 static ACPI_STATUS
 AcpiDsInitBufferField(
-    UINT16                  AmlOpcode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *BufferDesc,
-    ACPI_OPERAND_OBJECT     *OffsetDesc,
-    ACPI_OPERAND_OBJECT     *LengthDesc,
-    ACPI_OPERAND_OBJECT     *ResultDesc)
+        UINT16                  AmlOpcode,
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_OPERAND_OBJECT     *BufferDesc,
+        ACPI_OPERAND_OBJECT     *OffsetDesc,
+        ACPI_OPERAND_OBJECT     *LengthDesc,
+        ACPI_OPERAND_OBJECT     *ResultDesc)
 {
 	UINT32                  Offset;
 	UINT32                  BitOffset;
@@ -205,8 +205,7 @@ AcpiDsInitBufferField(
 
 	/* Host object must be a Buffer */
 
-	if (BufferDesc->Common.Type != ACPI_TYPE_BUFFER)
-	{
+	if (BufferDesc->Common.Type != ACPI_TYPE_BUFFER) {
 		ACPI_ERROR((AE_INFO,
 		            "Target of Create Field is not a Buffer object - %s",
 		            AcpiUtGetObjectTypeName(BufferDesc)));
@@ -220,8 +219,7 @@ AcpiDsInitBufferField(
 	 * out as a NameString, and should therefore now be a NS node
 	 * after resolution in AcpiExResolveOperands().
 	 */
-	if (ACPI_GET_DESCRIPTOR_TYPE(ResultDesc) != ACPI_DESC_TYPE_NAMED)
-	{
+	if (ACPI_GET_DESCRIPTOR_TYPE(ResultDesc) != ACPI_DESC_TYPE_NAMED) {
 		ACPI_ERROR((AE_INFO,
 		            "(%s) destination not a NS Node [%s]",
 		            AcpiPsGetOpcodeName(AmlOpcode),
@@ -236,8 +234,7 @@ AcpiDsInitBufferField(
 	/*
 	 * Setup the Bit offsets and counts, according to the opcode
 	 */
-	switch (AmlOpcode)
-	{
+	switch (AmlOpcode) {
 	case AML_CREATE_FIELD_OP:
 
 		/* Offset is in bits, count is in bits */
@@ -248,8 +245,7 @@ AcpiDsInitBufferField(
 
 		/* Must have a valid (>0) bit count */
 
-		if (BitCount == 0)
-		{
+		if (BitCount == 0) {
 			ACPI_ERROR((AE_INFO,
 			            "Attempt to CreateField of length zero"));
 			Status = AE_AML_OPERAND_VALUE;
@@ -315,8 +311,7 @@ AcpiDsInitBufferField(
 	/* Entire field must fit within the current length of the buffer */
 
 	if ((BitOffset + BitCount) >
-	        (8 * (UINT32) BufferDesc->Buffer.Length))
-	{
+	    (8 * (UINT32) BufferDesc->Buffer.Length)) {
 		ACPI_ERROR((AE_INFO,
 		            "Field [%4.4s] at %u exceeds Buffer [%4.4s] size %u (bits)",
 		            AcpiUtGetNodeName(ResultDesc),
@@ -333,12 +328,10 @@ AcpiDsInitBufferField(
 	 * UPDATE_RULE = 0 (UPDATE_PRESERVE)
 	 */
 	Status = AcpiExPrepCommonFieldObject(
-	             ObjDesc, FieldFlags, 0, BitOffset, BitCount);
+	                 ObjDesc, FieldFlags, 0, BitOffset, BitCount);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	ObjDesc->BufferField.BufferObj = BufferDesc;
 
@@ -356,18 +349,13 @@ Cleanup:
 	AcpiUtRemoveReference(BufferDesc);
 
 	if (AmlOpcode == AML_CREATE_FIELD_OP)
-	{
 		AcpiUtRemoveReference(LengthDesc);
-	}
 
 	/* On failure, delete the result descriptor */
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		AcpiUtRemoveReference(ResultDesc);      /* Result descriptor */
-	}
-	else
-	{
+	} else {
 		/* Now the address and length are valid for this BufferField */
 
 		ObjDesc->BufferField.Flags |= AOPOBJ_DATA_VALID;
@@ -393,8 +381,8 @@ Cleanup:
 
 ACPI_STATUS
 AcpiDsEvalBufferFieldOperands(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -420,24 +408,19 @@ AcpiDsEvalBufferFieldOperands(
 	Status = AcpiDsCreateOperands(WalkState, NextOp);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	ObjDesc = AcpiNsGetAttachedObject(Node);
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_NOT_EXIST);
-	}
 
 	/* Resolve the operands */
 
 	Status = AcpiExResolveOperands(
-	             Op->Common.AmlOpcode, ACPI_WALK_OPERANDS, WalkState);
+	                 Op->Common.AmlOpcode, ACPI_WALK_OPERANDS, WalkState);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_ERROR((AE_INFO, "(%s) bad operand(s), status 0x%X",
 		            AcpiPsGetOpcodeName(Op->Common.AmlOpcode), Status));
 
@@ -446,16 +429,13 @@ AcpiDsEvalBufferFieldOperands(
 
 	/* Initialize the Buffer Field */
 
-	if (Op->Common.AmlOpcode == AML_CREATE_FIELD_OP)
-	{
+	if (Op->Common.AmlOpcode == AML_CREATE_FIELD_OP) {
 		/* NOTE: Slightly different operands for this opcode */
 
 		Status = AcpiDsInitBufferField(Op->Common.AmlOpcode, ObjDesc,
 		                               WalkState->Operands[0], WalkState->Operands[1],
 		                               WalkState->Operands[2], WalkState->Operands[3]);
-	}
-	else
-	{
+	} else {
 		/* All other, CreateXxxField opcodes */
 
 		Status = AcpiDsInitBufferField(Op->Common.AmlOpcode, ObjDesc,
@@ -483,8 +463,8 @@ AcpiDsEvalBufferFieldOperands(
 
 ACPI_STATUS
 AcpiDsEvalRegionOperands(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -515,26 +495,20 @@ AcpiDsEvalRegionOperands(
 	Status = AcpiDsCreateOperands(WalkState, NextOp);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Resolve the length and address operands to numbers */
 
 	Status = AcpiExResolveOperands(
-	             Op->Common.AmlOpcode, ACPI_WALK_OPERANDS, WalkState);
+	                 Op->Common.AmlOpcode, ACPI_WALK_OPERANDS, WalkState);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	ObjDesc = AcpiNsGetAttachedObject(Node);
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_NOT_EXIST);
-	}
 
 	/*
 	 * Get the length operand and save it
@@ -583,8 +557,8 @@ AcpiDsEvalRegionOperands(
 
 ACPI_STATUS
 AcpiDsEvalTableRegionOperands(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -615,9 +589,7 @@ AcpiDsEvalTableRegionOperands(
 	Status = AcpiDsCreateOperands(WalkState, NextOp);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Operand = &WalkState->Operands[0];
 
@@ -626,24 +598,20 @@ AcpiDsEvalTableRegionOperands(
 	 * and OemTableId string operands
 	 */
 	Status = AcpiExResolveOperands(
-	             Op->Common.AmlOpcode, ACPI_WALK_OPERANDS, WalkState);
+	                 Op->Common.AmlOpcode, ACPI_WALK_OPERANDS, WalkState);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	/* Find the ACPI table */
 
 	Status = AcpiTbFindTable(
-	             Operand[0]->String.Pointer,
-	             Operand[1]->String.Pointer,
-	             Operand[2]->String.Pointer, &TableIndex);
+	                 Operand[0]->String.Pointer,
+	                 Operand[1]->String.Pointer,
+	                 Operand[2]->String.Pointer, &TableIndex);
 
-	if (ACPI_FAILURE(Status))
-	{
-		if (Status == AE_NOT_FOUND)
-		{
+	if (ACPI_FAILURE(Status)) {
+		if (Status == AE_NOT_FOUND) {
 			ACPI_ERROR((AE_INFO,
 			            "ACPI Table [%4.4s] OEM:(%s, %s) not found in RSDT/XSDT",
 			            Operand[0]->String.Pointer,
@@ -657,14 +625,11 @@ AcpiDsEvalTableRegionOperands(
 	Status = AcpiGetTableByIndex(TableIndex, &Table);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	ObjDesc = AcpiNsGetAttachedObject(Node);
 
-	if (!ObjDesc)
-	{
+	if (!ObjDesc) {
 		Status = AE_NOT_EXIST;
 		goto Cleanup;
 	}
@@ -706,9 +671,9 @@ Cleanup:
 
 ACPI_STATUS
 AcpiDsEvalDataObjectOperands(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *ArgDesc;
@@ -729,18 +694,14 @@ AcpiDsEvalDataObjectOperands(
 	Status = AcpiDsCreateOperand(WalkState, Op->Common.Value.Arg, 1);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiExResolveOperands(WalkState->Opcode,
 	                               &(WalkState->Operands [WalkState->NumOperands - 1]),
 	                               WalkState);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Extract length operand */
 
@@ -752,28 +713,25 @@ AcpiDsEvalDataObjectOperands(
 	Status = AcpiDsObjStackPop(1, WalkState);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	AcpiUtRemoveReference(ArgDesc);
 
 	/*
 	 * Create the actual data object
 	 */
-	switch (Op->Common.AmlOpcode)
-	{
+	switch (Op->Common.AmlOpcode) {
 	case AML_BUFFER_OP:
 
 		Status = AcpiDsBuildInternalBufferObj(
-		             WalkState, Op, Length, &ObjDesc);
+		                 WalkState, Op, Length, &ObjDesc);
 		break;
 
 	case AML_PACKAGE_OP:
 	case AML_VAR_PACKAGE_OP:
 
 		Status = AcpiDsBuildInternalPackageObj(
-		             WalkState, Op, Length, &ObjDesc);
+		                 WalkState, Op, Length, &ObjDesc);
 		break;
 
 	default:
@@ -781,20 +739,17 @@ AcpiDsEvalDataObjectOperands(
 		return_ACPI_STATUS(AE_AML_BAD_OPCODE);
 	}
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		/*
 		 * Return the object in the WalkState, unless the parent is a package -
 		 * in this case, the return object will be stored in the parse tree
 		 * for the package.
 		 */
 		if ((!Op->Common.Parent) ||
-		        ((Op->Common.Parent->Common.AmlOpcode != AML_PACKAGE_OP) &&
-		         (Op->Common.Parent->Common.AmlOpcode != AML_VAR_PACKAGE_OP) &&
-		         (Op->Common.Parent->Common.AmlOpcode != AML_NAME_OP)))
-		{
+		    ((Op->Common.Parent->Common.AmlOpcode != AML_PACKAGE_OP) &&
+		     (Op->Common.Parent->Common.AmlOpcode != AML_VAR_PACKAGE_OP) &&
+		     (Op->Common.Parent->Common.AmlOpcode != AML_NAME_OP)))
 			WalkState->ResultObj = ObjDesc;
-		}
 	}
 
 	return_ACPI_STATUS(Status);
@@ -817,8 +772,8 @@ AcpiDsEvalDataObjectOperands(
 
 ACPI_STATUS
 AcpiDsEvalBankFieldOperands(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -859,16 +814,12 @@ AcpiDsEvalBankFieldOperands(
 	Status = AcpiDsCreateOperand(WalkState, NextOp, 0);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	Status = AcpiExResolveToValue(&WalkState->Operands[0], WalkState);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	ACPI_DUMP_OPERANDS(ACPI_WALK_OPERANDS,
 	                   AcpiPsGetOpcodeName(Op->Common.AmlOpcode), 1);
@@ -882,20 +833,16 @@ AcpiDsEvalBankFieldOperands(
 
 	Arg = AcpiPsGetArg(Op, 4);
 
-	while (Arg)
-	{
+	while (Arg) {
 		/* Ignore OFFSET and ACCESSAS terms here */
 
-		if (Arg->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
-		{
+		if (Arg->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP) {
 			Node = Arg->Common.Node;
 
 			ObjDesc = AcpiNsGetAttachedObject(Node);
 
 			if (!ObjDesc)
-			{
 				return_ACPI_STATUS(AE_NOT_EXIST);
-			}
 
 			ObjDesc->BankField.Value = (UINT32) OperandDesc->Integer.Value;
 		}

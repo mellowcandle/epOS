@@ -44,7 +44,7 @@
 int syscall_exit(int ret)
 {
 	pr_debug("+syscall_exit: %d\r\n", ret);
-	task_t * task = get_current_task();
+	task_t *task = get_current_task();
 	task->exit_value = ret;
 
 	process_cleanup(task);
@@ -60,14 +60,10 @@ int syscall_open(char *file, int flags, int mode)
 	FUNC_ENTER();
 
 	if (!strcmp(file, "/dev/console"))
-	{
 		return 1;
-	}
 	else
 
-	{
 		return 0;
-	}
 }
 
 int syscall_read(int fd, char *buf, int len)
@@ -81,8 +77,7 @@ int syscall_write(int fd, char *buf, int len)
 {
 	FUNC_ENTER();
 
-	switch(fd)
-	{
+	switch (fd) {
 	case 1:
 	case 2:
 		printk("%s", buf);
@@ -110,18 +105,16 @@ int syscall_execve(char *name, char **argv, char **env)
 
 int syscall_fork(void)
 {
-	task_t * task = clone(get_current_task());
-	if (task) {
+	task_t *task = clone(get_current_task());
+	if (task)
 		return task->pid;
-	}
 	return -ENOMEM;
 }
 
 int syscall_fstat(int file, struct stat *st)
 {
 	FUNC_ENTER();
-	switch (file)
-	{
+	switch (file) {
 	case 0:
 	case 1:
 	case 2:
@@ -137,7 +130,7 @@ int syscall_fstat(int file, struct stat *st)
 int syscall_getpid(void)
 {
 	FUNC_ENTER();
-	task_t * task = get_current_task();
+	task_t *task = get_current_task();
 	return task->pid;
 }
 
@@ -172,7 +165,7 @@ int syscall_sbrk(int incr)
 	pr_debug("+syscall_sbrk: increment with: %d bytes\r\n", incr);
 
 	int ret;
-	task_t * task = get_current_task();
+	task_t *task = get_current_task();
 	memblock_t *block = kmalloc(sizeof(memblock_t));
 	if (!block) {
 		pr_error("Memory allocation failure\r\n");
@@ -195,9 +188,9 @@ int syscall_sbrk(int incr)
 	memset(tmp,  0, block->count * PAGE_SIZE);
 	mem_page_unmap_multiple(tmp, block->count);
 
-	ret = mem_pages_map_pdt_multiple(task->pdt_virt_addr, block->p_addr, block->v_addr, block->count, READ_WRITE_USER);
-	if (ret)
-	{
+	ret = mem_pages_map_pdt_multiple(task->pdt_virt_addr, block->p_addr, block->v_addr, block->count,
+	                                 READ_WRITE_USER);
+	if (ret) {
 		pr_error("Can't sbrk\r\n");
 		goto cleanup1;
 	}
@@ -241,8 +234,7 @@ int syscall_wait(int *status)
 	return -1;
 }
 
-static void *syscalls[SYSCALLS_COUNT] =
-{
+static void *syscalls[SYSCALLS_COUNT] = {
 	&syscall_exit,
 	&syscall_close,
 	&syscall_execve,
@@ -271,9 +263,7 @@ static void syscall_handler(registers_t *regs)
 	pr_debug("syscall handler: %u\r\n", regs->eax);
 
 	if (regs->eax >= SYSCALLS_COUNT)
-	{
 		return;
-	}
 
 	save_registers(current, regs);
 

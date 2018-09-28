@@ -136,8 +136,7 @@ ACPI_MODULE_NAME("utuuid")
  * Note: This table is basically the inverse of the string-to-offset table
  * found in the ACPI spec in the description of the ToUUID macro.
  */
-const UINT8    AcpiGbl_MapToUuidOffset[UUID_BUFFER_LENGTH] =
-{
+const UINT8    AcpiGbl_MapToUuidOffset[UUID_BUFFER_LENGTH] = {
 	6, 4, 2, 0, 11, 9, 16, 14, 19, 21, 24, 26, 28, 30, 32, 34
 };
 
@@ -157,19 +156,18 @@ const UINT8    AcpiGbl_MapToUuidOffset[UUID_BUFFER_LENGTH] =
 
 void
 AcpiUtConvertStringToUuid(
-    char                    *InString,
-    UINT8                   *UuidBuffer)
+        char                    *InString,
+        UINT8                   *UuidBuffer)
 {
 	UINT32                  i;
 
 
-	for (i = 0; i < UUID_BUFFER_LENGTH; i++)
-	{
+	for (i = 0; i < UUID_BUFFER_LENGTH; i++) {
 		UuidBuffer[i] = (AcpiUtAsciiCharToHex(
-		                     InString[AcpiGbl_MapToUuidOffset[i]]) << 4);
+		                         InString[AcpiGbl_MapToUuidOffset[i]]) << 4);
 
 		UuidBuffer[i] |= AcpiUtAsciiCharToHex(
-		                     InString[AcpiGbl_MapToUuidOffset[i] + 1]);
+		                         InString[AcpiGbl_MapToUuidOffset[i] + 1]);
 	}
 }
 #endif

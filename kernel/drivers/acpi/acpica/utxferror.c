@@ -145,10 +145,10 @@ ACPI_MODULE_NAME("utxferror")
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiError(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Format,
-    ...)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 
@@ -185,11 +185,11 @@ ACPI_EXPORT_SYMBOL(AcpiError)
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiException(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    ACPI_STATUS             Status,
-    const char              *Format,
-    ...)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        ACPI_STATUS             Status,
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 
@@ -199,12 +199,9 @@ AcpiException(
 	/* For AE_OK, just print the message */
 
 	if (ACPI_SUCCESS(Status))
-	{
 		AcpiOsPrintf(ACPI_MSG_EXCEPTION);
 
-	}
-	else
-	{
+	else {
 		AcpiOsPrintf(ACPI_MSG_EXCEPTION "%s, ",
 		             AcpiFormatException(Status));
 	}
@@ -236,10 +233,10 @@ ACPI_EXPORT_SYMBOL(AcpiException)
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiWarning(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Format,
-    ...)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 
@@ -277,8 +274,8 @@ ACPI_EXPORT_SYMBOL(AcpiWarning)
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiInfo(
-    const char              *Format,
-    ...)
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 
@@ -314,10 +311,10 @@ ACPI_EXPORT_SYMBOL(AcpiInfo)
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiBiosError(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Format,
-    ...)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 
@@ -353,10 +350,10 @@ ACPI_EXPORT_SYMBOL(AcpiBiosError)
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiBiosWarning(
-    const char              *ModuleName,
-    UINT32                  LineNumber,
-    const char              *Format,
-    ...)
+        const char              *ModuleName,
+        UINT32                  LineNumber,
+        const char              *Format,
+        ...)
 {
 	va_list                 ArgList;
 

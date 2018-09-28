@@ -133,19 +133,16 @@
 
 BOOLEAN
 AcpiUtValidNameseg(
-    char                    *Name)
+        char                    *Name)
 {
 	UINT32                  i;
 
 
 	/* Validate each character in the signature */
 
-	for (i = 0; i < ACPI_NAME_SIZE; i++)
-	{
+	for (i = 0; i < ACPI_NAME_SIZE; i++) {
 		if (!AcpiUtValidNameChar(Name[i], i))
-		{
 			return (FALSE);
-		}
 	}
 
 	return (TRUE);
@@ -172,20 +169,17 @@ AcpiUtValidNameseg(
 
 BOOLEAN
 AcpiUtValidNameChar(
-    char                    Character,
-    UINT32                  Position)
+        char                    Character,
+        UINT32                  Position)
 {
 
 	if (!((Character >= 'A' && Character <= 'Z') ||
-	        (Character >= '0' && Character <= '9') ||
-	        (Character == '_')))
-	{
+	      (Character >= '0' && Character <= '9') ||
+	      (Character == '_'))) {
 		/* Allow a '!' in the last position */
 
 		if (Character == '!' && Position == 3)
-		{
 			return (TRUE);
-		}
 
 		return (FALSE);
 	}
@@ -210,25 +204,20 @@ AcpiUtValidNameChar(
 
 void
 AcpiUtCheckAndRepairAscii(
-    UINT8                   *Name,
-    char                    *RepairedName,
-    UINT32                  Count)
+        UINT8                   *Name,
+        char                    *RepairedName,
+        UINT32                  Count)
 {
 	UINT32                  i;
 
 
-	for (i = 0; i < Count; i++)
-	{
+	for (i = 0; i < Count; i++) {
 		RepairedName[i] = (char) Name[i];
 
 		if (!Name[i])
-		{
 			return;
-		}
 
 		if (!isprint(Name[i]))
-		{
 			RepairedName[i] = ' ';
-		}
 	}
 }

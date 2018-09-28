@@ -136,7 +136,7 @@ ACPI_MODULE_NAME("utmisc")
 
 BOOLEAN
 AcpiUtIsPciRootBridge(
-    char                    *Id)
+        char                    *Id)
 {
 
 	/*
@@ -146,11 +146,9 @@ AcpiUtIsPciRootBridge(
 	if (!(strcmp(Id,
 	             PCI_ROOT_HID_STRING)) ||
 
-	        !(strcmp(Id,
-	                 PCI_EXPRESS_ROOT_HID_STRING)))
-	{
+	    !(strcmp(Id,
+	             PCI_EXPRESS_ROOT_HID_STRING)))
 		return (TRUE);
-	}
 
 	return (FALSE);
 }
@@ -173,18 +171,16 @@ AcpiUtIsPciRootBridge(
 
 BOOLEAN
 AcpiUtIsAmlTable(
-    ACPI_TABLE_HEADER       *Table)
+        ACPI_TABLE_HEADER       *Table)
 {
 
 	/* These are the only tables that contain executable AML */
 
 	if (ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_DSDT) ||
-	        ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_PSDT) ||
-	        ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_SSDT) ||
-	        ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_OSDT))
-	{
+	    ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_PSDT) ||
+	    ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_SSDT) ||
+	    ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_OSDT))
 		return (TRUE);
-	}
 
 	return (FALSE);
 }
@@ -205,15 +201,13 @@ AcpiUtIsAmlTable(
 
 UINT32
 AcpiUtDwordByteSwap(
-    UINT32                  Value)
+        UINT32                  Value)
 {
-	union
-	{
+	union {
 		UINT32              Value;
 		UINT8               Bytes[4];
 	} Out;
-	union
-	{
+	union {
 		UINT32              Value;
 		UINT8               Bytes[4];
 	} In;
@@ -250,19 +244,16 @@ AcpiUtDwordByteSwap(
 
 void
 AcpiUtSetIntegerWidth(
-    UINT8                   Revision)
+        UINT8                   Revision)
 {
 
-	if (Revision < 2)
-	{
+	if (Revision < 2) {
 		/* 32-bit case */
 
 		AcpiGbl_IntegerBitWidth = 32;
 		AcpiGbl_IntegerNybbleWidth = 8;
 		AcpiGbl_IntegerByteWidth = 4;
-	}
-	else
-	{
+	} else {
 		/* 64-bit case (ACPI 2.0+) */
 
 		AcpiGbl_IntegerBitWidth = 64;
@@ -288,9 +279,9 @@ AcpiUtSetIntegerWidth(
 
 ACPI_STATUS
 AcpiUtCreateUpdateStateAndPush(
-    ACPI_OPERAND_OBJECT     *Object,
-    UINT16                  Action,
-    ACPI_GENERIC_STATE      **StateList)
+        ACPI_OPERAND_OBJECT     *Object,
+        UINT16                  Action,
+        ACPI_GENERIC_STATE      **StateList)
 {
 	ACPI_GENERIC_STATE       *State;
 
@@ -301,16 +292,12 @@ AcpiUtCreateUpdateStateAndPush(
 	/* Ignore null objects; these are expected */
 
 	if (!Object)
-	{
 		return (AE_OK);
-	}
 
 	State = AcpiUtCreateUpdateState(Object, Action);
 
 	if (!State)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	AcpiUtPushGenericState(StateList, State);
 	return (AE_OK);
@@ -334,10 +321,10 @@ AcpiUtCreateUpdateStateAndPush(
 
 ACPI_STATUS
 AcpiUtWalkPackageTree(
-    ACPI_OPERAND_OBJECT     *SourceObject,
-    void                    *TargetObject,
-    ACPI_PKG_CALLBACK       WalkCallback,
-    void                    *Context)
+        ACPI_OPERAND_OBJECT     *SourceObject,
+        void                    *TargetObject,
+        ACPI_PKG_CALLBACK       WalkCallback,
+        void                    *Context)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_GENERIC_STATE      *StateList = NULL;
@@ -352,12 +339,9 @@ AcpiUtWalkPackageTree(
 	State = AcpiUtCreatePkgState(SourceObject, TargetObject, 0);
 
 	if (!State)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
-	while (State)
-	{
+	while (State) {
 		/* Get one element of the package */
 
 		ThisIndex = State->Pkg.Index;
@@ -373,23 +357,19 @@ AcpiUtWalkPackageTree(
 		 *    case below.
 		 */
 		if ((!ThisSourceObj) ||
-		        (ACPI_GET_DESCRIPTOR_TYPE(ThisSourceObj) !=
-		         ACPI_DESC_TYPE_OPERAND) ||
-		        (ThisSourceObj->Common.Type != ACPI_TYPE_PACKAGE))
-		{
+		    (ACPI_GET_DESCRIPTOR_TYPE(ThisSourceObj) !=
+		     ACPI_DESC_TYPE_OPERAND) ||
+		    (ThisSourceObj->Common.Type != ACPI_TYPE_PACKAGE)) {
 			Status = WalkCallback(ACPI_COPY_TYPE_SIMPLE, ThisSourceObj,
 			                      State, Context);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 
 			State->Pkg.Index++;
 
 			while (State->Pkg.Index >=
-			        State->Pkg.SourceObject->Package.Count)
-			{
+			       State->Pkg.SourceObject->Package.Count) {
 				/*
 				 * We've handled all of the objects at this level,  This means
 				 * that we have just completed a package. That package may
@@ -402,8 +382,7 @@ AcpiUtWalkPackageTree(
 
 				/* Finished when there are no more states */
 
-				if (!State)
-				{
+				if (!State) {
 					/*
 					 * We have handled all of the objects in the top level
 					 * package just add the length of the package objects
@@ -418,18 +397,14 @@ AcpiUtWalkPackageTree(
 				 */
 				State->Pkg.Index++;
 			}
-		}
-		else
-		{
+		} else {
 			/* This is a subobject of type package */
 
 			Status = WalkCallback(
-			             ACPI_COPY_TYPE_PACKAGE, ThisSourceObj, State, Context);
+			                 ACPI_COPY_TYPE_PACKAGE, ThisSourceObj, State, Context);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 
 			/*
 			 * Push the current state and create a new one
@@ -437,14 +412,12 @@ AcpiUtWalkPackageTree(
 			 */
 			AcpiUtPushGenericState(&StateList, State);
 			State = AcpiUtCreatePkgState(
-			            ThisSourceObj, State->Pkg.ThisTargetObj, 0);
+			                ThisSourceObj, State->Pkg.ThisTargetObj, 0);
 
-			if (!State)
-			{
+			if (!State) {
 				/* Free any stacked Update State objects */
 
-				while (StateList)
-				{
+				while (StateList) {
 					State = AcpiUtPopGenericState(&StateList);
 					AcpiUtDeleteGenericState(State);
 				}
@@ -478,9 +451,9 @@ AcpiUtWalkPackageTree(
 
 void
 AcpiUtDisplayInitPathname(
-    UINT8                   Type,
-    ACPI_NAMESPACE_NODE     *ObjHandle,
-    const char              *Path)
+        UINT8                   Type,
+        ACPI_NAMESPACE_NODE     *ObjHandle,
+        const char              *Path)
 {
 	ACPI_STATUS             Status;
 	ACPI_BUFFER             Buffer;
@@ -492,9 +465,7 @@ AcpiUtDisplayInitPathname(
 	/* Only print the path if the appropriate debug level is enabled */
 
 	if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
-	{
 		return;
-	}
 
 	/* Get the full pathname to the node */
 
@@ -502,14 +473,11 @@ AcpiUtDisplayInitPathname(
 	Status = AcpiNsHandleToPathname(ObjHandle, &Buffer, TRUE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return;
-	}
 
 	/* Print what we're doing */
 
-	switch (Type)
-	{
+	switch (Type) {
 	case ACPI_TYPE_METHOD:
 
 		AcpiOsPrintf("Executing    ");
@@ -529,9 +497,7 @@ AcpiUtDisplayInitPathname(
 	/* Extra path is used to append names like _STA, _INI, etc. */
 
 	if (Path)
-	{
 		AcpiOsPrintf(".%s", Path);
-	}
 
 	AcpiOsPrintf("\n");
 

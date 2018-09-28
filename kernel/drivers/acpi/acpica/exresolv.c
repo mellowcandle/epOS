@@ -128,8 +128,8 @@ ACPI_MODULE_NAME("exresolv")
 
 static ACPI_STATUS
 AcpiExResolveObjectToValue(
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_OPERAND_OBJECT     **StackPtr,
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*******************************************************************************
@@ -149,8 +149,8 @@ AcpiExResolveObjectToValue(
 
 ACPI_STATUS
 AcpiExResolveToValue(
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     **StackPtr,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status;
 
@@ -158,8 +158,7 @@ AcpiExResolveToValue(
 	ACPI_FUNCTION_TRACE_PTR(ExResolveToValue, StackPtr);
 
 
-	if (!StackPtr || !*StackPtr)
-	{
+	if (!StackPtr || !*StackPtr) {
 		ACPI_ERROR((AE_INFO, "Internal - null pointer"));
 		return_ACPI_STATUS(AE_AML_NO_OPERAND);
 	}
@@ -169,17 +168,13 @@ AcpiExResolveToValue(
 	 * 1) A valid ACPI_OPERAND_OBJECT, or
 	 * 2) A ACPI_NAMESPACE_NODE (NamedObj)
 	 */
-	if (ACPI_GET_DESCRIPTOR_TYPE(*StackPtr) == ACPI_DESC_TYPE_OPERAND)
-	{
+	if (ACPI_GET_DESCRIPTOR_TYPE(*StackPtr) == ACPI_DESC_TYPE_OPERAND) {
 		Status = AcpiExResolveObjectToValue(StackPtr, WalkState);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
-		if (!*StackPtr)
-		{
+		if (!*StackPtr) {
 			ACPI_ERROR((AE_INFO, "Internal - null pointer"));
 			return_ACPI_STATUS(AE_AML_NO_OPERAND);
 		}
@@ -189,16 +184,13 @@ AcpiExResolveToValue(
 	 * Object on the stack may have changed if AcpiExResolveObjectToValue()
 	 * was called (i.e., we can't use an _else_ here.)
 	 */
-	if (ACPI_GET_DESCRIPTOR_TYPE(*StackPtr) == ACPI_DESC_TYPE_NAMED)
-	{
+	if (ACPI_GET_DESCRIPTOR_TYPE(*StackPtr) == ACPI_DESC_TYPE_NAMED) {
 		Status = AcpiExResolveNodeToValue(
-		             ACPI_CAST_INDIRECT_PTR(ACPI_NAMESPACE_NODE, StackPtr),
-		             WalkState);
+		                 ACPI_CAST_INDIRECT_PTR(ACPI_NAMESPACE_NODE, StackPtr),
+		                 WalkState);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Resolved object %p\n", *StackPtr));
@@ -222,8 +214,8 @@ AcpiExResolveToValue(
 
 static ACPI_STATUS
 AcpiExResolveObjectToValue(
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     **StackPtr,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_OPERAND_OBJECT     *StackDesc;
@@ -238,14 +230,12 @@ AcpiExResolveObjectToValue(
 
 	/* This is an object of type ACPI_OPERAND_OBJECT */
 
-	switch (StackDesc->Common.Type)
-	{
+	switch (StackDesc->Common.Type) {
 	case ACPI_TYPE_LOCAL_REFERENCE:
 
 		RefType = StackDesc->Reference.Class;
 
-		switch (RefType)
-		{
+		switch (RefType) {
 		case ACPI_REFCLASS_LOCAL:
 		case ACPI_REFCLASS_ARG:
 			/*
@@ -256,9 +246,7 @@ AcpiExResolveObjectToValue(
 			                                  StackDesc->Reference.Value, WalkState, &ObjDesc);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 
 			ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[Arg/Local %X] ValueObj is %p\n",
 			                  StackDesc->Reference.Value, ObjDesc));
@@ -273,8 +261,7 @@ AcpiExResolveObjectToValue(
 
 		case ACPI_REFCLASS_INDEX:
 
-			switch (StackDesc->Reference.TargetType)
-			{
+			switch (StackDesc->Reference.TargetType) {
 			case ACPI_TYPE_BUFFER_FIELD:
 
 				/* Just return - do not dereference */
@@ -285,17 +272,14 @@ AcpiExResolveObjectToValue(
 				/* If method call or CopyObject - do not dereference */
 
 				if ((WalkState->Opcode == AML_INT_METHODCALL_OP) ||
-				        (WalkState->Opcode == AML_COPY_OP))
-				{
+				    (WalkState->Opcode == AML_COPY_OP))
 					break;
-				}
 
 				/* Otherwise, dereference the PackageIndex to a package element */
 
 				ObjDesc = *StackDesc->Reference.Where;
 
-				if (ObjDesc)
-				{
+				if (ObjDesc) {
 					/*
 					 * Valid object descriptor, copy pointer to return value
 					 * (i.e., dereference the package index)
@@ -303,9 +287,7 @@ AcpiExResolveObjectToValue(
 					 */
 					AcpiUtAddReference(ObjDesc);
 					*StackPtr = ObjDesc;
-				}
-				else
-				{
+				} else {
 					/*
 					 * A NULL object descriptor means an uninitialized element of
 					 * the package, can't dereference it
@@ -345,14 +327,11 @@ AcpiExResolveObjectToValue(
 			/* Dereference the name */
 
 			if ((StackDesc->Reference.Node->Type == ACPI_TYPE_DEVICE) ||
-			        (StackDesc->Reference.Node->Type == ACPI_TYPE_THERMAL))
-			{
+			    (StackDesc->Reference.Node->Type == ACPI_TYPE_THERMAL)) {
 				/* These node types do not have 'real' subobjects */
 
 				*StackPtr = (void *) StackDesc->Reference.Node;
-			}
-			else
-			{
+			} else {
 				/* Get the object pointed to by the namespace node */
 
 				*StackPtr = (StackDesc->Reference.Node)->Object;
@@ -427,10 +406,10 @@ AcpiExResolveObjectToValue(
 
 ACPI_STATUS
 AcpiExResolveMultiple(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     *Operand,
-    ACPI_OBJECT_TYPE        *ReturnType,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_OPERAND_OBJECT     *Operand,
+        ACPI_OBJECT_TYPE        *ReturnType,
+        ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc = ACPI_CAST_PTR(void, Operand);
 	ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR(ACPI_NAMESPACE_NODE, Operand);
@@ -443,8 +422,7 @@ AcpiExResolveMultiple(
 
 	/* Operand can be either a namespace node or an operand descriptor */
 
-	switch (ACPI_GET_DESCRIPTOR_TYPE(ObjDesc))
-	{
+	switch (ACPI_GET_DESCRIPTOR_TYPE(ObjDesc)) {
 	case ACPI_DESC_TYPE_OPERAND:
 
 		Type = ObjDesc->Common.Type;
@@ -457,15 +435,13 @@ AcpiExResolveMultiple(
 
 		/* If we had an Alias node, use the attached object for type info */
 
-		if (Type == ACPI_TYPE_LOCAL_ALIAS)
-		{
+		if (Type == ACPI_TYPE_LOCAL_ALIAS) {
 			Type = ((ACPI_NAMESPACE_NODE *) ObjDesc)->Type;
 			ObjDesc = AcpiNsGetAttachedObject(
-			              (ACPI_NAMESPACE_NODE *) ObjDesc);
+			                  (ACPI_NAMESPACE_NODE *) ObjDesc);
 		}
 
-		if (!ObjDesc)
-		{
+		if (!ObjDesc) {
 			ACPI_ERROR((AE_INFO,
 			            "[%4.4s] Node is unresolved or uninitialized",
 			            AcpiUtGetNodeName(Node)));
@@ -481,9 +457,7 @@ AcpiExResolveMultiple(
 	/* If type is anything other than a reference, we are done */
 
 	if (Type != ACPI_TYPE_LOCAL_REFERENCE)
-	{
 		goto Exit;
-	}
 
 	/*
 	 * For reference objects created via the RefOf, Index, or Load/LoadTable
@@ -491,28 +465,21 @@ AcpiExResolveMultiple(
 	 * specification of the ObjectType and SizeOf operators). This means
 	 * traversing the list of possibly many nested references.
 	 */
-	while (ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE)
-	{
-		switch (ObjDesc->Reference.Class)
-		{
+	while (ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) {
+		switch (ObjDesc->Reference.Class) {
 		case ACPI_REFCLASS_REFOF:
 		case ACPI_REFCLASS_NAME:
 
 			/* Dereference the reference pointer */
 
 			if (ObjDesc->Reference.Class == ACPI_REFCLASS_REFOF)
-			{
 				Node = ObjDesc->Reference.Object;
-			}
 			else /* AML_INT_NAMEPATH_OP */
-			{
 				Node = ObjDesc->Reference.Node;
-			}
 
 			/* All "References" point to a NS node */
 
-			if (ACPI_GET_DESCRIPTOR_TYPE(Node) != ACPI_DESC_TYPE_NAMED)
-			{
+			if (ACPI_GET_DESCRIPTOR_TYPE(Node) != ACPI_DESC_TYPE_NAMED) {
 				ACPI_ERROR((AE_INFO,
 				            "Not a namespace node %p [%s]",
 				            Node, AcpiUtGetDescriptorName(Node)));
@@ -523,8 +490,7 @@ AcpiExResolveMultiple(
 
 			ObjDesc = AcpiNsGetAttachedObject(Node);
 
-			if (!ObjDesc)
-			{
+			if (!ObjDesc) {
 				/* No object, use the NS node type */
 
 				Type = AcpiNsGetType(Node);
@@ -534,9 +500,7 @@ AcpiExResolveMultiple(
 			/* Check for circular references */
 
 			if (ObjDesc == Operand)
-			{
 				return_ACPI_STATUS(AE_AML_CIRCULAR_REFERENCE);
-			}
 
 			break;
 
@@ -547,9 +511,7 @@ AcpiExResolveMultiple(
 			Type = ObjDesc->Reference.TargetType;
 
 			if (Type != ACPI_TYPE_PACKAGE)
-			{
 				goto Exit;
-			}
 
 			/*
 			 * The main object is a package, we want to get the type
@@ -560,8 +522,7 @@ AcpiExResolveMultiple(
 			 */
 			ObjDesc = *(ObjDesc->Reference.Where);
 
-			if (!ObjDesc)
-			{
+			if (!ObjDesc) {
 				/* NULL package elements are allowed */
 
 				Type = 0; /* Uninitialized */
@@ -578,32 +539,24 @@ AcpiExResolveMultiple(
 		case ACPI_REFCLASS_LOCAL:
 		case ACPI_REFCLASS_ARG:
 
-			if (ReturnDesc)
-			{
+			if (ReturnDesc) {
 				Status = AcpiDsMethodDataGetValue(ObjDesc->Reference.Class,
 				                                  ObjDesc->Reference.Value, WalkState, &ObjDesc);
 
 				if (ACPI_FAILURE(Status))
-				{
 					return_ACPI_STATUS(Status);
-				}
 
 				AcpiUtRemoveReference(ObjDesc);
-			}
-			else
-			{
+			} else {
 				Status = AcpiDsMethodDataGetNode(ObjDesc->Reference.Class,
 				                                 ObjDesc->Reference.Value, WalkState, &Node);
 
 				if (ACPI_FAILURE(Status))
-				{
 					return_ACPI_STATUS(Status);
-				}
 
 				ObjDesc = AcpiNsGetAttachedObject(Node);
 
-				if (!ObjDesc)
-				{
+				if (!ObjDesc) {
 					Type = ACPI_TYPE_ANY;
 					goto Exit;
 				}
@@ -637,8 +590,7 @@ AcpiExResolveMultiple(
 Exit:
 	/* Convert internal types to external types */
 
-	switch (Type)
-	{
+	switch (Type) {
 	case ACPI_TYPE_LOCAL_REGION_FIELD:
 	case ACPI_TYPE_LOCAL_BANK_FIELD:
 	case ACPI_TYPE_LOCAL_INDEX_FIELD:
@@ -663,9 +615,7 @@ Exit:
 	*ReturnType = Type;
 
 	if (ReturnDesc)
-	{
 		*ReturnDesc = ObjDesc;
-	}
 
 	return_ACPI_STATUS(AE_OK);
 }

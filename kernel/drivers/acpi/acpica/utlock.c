@@ -136,7 +136,7 @@ ACPI_MODULE_NAME("utlock")
 
 ACPI_STATUS
 AcpiUtCreateRwLock(
-    ACPI_RW_LOCK            *Lock)
+        ACPI_RW_LOCK            *Lock)
 {
 	ACPI_STATUS             Status;
 
@@ -145,9 +145,7 @@ AcpiUtCreateRwLock(
 	Status = AcpiOsCreateMutex(&Lock->ReaderMutex);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	Status = AcpiOsCreateMutex(&Lock->WriterMutex);
 	return (Status);
@@ -156,7 +154,7 @@ AcpiUtCreateRwLock(
 
 void
 AcpiUtDeleteRwLock(
-    ACPI_RW_LOCK            *Lock)
+        ACPI_RW_LOCK            *Lock)
 {
 
 	AcpiOsDeleteMutex(Lock->ReaderMutex);
@@ -188,7 +186,7 @@ AcpiUtDeleteRwLock(
 
 ACPI_STATUS
 AcpiUtAcquireReadLock(
-    ACPI_RW_LOCK            *Lock)
+        ACPI_RW_LOCK            *Lock)
 {
 	ACPI_STATUS             Status;
 
@@ -196,18 +194,14 @@ AcpiUtAcquireReadLock(
 	Status = AcpiOsAcquireMutex(Lock->ReaderMutex, ACPI_WAIT_FOREVER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/* Acquire the write lock only for the first reader */
 
 	Lock->NumReaders++;
 
 	if (Lock->NumReaders == 1)
-	{
 		Status = AcpiOsAcquireMutex(Lock->WriterMutex, ACPI_WAIT_FOREVER);
-	}
 
 	AcpiOsReleaseMutex(Lock->ReaderMutex);
 	return (Status);
@@ -216,7 +210,7 @@ AcpiUtAcquireReadLock(
 
 ACPI_STATUS
 AcpiUtReleaseReadLock(
-    ACPI_RW_LOCK            *Lock)
+        ACPI_RW_LOCK            *Lock)
 {
 	ACPI_STATUS             Status;
 
@@ -224,18 +218,14 @@ AcpiUtReleaseReadLock(
 	Status = AcpiOsAcquireMutex(Lock->ReaderMutex, ACPI_WAIT_FOREVER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/* Release the write lock only for the very last reader */
 
 	Lock->NumReaders--;
 
 	if (Lock->NumReaders == 0)
-	{
 		AcpiOsReleaseMutex(Lock->WriterMutex);
-	}
 
 	AcpiOsReleaseMutex(Lock->ReaderMutex);
 	return (Status);
@@ -260,7 +250,7 @@ AcpiUtReleaseReadLock(
 
 ACPI_STATUS
 AcpiUtAcquireWriteLock(
-    ACPI_RW_LOCK            *Lock)
+        ACPI_RW_LOCK            *Lock)
 {
 	ACPI_STATUS             Status;
 
@@ -272,7 +262,7 @@ AcpiUtAcquireWriteLock(
 
 void
 AcpiUtReleaseWriteLock(
-    ACPI_RW_LOCK            *Lock)
+        ACPI_RW_LOCK            *Lock)
 {
 
 	AcpiOsReleaseMutex(Lock->WriterMutex);

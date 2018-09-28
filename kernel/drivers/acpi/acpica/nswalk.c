@@ -142,14 +142,13 @@ ACPI_MODULE_NAME("nswalk")
 
 ACPI_NAMESPACE_NODE *
 AcpiNsGetNextNode(
-    ACPI_NAMESPACE_NODE     *ParentNode,
-    ACPI_NAMESPACE_NODE     *ChildNode)
+        ACPI_NAMESPACE_NODE     *ParentNode,
+        ACPI_NAMESPACE_NODE     *ChildNode)
 {
 	ACPI_FUNCTION_ENTRY();
 
 
-	if (!ChildNode)
-	{
+	if (!ChildNode) {
 		/* It's really the parent's _scope_ that we want */
 
 		return (ParentNode->Child);
@@ -182,9 +181,9 @@ AcpiNsGetNextNode(
 
 ACPI_NAMESPACE_NODE *
 AcpiNsGetNextNodeTyped(
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_NAMESPACE_NODE     *ParentNode,
-    ACPI_NAMESPACE_NODE     *ChildNode)
+        ACPI_OBJECT_TYPE        Type,
+        ACPI_NAMESPACE_NODE     *ParentNode,
+        ACPI_NAMESPACE_NODE     *ChildNode)
 {
 	ACPI_NAMESPACE_NODE     *NextNode = NULL;
 
@@ -196,8 +195,7 @@ AcpiNsGetNextNodeTyped(
 
 	/* If any type is OK, we are done */
 
-	if (Type == ACPI_TYPE_ANY)
-	{
+	if (Type == ACPI_TYPE_ANY) {
 		/* NextNode is NULL if we are at the end-of-list */
 
 		return (NextNode);
@@ -205,14 +203,11 @@ AcpiNsGetNextNodeTyped(
 
 	/* Must search for the node -- but within this scope only */
 
-	while (NextNode)
-	{
+	while (NextNode) {
 		/* If type matches, we are done */
 
 		if (NextNode->Type == Type)
-		{
 			return (NextNode);
-		}
 
 		/* Otherwise, move on to the next peer node */
 
@@ -260,14 +255,14 @@ AcpiNsGetNextNodeTyped(
 
 ACPI_STATUS
 AcpiNsWalkNamespace(
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_HANDLE             StartNode,
-    UINT32                  MaxDepth,
-    UINT32                  Flags,
-    ACPI_WALK_CALLBACK      DescendingCallback,
-    ACPI_WALK_CALLBACK      AscendingCallback,
-    void                    *Context,
-    void                    **ReturnValue)
+        ACPI_OBJECT_TYPE        Type,
+        ACPI_HANDLE             StartNode,
+        UINT32                  MaxDepth,
+        UINT32                  Flags,
+        ACPI_WALK_CALLBACK      DescendingCallback,
+        ACPI_WALK_CALLBACK      AscendingCallback,
+        void                    *Context,
+        void                    **ReturnValue)
 {
 	ACPI_STATUS             Status;
 	ACPI_STATUS             MutexStatus;
@@ -284,9 +279,7 @@ AcpiNsWalkNamespace(
 	/* Special case for the namespace Root Node */
 
 	if (StartNode == ACPI_ROOT_OBJECT)
-	{
 		StartNode = AcpiGbl_RootNode;
-	}
 
 	/* Null child means "get first node" */
 
@@ -300,16 +293,13 @@ AcpiNsWalkNamespace(
 	 * started. When Level is zero, the loop is done because we have
 	 * bubbled up to (and passed) the original parent handle (StartEntry)
 	 */
-	while (Level > 0 && ChildNode)
-	{
+	while (Level > 0 && ChildNode) {
 		Status = AE_OK;
 
 		/* Found next child, get the type if we are not searching for ANY */
 
 		if (Type != ACPI_TYPE_ANY)
-		{
 			ChildType = ChildNode->Type;
-		}
 
 		/*
 		 * Ignore all temporary namespace nodes (created during control
@@ -320,62 +310,47 @@ AcpiNsWalkNamespace(
 		 * debugger namespace dump will examine the temporary nodes.
 		 */
 		if ((ChildNode->Flags & ANOBJ_TEMPORARY) &&
-		        !(Flags & ACPI_NS_WALK_TEMP_NODES))
-		{
+		    !(Flags & ACPI_NS_WALK_TEMP_NODES))
 			Status = AE_CTRL_DEPTH;
-		}
 
 		/* Type must match requested type */
 
-		else if (ChildType == Type)
-		{
+		else if (ChildType == Type) {
 			/*
 			 * Found a matching node, invoke the user callback function.
 			 * Unlock the namespace if flag is set.
 			 */
-			if (Flags & ACPI_NS_WALK_UNLOCK)
-			{
+			if (Flags & ACPI_NS_WALK_UNLOCK) {
 				MutexStatus = AcpiUtReleaseMutex(ACPI_MTX_NAMESPACE);
 
 				if (ACPI_FAILURE(MutexStatus))
-				{
 					return_ACPI_STATUS(MutexStatus);
-				}
 			}
 
 			/*
 			 * Invoke the user function, either descending, ascending,
 			 * or both.
 			 */
-			if (!NodePreviouslyVisited)
-			{
-				if (DescendingCallback)
-				{
+			if (!NodePreviouslyVisited) {
+				if (DescendingCallback) {
 					Status = DescendingCallback(ChildNode, Level,
 					                            Context, ReturnValue);
 				}
-			}
-			else
-			{
-				if (AscendingCallback)
-				{
+			} else {
+				if (AscendingCallback) {
 					Status = AscendingCallback(ChildNode, Level,
 					                           Context, ReturnValue);
 				}
 			}
 
-			if (Flags & ACPI_NS_WALK_UNLOCK)
-			{
+			if (Flags & ACPI_NS_WALK_UNLOCK) {
 				MutexStatus = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 				if (ACPI_FAILURE(MutexStatus))
-				{
 					return_ACPI_STATUS(MutexStatus);
-				}
 			}
 
-			switch (Status)
-			{
+			switch (Status) {
 			case AE_OK:
 			case AE_CTRL_DEPTH:
 
@@ -403,11 +378,9 @@ AcpiNsWalkNamespace(
 		 * function has specified that the maximum depth has been reached.
 		 */
 		if (!NodePreviouslyVisited &&
-		        (Level < MaxDepth) &&
-		        (Status != AE_CTRL_DEPTH))
-		{
-			if (ChildNode->Child)
-			{
+		    (Level < MaxDepth) &&
+		    (Status != AE_CTRL_DEPTH)) {
+			if (ChildNode->Child) {
 				/* There is at least one child of this node, visit it */
 
 				Level++;
@@ -419,8 +392,7 @@ AcpiNsWalkNamespace(
 
 		/* No more children, re-visit this node */
 
-		if (!NodePreviouslyVisited)
-		{
+		if (!NodePreviouslyVisited) {
 			NodePreviouslyVisited = TRUE;
 			continue;
 		}
@@ -430,14 +402,11 @@ AcpiNsWalkNamespace(
 		ChildNode = AcpiNsGetNextNode(ParentNode, ChildNode);
 
 		if (ChildNode)
-		{
 			NodePreviouslyVisited = FALSE;
-		}
 
 		/* No peers, re-visit parent */
 
-		else
-		{
+		else {
 			/*
 			 * No more children of this node (AcpiNsGetNextNode failed), go
 			 * back upwards in the namespace tree to the node's parent.

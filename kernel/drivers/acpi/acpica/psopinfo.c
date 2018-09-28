@@ -142,7 +142,7 @@ static const UINT8      AcpiGbl_ArgumentCount[] = {0, 1, 1, 1, 1, 2, 2, 2, 2, 3,
 
 const ACPI_OPCODE_INFO *
 AcpiPsGetOpcodeInfo(
-    UINT16                  Opcode)
+        UINT16                  Opcode)
 {
 #ifdef ACPI_DEBUG_OUTPUT
 	const char              *OpcodeName = "Unknown AML opcode";
@@ -154,16 +154,14 @@ AcpiPsGetOpcodeInfo(
 	/*
 	 * Detect normal 8-bit opcode or extended 16-bit opcode
 	 */
-	if (!(Opcode & 0xFF00))
-	{
+	if (!(Opcode & 0xFF00)) {
 		/* Simple (8-bit) opcode: 0-255, can't index beyond table  */
 
 		return (&AcpiGbl_AmlOpInfo [AcpiGbl_ShortOpIndex [(UINT8) Opcode]]);
 	}
 
 	if (((Opcode & 0xFF00) == AML_EXTENDED_OPCODE) &&
-	        (((UINT8) Opcode) <= MAX_EXTENDED_OPCODE))
-	{
+	    (((UINT8) Opcode) <= MAX_EXTENDED_OPCODE)) {
 		/* Valid extended (16-bit) opcode */
 
 		return (&AcpiGbl_AmlOpInfo [AcpiGbl_LongOpIndex [(UINT8) Opcode]]);
@@ -172,8 +170,7 @@ AcpiPsGetOpcodeInfo(
 #if defined ACPI_ASL_COMPILER && defined ACPI_DEBUG_OUTPUT
 #include "asldefine.h"
 
-	switch (Opcode)
-	{
+	switch (Opcode) {
 	case AML_RAW_DATA_BYTE:
 		OpcodeName = "-Raw Data Byte-";
 		break;
@@ -240,7 +237,7 @@ AcpiPsGetOpcodeInfo(
 
 const char *
 AcpiPsGetOpcodeName(
-    UINT16                  Opcode)
+        UINT16                  Opcode)
 {
 #if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUG_OUTPUT)
 
@@ -274,13 +271,11 @@ AcpiPsGetOpcodeName(
 
 UINT8
 AcpiPsGetArgumentCount(
-    UINT32                  OpType)
+        UINT32                  OpType)
 {
 
 	if (OpType <= AML_TYPE_EXEC_6A_0T_1R)
-	{
 		return (AcpiGbl_ArgumentCount[OpType]);
-	}
 
 	return (0);
 }
@@ -290,8 +285,7 @@ AcpiPsGetArgumentCount(
  * This table is directly indexed by the opcodes It returns
  * an index into the opcode table (AcpiGbl_AmlOpInfo)
  */
-const UINT8 AcpiGbl_ShortOpIndex[256] =
-{
+const UINT8 AcpiGbl_ShortOpIndex[256] = {
 	/*              0     1     2     3     4     5     6     7  */
 	/*              8     9     A     B     C     D     E     F  */
 	/* 0x00 */    0x00, 0x01, _UNK, _UNK, _UNK, _UNK, 0x02, _UNK,
@@ -332,8 +326,7 @@ const UINT8 AcpiGbl_ShortOpIndex[256] =
  * This table is indexed by the second opcode of the extended opcode
  * pair. It returns an index into the opcode table (AcpiGbl_AmlOpInfo)
  */
-const UINT8 AcpiGbl_LongOpIndex[NUM_EXTENDED_OPCODE] =
-{
+const UINT8 AcpiGbl_LongOpIndex[NUM_EXTENDED_OPCODE] = {
 	/*              0     1     2     3     4     5     6     7  */
 	/*              8     9     A     B     C     D     E     F  */
 	/* 0x00 */    _UNK, 0x46, 0x47, _UNK, _UNK, _UNK, _UNK, _UNK,

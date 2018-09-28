@@ -145,10 +145,10 @@ ACPI_MODULE_NAME("nsdumpdv")
 
 static ACPI_STATUS
 AcpiNsDumpOneDevice(
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue)
+        ACPI_HANDLE             ObjHandle,
+        UINT32                  Level,
+        void                    *Context,
+        void                    **ReturnValue)
 {
 	ACPI_BUFFER             Buffer;
 	ACPI_DEVICE_INFO        *Info;
@@ -164,14 +164,11 @@ AcpiNsDumpOneDevice(
 	Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
 	Status = AcpiGetObjectInfo(ObjHandle, &Buffer);
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		Info = Buffer.Pointer;
 
 		for (i = 0; i < Level; i++)
-		{
 			ACPI_DEBUG_PRINT_RAW((ACPI_DB_TABLES, " "));
-		}
 
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_TABLES,
 		                      "    HID: %s, ADR: %8.8X%8.8X, Status: %X\n",
@@ -198,7 +195,7 @@ AcpiNsDumpOneDevice(
 
 void
 AcpiNsDumpRootDevices(
-    void)
+        void)
 {
 	ACPI_HANDLE             SysBusHandle;
 	ACPI_STATUS             Status;
@@ -210,16 +207,12 @@ AcpiNsDumpRootDevices(
 	/* Only dump the table if tracing is enabled */
 
 	if (!(ACPI_LV_TABLES & AcpiDbgLevel))
-	{
 		return;
-	}
 
 	Status = AcpiGetHandle(NULL, METHOD_NAME__SB_, &SysBusHandle);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return;
-	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_TABLES,
 	                  "Display of all devices in the namespace:\n"));

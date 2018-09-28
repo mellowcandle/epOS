@@ -130,7 +130,7 @@ static ACPI_OPERAND_OBJECT  *AcpiGbl_TraceMethodObject = NULL;
 #ifdef ACPI_DEBUG_OUTPUT
 static const char *
 AcpiExGetTraceEventName(
-    ACPI_TRACE_EVENT_TYPE   Type);
+        ACPI_TRACE_EVENT_TYPE   Type);
 #endif
 
 
@@ -150,15 +150,13 @@ AcpiExGetTraceEventName(
 
 static BOOLEAN
 AcpiExInterpreterTraceEnabled(
-    char                    *Name)
+        char                    *Name)
 {
 
 	/* Check if tracing is enabled */
 
 	if (!(AcpiGbl_TraceFlags & ACPI_TRACE_ENABLED))
-	{
 		return (FALSE);
-	}
 
 	/*
 	 * Check if tracing is filtered:
@@ -171,22 +169,16 @@ AcpiExInterpreterTraceEnabled(
 	 *    not be cleared by the trace stopper during the first match
 	 */
 	if (AcpiGbl_TraceMethodObject)
-	{
 		return (TRUE);
-	}
 
 	if (Name &&
-	        (AcpiGbl_TraceMethodName &&
-	         strcmp(AcpiGbl_TraceMethodName, Name)))
-	{
+	    (AcpiGbl_TraceMethodName &&
+	     strcmp(AcpiGbl_TraceMethodName, Name)))
 		return (FALSE);
-	}
 
 	if ((AcpiGbl_TraceFlags & ACPI_TRACE_ONESHOT) &&
-	        !AcpiGbl_TraceMethodName)
-	{
+	    !AcpiGbl_TraceMethodName)
 		return (FALSE);
-	}
 
 	return (TRUE);
 }
@@ -208,11 +200,10 @@ AcpiExInterpreterTraceEnabled(
 
 static const char *
 AcpiExGetTraceEventName(
-    ACPI_TRACE_EVENT_TYPE   Type)
+        ACPI_TRACE_EVENT_TYPE   Type)
 {
 
-	switch (Type)
-	{
+	switch (Type) {
 	case ACPI_TRACE_AML_METHOD:
 
 		return "Method";
@@ -251,24 +242,21 @@ AcpiExGetTraceEventName(
 
 void
 AcpiExTracePoint(
-    ACPI_TRACE_EVENT_TYPE   Type,
-    BOOLEAN                 Begin,
-    UINT8                   *Aml,
-    char                    *Pathname)
+        ACPI_TRACE_EVENT_TYPE   Type,
+        BOOLEAN                 Begin,
+        UINT8                   *Aml,
+        char                    *Pathname)
 {
 
 	ACPI_FUNCTION_NAME(ExTracePoint);
 
 
-	if (Pathname)
-	{
+	if (Pathname) {
 		ACPI_DEBUG_PRINT((ACPI_DB_TRACE_POINT,
 		                  "%s %s [0x%p:%s] execution.\n",
 		                  AcpiExGetTraceEventName(Type), Begin ? "Begin" : "End",
 		                  Aml, Pathname));
-	}
-	else
-	{
+	} else {
 		ACPI_DEBUG_PRINT((ACPI_DB_TRACE_POINT,
 		                  "%s %s [0x%p] execution.\n",
 		                  AcpiExGetTraceEventName(Type), Begin ? "Begin" : "End",
@@ -294,9 +282,9 @@ AcpiExTracePoint(
 
 void
 AcpiExStartTraceMethod(
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_NAMESPACE_NODE     *MethodNode,
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	char                    *Pathname = NULL;
 	BOOLEAN                 Enabled = FALSE;
@@ -306,14 +294,11 @@ AcpiExStartTraceMethod(
 
 
 	if (MethodNode)
-	{
 		Pathname = AcpiNsGetNormalizedPathname(MethodNode, TRUE);
-	}
 
 	Enabled = AcpiExInterpreterTraceEnabled(Pathname);
 
-	if (Enabled && !AcpiGbl_TraceMethodObject)
-	{
+	if (Enabled && !AcpiGbl_TraceMethodObject) {
 		AcpiGbl_TraceMethodObject = ObjDesc;
 		AcpiGbl_OriginalDbgLevel = AcpiDbgLevel;
 		AcpiGbl_OriginalDbgLayer = AcpiDbgLayer;
@@ -321,26 +306,19 @@ AcpiExStartTraceMethod(
 		AcpiDbgLayer = ACPI_TRACE_LAYER_ALL;
 
 		if (AcpiGbl_TraceDbgLevel)
-		{
 			AcpiDbgLevel = AcpiGbl_TraceDbgLevel;
-		}
 
 		if (AcpiGbl_TraceDbgLayer)
-		{
 			AcpiDbgLayer = AcpiGbl_TraceDbgLayer;
-		}
 	}
 
-	if (Enabled)
-	{
+	if (Enabled) {
 		ACPI_TRACE_POINT(ACPI_TRACE_AML_METHOD, TRUE,
 		                 ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
 	}
 
 	if (Pathname)
-	{
 		ACPI_FREE(Pathname);
-	}
 }
 
 
@@ -361,9 +339,9 @@ AcpiExStartTraceMethod(
 
 void
 AcpiExStopTraceMethod(
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_NAMESPACE_NODE     *MethodNode,
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	char                    *Pathname = NULL;
 	BOOLEAN                 Enabled;
@@ -373,28 +351,22 @@ AcpiExStopTraceMethod(
 
 
 	if (MethodNode)
-	{
 		Pathname = AcpiNsGetNormalizedPathname(MethodNode, TRUE);
-	}
 
 	Enabled = AcpiExInterpreterTraceEnabled(NULL);
 
-	if (Enabled)
-	{
+	if (Enabled) {
 		ACPI_TRACE_POINT(ACPI_TRACE_AML_METHOD, FALSE,
 		                 ObjDesc ? ObjDesc->Method.AmlStart : NULL, Pathname);
 	}
 
 	/* Check whether the tracer should be stopped */
 
-	if (AcpiGbl_TraceMethodObject == ObjDesc)
-	{
+	if (AcpiGbl_TraceMethodObject == ObjDesc) {
 		/* Disable further tracing if type is one-shot */
 
 		if (AcpiGbl_TraceFlags & ACPI_TRACE_ONESHOT)
-		{
 			AcpiGbl_TraceMethodName = NULL;
-		}
 
 		AcpiDbgLevel = AcpiGbl_OriginalDbgLevel;
 		AcpiDbgLayer = AcpiGbl_OriginalDbgLayer;
@@ -402,9 +374,7 @@ AcpiExStopTraceMethod(
 	}
 
 	if (Pathname)
-	{
 		ACPI_FREE(Pathname);
-	}
 }
 
 
@@ -424,16 +394,15 @@ AcpiExStopTraceMethod(
 
 void
 AcpiExStartTraceOpcode(
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_WALK_STATE         *WalkState)
 {
 
 	ACPI_FUNCTION_NAME(ExStartTraceOpcode);
 
 
 	if (AcpiExInterpreterTraceEnabled(NULL) &&
-	        (AcpiGbl_TraceFlags & ACPI_TRACE_OPCODE))
-	{
+	    (AcpiGbl_TraceFlags & ACPI_TRACE_OPCODE)) {
 		ACPI_TRACE_POINT(ACPI_TRACE_AML_OPCODE, TRUE,
 		                 Op->Common.Aml, Op->Common.AmlOpName);
 	}
@@ -456,16 +425,15 @@ AcpiExStartTraceOpcode(
 
 void
 AcpiExStopTraceOpcode(
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_WALK_STATE         *WalkState)
 {
 
 	ACPI_FUNCTION_NAME(ExStopTraceOpcode);
 
 
 	if (AcpiExInterpreterTraceEnabled(NULL) &&
-	        (AcpiGbl_TraceFlags & ACPI_TRACE_OPCODE))
-	{
+	    (AcpiGbl_TraceFlags & ACPI_TRACE_OPCODE)) {
 		ACPI_TRACE_POINT(ACPI_TRACE_AML_OPCODE, FALSE,
 		                 Op->Common.Aml, Op->Common.AmlOpName);
 	}

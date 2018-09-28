@@ -137,7 +137,7 @@ ACPI_MODULE_NAME("utxface")
 
 ACPI_STATUS ACPI_INIT_FUNCTION
 AcpiTerminate(
-    void)
+        void)
 {
 	ACPI_STATUS         Status;
 
@@ -179,17 +179,13 @@ ACPI_EXPORT_SYMBOL_INIT(AcpiTerminate)
 
 ACPI_STATUS
 AcpiSubsystemStatus(
-    void)
+        void)
 {
 
 	if (AcpiGbl_StartupFlags & ACPI_INITIALIZED_OK)
-	{
 		return (AE_OK);
-	}
 	else
-	{
 		return (AE_ERROR);
-	}
 }
 
 ACPI_EXPORT_SYMBOL(AcpiSubsystemStatus)
@@ -215,7 +211,7 @@ ACPI_EXPORT_SYMBOL(AcpiSubsystemStatus)
 
 ACPI_STATUS
 AcpiGetSystemInfo(
-    ACPI_BUFFER             *OutBuffer)
+        ACPI_BUFFER             *OutBuffer)
 {
 	ACPI_SYSTEM_INFO        *InfoPtr;
 	ACPI_STATUS             Status;
@@ -229,18 +225,14 @@ AcpiGetSystemInfo(
 	Status = AcpiUtValidateBuffer(OutBuffer);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Validate/Allocate/Clear caller buffer */
 
 	Status = AcpiUtInitializeBuffer(OutBuffer, sizeof(ACPI_SYSTEM_INFO));
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Populate the return buffer
@@ -255,13 +247,9 @@ AcpiGetSystemInfo(
 	/* Timer resolution - 24 or 32 bits  */
 
 	if (AcpiGbl_FADT.Flags & ACPI_FADT_32BIT_TIMER)
-	{
 		InfoPtr->TimerResolution = 24;
-	}
 	else
-	{
 		InfoPtr->TimerResolution = 32;
-	}
 
 	/* Clear the reserved fields */
 
@@ -293,7 +281,7 @@ ACPI_EXPORT_SYMBOL(AcpiGetSystemInfo)
 
 ACPI_STATUS
 AcpiGetStatistics(
-    ACPI_STATISTICS         *Stats)
+        ACPI_STATISTICS         *Stats)
 {
 	ACPI_FUNCTION_TRACE(AcpiGetStatistics);
 
@@ -301,9 +289,7 @@ AcpiGetStatistics(
 	/* Parameter validation */
 
 	if (!Stats)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Various interrupt-based event counters */
 
@@ -339,19 +325,15 @@ ACPI_EXPORT_SYMBOL(AcpiGetStatistics)
 
 ACPI_STATUS
 AcpiInstallInitializationHandler(
-    ACPI_INIT_HANDLER       Handler,
-    UINT32                  Function)
+        ACPI_INIT_HANDLER       Handler,
+        UINT32                  Function)
 {
 
 	if (!Handler)
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	if (AcpiGbl_InitHandler)
-	{
 		return (AE_ALREADY_EXISTS);
-	}
 
 	AcpiGbl_InitHandler = Handler;
 	return (AE_OK);
@@ -374,7 +356,7 @@ ACPI_EXPORT_SYMBOL(AcpiInstallInitializationHandler)
 
 ACPI_STATUS
 AcpiPurgeCachedObjects(
-    void)
+        void)
 {
 	ACPI_FUNCTION_TRACE(AcpiPurgeCachedObjects);
 
@@ -404,7 +386,7 @@ ACPI_EXPORT_SYMBOL(AcpiPurgeCachedObjects)
 
 ACPI_STATUS
 AcpiInstallInterface(
-    ACPI_STRING             InterfaceName)
+        ACPI_STRING             InterfaceName)
 {
 	ACPI_STATUS             Status;
 	ACPI_INTERFACE_INFO     *InterfaceInfo;
@@ -413,39 +395,28 @@ AcpiInstallInterface(
 	/* Parameter validation */
 
 	if (!InterfaceName || (strlen(InterfaceName) == 0))
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiOsAcquireMutex(AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/* Check if the interface name is already in the global list */
 
 	InterfaceInfo = AcpiUtGetInterface(InterfaceName);
 
-	if (InterfaceInfo)
-	{
+	if (InterfaceInfo) {
 		/*
 		 * The interface already exists in the list. This is OK if the
 		 * interface has been marked invalid -- just clear the bit.
 		 */
-		if (InterfaceInfo->Flags & ACPI_OSI_INVALID)
-		{
+		if (InterfaceInfo->Flags & ACPI_OSI_INVALID) {
 			InterfaceInfo->Flags &= ~ACPI_OSI_INVALID;
 			Status = AE_OK;
-		}
-		else
-		{
+		} else
 			Status = AE_ALREADY_EXISTS;
-		}
-	}
-	else
-	{
+	} else {
 		/* New interface name, install into the global list */
 
 		Status = AcpiUtInstallInterface(InterfaceName);
@@ -472,7 +443,7 @@ ACPI_EXPORT_SYMBOL(AcpiInstallInterface)
 
 ACPI_STATUS
 AcpiRemoveInterface(
-    ACPI_STRING             InterfaceName)
+        ACPI_STRING             InterfaceName)
 {
 	ACPI_STATUS             Status;
 
@@ -480,16 +451,12 @@ AcpiRemoveInterface(
 	/* Parameter validation */
 
 	if (!InterfaceName || (strlen(InterfaceName) == 0))
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	Status = AcpiOsAcquireMutex(AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	Status = AcpiUtRemoveInterface(InterfaceName);
 
@@ -517,7 +484,7 @@ ACPI_EXPORT_SYMBOL(AcpiRemoveInterface)
 
 ACPI_STATUS
 AcpiInstallInterfaceHandler(
-    ACPI_INTERFACE_HANDLER  Handler)
+        ACPI_INTERFACE_HANDLER  Handler)
 {
 	ACPI_STATUS             Status;
 
@@ -525,18 +492,12 @@ AcpiInstallInterfaceHandler(
 	Status = AcpiOsAcquireMutex(AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	if (Handler && AcpiGbl_InterfaceHandler)
-	{
 		Status = AE_ALREADY_EXISTS;
-	}
 	else
-	{
 		AcpiGbl_InterfaceHandler = Handler;
-	}
 
 	AcpiOsReleaseMutex(AcpiGbl_OsiMutex);
 	return (Status);
@@ -561,7 +522,7 @@ ACPI_EXPORT_SYMBOL(AcpiInstallInterfaceHandler)
 
 ACPI_STATUS
 AcpiUpdateInterfaces(
-    UINT8                   Action)
+        UINT8                   Action)
 {
 	ACPI_STATUS             Status;
 
@@ -569,9 +530,7 @@ AcpiUpdateInterfaces(
 	Status = AcpiOsAcquireMutex(AcpiGbl_OsiMutex, ACPI_WAIT_FOREVER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	Status = AcpiUtUpdateInterfaces(Action);
 
@@ -598,10 +557,10 @@ AcpiUpdateInterfaces(
 
 UINT32
 AcpiCheckAddressRange(
-    ACPI_ADR_SPACE_TYPE     SpaceId,
-    ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_SIZE               Length,
-    BOOLEAN                 Warn)
+        ACPI_ADR_SPACE_TYPE     SpaceId,
+        ACPI_PHYSICAL_ADDRESS   Address,
+        ACPI_SIZE               Length,
+        BOOLEAN                 Warn)
 {
 	UINT32                  Overlaps;
 	ACPI_STATUS             Status;
@@ -610,9 +569,7 @@ AcpiCheckAddressRange(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (0);
-	}
 
 	Overlaps = AcpiUtCheckAddressRange(SpaceId, Address,
 	                                   (UINT32) Length, Warn);
@@ -644,9 +601,9 @@ ACPI_EXPORT_SYMBOL(AcpiCheckAddressRange)
 
 ACPI_STATUS
 AcpiDecodePldBuffer(
-    UINT8                   *InBuffer,
-    ACPI_SIZE               Length,
-    ACPI_PLD_INFO           **ReturnBuffer)
+        UINT8                   *InBuffer,
+        ACPI_SIZE               Length,
+        ACPI_PLD_INFO           **ReturnBuffer)
 {
 	ACPI_PLD_INFO           *PldInfo;
 	UINT32                  *Buffer = ACPI_CAST_PTR(UINT32, InBuffer);
@@ -656,16 +613,12 @@ AcpiDecodePldBuffer(
 	/* Parameter validation */
 
 	if (!InBuffer || !ReturnBuffer || (Length < ACPI_PLD_REV1_BUFFER_SIZE))
-	{
 		return (AE_BAD_PARAMETER);
-	}
 
 	PldInfo = ACPI_ALLOCATE_ZEROED(sizeof(ACPI_PLD_INFO));
 
 	if (!PldInfo)
-	{
 		return (AE_NO_MEMORY);
-	}
 
 	/* First 32-bit DWord */
 
@@ -708,8 +661,7 @@ AcpiDecodePldBuffer(
 	PldInfo->Rotation =             ACPI_PLD_GET_ROTATION(&Dword);
 	PldInfo->Order =                ACPI_PLD_GET_ORDER(&Dword);
 
-	if (Length >= ACPI_PLD_REV2_BUFFER_SIZE)
-	{
+	if (Length >= ACPI_PLD_REV2_BUFFER_SIZE) {
 		/* Fifth 32-bit DWord (Revision 2 of _PLD) */
 
 		ACPI_MOVE_32_TO_32(&Dword, &Buffer[4]);

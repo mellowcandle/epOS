@@ -141,9 +141,9 @@ ACPI_MODULE_NAME("exmisc")
 
 ACPI_STATUS
 AcpiExGetObjectReference(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ReturnDesc,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_OPERAND_OBJECT     **ReturnDesc,
+        ACPI_WALK_STATE         *WalkState)
 {
 	ACPI_OPERAND_OBJECT     *ReferenceObj;
 	ACPI_OPERAND_OBJECT     *ReferencedObj;
@@ -154,20 +154,16 @@ AcpiExGetObjectReference(
 
 	*ReturnDesc = NULL;
 
-	switch (ACPI_GET_DESCRIPTOR_TYPE(ObjDesc))
-	{
+	switch (ACPI_GET_DESCRIPTOR_TYPE(ObjDesc)) {
 	case ACPI_DESC_TYPE_OPERAND:
 
 		if (ObjDesc->Common.Type != ACPI_TYPE_LOCAL_REFERENCE)
-		{
 			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
-		}
 
 		/*
 		 * Must be a reference to a Local or Arg
 		 */
-		switch (ObjDesc->Reference.Class)
-		{
+		switch (ObjDesc->Reference.Class) {
 		case ACPI_REFCLASS_LOCAL:
 		case ACPI_REFCLASS_ARG:
 		case ACPI_REFCLASS_DEBUG:
@@ -206,9 +202,7 @@ AcpiExGetObjectReference(
 	ReferenceObj = AcpiUtCreateInternalObject(ACPI_TYPE_LOCAL_REFERENCE);
 
 	if (!ReferenceObj)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	ReferenceObj->Reference.Class = ACPI_REFCLASS_REFOF;
 	ReferenceObj->Reference.Object = ReferencedObj;
@@ -240,16 +234,15 @@ AcpiExGetObjectReference(
 
 UINT64
 AcpiExDoMathOp(
-    UINT16                  Opcode,
-    UINT64                  Integer0,
-    UINT64                  Integer1)
+        UINT16                  Opcode,
+        UINT64                  Integer0,
+        UINT64                  Integer1)
 {
 
 	ACPI_FUNCTION_ENTRY();
 
 
-	switch (Opcode)
-	{
+	switch (Opcode) {
 	case AML_ADD_OP:                /* Add (Integer0, Integer1, Result) */
 
 		return (Integer0 + Integer1);
@@ -285,9 +278,7 @@ AcpiExDoMathOp(
 		 * width since the behavior of this is not well-defined in the C language.
 		 */
 		if (Integer1 >= AcpiGbl_IntegerBitWidth)
-		{
 			return (0);
-		}
 
 		return (Integer0 << Integer1);
 
@@ -298,9 +289,7 @@ AcpiExDoMathOp(
 		 * width since the behavior of this is not well-defined in the C language.
 		 */
 		if (Integer1 >= AcpiGbl_IntegerBitWidth)
-		{
 			return (0);
-		}
 
 		return (Integer0 >> Integer1);
 
@@ -337,10 +326,10 @@ AcpiExDoMathOp(
 
 ACPI_STATUS
 AcpiExDoLogicalNumericOp(
-    UINT16                  Opcode,
-    UINT64                  Integer0,
-    UINT64                  Integer1,
-    BOOLEAN                 *LogicalResult)
+        UINT16                  Opcode,
+        UINT64                  Integer0,
+        UINT64                  Integer1,
+        BOOLEAN                 *LogicalResult)
 {
 	ACPI_STATUS             Status = AE_OK;
 	BOOLEAN                 LocalResult = FALSE;
@@ -349,23 +338,18 @@ AcpiExDoLogicalNumericOp(
 	ACPI_FUNCTION_TRACE(ExDoLogicalNumericOp);
 
 
-	switch (Opcode)
-	{
+	switch (Opcode) {
 	case AML_LAND_OP:               /* LAnd (Integer0, Integer1) */
 
 		if (Integer0 && Integer1)
-		{
 			LocalResult = TRUE;
-		}
 
 		break;
 
 	case AML_LOR_OP:                /* LOr (Integer0, Integer1) */
 
 		if (Integer0 || Integer1)
-		{
 			LocalResult = TRUE;
-		}
 
 		break;
 
@@ -410,10 +394,10 @@ AcpiExDoLogicalNumericOp(
 
 ACPI_STATUS
 AcpiExDoLogicalOp(
-    UINT16                  Opcode,
-    ACPI_OPERAND_OBJECT     *Operand0,
-    ACPI_OPERAND_OBJECT     *Operand1,
-    BOOLEAN                 *LogicalResult)
+        UINT16                  Opcode,
+        ACPI_OPERAND_OBJECT     *Operand0,
+        ACPI_OPERAND_OBJECT     *Operand1,
+        BOOLEAN                 *LogicalResult)
 {
 	ACPI_OPERAND_OBJECT     *LocalOperand1 = Operand1;
 	UINT64                  Integer0;
@@ -435,8 +419,7 @@ AcpiExDoLogicalOp(
 	 * guaranteed to be either Integer/String/Buffer by the operand
 	 * resolution mechanism.
 	 */
-	switch (Operand0->Common.Type)
-	{
+	switch (Operand0->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 
 		Status = AcpiExConvertToInteger(Operand1, &LocalOperand1,
@@ -446,7 +429,7 @@ AcpiExDoLogicalOp(
 	case ACPI_TYPE_STRING:
 
 		Status = AcpiExConvertToString(
-		             Operand1, &LocalOperand1, ACPI_IMPLICIT_CONVERT_HEX);
+		                 Operand1, &LocalOperand1, ACPI_IMPLICIT_CONVERT_HEX);
 		break;
 
 	case ACPI_TYPE_BUFFER:
@@ -461,15 +444,12 @@ AcpiExDoLogicalOp(
 	}
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	/*
 	 * Two cases: 1) Both Integers, 2) Both Strings or Buffers
 	 */
-	if (Operand0->Common.Type == ACPI_TYPE_INTEGER)
-	{
+	if (Operand0->Common.Type == ACPI_TYPE_INTEGER) {
 		/*
 		 * 1) Both operands are of type integer
 		 *    Note: LocalOperand1 may have changed above
@@ -477,32 +457,25 @@ AcpiExDoLogicalOp(
 		Integer0 = Operand0->Integer.Value;
 		Integer1 = LocalOperand1->Integer.Value;
 
-		switch (Opcode)
-		{
+		switch (Opcode) {
 		case AML_LEQUAL_OP:             /* LEqual (Operand0, Operand1) */
 
 			if (Integer0 == Integer1)
-			{
 				LocalResult = TRUE;
-			}
 
 			break;
 
 		case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
 
 			if (Integer0 > Integer1)
-			{
 				LocalResult = TRUE;
-			}
 
 			break;
 
 		case AML_LLESS_OP:              /* LLess (Operand0, Operand1) */
 
 			if (Integer0 < Integer1)
-			{
 				LocalResult = TRUE;
-			}
 
 			break;
 
@@ -511,9 +484,7 @@ AcpiExDoLogicalOp(
 			Status = AE_AML_INTERNAL;
 			break;
 		}
-	}
-	else
-	{
+	} else {
 		/*
 		 * 2) Both operands are Strings or both are Buffers
 		 *    Note: Code below takes advantage of common Buffer/String
@@ -529,15 +500,13 @@ AcpiExDoLogicalOp(
 		                 LocalOperand1->Buffer.Pointer,
 		                 (Length0 > Length1) ? Length1 : Length0);
 
-		switch (Opcode)
-		{
+		switch (Opcode) {
 		case AML_LEQUAL_OP:             /* LEqual (Operand0, Operand1) */
 
 			/* Length and all bytes must be equal */
 
 			if ((Length0 == Length1) &&
-			        (Compare == 0))
-			{
+			    (Compare == 0)) {
 				/* Length and all bytes match ==> TRUE */
 
 				LocalResult = TRUE;
@@ -547,35 +516,29 @@ AcpiExDoLogicalOp(
 
 		case AML_LGREATER_OP:           /* LGreater (Operand0, Operand1) */
 
-			if (Compare > 0)
-			{
+			if (Compare > 0) {
 				LocalResult = TRUE;
 				goto Cleanup;   /* TRUE */
 			}
 
-			if (Compare < 0)
-			{
+			if (Compare < 0) {
 				goto Cleanup;   /* FALSE */
 			}
 
 			/* Bytes match (to shortest length), compare lengths */
 
 			if (Length0 > Length1)
-			{
 				LocalResult = TRUE;
-			}
 
 			break;
 
 		case AML_LLESS_OP:              /* LLess (Operand0, Operand1) */
 
-			if (Compare > 0)
-			{
+			if (Compare > 0) {
 				goto Cleanup;   /* FALSE */
 			}
 
-			if (Compare < 0)
-			{
+			if (Compare < 0) {
 				LocalResult = TRUE;
 				goto Cleanup;   /* TRUE */
 			}
@@ -583,9 +546,7 @@ AcpiExDoLogicalOp(
 			/* Bytes match (to shortest length), compare lengths */
 
 			if (Length0 < Length1)
-			{
 				LocalResult = TRUE;
-			}
 
 			break;
 
@@ -601,9 +562,7 @@ Cleanup:
 	/* New object was created if implicit conversion performed - delete */
 
 	if (LocalOperand1 != Operand1)
-	{
 		AcpiUtRemoveReference(LocalOperand1);
-	}
 
 	/* Return the logical result and status */
 

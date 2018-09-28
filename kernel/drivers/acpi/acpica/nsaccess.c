@@ -140,7 +140,7 @@ ACPI_MODULE_NAME("nsaccess")
 
 ACPI_STATUS
 AcpiNsRootInitialize(
-    void)
+        void)
 {
 	ACPI_STATUS                 Status;
 	const ACPI_PREDEFINED_NAMES *InitVal = NULL;
@@ -155,16 +155,13 @@ AcpiNsRootInitialize(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * The global root ptr is initially NULL, so a non-NULL value indicates
 	 * that AcpiNsRootInitialize() has already been called; just return.
 	 */
-	if (AcpiGbl_RootNode)
-	{
+	if (AcpiGbl_RootNode) {
 		Status = AE_OK;
 		goto UnlockAndExit;
 	}
@@ -180,21 +177,17 @@ AcpiNsRootInitialize(
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 	                  "Entering predefined entries into namespace\n"));
 
-	for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
-	{
+	for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++) {
 		/* _OSI is optional for now, will be permanent later */
 
 		if (!strcmp(InitVal->Name, "_OSI") && !AcpiGbl_CreateOsiMethod)
-		{
 			continue;
-		}
 
 		Status = AcpiNsLookup(NULL, ACPI_CAST_PTR(char, InitVal->Name),
 		                      InitVal->Type, ACPI_IMODE_LOAD_PASS2, ACPI_NS_NO_UPSEARCH,
 		                      NULL, &NewNode);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_EXCEPTION((AE_INFO, Status,
 			                "Could not create predefined name %s",
 			                InitVal->Name));
@@ -205,21 +198,17 @@ AcpiNsRootInitialize(
 		 * Name entered successfully. If entry in PreDefinedNames[] specifies
 		 * an initial value, create the initial value.
 		 */
-		if (InitVal->Val)
-		{
+		if (InitVal->Val) {
 			Status = AcpiOsPredefinedOverride(InitVal, &Val);
 
-			if (ACPI_FAILURE(Status))
-			{
+			if (ACPI_FAILURE(Status)) {
 				ACPI_ERROR((AE_INFO,
 				            "Could not override predefined %s",
 				            InitVal->Name));
 			}
 
 			if (!Val)
-			{
 				Val = InitVal->Val;
-			}
 
 			/*
 			 * Entry requests an initial value, allocate a
@@ -227,8 +216,7 @@ AcpiNsRootInitialize(
 			 */
 			ObjDesc = AcpiUtCreateInternalObject(InitVal->Type);
 
-			if (!ObjDesc)
-			{
+			if (!ObjDesc) {
 				Status = AE_NO_MEMORY;
 				goto UnlockAndExit;
 			}
@@ -238,8 +226,7 @@ AcpiNsRootInitialize(
 			 * internal representation. Only types actually
 			 * used for initial values are implemented here.
 			 */
-			switch (InitVal->Type)
-			{
+			switch (InitVal->Type) {
 			case ACPI_TYPE_METHOD:
 
 				ObjDesc->Method.ParamCount = (UINT8) ACPI_TO_INTEGER(Val);
@@ -281,25 +268,22 @@ AcpiNsRootInitialize(
 
 				Status = AcpiOsCreateMutex(&ObjDesc->Mutex.OsMutex);
 
-				if (ACPI_FAILURE(Status))
-				{
+				if (ACPI_FAILURE(Status)) {
 					AcpiUtRemoveReference(ObjDesc);
 					goto UnlockAndExit;
 				}
 
 				/* Special case for ACPI Global Lock */
 
-				if (strcmp(InitVal->Name, "_GL_") == 0)
-				{
+				if (strcmp(InitVal->Name, "_GL_") == 0) {
 					AcpiGbl_GlobalLockMutex = ObjDesc;
 
 					/* Create additional counting semaphore for global lock */
 
 					Status = AcpiOsCreateSemaphore(
-					             1, 0, &AcpiGbl_GlobalLockSemaphore);
+					                 1, 0, &AcpiGbl_GlobalLockSemaphore);
 
-					if (ACPI_FAILURE(Status))
-					{
+					if (ACPI_FAILURE(Status)) {
 						AcpiUtRemoveReference(ObjDesc);
 						goto UnlockAndExit;
 					}
@@ -333,8 +317,7 @@ UnlockAndExit:
 
 	/* Save a handle to "_GPE", it is always present */
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		Status = AcpiNsGetNode(NULL, "\\_GPE", ACPI_NS_NO_UPSEARCH,
 		                       &AcpiGbl_FadtGpeDevice);
 	}
@@ -368,13 +351,13 @@ UnlockAndExit:
 
 ACPI_STATUS
 AcpiNsLookup(
-    ACPI_GENERIC_STATE      *ScopeInfo,
-    char                    *Pathname,
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_INTERPRETER_MODE   InterpreterMode,
-    UINT32                  Flags,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     **ReturnNode)
+        ACPI_GENERIC_STATE      *ScopeInfo,
+        char                    *Pathname,
+        ACPI_OBJECT_TYPE        Type,
+        ACPI_INTERPRETER_MODE   InterpreterMode,
+        UINT32                  Flags,
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_NAMESPACE_NODE     **ReturnNode)
 {
 	ACPI_STATUS             Status;
 	char                    *Path = Pathname;
@@ -394,9 +377,7 @@ AcpiNsLookup(
 
 
 	if (!ReturnNode)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	LocalFlags = Flags &
 	             ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_OVERRIDE_IF_FOUND |
@@ -405,44 +386,35 @@ AcpiNsLookup(
 	AcpiGbl_NsLookupCount++;
 
 	if (!AcpiGbl_RootNode)
-	{
 		return_ACPI_STATUS(AE_NO_NAMESPACE);
-	}
 
 	/* Get the prefix scope. A null scope means use the root scope */
 
 	if ((!ScopeInfo) ||
-	        (!ScopeInfo->Scope.Node))
-	{
+	    (!ScopeInfo->Scope.Node)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 		                  "Null scope prefix, using root node (%p)\n",
 		                  AcpiGbl_RootNode));
 
 		PrefixNode = AcpiGbl_RootNode;
-	}
-	else
-	{
+	} else {
 		PrefixNode = ScopeInfo->Scope.Node;
 
-		if (ACPI_GET_DESCRIPTOR_TYPE(PrefixNode) != ACPI_DESC_TYPE_NAMED)
-		{
+		if (ACPI_GET_DESCRIPTOR_TYPE(PrefixNode) != ACPI_DESC_TYPE_NAMED) {
 			ACPI_ERROR((AE_INFO, "%p is not a namespace node [%s]",
 			            PrefixNode, AcpiUtGetDescriptorName(PrefixNode)));
 			return_ACPI_STATUS(AE_AML_INTERNAL);
 		}
 
-		if (!(Flags & ACPI_NS_PREFIX_IS_SCOPE))
-		{
+		if (!(Flags & ACPI_NS_PREFIX_IS_SCOPE)) {
 			/*
 			 * This node might not be a actual "scope" node (such as a
 			 * Device/Method, etc.)  It could be a Package or other object
 			 * node. Backup up the tree to find the containing scope node.
 			 */
 			while (!AcpiNsOpensScope(PrefixNode->Type) &&
-			        PrefixNode->Type != ACPI_TYPE_ANY)
-			{
+			       PrefixNode->Type != ACPI_TYPE_ANY)
 				PrefixNode = PrefixNode->Parent;
-			}
 		}
 	}
 
@@ -453,8 +425,7 @@ AcpiNsLookup(
 	/*
 	 * Begin examination of the actual pathname
 	 */
-	if (!Pathname)
-	{
+	if (!Pathname) {
 		/* A Null NamePath is allowed and refers to the root */
 
 		NumSegments = 0;
@@ -463,9 +434,7 @@ AcpiNsLookup(
 
 		ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 		                  "Null Pathname (Zero segments), Flags=%X\n", Flags));
-	}
-	else
-	{
+	} else {
 		/*
 		 * Name pointer is valid (and must be in internal name format)
 		 *
@@ -479,8 +448,7 @@ AcpiNsLookup(
 		 * Parent Prefixes (in which case the name's scope is relative
 		 * to the current scope).
 		 */
-		if (*Path == (UINT8) AML_ROOT_PREFIX)
-		{
+		if (*Path == (UINT8) AML_ROOT_PREFIX) {
 			/* Pathname is fully qualified, start from the root */
 
 			ThisNode = AcpiGbl_RootNode;
@@ -492,9 +460,7 @@ AcpiNsLookup(
 
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 			                  "Path is absolute from root [%p]\n", ThisNode));
-		}
-		else
-		{
+		} else {
 			/* Pathname is relative to current scope, start there */
 
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
@@ -508,8 +474,7 @@ AcpiNsLookup(
 			ThisNode = PrefixNode;
 			NumCarats = 0;
 
-			while (*Path == (UINT8) AML_PARENT_PREFIX)
-			{
+			while (*Path == (UINT8) AML_PARENT_PREFIX) {
 				/* Name is fully qualified, no search rules apply */
 
 				SearchParentFlag = ACPI_NS_NO_UPSEARCH;
@@ -525,8 +490,7 @@ AcpiNsLookup(
 				NumCarats++;
 				ThisNode = ThisNode->Parent;
 
-				if (!ThisNode)
-				{
+				if (!ThisNode) {
 					/* Current scope has no parent scope */
 
 					ACPI_ERROR((AE_INFO,
@@ -536,8 +500,7 @@ AcpiNsLookup(
 				}
 			}
 
-			if (SearchParentFlag == ACPI_NS_NO_UPSEARCH)
-			{
+			if (SearchParentFlag == ACPI_NS_NO_UPSEARCH) {
 				ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 				                  "Search scope is [%4.4s], path has %u carat(s)\n",
 				                  AcpiUtGetNodeName(ThisNode), NumCarats));
@@ -557,8 +520,7 @@ AcpiNsLookup(
 		 * Examine the name prefix opcode, if any, to determine the number of
 		 * segments.
 		 */
-		switch (*Path)
-		{
+		switch (*Path) {
 		case 0:
 			/*
 			 * Null name after a root or parent prefixes. We already
@@ -631,12 +593,10 @@ AcpiNsLookup(
 	ThisSearchType = ACPI_TYPE_ANY;
 	CurrentNode = ThisNode;
 
-	while (NumSegments && CurrentNode)
-	{
+	while (NumSegments && CurrentNode) {
 		NumSegments--;
 
-		if (!NumSegments)
-		{
+		if (!NumSegments) {
 			/* This is the last segment, enable typechecking */
 
 			ThisSearchType = Type;
@@ -646,24 +606,18 @@ AcpiNsLookup(
 			 * requested it AND we have a single, non-fully-qualified NameSeg
 			 */
 			if ((SearchParentFlag != ACPI_NS_NO_UPSEARCH) &&
-			        (Flags & ACPI_NS_SEARCH_PARENT))
-			{
+			    (Flags & ACPI_NS_SEARCH_PARENT))
 				LocalFlags |= ACPI_NS_SEARCH_PARENT;
-			}
 
 			/* Set error flag according to caller */
 
 			if (Flags & ACPI_NS_ERROR_IF_FOUND)
-			{
 				LocalFlags |= ACPI_NS_ERROR_IF_FOUND;
-			}
 
 			/* Set override flag according to caller */
 
 			if (Flags & ACPI_NS_OVERRIDE_IF_FOUND)
-			{
 				LocalFlags |= ACPI_NS_OVERRIDE_IF_FOUND;
-			}
 		}
 
 		/* Extract one ACPI name from the front of the pathname */
@@ -675,10 +629,8 @@ AcpiNsLookup(
 		Status = AcpiNsSearchAndEnter(SimpleName, WalkState, CurrentNode,
 		                              InterpreterMode, ThisSearchType, LocalFlags, &ThisNode);
 
-		if (ACPI_FAILURE(Status))
-		{
-			if (Status == AE_NOT_FOUND)
-			{
+		if (ACPI_FAILURE(Status)) {
+			if (Status == AE_NOT_FOUND) {
 				/* Name not found in ACPI namespace */
 
 				ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
@@ -693,33 +645,26 @@ AcpiNsLookup(
 
 		/* More segments to follow? */
 
-		if (NumSegments > 0)
-		{
+		if (NumSegments > 0) {
 			/*
 			 * If we have an alias to an object that opens a scope (such as a
 			 * device or processor), we need to dereference the alias here so
 			 * that we can access any children of the original node (via the
 			 * remaining segments).
 			 */
-			if (ThisNode->Type == ACPI_TYPE_LOCAL_ALIAS)
-			{
+			if (ThisNode->Type == ACPI_TYPE_LOCAL_ALIAS) {
 				if (!ThisNode->Object)
-				{
 					return_ACPI_STATUS(AE_NOT_EXIST);
-				}
 
 				if (AcpiNsOpensScope(((ACPI_NAMESPACE_NODE *)
 				                      ThisNode->Object)->Type))
-				{
 					ThisNode = (ACPI_NAMESPACE_NODE *) ThisNode->Object;
-				}
 			}
 		}
 
 		/* Special handling for the last segment (NumSegments == 0) */
 
-		else
-		{
+		else {
 			/*
 			 * Sanity typecheck of the target object:
 			 *
@@ -734,12 +679,11 @@ AcpiNsLookup(
 			 * Then we have a type mismatch. Just warn and ignore it.
 			 */
 			if ((TypeToCheckFor != ACPI_TYPE_ANY)                   &&
-			        (TypeToCheckFor != ACPI_TYPE_LOCAL_ALIAS)           &&
-			        (TypeToCheckFor != ACPI_TYPE_LOCAL_METHOD_ALIAS)    &&
-			        (TypeToCheckFor != ACPI_TYPE_LOCAL_SCOPE)           &&
-			        (ThisNode->Type != ACPI_TYPE_ANY)                   &&
-			        (ThisNode->Type != TypeToCheckFor))
-			{
+			    (TypeToCheckFor != ACPI_TYPE_LOCAL_ALIAS)           &&
+			    (TypeToCheckFor != ACPI_TYPE_LOCAL_METHOD_ALIAS)    &&
+			    (TypeToCheckFor != ACPI_TYPE_LOCAL_SCOPE)           &&
+			    (ThisNode->Type != ACPI_TYPE_ANY)                   &&
+			    (ThisNode->Type != TypeToCheckFor)) {
 				/* Complain about a type mismatch */
 
 				ACPI_WARNING((AE_INFO,
@@ -755,9 +699,7 @@ AcpiNsLookup(
 			 * type to (later) see if it opens a scope.
 			 */
 			if (Type == ACPI_TYPE_ANY)
-			{
 				Type = ThisNode->Type;
-			}
 		}
 
 		/* Point to next name segment and make this node current */
@@ -768,20 +710,16 @@ AcpiNsLookup(
 
 	/* Always check if we need to open a new scope */
 
-	if (!(Flags & ACPI_NS_DONT_OPEN_SCOPE) && (WalkState))
-	{
+	if (!(Flags & ACPI_NS_DONT_OPEN_SCOPE) && (WalkState)) {
 		/*
 		 * If entry is a type which opens a scope, push the new scope on the
 		 * scope stack.
 		 */
-		if (AcpiNsOpensScope(Type))
-		{
+		if (AcpiNsOpensScope(Type)) {
 			Status = AcpiDsScopeStackPush(ThisNode, Type, WalkState);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 		}
 	}
 

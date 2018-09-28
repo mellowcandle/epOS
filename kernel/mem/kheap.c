@@ -109,31 +109,24 @@ void *_mem_heap_map_alloc(heap_t *heap, size_t count, addr_t hw_pages, bool hw)
 
 	assert(heap->initalized);
 
-	if (heap->total_pages - heap->used_pages < count)
-	{
+	if (heap->total_pages - heap->used_pages < count) {
 		pr_fatal("not enough physical pages\r\n");
 		panic();
 	}
 
 	if (hw)
-	{
 		physical = hw_pages;
-	}
-	else
-	{
+	else {
 		physical = mem_get_pages(count);
 
 		if (!physical)
-		{
 			goto error;
-		}
 	}
 
 
 	for (size_t i = 0; i < count; i++)
-	{
-		mem_page_map(physical + i * (PAGE_SIZE), (void *) heap->location + i * (PAGE_SIZE), READ_WRITE_KERNEL);
-	}
+		mem_page_map(physical + i * (PAGE_SIZE), (void *) heap->location + i * (PAGE_SIZE),
+		             READ_WRITE_KERNEL);
 
 	ret_address = heap->location;
 	heap->location += count * PAGE_SIZE;

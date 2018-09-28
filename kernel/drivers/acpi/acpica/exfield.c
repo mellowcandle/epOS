@@ -127,8 +127,8 @@ ACPI_MODULE_NAME("exfield")
 
 static UINT32
 AcpiExGetSerialAccessLength(
-    UINT32                  AccessorType,
-    UINT32                  AccessLength);
+        UINT32                  AccessorType,
+        UINT32                  AccessLength);
 
 
 /*******************************************************************************
@@ -148,14 +148,13 @@ AcpiExGetSerialAccessLength(
 
 static UINT32
 AcpiExGetSerialAccessLength(
-    UINT32                  AccessorType,
-    UINT32                  AccessLength)
+        UINT32                  AccessorType,
+        UINT32                  AccessLength)
 {
 	UINT32                  Length;
 
 
-	switch (AccessorType)
-	{
+	switch (AccessorType) {
 	case AML_FIELD_ATTRIB_QUICK:
 
 		Length = 0;
@@ -209,9 +208,9 @@ AcpiExGetSerialAccessLength(
 
 ACPI_STATUS
 AcpiExReadDataFromField(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **RetBufferDesc)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_OPERAND_OBJECT     **RetBufferDesc)
 {
 	ACPI_STATUS             Status;
 	ACPI_OPERAND_OBJECT     *BufferDesc;
@@ -227,36 +226,26 @@ AcpiExReadDataFromField(
 	/* Parameter validation */
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_AML_NO_OPERAND);
-	}
 
 	if (!RetBufferDesc)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
-	if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
-	{
+	if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD) {
 		/*
 		 * If the BufferField arguments have not been previously evaluated,
 		 * evaluate them now and save the results.
 		 */
-		if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
-		{
+		if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)) {
 			Status = AcpiDsGetBufferFieldArguments(ObjDesc);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 		}
-	}
-	else if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REGION_FIELD) &&
-	         (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_SMBUS ||
-	          ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS ||
-	          ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_IPMI))
-	{
+	} else if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REGION_FIELD) &&
+	           (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_SMBUS ||
+	            ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS ||
+	            ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_IPMI)) {
 		/*
 		 * This is an SMBus, GSBus or IPMI read. We must create a buffer to
 		 * hold the data and then directly access the region handler.
@@ -265,17 +254,14 @@ AcpiExReadDataFromField(
 		 * of Function
 		 */
 		if (ObjDesc->Field.RegionObj->Region.SpaceId ==
-		        ACPI_ADR_SPACE_SMBUS)
-		{
+		    ACPI_ADR_SPACE_SMBUS) {
 			Length = ACPI_SMBUS_BUFFER_SIZE;
 			Function = ACPI_READ | (ObjDesc->Field.Attribute << 16);
-		}
-		else if (ObjDesc->Field.RegionObj->Region.SpaceId ==
-		         ACPI_ADR_SPACE_GSBUS)
-		{
+		} else if (ObjDesc->Field.RegionObj->Region.SpaceId ==
+		           ACPI_ADR_SPACE_GSBUS) {
 			AccessorType = ObjDesc->Field.Attribute;
 			Length = AcpiExGetSerialAccessLength(
-			             AccessorType, ObjDesc->Field.AccessLength);
+			                 AccessorType, ObjDesc->Field.AccessLength);
 
 			/*
 			 * Add additional 2 bytes for the GenericSerialBus data buffer:
@@ -286,9 +272,7 @@ AcpiExReadDataFromField(
 			 */
 			Length += 2;
 			Function = ACPI_READ | (AccessorType << 16);
-		}
-		else /* IPMI */
-		{
+		} else { /* IPMI */
 			Length = ACPI_IPMI_BUFFER_SIZE;
 			Function = ACPI_READ;
 		}
@@ -296,9 +280,7 @@ AcpiExReadDataFromField(
 		BufferDesc = AcpiUtCreateBufferObject(Length);
 
 		if (!BufferDesc)
-		{
 			return_ACPI_STATUS(AE_NO_MEMORY);
-		}
 
 		/* Lock entire transaction if requested */
 
@@ -324,39 +306,31 @@ AcpiExReadDataFromField(
 	 * Note: Field.length is in bits.
 	 */
 	Length = (ACPI_SIZE) ACPI_ROUND_BITS_UP_TO_BYTES(
-	             ObjDesc->Field.BitLength);
+	                 ObjDesc->Field.BitLength);
 
-	if (Length > AcpiGbl_IntegerByteWidth)
-	{
+	if (Length > AcpiGbl_IntegerByteWidth) {
 		/* Field is too large for an Integer, create a Buffer instead */
 
 		BufferDesc = AcpiUtCreateBufferObject(Length);
 
 		if (!BufferDesc)
-		{
 			return_ACPI_STATUS(AE_NO_MEMORY);
-		}
 
 		Buffer = BufferDesc->Buffer.Pointer;
-	}
-	else
-	{
+	} else {
 		/* Field will fit within an Integer (normal case) */
 
 		BufferDesc = AcpiUtCreateIntegerObject((UINT64) 0);
 
 		if (!BufferDesc)
-		{
 			return_ACPI_STATUS(AE_NO_MEMORY);
-		}
 
 		Length = AcpiGbl_IntegerByteWidth;
 		Buffer = &BufferDesc->Integer.Value;
 	}
 
 	if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REGION_FIELD) &&
-	        (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO))
-	{
+	    (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO)) {
 		/*
 		 * For GPIO (GeneralPurposeIo), the Address will be the bit offset
 		 * from the previous Connection() operator, making it effectively a
@@ -374,18 +348,14 @@ AcpiExReadDataFromField(
 		/* Perform the write */
 
 		Status = AcpiExAccessRegion(
-		             ObjDesc, 0, (UINT64 *) Buffer, ACPI_READ);
+		                 ObjDesc, 0, (UINT64 *) Buffer, ACPI_READ);
 
 		AcpiExReleaseGlobalLock(ObjDesc->CommonField.FieldFlags);
 
 		if (ACPI_FAILURE(Status))
-		{
 			AcpiUtRemoveReference(BufferDesc);
-		}
 		else
-		{
 			*RetBufferDesc = BufferDesc;
-		}
 
 		return_ACPI_STATUS(Status);
 	}
@@ -412,13 +382,9 @@ AcpiExReadDataFromField(
 Exit:
 
 	if (ACPI_FAILURE(Status))
-	{
 		AcpiUtRemoveReference(BufferDesc);
-	}
 	else
-	{
 		*RetBufferDesc = BufferDesc;
-	}
 
 	return_ACPI_STATUS(Status);
 }
@@ -440,9 +406,9 @@ Exit:
 
 ACPI_STATUS
 AcpiExWriteDataToField(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ResultDesc)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        ACPI_OPERAND_OBJECT     **ResultDesc)
 {
 	ACPI_STATUS             Status;
 	UINT32                  Length;
@@ -458,31 +424,23 @@ AcpiExWriteDataToField(
 	/* Parameter validation */
 
 	if (!SourceDesc || !ObjDesc)
-	{
 		return_ACPI_STATUS(AE_AML_NO_OPERAND);
-	}
 
-	if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
-	{
+	if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD) {
 		/*
 		 * If the BufferField arguments have not been previously evaluated,
 		 * evaluate them now and save the results.
 		 */
-		if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
-		{
+		if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)) {
 			Status = AcpiDsGetBufferFieldArguments(ObjDesc);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return_ACPI_STATUS(Status);
-			}
 		}
-	}
-	else if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REGION_FIELD) &&
-	         (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_SMBUS ||
-	          ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS ||
-	          ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_IPMI))
-	{
+	} else if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REGION_FIELD) &&
+	           (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_SMBUS ||
+	            ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GSBUS ||
+	            ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_IPMI)) {
 		/*
 		 * This is an SMBus, GSBus or IPMI write. We will bypass the entire
 		 * field mechanism and handoff the buffer directly to the handler.
@@ -496,8 +454,7 @@ AcpiExWriteDataToField(
 		 * Note: SMBus and GSBus protocol type is passed in upper 16-bits
 		 * of Function
 		 */
-		if (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)
-		{
+		if (SourceDesc->Common.Type != ACPI_TYPE_BUFFER) {
 			ACPI_ERROR((AE_INFO,
 			            "SMBus/IPMI/GenericSerialBus write requires "
 			            "Buffer, found type %s",
@@ -507,17 +464,14 @@ AcpiExWriteDataToField(
 		}
 
 		if (ObjDesc->Field.RegionObj->Region.SpaceId ==
-		        ACPI_ADR_SPACE_SMBUS)
-		{
+		    ACPI_ADR_SPACE_SMBUS) {
 			Length = ACPI_SMBUS_BUFFER_SIZE;
 			Function = ACPI_WRITE | (ObjDesc->Field.Attribute << 16);
-		}
-		else if (ObjDesc->Field.RegionObj->Region.SpaceId ==
-		         ACPI_ADR_SPACE_GSBUS)
-		{
+		} else if (ObjDesc->Field.RegionObj->Region.SpaceId ==
+		           ACPI_ADR_SPACE_GSBUS) {
 			AccessorType = ObjDesc->Field.Attribute;
 			Length = AcpiExGetSerialAccessLength(
-			             AccessorType, ObjDesc->Field.AccessLength);
+			                 AccessorType, ObjDesc->Field.AccessLength);
 
 			/*
 			 * Add additional 2 bytes for the GenericSerialBus data buffer:
@@ -528,15 +482,12 @@ AcpiExWriteDataToField(
 			 */
 			Length += 2;
 			Function = ACPI_WRITE | (AccessorType << 16);
-		}
-		else /* IPMI */
-		{
+		} else { /* IPMI */
 			Length = ACPI_IPMI_BUFFER_SIZE;
 			Function = ACPI_WRITE;
 		}
 
-		if (SourceDesc->Buffer.Length < Length)
-		{
+		if (SourceDesc->Buffer.Length < Length) {
 			ACPI_ERROR((AE_INFO,
 			            "SMBus/IPMI/GenericSerialBus write requires "
 			            "Buffer of length %u, found length %u",
@@ -550,9 +501,7 @@ AcpiExWriteDataToField(
 		BufferDesc = AcpiUtCreateBufferObject(Length);
 
 		if (!BufferDesc)
-		{
 			return_ACPI_STATUS(AE_NO_MEMORY);
-		}
 
 		Buffer = BufferDesc->Buffer.Pointer;
 		memcpy(Buffer, SourceDesc->Buffer.Pointer, Length);
@@ -566,15 +515,13 @@ AcpiExWriteDataToField(
 		 * same buffer)
 		 */
 		Status = AcpiExAccessRegion(
-		             ObjDesc, 0, (UINT64 *) Buffer, Function);
+		                 ObjDesc, 0, (UINT64 *) Buffer, Function);
 		AcpiExReleaseGlobalLock(ObjDesc->CommonField.FieldFlags);
 
 		*ResultDesc = BufferDesc;
 		return_ACPI_STATUS(Status);
-	}
-	else if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REGION_FIELD) &&
-	         (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO))
-	{
+	} else if ((ObjDesc->Common.Type == ACPI_TYPE_LOCAL_REGION_FIELD) &&
+	           (ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_GPIO)) {
 		/*
 		 * For GPIO (GeneralPurposeIo), we will bypass the entire field
 		 * mechanism and handoff the bit address and bit width directly to
@@ -584,9 +531,7 @@ AcpiExWriteDataToField(
 		 * is thus the number of pins.
 		 */
 		if (SourceDesc->Common.Type != ACPI_TYPE_INTEGER)
-		{
 			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
-		}
 
 		ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 		                  "GPIO FieldWrite [FROM]: (%s:%X), Val %.8X  [TO]: Pin %u Bits %u\n",
@@ -603,15 +548,14 @@ AcpiExWriteDataToField(
 		/* Perform the write */
 
 		Status = AcpiExAccessRegion(
-		             ObjDesc, 0, (UINT64 *) Buffer, ACPI_WRITE);
+		                 ObjDesc, 0, (UINT64 *) Buffer, ACPI_WRITE);
 		AcpiExReleaseGlobalLock(ObjDesc->CommonField.FieldFlags);
 		return_ACPI_STATUS(Status);
 	}
 
 	/* Get a pointer to the data to be written */
 
-	switch (SourceDesc->Common.Type)
-	{
+	switch (SourceDesc->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 
 		Buffer = &SourceDesc->Integer.Value;

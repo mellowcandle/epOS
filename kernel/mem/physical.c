@@ -50,8 +50,7 @@ extern uint32_t kernel_end;
 #define PAGE_TO_BITMAP_INDEX(_x) (_x / 32)
 #define PAGE_TO_BITMAP_OFFSET(_x) (_x % 32)
 
-typedef struct
-{
+typedef struct {
 	addr_t phys_start;
 	addr_t phys_bitmap;
 	uint32_t total_pages;
@@ -87,8 +86,7 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 	/* We're placing our physical manager just after the kernel */
 	vaddr = PHYSICAL_ALLOCATOR_BITMAP_BASE;
 
-	for (i = 0; i < pde_count; i++)
-	{
+	for (i = 0; i < pde_count; i++) {
 		// Get PTE page
 		page = (addr_t) physmem.phys_start;
 		physmem.phys_start += PAGE_SIZE;
@@ -105,8 +103,7 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 		memset(access_ptr, 0, PAGE_SIZE);
 
 
-		for (j = 0; j < MIN(pte_count, 1024) ; j++)
-		{
+		for (j = 0; j < MIN(pte_count, 1024) ; j++) {
 			page = (addr_t) physmem.phys_start;
 			physmem.phys_start += PAGE_SIZE;
 			total_memory -= PAGE_SIZE;
@@ -116,18 +113,15 @@ void mem_phys_init(addr_t phy_start, uint32_t total_memory)
 		}
 
 		if (j == 1024)
-		{
 			pte_count -= 1024;
-		}
 
 	}
 
 	/* Invalidate all our memory region */
 
-	for (i = 0, access_ptr = (void *) PHYSICAL_ALLOCATOR_BITMAP_BASE;  i < pte_count ; i++, access_ptr += PAGE_SIZE)
-	{
+	for (i = 0, access_ptr = (void *) PHYSICAL_ALLOCATOR_BITMAP_BASE;  i < pte_count ;
+	     i++, access_ptr += PAGE_SIZE)
 		mem_tlb_flush(access_ptr);
-	}
 
 	memset((void *)PHYSICAL_ALLOCATOR_BITMAP_BASE, 0, required_bytes);
 
@@ -141,8 +135,7 @@ void mem_free_pages(addr_t addr, uint32_t count)
 
 	FUNC_ENTER();
 
-	if (!IS_PAGE_ALIGNED(addr))
-	{
+	if (!IS_PAGE_ALIGNED(addr)) {
 		pr_error("mem_free_pages: addr: 0x%x is not page aligned\r\n", addr);
 		panic();
 	}
@@ -151,13 +144,11 @@ void mem_free_pages(addr_t addr, uint32_t count)
 
 	count++; // This make sure we erase also the last page
 
-	for (i = PAGE_TO_BITMAP_INDEX(page_num), j = PAGE_TO_BITMAP_OFFSET(page_num); count > 0; count--)
-	{
+	for (i = PAGE_TO_BITMAP_INDEX(page_num), j = PAGE_TO_BITMAP_OFFSET(page_num); count > 0; count--) {
 		BIT_CLEAR(physmem.bitmap[i], j);
 		j++;
 
-		if (j == 32)
-		{
+		if (j == 32) {
 			i++;
 			j = 0;
 		}
@@ -179,42 +170,30 @@ addr_t mem_get_pages(uint32_t count)
 
 	FUNC_ENTER();
 
-	for (page_end = 0; page_end < physmem.total_pages; page_end++)
-	{
-		if (!BIT_CHECK(physmem.bitmap[PAGE_TO_BITMAP_INDEX(page_end)], PAGE_TO_BITMAP_OFFSET(page_end)))
-		{
+	for (page_end = 0; page_end < physmem.total_pages; page_end++) {
+		if (!BIT_CHECK(physmem.bitmap[PAGE_TO_BITMAP_INDEX(page_end)], PAGE_TO_BITMAP_OFFSET(page_end))) {
 			found++;
 
-			if (found == count)
-			{
+			if (found == count) {
 				page_start = page_end - count + 1;
 				break;
 			}
-		}
-		else
-		{
+		} else
 			found = 0;
-		}
 
 	}
 
-	if (found)
-	{
+	if (found) {
 		addr = (page_start * PAGE_SIZE) + physmem.phys_start;
 		pr_debug("mem_get_pages: found %u continous pages starting from 0x%x\r\n", count, addr);
 
 		for (uint32_t i = page_start; i <= page_end; i++)
-		{
 			BIT_SET(physmem.bitmap[PAGE_TO_BITMAP_INDEX(i)], PAGE_TO_BITMAP_OFFSET(i));
-		}
 
 		FUNC_LEAVE();
 		return addr;
-	}
-	else
-	{
+	} else
 		pr_error("mem_get_pages: could not find %u continous free pages\r\n", count);
-	}
 
 	FUNC_LEAVE();
 	return 0;

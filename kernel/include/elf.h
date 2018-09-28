@@ -67,8 +67,7 @@ typedef elf64_half elf64_versym;
 
 #define ei_nident (16)
 
-typedef struct
-{
+typedef struct {
 	unsigned char	e_ident[ei_nident];	/* magic number and other info */
 	elf32_half	e_type;			/* object file type */
 	elf32_half	e_machine;		/* architecture */
@@ -85,8 +84,7 @@ typedef struct
 	elf32_half	e_shstrndx;		/* section header string table index */
 } elf32_ehdr;
 
-typedef struct
-{
+typedef struct {
 	unsigned char	e_ident[ei_nident];	/* magic number and other info */
 	elf64_half	e_type;			/* object file type */
 	elf64_half	e_machine;		/* architecture */
@@ -187,8 +185,7 @@ typedef struct
 
 /* section header.  */
 
-typedef struct
-{
+typedef struct {
 	elf32_word	sh_name;		/* section name (string tbl index) */
 	elf32_word	sh_type;		/* section type */
 	elf32_word	sh_flags;		/* section flags */
@@ -204,8 +201,7 @@ typedef struct
 #define ELF32_ST_TYPE(i) ((i)&0xf)
 
 /* Program headers */
-typedef struct
-{
+typedef struct {
 	elf32_word	p_type;
 	elf32_off	p_offset;
 	elf32_addr	p_vaddr;
@@ -222,8 +218,7 @@ typedef struct
 
 /* symbol table entry.  */
 
-typedef struct
-{
+typedef struct {
 	elf32_word	st_name;		/* symbol name (string tbl index) */
 	elf32_addr	st_value;		/* symbol value */
 	elf32_word	st_size;		/* symbol size */
@@ -233,8 +228,7 @@ typedef struct
 } elf32_sym;
 
 
-typedef struct
-{
+typedef struct {
 	elf32_sym *symtab;
 	uint32_t      symtabsz;
 	const char   *strtab;

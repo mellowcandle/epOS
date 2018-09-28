@@ -66,9 +66,7 @@ static inline uint32_t divide_up(uint32_t value, uint32_t align)
 	ret = value / align;
 
 	if (value % align)
-	{
 		ret++;
-	}
 
 	return ret;
 }

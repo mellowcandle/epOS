@@ -141,8 +141,8 @@ ACPI_MODULE_NAME("exutils")
 
 static UINT32
 AcpiExDigitsNeeded(
-    UINT64                  Value,
-    UINT32                  Base);
+        UINT64                  Value,
+        UINT32                  Base);
 
 
 #ifndef ACPI_NO_METHOD_EXECUTION
@@ -162,7 +162,7 @@ AcpiExDigitsNeeded(
 
 void
 AcpiExEnterInterpreter(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 
@@ -173,16 +173,12 @@ AcpiExEnterInterpreter(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_INTERPRETER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_ERROR((AE_INFO, "Could not acquire AML Interpreter mutex"));
-	}
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_ERROR((AE_INFO, "Could not acquire AML Namespace mutex"));
-	}
 
 	return_VOID;
 }
@@ -213,7 +209,7 @@ AcpiExEnterInterpreter(
 
 void
 AcpiExExitInterpreter(
-    void)
+        void)
 {
 	ACPI_STATUS             Status;
 
@@ -224,16 +220,12 @@ AcpiExExitInterpreter(
 	Status = AcpiUtReleaseMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_ERROR((AE_INFO, "Could not release AML Namespace mutex"));
-	}
 
 	Status = AcpiUtReleaseMutex(ACPI_MTX_INTERPRETER);
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_ERROR((AE_INFO, "Could not release AML Interpreter mutex"));
-	}
 
 	return_VOID;
 }
@@ -254,7 +246,7 @@ AcpiExExitInterpreter(
 
 BOOLEAN
 AcpiExTruncateFor32bitTable(
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+        ACPI_OPERAND_OBJECT     *ObjDesc)
 {
 
 	ACPI_FUNCTION_ENTRY();
@@ -265,15 +257,12 @@ AcpiExTruncateFor32bitTable(
 	 * a control method. Object could be NS node for AML_INT_NAMEPATH_OP.
 	 */
 	if ((!ObjDesc) ||
-	        (ACPI_GET_DESCRIPTOR_TYPE(ObjDesc) != ACPI_DESC_TYPE_OPERAND) ||
-	        (ObjDesc->Common.Type != ACPI_TYPE_INTEGER))
-	{
+	    (ACPI_GET_DESCRIPTOR_TYPE(ObjDesc) != ACPI_DESC_TYPE_OPERAND) ||
+	    (ObjDesc->Common.Type != ACPI_TYPE_INTEGER))
 		return (FALSE);
-	}
 
 	if ((AcpiGbl_IntegerByteWidth == 4) &&
-	        (ObjDesc->Integer.Value > (UINT64) ACPI_UINT32_MAX))
-	{
+	    (ObjDesc->Integer.Value > (UINT64) ACPI_UINT32_MAX)) {
 		/*
 		 * We are executing in a 32-bit ACPI table. Truncate
 		 * the value to 32 bits by zeroing out the upper 32-bit field
@@ -302,7 +291,7 @@ AcpiExTruncateFor32bitTable(
 
 void
 AcpiExAcquireGlobalLock(
-    UINT32                  FieldFlags)
+        UINT32                  FieldFlags)
 {
 	ACPI_STATUS             Status;
 
@@ -313,17 +302,14 @@ AcpiExAcquireGlobalLock(
 	/* Only use the lock if the AlwaysLock bit is set */
 
 	if (!(FieldFlags & AML_FIELD_LOCK_RULE_MASK))
-	{
 		return_VOID;
-	}
 
 	/* Attempt to get the global lock, wait forever */
 
 	Status = AcpiExAcquireMutexObject(ACPI_WAIT_FOREVER,
 	                                  AcpiGbl_GlobalLockMutex, AcpiOsGetThreadId());
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		ACPI_EXCEPTION((AE_INFO, Status,
 		                "Could not acquire Global Lock"));
 	}
@@ -347,7 +333,7 @@ AcpiExAcquireGlobalLock(
 
 void
 AcpiExReleaseGlobalLock(
-    UINT32                  FieldFlags)
+        UINT32                  FieldFlags)
 {
 	ACPI_STATUS             Status;
 
@@ -358,16 +344,13 @@ AcpiExReleaseGlobalLock(
 	/* Only use the lock if the AlwaysLock bit is set */
 
 	if (!(FieldFlags & AML_FIELD_LOCK_RULE_MASK))
-	{
 		return_VOID;
-	}
 
 	/* Release the global lock */
 
 	Status = AcpiExReleaseMutexObject(AcpiGbl_GlobalLockMutex);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		/* Report the error, but there isn't much else we can do */
 
 		ACPI_EXCEPTION((AE_INFO, Status,
@@ -394,8 +377,8 @@ AcpiExReleaseGlobalLock(
 
 static UINT32
 AcpiExDigitsNeeded(
-    UINT64                  Value,
-    UINT32                  Base)
+        UINT64                  Value,
+        UINT32                  Base)
 {
 	UINT32                  NumDigits;
 	UINT64                  CurrentValue;
@@ -407,17 +390,14 @@ AcpiExDigitsNeeded(
 	/* UINT64 is unsigned, so we don't worry about a '-' prefix */
 
 	if (Value == 0)
-	{
 		return_UINT32(1);
-	}
 
 	CurrentValue = Value;
 	NumDigits = 0;
 
 	/* Count the digits in the requested base */
 
-	while (CurrentValue)
-	{
+	while (CurrentValue) {
 		(void) AcpiUtShortDivide(CurrentValue, Base, &CurrentValue, NULL);
 		NumDigits++;
 	}
@@ -444,8 +424,8 @@ AcpiExDigitsNeeded(
 
 void
 AcpiExEisaIdToString(
-    char                    *OutString,
-    UINT64                  CompressedId)
+        char                    *OutString,
+        UINT64                  CompressedId)
 {
 	UINT32                  SwappedId;
 
@@ -455,8 +435,7 @@ AcpiExEisaIdToString(
 
 	/* The EISAID should be a 32-bit integer */
 
-	if (CompressedId > ACPI_UINT32_MAX)
-	{
+	if (CompressedId > ACPI_UINT32_MAX) {
 		ACPI_WARNING((AE_INFO,
 		              "Expected EISAID is larger than 32 bits: "
 		              "0x%8.8X%8.8X, truncating",
@@ -499,8 +478,8 @@ AcpiExEisaIdToString(
 
 void
 AcpiExIntegerToString(
-    char                    *OutString,
-    UINT64                  Value)
+        char                    *OutString,
+        UINT64                  Value)
 {
 	UINT32                  Count;
 	UINT32                  DigitsNeeded;
@@ -513,8 +492,7 @@ AcpiExIntegerToString(
 	DigitsNeeded = AcpiExDigitsNeeded(Value, 10);
 	OutString[DigitsNeeded] = 0;
 
-	for (Count = DigitsNeeded; Count > 0; Count--)
-	{
+	for (Count = DigitsNeeded; Count > 0; Count--) {
 		(void) AcpiUtShortDivide(Value, 10, &Value, &Remainder);
 		OutString[Count - 1] = (char)('0' + Remainder);
 		\
@@ -540,8 +518,8 @@ AcpiExIntegerToString(
 
 void
 AcpiExPciClsToString(
-    char                    *OutString,
-    UINT8                   ClassCode[3])
+        char                    *OutString,
+        UINT8                   ClassCode[3])
 {
 
 	ACPI_FUNCTION_ENTRY();
@@ -573,16 +551,14 @@ AcpiExPciClsToString(
 
 BOOLEAN
 AcpiIsValidSpaceId(
-    UINT8                   SpaceId)
+        UINT8                   SpaceId)
 {
 
 	if ((SpaceId >= ACPI_NUM_PREDEFINED_REGIONS) &&
-	        (SpaceId < ACPI_USER_REGION_BEGIN) &&
-	        (SpaceId != ACPI_ADR_SPACE_DATA_TABLE) &&
-	        (SpaceId != ACPI_ADR_SPACE_FIXED_HARDWARE))
-	{
+	    (SpaceId < ACPI_USER_REGION_BEGIN) &&
+	    (SpaceId != ACPI_ADR_SPACE_DATA_TABLE) &&
+	    (SpaceId != ACPI_ADR_SPACE_FIXED_HARDWARE))
 		return (FALSE);
-	}
 
 	return (TRUE);
 }

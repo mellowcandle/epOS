@@ -133,8 +133,7 @@ ACPI_MODULE_NAME("hwpci")
 #define PCI_TYPE_BRIDGE                     0x01
 #define PCI_TYPE_CARDBUS_BRIDGE             0x02
 
-typedef struct acpi_pci_device
-{
+typedef struct acpi_pci_device {
 	ACPI_HANDLE             Device;
 	struct acpi_pci_device  *Next;
 
@@ -145,25 +144,25 @@ typedef struct acpi_pci_device
 
 static ACPI_STATUS
 AcpiHwBuildPciList(
-    ACPI_HANDLE             RootPciDevice,
-    ACPI_HANDLE             PciRegion,
-    ACPI_PCI_DEVICE         **ReturnListHead);
+        ACPI_HANDLE             RootPciDevice,
+        ACPI_HANDLE             PciRegion,
+        ACPI_PCI_DEVICE         **ReturnListHead);
 
 static ACPI_STATUS
 AcpiHwProcessPciList(
-    ACPI_PCI_ID             *PciId,
-    ACPI_PCI_DEVICE         *ListHead);
+        ACPI_PCI_ID             *PciId,
+        ACPI_PCI_DEVICE         *ListHead);
 
 static void
 AcpiHwDeletePciList(
-    ACPI_PCI_DEVICE         *ListHead);
+        ACPI_PCI_DEVICE         *ListHead);
 
 static ACPI_STATUS
 AcpiHwGetPciDeviceInfo(
-    ACPI_PCI_ID             *PciId,
-    ACPI_HANDLE             PciDevice,
-    UINT16                  *BusNumber,
-    BOOLEAN                 *IsBridge);
+        ACPI_PCI_ID             *PciId,
+        ACPI_HANDLE             PciDevice,
+        UINT16                  *BusNumber,
+        BOOLEAN                 *IsBridge);
 
 
 /*******************************************************************************
@@ -207,9 +206,9 @@ AcpiHwGetPciDeviceInfo(
 
 ACPI_STATUS
 AcpiHwDerivePciId(
-    ACPI_PCI_ID             *PciId,
-    ACPI_HANDLE             RootPciDevice,
-    ACPI_HANDLE             PciRegion)
+        ACPI_PCI_ID             *PciId,
+        ACPI_HANDLE             RootPciDevice,
+        ACPI_HANDLE             PciRegion)
 {
 	ACPI_STATUS             Status;
 	ACPI_PCI_DEVICE         *ListHead;
@@ -219,16 +218,13 @@ AcpiHwDerivePciId(
 
 
 	if (!PciId)
-	{
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
-	}
 
 	/* Build a list of PCI devices, from PciRegion up to RootPciDevice */
 
 	Status = AcpiHwBuildPciList(RootPciDevice, PciRegion, &ListHead);
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		/* Walk the list, updating the PCI device/function/bus numbers */
 
 		Status = AcpiHwProcessPciList(PciId, ListHead);
@@ -263,9 +259,9 @@ AcpiHwDerivePciId(
 
 static ACPI_STATUS
 AcpiHwBuildPciList(
-    ACPI_HANDLE             RootPciDevice,
-    ACPI_HANDLE             PciRegion,
-    ACPI_PCI_DEVICE         **ReturnListHead)
+        ACPI_HANDLE             RootPciDevice,
+        ACPI_HANDLE             PciRegion,
+        ACPI_PCI_DEVICE         **ReturnListHead)
 {
 	ACPI_HANDLE             CurrentDevice;
 	ACPI_HANDLE             ParentDevice;
@@ -281,12 +277,10 @@ AcpiHwBuildPciList(
 	*ReturnListHead = NULL;
 	CurrentDevice = PciRegion;
 
-	while (1)
-	{
+	while (1) {
 		Status = AcpiGetParent(CurrentDevice, &ParentDevice);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			/* Must delete the list before exit */
 
 			AcpiHwDeletePciList(*ReturnListHead);
@@ -296,14 +290,11 @@ AcpiHwBuildPciList(
 		/* Finished when we reach the PCI root device (PNP0A03 or PNP0A08) */
 
 		if (ParentDevice == RootPciDevice)
-		{
 			return (AE_OK);
-		}
 
 		ListElement = ACPI_ALLOCATE(sizeof(ACPI_PCI_DEVICE));
 
-		if (!ListElement)
-		{
+		if (!ListElement) {
 			/* Must delete the list before exit */
 
 			AcpiHwDeletePciList(*ReturnListHead);
@@ -340,8 +331,8 @@ AcpiHwBuildPciList(
 
 static ACPI_STATUS
 AcpiHwProcessPciList(
-    ACPI_PCI_ID             *PciId,
-    ACPI_PCI_DEVICE         *ListHead)
+        ACPI_PCI_ID             *PciId,
+        ACPI_PCI_DEVICE         *ListHead)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_PCI_DEVICE         *Info;
@@ -367,15 +358,12 @@ AcpiHwProcessPciList(
 	 */
 	Info = ListHead;
 
-	while (Info)
-	{
+	while (Info) {
 		Status = AcpiHwGetPciDeviceInfo(PciId, Info->Device,
 		                                &BusNumber, &IsBridge);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return (Status);
-		}
 
 		Info = Info->Next;
 	}
@@ -405,7 +393,7 @@ AcpiHwProcessPciList(
 
 static void
 AcpiHwDeletePciList(
-    ACPI_PCI_DEVICE         *ListHead)
+        ACPI_PCI_DEVICE         *ListHead)
 {
 	ACPI_PCI_DEVICE         *Next;
 	ACPI_PCI_DEVICE         *Previous;
@@ -413,8 +401,7 @@ AcpiHwDeletePciList(
 
 	Next = ListHead;
 
-	while (Next)
-	{
+	while (Next) {
 		Previous = Next;
 		Next = Previous->Next;
 		ACPI_FREE(Previous);
@@ -444,10 +431,10 @@ AcpiHwDeletePciList(
 
 static ACPI_STATUS
 AcpiHwGetPciDeviceInfo(
-    ACPI_PCI_ID             *PciId,
-    ACPI_HANDLE             PciDevice,
-    UINT16                  *BusNumber,
-    BOOLEAN                 *IsBridge)
+        ACPI_PCI_ID             *PciId,
+        ACPI_HANDLE             PciDevice,
+        UINT16                  *BusNumber,
+        BOOLEAN                 *IsBridge)
 {
 	ACPI_STATUS             Status;
 	ACPI_OBJECT_TYPE        ObjectType;
@@ -460,14 +447,10 @@ AcpiHwGetPciDeviceInfo(
 	Status = AcpiGetType(PciDevice, &ObjectType);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	if (ObjectType != ACPI_TYPE_DEVICE)
-	{
 		return (AE_OK);
-	}
 
 	/* We need an _ADR. Ignore device if not present */
 
@@ -475,9 +458,7 @@ AcpiHwGetPciDeviceInfo(
 	                                     PciDevice, &ReturnValue);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (AE_OK);
-	}
 
 	/*
 	 * From _ADR, get the PCI Device and Function and
@@ -491,9 +472,7 @@ AcpiHwGetPciDeviceInfo(
 	 * device bus number
 	 */
 	if (*IsBridge)
-	{
 		PciId->Bus = *BusNumber;
-	}
 
 	/*
 	 * Get the bus numbers from PCI Config space:
@@ -505,19 +484,15 @@ AcpiHwGetPciDeviceInfo(
 	                                    PCI_CFG_HEADER_TYPE_REG, &PciValue, 8);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	/* We only care about bridges (1=PciBridge, 2=CardBusBridge) */
 
 	PciValue &= PCI_HEADER_TYPE_MASK;
 
 	if ((PciValue != PCI_TYPE_BRIDGE) &&
-	        (PciValue != PCI_TYPE_CARDBUS_BRIDGE))
-	{
+	    (PciValue != PCI_TYPE_CARDBUS_BRIDGE))
 		return (AE_OK);
-	}
 
 	/* Bridge: Get the Primary BusNumber */
 
@@ -525,9 +500,7 @@ AcpiHwGetPciDeviceInfo(
 	                                    PCI_CFG_PRIMARY_BUS_NUMBER_REG, &PciValue, 8);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	*IsBridge = TRUE;
 	PciId->Bus = (UINT16) PciValue;
@@ -538,9 +511,7 @@ AcpiHwGetPciDeviceInfo(
 	                                    PCI_CFG_SECONDARY_BUS_NUMBER_REG, &PciValue, 8);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return (Status);
-	}
 
 	*BusNumber = (UINT16) PciValue;
 	return (AE_OK);

@@ -127,8 +127,7 @@ ACPI_MODULE_NAME("rsio")
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertIo[5] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertIo[5] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_IO,
 		ACPI_RS_SIZE(ACPI_RESOURCE_IO),
@@ -175,8 +174,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertIo[5] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertFixedIo[4] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertFixedIo[4] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_FIXED_IO,
 		ACPI_RS_SIZE(ACPI_RESOURCE_FIXED_IO),
@@ -213,8 +211,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertFixedIo[4] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO     AcpiRsConvertGenericReg[4] =
-{
+ACPI_RSCONVERT_INFO     AcpiRsConvertGenericReg[4] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_GENERIC_REGISTER,
 		ACPI_RS_SIZE(ACPI_RESOURCE_GENERIC_REGISTER),
@@ -255,8 +252,7 @@ ACPI_RSCONVERT_INFO     AcpiRsConvertGenericReg[4] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO   AcpiRsConvertEndDpf[2] =
-{
+ACPI_RSCONVERT_INFO   AcpiRsConvertEndDpf[2] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_END_DEPENDENT,
 		ACPI_RS_SIZE_MIN,
@@ -277,8 +273,7 @@ ACPI_RSCONVERT_INFO   AcpiRsConvertEndDpf[2] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO   AcpiRsConvertEndTag[2] =
-{
+ACPI_RSCONVERT_INFO   AcpiRsConvertEndTag[2] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_END_TAG,
 		ACPI_RS_SIZE_MIN,
@@ -304,8 +299,7 @@ ACPI_RSCONVERT_INFO   AcpiRsConvertEndTag[2] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO   AcpiRsGetStartDpf[6] =
-{
+ACPI_RSCONVERT_INFO   AcpiRsGetStartDpf[6] = {
 	{
 		ACPI_RSC_INITGET,  ACPI_RESOURCE_TYPE_START_DEPENDENT,
 		ACPI_RS_SIZE(ACPI_RESOURCE_START_DEPENDENT),
@@ -354,8 +348,7 @@ ACPI_RSCONVERT_INFO   AcpiRsGetStartDpf[6] =
  *
  ******************************************************************************/
 
-ACPI_RSCONVERT_INFO   AcpiRsSetStartDpf[10] =
-{
+ACPI_RSCONVERT_INFO   AcpiRsSetStartDpf[10] = {
 	/* Start with a default descriptor of length 1 */
 
 	{

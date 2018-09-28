@@ -143,10 +143,10 @@ ACPI_MODULE_NAME("uteval")
 
 ACPI_STATUS
 AcpiUtEvaluateObject(
-    ACPI_NAMESPACE_NODE     *PrefixNode,
-    const char              *Path,
-    UINT32                  ExpectedReturnBtypes,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
+        ACPI_NAMESPACE_NODE     *PrefixNode,
+        const char              *Path,
+        UINT32                  ExpectedReturnBtypes,
+        ACPI_OPERAND_OBJECT     **ReturnDesc)
 {
 	ACPI_EVALUATE_INFO      *Info;
 	ACPI_STATUS             Status;
@@ -161,9 +161,7 @@ AcpiUtEvaluateObject(
 	Info = ACPI_ALLOCATE_ZEROED(sizeof(ACPI_EVALUATE_INFO));
 
 	if (!Info)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	Info->PrefixNode = PrefixNode;
 	Info->RelativePathname = Path;
@@ -172,15 +170,11 @@ AcpiUtEvaluateObject(
 
 	Status = AcpiNsEvaluate(Info);
 
-	if (ACPI_FAILURE(Status))
-	{
-		if (Status == AE_NOT_FOUND)
-		{
+	if (ACPI_FAILURE(Status)) {
+		if (Status == AE_NOT_FOUND) {
 			ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[%4.4s.%s] was not found\n",
 			                  AcpiUtGetNodeName(PrefixNode), Path));
-		}
-		else
-		{
+		} else {
 			ACPI_ERROR_METHOD("Method execution failed",
 			                  PrefixNode, Path, Status);
 		}
@@ -190,10 +184,8 @@ AcpiUtEvaluateObject(
 
 	/* Did we get a return object? */
 
-	if (!Info->ReturnObject)
-	{
-		if (ExpectedReturnBtypes)
-		{
+	if (!Info->ReturnObject) {
+		if (ExpectedReturnBtypes) {
 			ACPI_ERROR_METHOD("No object was returned from",
 			                  PrefixNode, Path, AE_NOT_EXIST);
 
@@ -205,8 +197,7 @@ AcpiUtEvaluateObject(
 
 	/* Map the return object type to the bitmapped type */
 
-	switch ((Info->ReturnObject)->Common.Type)
-	{
+	switch ((Info->ReturnObject)->Common.Type) {
 	case ACPI_TYPE_INTEGER:
 
 		ReturnBtype = ACPI_BTYPE_INTEGER;
@@ -234,8 +225,7 @@ AcpiUtEvaluateObject(
 	}
 
 	if ((AcpiGbl_EnableInterpreterSlack) &&
-	        (!ExpectedReturnBtypes))
-	{
+	    (!ExpectedReturnBtypes)) {
 		/*
 		 * We received a return object, but one was not expected. This can
 		 * happen frequently if the "implicit return" feature is enabled.
@@ -247,8 +237,7 @@ AcpiUtEvaluateObject(
 
 	/* Is the return object one of the expected types? */
 
-	if (!(ExpectedReturnBtypes & ReturnBtype))
-	{
+	if (!(ExpectedReturnBtypes & ReturnBtype)) {
 		ACPI_ERROR_METHOD("Return object type is incorrect",
 		                  PrefixNode, Path, AE_TYPE);
 
@@ -293,9 +282,9 @@ Cleanup:
 
 ACPI_STATUS
 AcpiUtEvaluateNumericObject(
-    const char              *ObjectName,
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT64                  *Value)
+        const char              *ObjectName,
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        UINT64                  *Value)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -308,9 +297,7 @@ AcpiUtEvaluateNumericObject(
 	                              ACPI_BTYPE_INTEGER, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Get the returned Integer */
 
@@ -342,8 +329,8 @@ AcpiUtEvaluateNumericObject(
 
 ACPI_STATUS
 AcpiUtExecute_STA(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT32                  *Flags)
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        UINT32                  *Flags)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -355,10 +342,8 @@ AcpiUtExecute_STA(
 	Status = AcpiUtEvaluateObject(DeviceNode, METHOD_NAME__STA,
 	                              ACPI_BTYPE_INTEGER, &ObjDesc);
 
-	if (ACPI_FAILURE(Status))
-	{
-		if (AE_NOT_FOUND == Status)
-		{
+	if (ACPI_FAILURE(Status)) {
+		if (AE_NOT_FOUND == Status) {
 			/*
 			 * if _STA does not exist, then (as per the ACPI specification),
 			 * the returned flags will indicate that the device is present,
@@ -406,10 +391,10 @@ AcpiUtExecute_STA(
 
 ACPI_STATUS
 AcpiUtExecutePowerMethods(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    const char              **MethodNames,
-    UINT8                   MethodCount,
-    UINT8                   *OutValues)
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        const char              **MethodNames,
+        UINT8                   MethodCount,
+        UINT8                   *OutValues)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -420,8 +405,7 @@ AcpiUtExecutePowerMethods(
 	ACPI_FUNCTION_TRACE(UtExecutePowerMethods);
 
 
-	for (i = 0; i < MethodCount; i++)
-	{
+	for (i = 0; i < MethodCount; i++) {
 		/*
 		 * Execute the power method (_SxD or _SxW). The only allowable
 		 * return type is an Integer.
@@ -430,8 +414,7 @@ AcpiUtExecutePowerMethods(
 		                              ACPI_CAST_PTR(char, MethodNames[i]),
 		                              ACPI_BTYPE_INTEGER, &ObjDesc);
 
-		if (ACPI_SUCCESS(Status))
-		{
+		if (ACPI_SUCCESS(Status)) {
 			OutValues[i] = (UINT8) ObjDesc->Integer.Value;
 
 			/* Delete the return object */
@@ -443,8 +426,7 @@ AcpiUtExecutePowerMethods(
 
 		OutValues[i] = ACPI_UINT8_MAX;
 
-		if (Status == AE_NOT_FOUND)
-		{
+		if (Status == AE_NOT_FOUND) {
 			continue; /* Ignore if not found */
 		}
 

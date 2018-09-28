@@ -123,8 +123,8 @@ ACPI_MODULE_NAME("hwvalid")
 
 static ACPI_STATUS
 AcpiHwValidateIoRequest(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  BitWidth);
+        ACPI_IO_ADDRESS         Address,
+        UINT32                  BitWidth);
 
 
 /*
@@ -158,8 +158,7 @@ AcpiHwValidateIoRequest(
  *  ELCR:  PIC edge/level registers
  *  PCI:   PCI configuration space
  */
-static const ACPI_PORT_INFO     AcpiProtectedPorts[] =
-{
+static const ACPI_PORT_INFO     AcpiProtectedPorts[] = {
 	{"DMA",     0x0000, 0x000F, ACPI_OSI_WIN_XP},
 	{"PIC0",    0x0020, 0x0021, ACPI_ALWAYS_ILLEGAL},
 	{"PIT1",    0x0040, 0x0043, ACPI_OSI_WIN_XP},
@@ -200,8 +199,8 @@ static const ACPI_PORT_INFO     AcpiProtectedPorts[] =
 
 static ACPI_STATUS
 AcpiHwValidateIoRequest(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  BitWidth)
+        ACPI_IO_ADDRESS         Address,
+        UINT32                  BitWidth)
 {
 	UINT32                  i;
 	UINT32                  ByteWidth;
@@ -215,9 +214,8 @@ AcpiHwValidateIoRequest(
 	/* Supported widths are 8/16/32 */
 
 	if ((BitWidth != 8) &&
-	        (BitWidth != 16) &&
-	        (BitWidth != 32))
-	{
+	    (BitWidth != 16) &&
+	    (BitWidth != 32)) {
 		ACPI_ERROR((AE_INFO,
 		            "Bad BitWidth parameter: %8.8X", BitWidth));
 		return (AE_BAD_PARAMETER);
@@ -233,8 +231,7 @@ AcpiHwValidateIoRequest(
 
 	/* Maximum 16-bit address in I/O space */
 
-	if (LastAddress > ACPI_UINT16_MAX)
-	{
+	if (LastAddress > ACPI_UINT16_MAX) {
 		ACPI_ERROR((AE_INFO,
 		            "Illegal I/O port address/length above 64K: %8.8X%8.8X/0x%X",
 		            ACPI_FORMAT_UINT64(Address), ByteWidth));
@@ -244,14 +241,11 @@ AcpiHwValidateIoRequest(
 	/* Exit if requested address is not within the protected port table */
 
 	if (Address > AcpiProtectedPorts[ACPI_PORT_INFO_ENTRIES - 1].End)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* Check request against the list of protected I/O ports */
 
-	for (i = 0; i < ACPI_PORT_INFO_ENTRIES; i++, PortInfo++)
-	{
+	for (i = 0; i < ACPI_PORT_INFO_ENTRIES; i++, PortInfo++) {
 		/*
 		 * Check if the requested address range will write to a reserved
 		 * port. Four cases to consider:
@@ -261,12 +255,10 @@ AcpiHwValidateIoRequest(
 		 * 3) Address range overlaps port range at the port range end
 		 * 4) Address range completely encompasses the port range
 		 */
-		if ((Address <= PortInfo->End) && (LastAddress >= PortInfo->Start))
-		{
+		if ((Address <= PortInfo->End) && (LastAddress >= PortInfo->Start)) {
 			/* Port illegality may depend on the _OSI calls made by the BIOS */
 
-			if (AcpiGbl_OsiData >= PortInfo->OsiDependency)
-			{
+			if (AcpiGbl_OsiData >= PortInfo->OsiDependency) {
 				ACPI_DEBUG_PRINT((ACPI_DB_IO,
 				                  "Denied AML access to port 0x%8.8X%8.8X/%X (%s 0x%.4X-0x%.4X)",
 				                  ACPI_FORMAT_UINT64(Address), ByteWidth, PortInfo->Name,
@@ -279,9 +271,7 @@ AcpiHwValidateIoRequest(
 		/* Finished if address range ends before the end of this port */
 
 		if (LastAddress <= PortInfo->End)
-		{
 			break;
-		}
 	}
 
 	return_ACPI_STATUS(AE_OK);
@@ -306,9 +296,9 @@ AcpiHwValidateIoRequest(
 
 ACPI_STATUS
 AcpiHwReadPort(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  *Value,
-    UINT32                  Width)
+        ACPI_IO_ADDRESS         Address,
+        UINT32                  *Value,
+        UINT32                  Width)
 {
 	ACPI_STATUS             Status;
 	UINT32                  OneByte;
@@ -318,42 +308,33 @@ AcpiHwReadPort(
 	/* Truncate address to 16 bits if requested */
 
 	if (AcpiGbl_TruncateIoAddresses)
-	{
 		Address &= ACPI_UINT16_MAX;
-	}
 
 	/* Validate the entire request and perform the I/O */
 
 	Status = AcpiHwValidateIoRequest(Address, Width);
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		Status = AcpiOsReadPort(Address, Value, Width);
 		return (Status);
 	}
 
 	if (Status != AE_AML_ILLEGAL_ADDRESS)
-	{
 		return (Status);
-	}
 
 	/*
 	 * There has been a protection violation within the request. Fall
 	 * back to byte granularity port I/O and ignore the failing bytes.
 	 * This provides Windows compatibility.
 	 */
-	for (i = 0, *Value = 0; i < Width; i += 8)
-	{
+	for (i = 0, *Value = 0; i < Width; i += 8) {
 		/* Validate and read one byte */
 
-		if (AcpiHwValidateIoRequest(Address, 8) == AE_OK)
-		{
+		if (AcpiHwValidateIoRequest(Address, 8) == AE_OK) {
 			Status = AcpiOsReadPort(Address, &OneByte, 8);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return (Status);
-			}
 
 			*Value |= (OneByte << i);
 		}
@@ -383,9 +364,9 @@ AcpiHwReadPort(
 
 ACPI_STATUS
 AcpiHwWritePort(
-    ACPI_IO_ADDRESS         Address,
-    UINT32                  Value,
-    UINT32                  Width)
+        ACPI_IO_ADDRESS         Address,
+        UINT32                  Value,
+        UINT32                  Width)
 {
 	ACPI_STATUS             Status;
 	UINT32                  i;
@@ -394,42 +375,33 @@ AcpiHwWritePort(
 	/* Truncate address to 16 bits if requested */
 
 	if (AcpiGbl_TruncateIoAddresses)
-	{
 		Address &= ACPI_UINT16_MAX;
-	}
 
 	/* Validate the entire request and perform the I/O */
 
 	Status = AcpiHwValidateIoRequest(Address, Width);
 
-	if (ACPI_SUCCESS(Status))
-	{
+	if (ACPI_SUCCESS(Status)) {
 		Status = AcpiOsWritePort(Address, Value, Width);
 		return (Status);
 	}
 
 	if (Status != AE_AML_ILLEGAL_ADDRESS)
-	{
 		return (Status);
-	}
 
 	/*
 	 * There has been a protection violation within the request. Fall
 	 * back to byte granularity port I/O and ignore the failing bytes.
 	 * This provides Windows compatibility.
 	 */
-	for (i = 0; i < Width; i += 8)
-	{
+	for (i = 0; i < Width; i += 8) {
 		/* Validate and write one byte */
 
-		if (AcpiHwValidateIoRequest(Address, 8) == AE_OK)
-		{
+		if (AcpiHwValidateIoRequest(Address, 8) == AE_OK) {
 			Status = AcpiOsWritePort(Address, (Value >> i) & 0xFF, 8);
 
 			if (ACPI_FAILURE(Status))
-			{
 				return (Status);
-			}
 		}
 
 		Address++;

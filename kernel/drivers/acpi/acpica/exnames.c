@@ -125,13 +125,13 @@ ACPI_MODULE_NAME("exnames")
 
 static char *
 AcpiExAllocateNameString(
-    UINT32                  PrefixCount,
-    UINT32                  NumNameSegs);
+        UINT32                  PrefixCount,
+        UINT32                  NumNameSegs);
 
 static ACPI_STATUS
 AcpiExNameSegment(
-    UINT8                   **InAmlAddress,
-    char                    *NameString);
+        UINT8                   **InAmlAddress,
+        char                    *NameString);
 
 
 /*******************************************************************************
@@ -152,8 +152,8 @@ AcpiExNameSegment(
 
 static char *
 AcpiExAllocateNameString(
-    UINT32                  PrefixCount,
-    UINT32                  NumNameSegs)
+        UINT32                  PrefixCount,
+        UINT32                  NumNameSegs)
 {
 	char                    *TempPtr;
 	char                    *NameString;
@@ -167,16 +167,12 @@ AcpiExAllocateNameString(
 	 * Also, one byte for the null terminator.
 	 * This may actually be somewhat longer than needed.
 	 */
-	if (PrefixCount == ACPI_UINT32_MAX)
-	{
+	if (PrefixCount == ACPI_UINT32_MAX) {
 		/* Special case for root */
 
 		SizeNeeded = 1 + (ACPI_NAME_SIZE * NumNameSegs) + 2 + 1;
-	}
-	else
-	{
+	} else
 		SizeNeeded = PrefixCount + (ACPI_NAME_SIZE * NumNameSegs) + 2 + 1;
-	}
 
 	/*
 	 * Allocate a buffer for the name.
@@ -184,8 +180,7 @@ AcpiExAllocateNameString(
 	 */
 	NameString = ACPI_ALLOCATE(SizeNeeded);
 
-	if (!NameString)
-	{
+	if (!NameString) {
 		ACPI_ERROR((AE_INFO,
 		            "Could not allocate size %u", SizeNeeded));
 		return_PTR(NULL);
@@ -196,29 +191,21 @@ AcpiExAllocateNameString(
 	/* Set up Root or Parent prefixes if needed */
 
 	if (PrefixCount == ACPI_UINT32_MAX)
-	{
 		*TempPtr++ = AML_ROOT_PREFIX;
-	}
-	else
-	{
+	else {
 		while (PrefixCount--)
-		{
 			*TempPtr++ = AML_PARENT_PREFIX;
-		}
 	}
 
 
 	/* Set up Dual or Multi prefixes if needed */
 
-	if (NumNameSegs > 2)
-	{
+	if (NumNameSegs > 2) {
 		/* Set up multi prefixes   */
 
 		*TempPtr++ = AML_MULTI_NAME_PREFIX_OP;
 		*TempPtr++ = (char) NumNameSegs;
-	}
-	else if (2 == NumNameSegs)
-	{
+	} else if (2 == NumNameSegs) {
 		/* Set up dual prefixes */
 
 		*TempPtr++ = AML_DUAL_NAME_PREFIX;
@@ -250,8 +237,8 @@ AcpiExAllocateNameString(
 
 static ACPI_STATUS
 AcpiExNameSegment(
-    UINT8                   **InAmlAddress,
-    char                    *NameString)
+        UINT8                   **InAmlAddress,
+        char                    *NameString)
 {
 	char                    *AmlAddress = (void *) *InAmlAddress;
 	ACPI_STATUS             Status = AE_OK;
@@ -268,8 +255,7 @@ AcpiExNameSegment(
 	 */
 	CharBuf[0] = *AmlAddress;
 
-	if ('0' <= CharBuf[0] && CharBuf[0] <= '9')
-	{
+	if ('0' <= CharBuf[0] && CharBuf[0] <= '9') {
 		ACPI_ERROR((AE_INFO, "Invalid leading digit: %c", CharBuf[0]));
 		return_ACPI_STATUS(AE_CTRL_PENDING);
 	}
@@ -277,9 +263,8 @@ AcpiExNameSegment(
 	ACPI_DEBUG_PRINT((ACPI_DB_LOAD, "Bytes from stream:\n"));
 
 	for (Index = 0;
-	        (Index < ACPI_NAME_SIZE) && (AcpiUtValidNameChar(*AmlAddress, 0));
-	        Index++)
-	{
+	     (Index < ACPI_NAME_SIZE) && (AcpiUtValidNameChar(*AmlAddress, 0));
+	     Index++) {
 		CharBuf[Index] = *AmlAddress++;
 		ACPI_DEBUG_PRINT((ACPI_DB_LOAD, "%c\n", CharBuf[Index]));
 	}
@@ -287,26 +272,20 @@ AcpiExNameSegment(
 
 	/* Valid name segment  */
 
-	if (Index == 4)
-	{
+	if (Index == 4) {
 		/* Found 4 valid characters */
 
 		CharBuf[4] = '\0';
 
-		if (NameString)
-		{
+		if (NameString) {
 			strcat(NameString, CharBuf);
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 			                  "Appended to - %s\n", NameString));
-		}
-		else
-		{
+		} else {
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 			                  "No Name string - %s\n", CharBuf));
 		}
-	}
-	else if (Index == 0)
-	{
+	} else if (Index == 0) {
 		/*
 		 * First character was not a valid name character,
 		 * so we are looking at something other than a name.
@@ -315,9 +294,7 @@ AcpiExNameSegment(
 		                  "Leading character is not alpha: %02Xh (not a name)\n",
 		                  CharBuf[0]));
 		Status = AE_CTRL_PENDING;
-	}
-	else
-	{
+	} else {
 		/*
 		 * Segment started with one or more valid characters, but fewer than
 		 * the required 4
@@ -352,10 +329,10 @@ AcpiExNameSegment(
 
 ACPI_STATUS
 AcpiExGetNameString(
-    ACPI_OBJECT_TYPE        DataType,
-    UINT8                   *InAmlAddress,
-    char                    **OutNameString,
-    UINT32                  *OutNameLength)
+        ACPI_OBJECT_TYPE        DataType,
+        UINT8                   *InAmlAddress,
+        char                    **OutNameString,
+        UINT32                  *OutNameLength)
 {
 	ACPI_STATUS             Status = AE_OK;
 	UINT8                   *AmlAddress = InAmlAddress;
@@ -369,30 +346,22 @@ AcpiExGetNameString(
 
 
 	if (ACPI_TYPE_LOCAL_REGION_FIELD == DataType   ||
-	        ACPI_TYPE_LOCAL_BANK_FIELD == DataType     ||
-	        ACPI_TYPE_LOCAL_INDEX_FIELD == DataType)
-	{
+	    ACPI_TYPE_LOCAL_BANK_FIELD == DataType     ||
+	    ACPI_TYPE_LOCAL_INDEX_FIELD == DataType) {
 		/* Disallow prefixes for types associated with FieldUnit names */
 
 		NameString = AcpiExAllocateNameString(0, 1);
 
 		if (!NameString)
-		{
 			Status = AE_NO_MEMORY;
-		}
 		else
-		{
 			Status = AcpiExNameSegment(&AmlAddress, NameString);
-		}
-	}
-	else
-	{
+	} else {
 		/*
 		 * DataType is not a field name.
 		 * Examine first character of name for root or parent prefix operators
 		 */
-		switch (*AmlAddress)
-		{
+		switch (*AmlAddress) {
 		case AML_ROOT_PREFIX:
 
 			ACPI_DEBUG_PRINT((ACPI_DB_LOAD, "RootPrefix(\\) at %p\n",
@@ -411,16 +380,14 @@ AcpiExGetNameString(
 
 			/* Increment past possibly multiple parent prefixes */
 
-			do
-			{
+			do {
 				ACPI_DEBUG_PRINT((ACPI_DB_LOAD, "ParentPrefix (^) at %p\n",
 				                  AmlAddress));
 
 				AmlAddress++;
 				PrefixCount++;
 
-			}
-			while (*AmlAddress == AML_PARENT_PREFIX);
+			} while (*AmlAddress == AML_PARENT_PREFIX);
 
 			HasPrefix = TRUE;
 			break;
@@ -434,8 +401,7 @@ AcpiExGetNameString(
 
 		/* Examine first character of name for name segment prefix operator */
 
-		switch (*AmlAddress)
-		{
+		switch (*AmlAddress) {
 		case AML_DUAL_NAME_PREFIX:
 
 			ACPI_DEBUG_PRINT((ACPI_DB_LOAD, "DualNamePrefix at %p\n",
@@ -444,8 +410,7 @@ AcpiExGetNameString(
 			AmlAddress++;
 			NameString = AcpiExAllocateNameString(PrefixCount, 2);
 
-			if (!NameString)
-			{
+			if (!NameString) {
 				Status = AE_NO_MEMORY;
 				break;
 			}
@@ -457,9 +422,7 @@ AcpiExGetNameString(
 			Status = AcpiExNameSegment(&AmlAddress, NameString);
 
 			if (ACPI_SUCCESS(Status))
-			{
 				Status = AcpiExNameSegment(&AmlAddress, NameString);
-			}
 
 			break;
 
@@ -474,10 +437,9 @@ AcpiExGetNameString(
 			NumSegments = *AmlAddress;
 
 			NameString = AcpiExAllocateNameString(
-			                 PrefixCount, NumSegments);
+			                     PrefixCount, NumSegments);
 
-			if (!NameString)
-			{
+			if (!NameString) {
 				Status = AE_NO_MEMORY;
 				break;
 			}
@@ -488,11 +450,9 @@ AcpiExGetNameString(
 			HasPrefix = TRUE;
 
 			while (NumSegments &&
-			        (Status = AcpiExNameSegment(&AmlAddress, NameString)) ==
-			        AE_OK)
-			{
+			       (Status = AcpiExNameSegment(&AmlAddress, NameString)) ==
+			       AE_OK)
 				NumSegments--;
-			}
 
 			break;
 
@@ -500,8 +460,7 @@ AcpiExGetNameString(
 
 			/* NullName valid as of 8-12-98 ASL/AML Grammar Update */
 
-			if (PrefixCount == ACPI_UINT32_MAX)
-			{
+			if (PrefixCount == ACPI_UINT32_MAX) {
 				ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 				                  "NameSeg is \"\\\" followed by NULL\n"));
 			}
@@ -511,8 +470,7 @@ AcpiExGetNameString(
 			AmlAddress++;
 			NameString = AcpiExAllocateNameString(PrefixCount, 0);
 
-			if (!NameString)
-			{
+			if (!NameString) {
 				Status = AE_NO_MEMORY;
 				break;
 			}
@@ -525,8 +483,7 @@ AcpiExGetNameString(
 
 			NameString = AcpiExAllocateNameString(PrefixCount, 1);
 
-			if (!NameString)
-			{
+			if (!NameString) {
 				Status = AE_NO_MEMORY;
 				break;
 			}
@@ -536,8 +493,7 @@ AcpiExGetNameString(
 		}
 	}
 
-	if (AE_CTRL_PENDING == Status && HasPrefix)
-	{
+	if (AE_CTRL_PENDING == Status && HasPrefix) {
 		/* Ran out of segments after processing a prefix */
 
 		ACPI_ERROR((AE_INFO,
@@ -545,12 +501,9 @@ AcpiExGetNameString(
 		Status = AE_AML_BAD_NAME;
 	}
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		if (NameString)
-		{
 			ACPI_FREE(NameString);
-		}
 
 		return_ACPI_STATUS(Status);
 	}

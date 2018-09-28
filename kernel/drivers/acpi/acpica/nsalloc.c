@@ -136,7 +136,7 @@ ACPI_MODULE_NAME("nsalloc")
 
 ACPI_NAMESPACE_NODE *
 AcpiNsCreateNode(
-    UINT32                  Name)
+        UINT32                  Name)
 {
 	ACPI_NAMESPACE_NODE     *Node;
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
@@ -150,9 +150,7 @@ AcpiNsCreateNode(
 	Node = AcpiOsAcquireObject(AcpiGbl_NamespaceCache);
 
 	if (!Node)
-	{
 		return_PTR(NULL);
-	}
 
 	ACPI_MEM_TRACKING(AcpiGbl_NsNodeList->TotalAllocated++);
 
@@ -161,9 +159,7 @@ AcpiNsCreateNode(
 	       AcpiGbl_NsNodeList->TotalFreed;
 
 	if (Temp > AcpiGbl_NsNodeList->MaxOccupied)
-	{
 		AcpiGbl_NsNodeList->MaxOccupied = Temp;
-	}
 
 #endif
 
@@ -190,7 +186,7 @@ AcpiNsCreateNode(
 
 void
 AcpiNsDeleteNode(
-    ACPI_NAMESPACE_NODE     *Node)
+        ACPI_NAMESPACE_NODE     *Node)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_OPERAND_OBJECT     *NextDesc;
@@ -212,14 +208,11 @@ AcpiNsDeleteNode(
 	ObjDesc = Node->Object;
 
 	while (ObjDesc &&
-	        (ObjDesc->Common.Type == ACPI_TYPE_LOCAL_DATA))
-	{
+	       (ObjDesc->Common.Type == ACPI_TYPE_LOCAL_DATA)) {
 		/* Invoke the attached data deletion handler if present */
 
 		if (ObjDesc->Data.Handler)
-		{
 			ObjDesc->Data.Handler(Node, ObjDesc->Data.Pointer);
-		}
 
 		NextDesc = ObjDesc->Common.NextObject;
 		AcpiUtRemoveReference(ObjDesc);
@@ -229,9 +222,7 @@ AcpiNsDeleteNode(
 	/* Special case for the statically allocated root node */
 
 	if (Node == AcpiGbl_RootNode)
-	{
 		return;
-	}
 
 	/* Now we can delete the node */
 
@@ -257,7 +248,7 @@ AcpiNsDeleteNode(
 
 void
 AcpiNsRemoveNode(
-    ACPI_NAMESPACE_NODE     *Node)
+        ACPI_NAMESPACE_NODE     *Node)
 {
 	ACPI_NAMESPACE_NODE     *ParentNode;
 	ACPI_NAMESPACE_NODE     *PrevNode;
@@ -274,20 +265,16 @@ AcpiNsRemoveNode(
 
 	/* Find the node that is the previous peer in the parent's child list */
 
-	while (NextNode != Node)
-	{
+	while (NextNode != Node) {
 		PrevNode = NextNode;
 		NextNode = NextNode->Peer;
 	}
 
-	if (PrevNode)
-	{
+	if (PrevNode) {
 		/* Node is not first child, unlink it */
 
 		PrevNode->Peer = Node->Peer;
-	}
-	else
-	{
+	} else {
 		/*
 		 * Node is first child (has no previous peer).
 		 * Link peer list to parent
@@ -324,10 +311,10 @@ AcpiNsRemoveNode(
 
 void
 AcpiNsInstallNode(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *ParentNode,    /* Parent */
-    ACPI_NAMESPACE_NODE     *Node,          /* New Child*/
-    ACPI_OBJECT_TYPE        Type)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_NAMESPACE_NODE     *ParentNode,    /* Parent */
+        ACPI_NAMESPACE_NODE     *Node,          /* New Child*/
+        ACPI_OBJECT_TYPE        Type)
 {
 	ACPI_OWNER_ID           OwnerId = 0;
 	ACPI_NAMESPACE_NODE     *ChildNode;
@@ -336,8 +323,7 @@ AcpiNsInstallNode(
 	ACPI_FUNCTION_TRACE(NsInstallNode);
 
 
-	if (WalkState)
-	{
+	if (WalkState) {
 		/*
 		 * Get the owner ID from the Walk state. The owner ID is used to
 		 * track table deletion and deletion of objects created by methods.
@@ -345,8 +331,7 @@ AcpiNsInstallNode(
 		OwnerId = WalkState->OwnerId;
 
 		if ((WalkState->MethodDesc) &&
-		        (ParentNode != WalkState->MethodNode))
-		{
+		    (ParentNode != WalkState->MethodNode)) {
 			/*
 			 * A method is creating a new node that is not a child of the
 			 * method (it is non-local). Mark the executing method as having
@@ -354,7 +339,7 @@ AcpiNsInstallNode(
 			 * method exits.
 			 */
 			WalkState->MethodDesc->Method.InfoFlags |=
-			    ACPI_METHOD_MODIFIED_NAMESPACE;
+			        ACPI_METHOD_MODIFIED_NAMESPACE;
 		}
 	}
 
@@ -365,17 +350,12 @@ AcpiNsInstallNode(
 	ChildNode = ParentNode->Child;
 
 	if (!ChildNode)
-	{
 		ParentNode->Child = Node;
-	}
-	else
-	{
+	else {
 		/* Add node to the end of the peer list */
 
 		while (ChildNode->Peer)
-		{
 			ChildNode = ChildNode->Peer;
-		}
 
 		ChildNode->Peer = Node;
 	}
@@ -410,7 +390,7 @@ AcpiNsInstallNode(
 
 void
 AcpiNsDeleteChildren(
-    ACPI_NAMESPACE_NODE     *ParentNode)
+        ACPI_NAMESPACE_NODE     *ParentNode)
 {
 	ACPI_NAMESPACE_NODE     *NextNode;
 	ACPI_NAMESPACE_NODE     *NodeToDelete;
@@ -420,20 +400,16 @@ AcpiNsDeleteChildren(
 
 
 	if (!ParentNode)
-	{
 		return_VOID;
-	}
 
 	/* Deallocate all children at this level */
 
 	NextNode = ParentNode->Child;
 
-	while (NextNode)
-	{
+	while (NextNode) {
 		/* Grandchildren should have all been deleted already */
 
-		if (NextNode->Child)
-		{
+		if (NextNode->Child) {
 			ACPI_ERROR((AE_INFO, "Found a grandchild! P=%p C=%p",
 			            ParentNode, NextNode));
 		}
@@ -470,7 +446,7 @@ AcpiNsDeleteChildren(
 
 void
 AcpiNsDeleteNamespaceSubtree(
-    ACPI_NAMESPACE_NODE     *ParentNode)
+        ACPI_NAMESPACE_NODE     *ParentNode)
 {
 	ACPI_NAMESPACE_NODE     *ChildNode = NULL;
 	UINT32                  Level = 1;
@@ -481,39 +457,32 @@ AcpiNsDeleteNamespaceSubtree(
 
 
 	if (!ParentNode)
-	{
 		return_VOID;
-	}
 
 	/* Lock namespace for possible update */
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_VOID;
-	}
 
 	/*
 	 * Traverse the tree of objects until we bubble back up
 	 * to where we started.
 	 */
-	while (Level > 0)
-	{
+	while (Level > 0) {
 		/* Get the next node in this scope (NULL if none) */
 
 		ChildNode = AcpiNsGetNextNode(ParentNode, ChildNode);
 
-		if (ChildNode)
-		{
+		if (ChildNode) {
 			/* Found a child node - detach any attached object */
 
 			AcpiNsDetachObject(ChildNode);
 
 			/* Check if this node has any children */
 
-			if (ChildNode->Child)
-			{
+			if (ChildNode->Child) {
 				/*
 				 * There is at least one child of this node,
 				 * visit the node
@@ -522,9 +491,7 @@ AcpiNsDeleteNamespaceSubtree(
 				ParentNode = ChildNode;
 				ChildNode  = NULL;
 			}
-		}
-		else
-		{
+		} else {
 			/*
 			 * No more children of this parent node.
 			 * Move up to the grandparent.
@@ -570,7 +537,7 @@ AcpiNsDeleteNamespaceSubtree(
 
 void
 AcpiNsDeleteNamespaceByOwner(
-    ACPI_OWNER_ID            OwnerId)
+        ACPI_OWNER_ID            OwnerId)
 {
 	ACPI_NAMESPACE_NODE     *ChildNode;
 	ACPI_NAMESPACE_NODE     *DeletionNode;
@@ -583,18 +550,14 @@ AcpiNsDeleteNamespaceByOwner(
 
 
 	if (OwnerId == 0)
-	{
 		return_VOID;
-	}
 
 	/* Lock namespace for possible update */
 
 	Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_VOID;
-	}
 
 	DeletionNode = NULL;
 	ParentNode = AcpiGbl_RootNode;
@@ -605,25 +568,21 @@ AcpiNsDeleteNamespaceByOwner(
 	 * Traverse the tree of nodes until we bubble back up
 	 * to where we started.
 	 */
-	while (Level > 0)
-	{
+	while (Level > 0) {
 		/*
 		 * Get the next child of this parent node. When ChildNode is NULL,
 		 * the first child of the parent is returned
 		 */
 		ChildNode = AcpiNsGetNextNode(ParentNode, ChildNode);
 
-		if (DeletionNode)
-		{
+		if (DeletionNode) {
 			AcpiNsDeleteChildren(DeletionNode);
 			AcpiNsRemoveNode(DeletionNode);
 			DeletionNode = NULL;
 		}
 
-		if (ChildNode)
-		{
-			if (ChildNode->OwnerId == OwnerId)
-			{
+		if (ChildNode) {
+			if (ChildNode->OwnerId == OwnerId) {
 				/* Found a matching child node - detach any attached object */
 
 				AcpiNsDetachObject(ChildNode);
@@ -631,8 +590,7 @@ AcpiNsDeleteNamespaceByOwner(
 
 			/* Check if this node has any children */
 
-			if (ChildNode->Child)
-			{
+			if (ChildNode->Child) {
 				/*
 				 * There is at least one child of this node,
 				 * visit the node
@@ -640,26 +598,18 @@ AcpiNsDeleteNamespaceByOwner(
 				Level++;
 				ParentNode = ChildNode;
 				ChildNode  = NULL;
-			}
-			else if (ChildNode->OwnerId == OwnerId)
-			{
+			} else if (ChildNode->OwnerId == OwnerId)
 				DeletionNode = ChildNode;
-			}
-		}
-		else
-		{
+		} else {
 			/*
 			 * No more children of this parent node.
 			 * Move up to the grandparent.
 			 */
 			Level--;
 
-			if (Level != 0)
-			{
+			if (Level != 0) {
 				if (ParentNode->OwnerId == OwnerId)
-				{
 					DeletionNode = ParentNode;
-				}
 			}
 
 			/* New "last child" is this parent node */

@@ -38,8 +38,7 @@
 
 
 static LIST(ramfs_headers);
-typedef struct
-{
+typedef struct {
 	tar_header_t *ptr;
 	list_t list_head;
 } ramfs_node;
@@ -52,9 +51,7 @@ uint32_t ramfs_atoi(const char *in, uint32_t len)
 	uint32_t count = 1;
 
 	for (; len > 0; len--, count *= 8)
-	{
 		size += ((in[len - 1] - '0') * count);
-	}
 
 	return size;
 
@@ -62,10 +59,8 @@ uint32_t ramfs_atoi(const char *in, uint32_t len)
 int ramfs_find_node(const char *name, tar_header_t **ptr)
 {
 	ramfs_node *node;
-	list_for_each_entry(node, &ramfs_headers, list_head)
-	{
-		if (strncmp(node->ptr->header.name, name, strlen(name)) == 0)
-		{
+	list_for_each_entry(node, &ramfs_headers, list_head) {
+		if (strncmp(node->ptr->header.name, name, strlen(name)) == 0) {
 			pr_debug("Found the node\r\n");
 			*ptr = node->ptr;
 			return 0;
@@ -83,14 +78,11 @@ int parse_ramfs(void *ramfs, uint32_t size)
 	ramfs_node *new_header;
 	uint8_t *pos;
 
-	while (size)
-	{
+	while (size) {
 		pos = (uint8_t *) ramfs + offset;
 
 		if (pos[0] == 0) // Detect EOF
-		{
 			break;
-		}
 
 		new_header = kmalloc(sizeof(ramfs_node));
 		assert(new_header);
@@ -118,8 +110,7 @@ int init_ramfs(addr_t phy_addr, uint32_t len)
 
 	void *ramfs = mem_page_map_kernel(aligned_addr, pagecnt, READ_WRITE_KERNEL);
 
-	if (!ramfs)
-	{
+	if (!ramfs) {
 		pr_fatal("Can't map memory\r\n");
 		panic();
 	}

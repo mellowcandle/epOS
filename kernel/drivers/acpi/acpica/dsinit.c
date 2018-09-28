@@ -127,10 +127,10 @@ ACPI_MODULE_NAME("dsinit")
 
 static ACPI_STATUS
 AcpiDsInitOneObject(
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
+        ACPI_HANDLE             ObjHandle,
+        UINT32                  Level,
+        void                    *Context,
+        void                    **ReturnValue);
 
 
 /*******************************************************************************
@@ -155,10 +155,10 @@ AcpiDsInitOneObject(
 
 static ACPI_STATUS
 AcpiDsInitOneObject(
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue)
+        ACPI_HANDLE             ObjHandle,
+        UINT32                  Level,
+        void                    *Context,
+        void                    **ReturnValue)
 {
 	ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
 	ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
@@ -174,22 +174,18 @@ AcpiDsInitOneObject(
 	 * was just loaded
 	 */
 	if (Node->OwnerId != Info->OwnerId)
-	{
 		return (AE_OK);
-	}
 
 	Info->ObjectCount++;
 
 	/* And even then, we are only interested in a few object types */
 
-	switch (AcpiNsGetType(ObjHandle))
-	{
+	switch (AcpiNsGetType(ObjHandle)) {
 	case ACPI_TYPE_REGION:
 
 		Status = AcpiDsInitializeRegion(ObjHandle);
 
-		if (ACPI_FAILURE(Status))
-		{
+		if (ACPI_FAILURE(Status)) {
 			ACPI_EXCEPTION((AE_INFO, Status,
 			                "During Region initialization %p [%4.4s]",
 			                ObjHandle, AcpiUtGetNodeName(ObjHandle)));
@@ -211,26 +207,21 @@ AcpiDsInitOneObject(
 		ObjDesc = AcpiNsGetAttachedObject(Node);
 
 		if (!ObjDesc)
-		{
 			break;
-		}
 
 		/* Ignore if already serialized */
 
-		if (ObjDesc->Method.InfoFlags & ACPI_METHOD_SERIALIZED)
-		{
+		if (ObjDesc->Method.InfoFlags & ACPI_METHOD_SERIALIZED) {
 			Info->SerialMethodCount++;
 			break;
 		}
 
-		if (AcpiGbl_AutoSerializeMethods)
-		{
+		if (AcpiGbl_AutoSerializeMethods) {
 			/* Parse/scan method and serialize it if necessary */
 
 			AcpiDsAutoSerializeMethod(Node, ObjDesc);
 
-			if (ObjDesc->Method.InfoFlags & ACPI_METHOD_SERIALIZED)
-			{
+			if (ObjDesc->Method.InfoFlags & ACPI_METHOD_SERIALIZED) {
 				/* Method was just converted to Serialized */
 
 				Info->SerialMethodCount++;
@@ -276,8 +267,8 @@ AcpiDsInitOneObject(
 
 ACPI_STATUS
 AcpiDsInitializeObjects(
-    UINT32                  TableIndex,
-    ACPI_NAMESPACE_NODE     *StartNode)
+        UINT32                  TableIndex,
+        ACPI_NAMESPACE_NODE     *StartNode)
 {
 	ACPI_STATUS             Status;
 	ACPI_INIT_WALK_INFO     Info;
@@ -291,9 +282,7 @@ AcpiDsInitializeObjects(
 	Status = AcpiTbGetOwnerId(TableIndex, &OwnerId);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 	                  "**** Starting initialization of namespace objects ****\n"));
@@ -310,9 +299,7 @@ AcpiDsInitializeObjects(
 	Status = AcpiUtAcquireMutex(ACPI_MTX_NAMESPACE);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * We don't use AcpiWalkNamespace since we do not want to acquire
@@ -322,23 +309,18 @@ AcpiDsInitializeObjects(
 	                             ACPI_NS_WALK_UNLOCK, AcpiDsInitOneObject, NULL, &Info, NULL);
 
 	if (ACPI_FAILURE(Status))
-	{
 		ACPI_EXCEPTION((AE_INFO, Status, "During WalkNamespace"));
-	}
 
 	(void) AcpiUtReleaseMutex(ACPI_MTX_NAMESPACE);
 
 	Status = AcpiGetTableByIndex(TableIndex, &Table);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* DSDT is always the first AML table */
 
-	if (ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_DSDT))
-	{
+	if (ACPI_COMPARE_NAME(Table->Signature, ACPI_SIG_DSDT)) {
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
 		                      "\nInitializing Namespace objects:\n"));
 	}

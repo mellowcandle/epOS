@@ -126,7 +126,7 @@ ACPI_MODULE_NAME("psobject")
 
 static ACPI_STATUS
 AcpiPsGetAmlOpcode(
-    ACPI_WALK_STATE         *WalkState);
+        ACPI_WALK_STATE         *WalkState);
 
 
 /*******************************************************************************
@@ -143,7 +143,7 @@ AcpiPsGetAmlOpcode(
 
 static ACPI_STATUS
 AcpiPsGetAmlOpcode(
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_WALK_STATE         *WalkState)
 {
 	UINT32                  AmlOffset;
 
@@ -162,8 +162,7 @@ AcpiPsGetAmlOpcode(
 	 */
 	WalkState->OpInfo = AcpiPsGetOpcodeInfo(WalkState->Opcode);
 
-	switch (WalkState->OpInfo->Class)
-	{
+	switch (WalkState->OpInfo->Class) {
 	case AML_CLASS_ASCII:
 	case AML_CLASS_PREFIX:
 		/*
@@ -178,8 +177,7 @@ AcpiPsGetAmlOpcode(
 
 		/* The opcode is unrecognized. Complain and skip unknown opcodes */
 
-		if (WalkState->PassNumber == 2)
-		{
+		if (WalkState->PassNumber == 2) {
 			AmlOffset = (UINT32) ACPI_PTR_DIFF(WalkState->Aml,
 			                                   WalkState->ParserState.AmlStart);
 
@@ -196,9 +194,9 @@ AcpiPsGetAmlOpcode(
 			 * to the disassembled ASL output file.
 			 */
 			AcpiOsPrintf(
-			    "/*\nError: Unknown opcode 0x%.2X at table offset 0x%.4X, context:\n",
-			    WalkState->Opcode,
-			    (UINT32)(AmlOffset + sizeof(ACPI_TABLE_HEADER)));
+			        "/*\nError: Unknown opcode 0x%.2X at table offset 0x%.4X, context:\n",
+			        WalkState->Opcode,
+			        (UINT32)(AmlOffset + sizeof(ACPI_TABLE_HEADER)));
 
 			/* Dump the context surrounding the invalid opcode */
 
@@ -214,9 +212,7 @@ AcpiPsGetAmlOpcode(
 		WalkState->ParserState.Aml++;
 
 		if (WalkState->Opcode > 0xFF) /* Can only happen if first byte is 0x5B */
-		{
 			WalkState->ParserState.Aml++;
-		}
 
 		return_ACPI_STATUS(AE_CTRL_PARSE_CONTINUE);
 
@@ -225,7 +221,7 @@ AcpiPsGetAmlOpcode(
 		/* Found opcode info, this is a normal opcode */
 
 		WalkState->ParserState.Aml +=
-		    AcpiPsGetOpcodeSize(WalkState->Opcode);
+		        AcpiPsGetOpcodeSize(WalkState->Opcode);
 		WalkState->ArgTypes = WalkState->OpInfo->ParseArgs;
 		break;
 	}
@@ -251,10 +247,10 @@ AcpiPsGetAmlOpcode(
 
 ACPI_STATUS
 AcpiPsBuildNamedOp(
-    ACPI_WALK_STATE         *WalkState,
-    UINT8                   *AmlOpStart,
-    ACPI_PARSE_OBJECT       *UnnamedOp,
-    ACPI_PARSE_OBJECT       **Op)
+        ACPI_WALK_STATE         *WalkState,
+        UINT8                   *AmlOpStart,
+        ACPI_PARSE_OBJECT       *UnnamedOp,
+        ACPI_PARSE_OBJECT       **Op)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_PARSE_OBJECT       *Arg = NULL;
@@ -272,15 +268,12 @@ AcpiPsBuildNamedOp(
 	 * the name (the type ARGP_NAME).
 	 */
 	while (GET_CURRENT_ARG_TYPE(WalkState->ArgTypes) &&
-	        (GET_CURRENT_ARG_TYPE(WalkState->ArgTypes) != ARGP_NAME))
-	{
+	       (GET_CURRENT_ARG_TYPE(WalkState->ArgTypes) != ARGP_NAME)) {
 		Status = AcpiPsGetNextArg(WalkState, &(WalkState->ParserState),
 		                          GET_CURRENT_ARG_TYPE(WalkState->ArgTypes), &Arg);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
 		AcpiPsAppendArg(UnnamedOp, Arg);
 		INCREMENT_ARG_LIST(WalkState->ArgTypes);
@@ -290,9 +283,7 @@ AcpiPsBuildNamedOp(
 	 * Make sure that we found a NAME and didn't run out of arguments
 	 */
 	if (!GET_CURRENT_ARG_TYPE(WalkState->ArgTypes))
-	{
 		return_ACPI_STATUS(AE_AML_NO_OPERAND);
-	}
 
 	/* We know that this arg is a name, move to next arg */
 
@@ -306,29 +297,21 @@ AcpiPsBuildNamedOp(
 
 	Status = WalkState->DescendingCallback(WalkState, Op);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		if (Status != AE_CTRL_TERMINATE)
-		{
 			ACPI_EXCEPTION((AE_INFO, Status, "During name lookup/catalog"));
-		}
 
 		return_ACPI_STATUS(Status);
 	}
 
 	if (!*Op)
-	{
 		return_ACPI_STATUS(AE_CTRL_PARSE_CONTINUE);
-	}
 
 	Status = AcpiPsNextParseState(WalkState, *Op, Status);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		if (Status == AE_CTRL_PENDING)
-		{
 			Status = AE_CTRL_PARSE_PENDING;
-		}
 
 		return_ACPI_STATUS(Status);
 	}
@@ -336,8 +319,7 @@ AcpiPsBuildNamedOp(
 	AcpiPsAppendArg(*Op, UnnamedOp->Common.Value.Arg);
 
 	if ((*Op)->Common.AmlOpcode == AML_REGION_OP ||
-	        (*Op)->Common.AmlOpcode == AML_DATA_REGION_OP)
-	{
+	    (*Op)->Common.AmlOpcode == AML_DATA_REGION_OP) {
 		/*
 		 * Defer final parsing of an OperationRegion body, because we don't
 		 * have enough info in the first pass to parse it correctly (i.e.,
@@ -372,9 +354,9 @@ AcpiPsBuildNamedOp(
 
 ACPI_STATUS
 AcpiPsCreateOp(
-    ACPI_WALK_STATE         *WalkState,
-    UINT8                   *AmlOpStart,
-    ACPI_PARSE_OBJECT       **NewOp)
+        ACPI_WALK_STATE         *WalkState,
+        UINT8                   *AmlOpStart,
+        ACPI_PARSE_OBJECT       **NewOp)
 {
 	ACPI_STATUS             Status = AE_OK;
 	ACPI_PARSE_OBJECT       *Op;
@@ -390,9 +372,7 @@ AcpiPsCreateOp(
 	Status = AcpiPsGetAmlOpcode(WalkState);
 
 	if (Status == AE_CTRL_PARSE_CONTINUE)
-	{
 		return_ACPI_STATUS(AE_CTRL_PARSE_CONTINUE);
-	}
 
 	/* Create Op structure and append to parent's argument list */
 
@@ -400,19 +380,14 @@ AcpiPsCreateOp(
 	Op = AcpiPsAllocOp(WalkState->Opcode, AmlOpStart);
 
 	if (!Op)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
-	if (WalkState->OpInfo->Flags & AML_NAMED)
-	{
+	if (WalkState->OpInfo->Flags & AML_NAMED) {
 		Status = AcpiPsBuildNamedOp(WalkState, AmlOpStart, Op, &NamedOp);
 		AcpiPsFreeOp(Op);
 
 		if (ACPI_FAILURE(Status))
-		{
 			return_ACPI_STATUS(Status);
-		}
 
 		*NewOp = NamedOp;
 		return_ACPI_STATUS(AE_OK);
@@ -420,8 +395,7 @@ AcpiPsCreateOp(
 
 	/* Not a named opcode, just allocate Op and append to parent */
 
-	if (WalkState->OpInfo->Flags & AML_CREATE)
-	{
+	if (WalkState->OpInfo->Flags & AML_CREATE) {
 		/*
 		 * Backup to beginning of CreateXXXfield declaration
 		 * BodyLength is unknown until we parse the body
@@ -430,8 +404,7 @@ AcpiPsCreateOp(
 		Op->Named.Length = 0;
 	}
 
-	if (WalkState->Opcode == AML_BANK_FIELD_OP)
-	{
+	if (WalkState->Opcode == AML_BANK_FIELD_OP) {
 		/*
 		 * Backup to beginning of BankField declaration
 		 * BodyLength is unknown until we parse the body
@@ -443,27 +416,19 @@ AcpiPsCreateOp(
 	ParentScope = AcpiPsGetParentScope(&(WalkState->ParserState));
 	AcpiPsAppendArg(ParentScope, Op);
 
-	if (ParentScope)
-	{
+	if (ParentScope) {
 		OpInfo = AcpiPsGetOpcodeInfo(ParentScope->Common.AmlOpcode);
 
-		if (OpInfo->Flags & AML_HAS_TARGET)
-		{
+		if (OpInfo->Flags & AML_HAS_TARGET) {
 			ArgumentCount = AcpiPsGetArgumentCount(OpInfo->Type);
 
 			if (ParentScope->Common.ArgListLength > ArgumentCount)
-			{
 				Op->Common.Flags |= ACPI_PARSEOP_TARGET;
-			}
-		}
-		else if (ParentScope->Common.AmlOpcode == AML_INCREMENT_OP)
-		{
+		} else if (ParentScope->Common.AmlOpcode == AML_INCREMENT_OP)
 			Op->Common.Flags |= ACPI_PARSEOP_TARGET;
-		}
 	}
 
-	if (WalkState->DescendingCallback != NULL)
-	{
+	if (WalkState->DescendingCallback != NULL) {
 		/*
 		 * Find the object. This will either insert the object into
 		 * the namespace or simply look it up
@@ -474,9 +439,7 @@ AcpiPsCreateOp(
 		Status = AcpiPsNextParseState(WalkState, Op, Status);
 
 		if (Status == AE_CTRL_PENDING)
-		{
 			Status = AE_CTRL_PARSE_PENDING;
-		}
 	}
 
 	return_ACPI_STATUS(Status);
@@ -499,9 +462,9 @@ AcpiPsCreateOp(
 
 ACPI_STATUS
 AcpiPsCompleteOp(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       **Op,
-    ACPI_STATUS             Status)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       **Op,
+        ACPI_STATUS             Status)
 {
 	ACPI_STATUS             Status2;
 
@@ -519,14 +482,11 @@ AcpiPsCompleteOp(
 	Status2 = AcpiPsCompleteThisOp(WalkState, *Op);
 
 	if (ACPI_FAILURE(Status2))
-	{
 		return_ACPI_STATUS(Status2);
-	}
 
 	*Op = NULL;
 
-	switch (Status)
-	{
+	switch (Status) {
 	case AE_OK:
 
 		break;
@@ -544,8 +504,7 @@ AcpiPsCompleteOp(
 		AcpiPsPopScope(&(WalkState->ParserState), Op,
 		               &WalkState->ArgTypes, &WalkState->ArgCount);
 
-		if (*Op)
-		{
+		if (*Op) {
 			WalkState->Op = *Op;
 			WalkState->OpInfo = AcpiPsGetOpcodeInfo((*Op)->Common.AmlOpcode);
 			WalkState->Opcode = (*Op)->Common.AmlOpcode;
@@ -556,9 +515,7 @@ AcpiPsCompleteOp(
 			Status2 = AcpiPsCompleteThisOp(WalkState, *Op);
 
 			if (ACPI_FAILURE(Status2))
-			{
 				return_ACPI_STATUS(Status2);
-			}
 		}
 
 		Status = AE_OK;
@@ -569,8 +526,7 @@ AcpiPsCompleteOp(
 
 		/* Pop off scopes until we find the While */
 
-		while (!(*Op) || ((*Op)->Common.AmlOpcode != AML_WHILE_OP))
-		{
+		while (!(*Op) || ((*Op)->Common.AmlOpcode != AML_WHILE_OP)) {
 			AcpiPsPopScope(&(WalkState->ParserState), Op,
 			               &WalkState->ArgTypes, &WalkState->ArgCount);
 		}
@@ -587,9 +543,7 @@ AcpiPsCompleteOp(
 		Status2 = AcpiPsCompleteThisOp(WalkState, *Op);
 
 		if (ACPI_FAILURE(Status2))
-		{
 			return_ACPI_STATUS(Status2);
-		}
 
 		Status = AE_OK;
 		break;
@@ -597,48 +551,38 @@ AcpiPsCompleteOp(
 	case AE_CTRL_TERMINATE:
 
 		/* Clean up */
-		do
-		{
-			if (*Op)
-			{
+		do {
+			if (*Op) {
 				Status2 = AcpiPsCompleteThisOp(WalkState, *Op);
 
 				if (ACPI_FAILURE(Status2))
-				{
 					return_ACPI_STATUS(Status2);
-				}
 
 				AcpiUtDeleteGenericState(
-				    AcpiUtPopGenericState(&WalkState->ControlState));
+				        AcpiUtPopGenericState(&WalkState->ControlState));
 			}
 
 			AcpiPsPopScope(&(WalkState->ParserState), Op,
 			               &WalkState->ArgTypes, &WalkState->ArgCount);
 
-		}
-		while (*Op);
+		} while (*Op);
 
 		return_ACPI_STATUS(AE_OK);
 
 	default:  /* All other non-AE_OK status */
 
-		do
-		{
-			if (*Op)
-			{
+		do {
+			if (*Op) {
 				Status2 = AcpiPsCompleteThisOp(WalkState, *Op);
 
 				if (ACPI_FAILURE(Status2))
-				{
 					return_ACPI_STATUS(Status2);
-				}
 			}
 
 			AcpiPsPopScope(&(WalkState->ParserState), Op,
 			               &WalkState->ArgTypes, &WalkState->ArgCount);
 
-		}
-		while (*Op);
+		} while (*Op);
 
 
 #if 0
@@ -646,8 +590,7 @@ AcpiPsCompleteOp(
 		/*
 		 * TBD: Cleanup parse ops on error
 		 */
-		if (*Op == NULL)
-		{
+		if (*Op == NULL) {
 			AcpiPsPopScope(ParserState, Op,
 			               &WalkState->ArgTypes, &WalkState->ArgCount);
 		}
@@ -660,16 +603,12 @@ AcpiPsCompleteOp(
 
 	/* This scope complete? */
 
-	if (AcpiPsHasCompletedScope(&(WalkState->ParserState)))
-	{
+	if (AcpiPsHasCompletedScope(&(WalkState->ParserState))) {
 		AcpiPsPopScope(&(WalkState->ParserState), Op,
 		               &WalkState->ArgTypes, &WalkState->ArgCount);
 		ACPI_DEBUG_PRINT((ACPI_DB_PARSE, "Popped scope, Op=%p\n", *Op));
-	}
-	else
-	{
+	} else
 		*Op = NULL;
-	}
 
 	return_ACPI_STATUS(AE_OK);
 }
@@ -692,9 +631,9 @@ AcpiPsCompleteOp(
 
 ACPI_STATUS
 AcpiPsCompleteFinalOp(
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_STATUS             Status)
+        ACPI_WALK_STATE         *WalkState,
+        ACPI_PARSE_OBJECT       *Op,
+        ACPI_STATUS             Status)
 {
 	ACPI_STATUS             Status2;
 
@@ -710,12 +649,9 @@ AcpiPsCompleteFinalOp(
 	 */
 	ACPI_DEBUG_PRINT((ACPI_DB_PARSE, "AML package complete at Op %p\n", Op));
 
-	do
-	{
-		if (Op)
-		{
-			if (WalkState->AscendingCallback != NULL)
-			{
+	do {
+		if (Op) {
+			if (WalkState->AscendingCallback != NULL) {
 				WalkState->Op = Op;
 				WalkState->OpInfo = AcpiPsGetOpcodeInfo(Op->Common.AmlOpcode);
 				WalkState->Opcode = Op->Common.AmlOpcode;
@@ -723,44 +659,34 @@ AcpiPsCompleteFinalOp(
 				Status = WalkState->AscendingCallback(WalkState);
 				Status = AcpiPsNextParseState(WalkState, Op, Status);
 
-				if (Status == AE_CTRL_PENDING)
-				{
+				if (Status == AE_CTRL_PENDING) {
 					Status = AcpiPsCompleteOp(WalkState, &Op, AE_OK);
 
 					if (ACPI_FAILURE(Status))
-					{
 						return_ACPI_STATUS(Status);
-					}
 				}
 
-				if (Status == AE_CTRL_TERMINATE)
-				{
+				if (Status == AE_CTRL_TERMINATE) {
 					Status = AE_OK;
 
 					/* Clean up */
-					do
-					{
-						if (Op)
-						{
+					do {
+						if (Op) {
 							Status2 = AcpiPsCompleteThisOp(WalkState, Op);
 
 							if (ACPI_FAILURE(Status2))
-							{
 								return_ACPI_STATUS(Status2);
-							}
 						}
 
 						AcpiPsPopScope(&(WalkState->ParserState), &Op,
 						               &WalkState->ArgTypes, &WalkState->ArgCount);
 
-					}
-					while (Op);
+					} while (Op);
 
 					return_ACPI_STATUS(Status);
 				}
 
-				else if (ACPI_FAILURE(Status))
-				{
+				else if (ACPI_FAILURE(Status)) {
 					/* First error is most important */
 
 					(void) AcpiPsCompleteThisOp(WalkState, Op);
@@ -771,16 +697,13 @@ AcpiPsCompleteFinalOp(
 			Status2 = AcpiPsCompleteThisOp(WalkState, Op);
 
 			if (ACPI_FAILURE(Status2))
-			{
 				return_ACPI_STATUS(Status2);
-			}
 		}
 
 		AcpiPsPopScope(&(WalkState->ParserState), &Op, &WalkState->ArgTypes,
 		               &WalkState->ArgCount);
 
-	}
-	while (Op);
+	} while (Op);
 
 	return_ACPI_STATUS(Status);
 }

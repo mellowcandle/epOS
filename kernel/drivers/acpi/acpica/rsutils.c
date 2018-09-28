@@ -138,8 +138,8 @@ ACPI_MODULE_NAME("rsutils")
 
 UINT8
 AcpiRsDecodeBitmask(
-    UINT16                  Mask,
-    UINT8                   *List)
+        UINT16                  Mask,
+        UINT8                   *List)
 {
 	UINT8                   i;
 	UINT8                   BitCount;
@@ -150,10 +150,8 @@ AcpiRsDecodeBitmask(
 
 	/* Decode the mask bits */
 
-	for (i = 0, BitCount = 0; Mask; i++)
-	{
-		if (Mask & 0x0001)
-		{
+	for (i = 0, BitCount = 0; Mask; i++) {
+		if (Mask & 0x0001) {
 			List[BitCount] = i;
 			BitCount++;
 		}
@@ -180,8 +178,8 @@ AcpiRsDecodeBitmask(
 
 UINT16
 AcpiRsEncodeBitmask(
-    UINT8                   *List,
-    UINT8                   Count)
+        UINT8                   *List,
+        UINT8                   Count)
 {
 	UINT32                  i;
 	UINT16                  Mask;
@@ -193,9 +191,7 @@ AcpiRsEncodeBitmask(
 	/* Encode the list into a single bitmask */
 
 	for (i = 0, Mask = 0; i < Count; i++)
-	{
 		Mask |= (0x1 << List[i]);
-	}
 
 	return (Mask);
 }
@@ -220,10 +216,10 @@ AcpiRsEncodeBitmask(
 
 void
 AcpiRsMoveData(
-    void                    *Destination,
-    void                    *Source,
-    UINT16                  ItemCount,
-    UINT8                   MoveType)
+        void                    *Destination,
+        void                    *Source,
+        UINT16                  ItemCount,
+        UINT8                   MoveType)
 {
 	UINT32                  i;
 
@@ -233,10 +229,8 @@ AcpiRsMoveData(
 
 	/* One move per item */
 
-	for (i = 0; i < ItemCount; i++)
-	{
-		switch (MoveType)
-		{
+	for (i = 0; i < ItemCount; i++) {
+		switch (MoveType) {
 		/*
 		 * For the 8-bit case, we can perform the move all at once
 		 * since there are no alignment or endian issues
@@ -258,22 +252,22 @@ AcpiRsMoveData(
 		case ACPI_RSC_MOVE_GPIO_PIN:
 
 			ACPI_MOVE_16_TO_16(
-			    &ACPI_CAST_PTR(UINT16, Destination)[i],
-			    &ACPI_CAST_PTR(UINT16, Source)[i]);
+			        &ACPI_CAST_PTR(UINT16, Destination)[i],
+			        &ACPI_CAST_PTR(UINT16, Source)[i]);
 			break;
 
 		case ACPI_RSC_MOVE32:
 
 			ACPI_MOVE_32_TO_32(
-			    &ACPI_CAST_PTR(UINT32, Destination)[i],
-			    &ACPI_CAST_PTR(UINT32, Source)[i]);
+			        &ACPI_CAST_PTR(UINT32, Destination)[i],
+			        &ACPI_CAST_PTR(UINT32, Source)[i]);
 			break;
 
 		case ACPI_RSC_MOVE64:
 
 			ACPI_MOVE_64_TO_64(
-			    &ACPI_CAST_PTR(UINT64, Destination)[i],
-			    &ACPI_CAST_PTR(UINT64, Source)[i]);
+			        &ACPI_CAST_PTR(UINT64, Destination)[i],
+			        &ACPI_CAST_PTR(UINT64, Source)[i]);
 			break;
 
 		default:
@@ -303,8 +297,8 @@ AcpiRsMoveData(
 
 void
 AcpiRsSetResourceLength(
-    ACPI_RSDESC_SIZE        TotalLength,
-    AML_RESOURCE            *Aml)
+        ACPI_RSDESC_SIZE        TotalLength,
+        AML_RESOURCE            *Aml)
 {
 	ACPI_RS_LENGTH          ResourceLength;
 
@@ -319,15 +313,12 @@ AcpiRsSetResourceLength(
 
 	/* Length is stored differently for large and small descriptors */
 
-	if (Aml->SmallHeader.DescriptorType & ACPI_RESOURCE_NAME_LARGE)
-	{
+	if (Aml->SmallHeader.DescriptorType & ACPI_RESOURCE_NAME_LARGE) {
 		/* Large descriptor -- bytes 1-2 contain the 16-bit length */
 
 		ACPI_MOVE_16_TO_16(
-		    &Aml->LargeHeader.ResourceLength, &ResourceLength);
-	}
-	else
-	{
+		        &Aml->LargeHeader.ResourceLength, &ResourceLength);
+	} else {
 		/*
 		 * Small descriptor -- bits 2:0 of byte 0 contain the length
 		 * Clear any existing length, preserving descriptor type bits
@@ -359,9 +350,9 @@ AcpiRsSetResourceLength(
 
 void
 AcpiRsSetResourceHeader(
-    UINT8                   DescriptorType,
-    ACPI_RSDESC_SIZE        TotalLength,
-    AML_RESOURCE            *Aml)
+        UINT8                   DescriptorType,
+        ACPI_RSDESC_SIZE        TotalLength,
+        AML_RESOURCE            *Aml)
 {
 	ACPI_FUNCTION_ENTRY();
 
@@ -392,8 +383,8 @@ AcpiRsSetResourceHeader(
 
 static UINT16
 AcpiRsStrcpy(
-    char                    *Destination,
-    char                    *Source)
+        char                    *Destination,
+        char                    *Source)
 {
 	UINT16                  i;
 
@@ -402,9 +393,7 @@ AcpiRsStrcpy(
 
 
 	for (i = 0; Source[i]; i++)
-	{
 		Destination[i] = Source[i];
-	}
 
 	Destination[i] = 0;
 
@@ -436,11 +425,11 @@ AcpiRsStrcpy(
 
 ACPI_RS_LENGTH
 AcpiRsGetResourceSource(
-    ACPI_RS_LENGTH          ResourceLength,
-    ACPI_RS_LENGTH          MinimumLength,
-    ACPI_RESOURCE_SOURCE    *ResourceSource,
-    AML_RESOURCE            *Aml,
-    char                    *StringPtr)
+        ACPI_RS_LENGTH          ResourceLength,
+        ACPI_RS_LENGTH          MinimumLength,
+        ACPI_RESOURCE_SOURCE    *ResourceSource,
+        AML_RESOURCE            *Aml,
+        char                    *StringPtr)
 {
 	ACPI_RSDESC_SIZE        TotalLength;
 	UINT8                   *AmlResourceSource;
@@ -459,22 +448,20 @@ AcpiRsGetResourceSource(
 	 * Note: Some resource descriptors will have an additional null, so
 	 * we add 1 to the minimum length.
 	 */
-	if (TotalLength > (ACPI_RSDESC_SIZE)(MinimumLength + 1))
-	{
+	if (TotalLength > (ACPI_RSDESC_SIZE)(MinimumLength + 1)) {
 		/* Get the ResourceSourceIndex */
 
 		ResourceSource->Index = AmlResourceSource[0];
 
 		ResourceSource->StringPtr = StringPtr;
 
-		if (!StringPtr)
-		{
+		if (!StringPtr) {
 			/*
 			 * String destination pointer is not specified; Set the String
 			 * pointer to the end of the current ResourceSource structure.
 			 */
 			ResourceSource->StringPtr = ACPI_ADD_PTR(
-			                                char, ResourceSource, sizeof(ACPI_RESOURCE_SOURCE));
+			                                    char, ResourceSource, sizeof(ACPI_RESOURCE_SOURCE));
 		}
 
 		/*
@@ -485,7 +472,7 @@ AcpiRsGetResourceSource(
 		 * Zero the entire area of the buffer.
 		 */
 		TotalLength = (UINT32) strlen(
-		                  ACPI_CAST_PTR(char, &AmlResourceSource[1])) + 1;
+		                      ACPI_CAST_PTR(char, &AmlResourceSource[1])) + 1;
 
 		TotalLength = (UINT32) ACPI_ROUND_UP_TO_NATIVE_WORD(TotalLength);
 
@@ -494,8 +481,8 @@ AcpiRsGetResourceSource(
 		/* Copy the ResourceSource string to the destination */
 
 		ResourceSource->StringLength = AcpiRsStrcpy(
-		                                   ResourceSource->StringPtr,
-		                                   ACPI_CAST_PTR(char, &AmlResourceSource[1]));
+		                                       ResourceSource->StringPtr,
+		                                       ACPI_CAST_PTR(char, &AmlResourceSource[1]));
 
 		return ((ACPI_RS_LENGTH) TotalLength);
 	}
@@ -528,9 +515,9 @@ AcpiRsGetResourceSource(
 
 ACPI_RSDESC_SIZE
 AcpiRsSetResourceSource(
-    AML_RESOURCE            *Aml,
-    ACPI_RS_LENGTH          MinimumLength,
-    ACPI_RESOURCE_SOURCE    *ResourceSource)
+        AML_RESOURCE            *Aml,
+        ACPI_RS_LENGTH          MinimumLength,
+        ACPI_RESOURCE_SOURCE    *ResourceSource)
 {
 	UINT8                   *AmlResourceSource;
 	ACPI_RSDESC_SIZE        DescriptorLength;
@@ -543,8 +530,7 @@ AcpiRsSetResourceSource(
 
 	/* Non-zero string length indicates presence of a ResourceSource */
 
-	if (ResourceSource->StringLength)
-	{
+	if (ResourceSource->StringLength) {
 		/* Point to the end of the AML descriptor */
 
 		AmlResourceSource = ACPI_ADD_PTR(UINT8, Aml, MinimumLength);
@@ -592,8 +578,8 @@ AcpiRsSetResourceSource(
 
 ACPI_STATUS
 AcpiRsGetPrtMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -607,12 +593,10 @@ AcpiRsGetPrtMethodData(
 	/* Execute the method, no parameters */
 
 	Status = AcpiUtEvaluateObject(
-	             Node, METHOD_NAME__PRT, ACPI_BTYPE_PACKAGE, &ObjDesc);
+	                 Node, METHOD_NAME__PRT, ACPI_BTYPE_PACKAGE, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Create a resource linked list from the byte stream buffer that comes
@@ -647,8 +631,8 @@ AcpiRsGetPrtMethodData(
 
 ACPI_STATUS
 AcpiRsGetCrsMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -662,12 +646,10 @@ AcpiRsGetCrsMethodData(
 	/* Execute the method, no parameters */
 
 	Status = AcpiUtEvaluateObject(
-	             Node, METHOD_NAME__CRS, ACPI_BTYPE_BUFFER, &ObjDesc);
+	                 Node, METHOD_NAME__CRS, ACPI_BTYPE_BUFFER, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Make the call to create a resource linked list from the
@@ -703,8 +685,8 @@ AcpiRsGetCrsMethodData(
 
 ACPI_STATUS
 AcpiRsGetPrsMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -718,12 +700,10 @@ AcpiRsGetPrsMethodData(
 	/* Execute the method, no parameters */
 
 	Status = AcpiUtEvaluateObject(
-	             Node, METHOD_NAME__PRS, ACPI_BTYPE_BUFFER, &ObjDesc);
+	                 Node, METHOD_NAME__PRS, ACPI_BTYPE_BUFFER, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Make the call to create a resource linked list from the
@@ -759,8 +739,8 @@ AcpiRsGetPrsMethodData(
 
 ACPI_STATUS
 AcpiRsGetAeiMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -774,12 +754,10 @@ AcpiRsGetAeiMethodData(
 	/* Execute the method, no parameters */
 
 	Status = AcpiUtEvaluateObject(
-	             Node, METHOD_NAME__AEI, ACPI_BTYPE_BUFFER, &ObjDesc);
+	                 Node, METHOD_NAME__AEI, ACPI_BTYPE_BUFFER, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Make the call to create a resource linked list from the
@@ -816,9 +794,9 @@ AcpiRsGetAeiMethodData(
 
 ACPI_STATUS
 AcpiRsGetMethodData(
-    ACPI_HANDLE             Handle,
-    const char              *Path,
-    ACPI_BUFFER             *RetBuffer)
+        ACPI_HANDLE             Handle,
+        const char              *Path,
+        ACPI_BUFFER             *RetBuffer)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_STATUS             Status;
@@ -832,13 +810,11 @@ AcpiRsGetMethodData(
 	/* Execute the method, no parameters */
 
 	Status = AcpiUtEvaluateObject(
-	             ACPI_CAST_PTR(ACPI_NAMESPACE_NODE, Handle),
-	             Path, ACPI_BTYPE_BUFFER, &ObjDesc);
+	                 ACPI_CAST_PTR(ACPI_NAMESPACE_NODE, Handle),
+	                 Path, ACPI_BTYPE_BUFFER, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Make the call to create a resource linked list from the
@@ -876,8 +852,8 @@ AcpiRsGetMethodData(
 
 ACPI_STATUS
 AcpiRsSetSrsMethodData(
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_BUFFER             *InBuffer)
+        ACPI_NAMESPACE_NODE     *Node,
+        ACPI_BUFFER             *InBuffer)
 {
 	ACPI_EVALUATE_INFO      *Info;
 	ACPI_OPERAND_OBJECT     *Args[2];
@@ -893,9 +869,7 @@ AcpiRsSetSrsMethodData(
 	Info = ACPI_ALLOCATE_ZEROED(sizeof(ACPI_EVALUATE_INFO));
 
 	if (!Info)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	Info->PrefixNode = Node;
 	Info->RelativePathname = METHOD_NAME__SRS;
@@ -913,16 +887,13 @@ AcpiRsSetSrsMethodData(
 	Status = AcpiRsCreateAmlResources(InBuffer, &Buffer);
 
 	if (ACPI_FAILURE(Status))
-	{
 		goto Cleanup;
-	}
 
 	/* Create and initialize the method parameter object */
 
 	Args[0] = AcpiUtCreateInternalObject(ACPI_TYPE_BUFFER);
 
-	if (!Args[0])
-	{
+	if (!Args[0]) {
 		/*
 		 * Must free the buffer allocated above (otherwise it is freed
 		 * later)

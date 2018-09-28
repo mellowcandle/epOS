@@ -152,8 +152,8 @@ ACPI_MODULE_NAME("exresnte")
 
 ACPI_STATUS
 AcpiExResolveNodeToValue(
-    ACPI_NAMESPACE_NODE     **ObjectPtr,
-    ACPI_WALK_STATE         *WalkState)
+        ACPI_NAMESPACE_NODE     **ObjectPtr,
+        ACPI_WALK_STATE         *WalkState)
 
 {
 	ACPI_STATUS             Status = AE_OK;
@@ -178,8 +178,7 @@ AcpiExResolveNodeToValue(
 	                  Node, SourceDesc, AcpiUtGetTypeName(EntryType)));
 
 	if ((EntryType == ACPI_TYPE_LOCAL_ALIAS) ||
-	        (EntryType == ACPI_TYPE_LOCAL_METHOD_ALIAS))
-	{
+	    (EntryType == ACPI_TYPE_LOCAL_METHOD_ALIAS)) {
 		/* There is always exactly one level of indirection */
 
 		Node = ACPI_CAST_PTR(ACPI_NAMESPACE_NODE, Node->Object);
@@ -195,15 +194,12 @@ AcpiExResolveNodeToValue(
 	 * 3) 10/2007: Added method type to assist with Package construction.
 	 */
 	if ((EntryType == ACPI_TYPE_DEVICE)  ||
-	        (EntryType == ACPI_TYPE_THERMAL) ||
-	        (EntryType == ACPI_TYPE_METHOD)  ||
-	        (Node->Flags & (ANOBJ_METHOD_ARG | ANOBJ_METHOD_LOCAL)))
-	{
+	    (EntryType == ACPI_TYPE_THERMAL) ||
+	    (EntryType == ACPI_TYPE_METHOD)  ||
+	    (Node->Flags & (ANOBJ_METHOD_ARG | ANOBJ_METHOD_LOCAL)))
 		return_ACPI_STATUS(AE_OK);
-	}
 
-	if (!SourceDesc)
-	{
+	if (!SourceDesc) {
 		ACPI_ERROR((AE_INFO, "No object attached to node [%4.4s] %p",
 		            Node->Name.Ascii, Node));
 		return_ACPI_STATUS(AE_AML_UNINITIALIZED_NODE);
@@ -213,12 +209,10 @@ AcpiExResolveNodeToValue(
 	 * Action is based on the type of the Node, which indicates the type
 	 * of the attached object or pointer
 	 */
-	switch (EntryType)
-	{
+	switch (EntryType) {
 	case ACPI_TYPE_PACKAGE:
 
-		if (SourceDesc->Common.Type != ACPI_TYPE_PACKAGE)
-		{
+		if (SourceDesc->Common.Type != ACPI_TYPE_PACKAGE) {
 			ACPI_ERROR((AE_INFO, "Object not a Package, type %s",
 			            AcpiUtGetObjectTypeName(SourceDesc)));
 			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
@@ -226,8 +220,7 @@ AcpiExResolveNodeToValue(
 
 		Status = AcpiDsGetPackageArguments(SourceDesc);
 
-		if (ACPI_SUCCESS(Status))
-		{
+		if (ACPI_SUCCESS(Status)) {
 			/* Return an additional reference to the object */
 
 			ObjDesc = SourceDesc;
@@ -238,8 +231,7 @@ AcpiExResolveNodeToValue(
 
 	case ACPI_TYPE_BUFFER:
 
-		if (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)
-		{
+		if (SourceDesc->Common.Type != ACPI_TYPE_BUFFER) {
 			ACPI_ERROR((AE_INFO, "Object not a Buffer, type %s",
 			            AcpiUtGetObjectTypeName(SourceDesc)));
 			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
@@ -247,8 +239,7 @@ AcpiExResolveNodeToValue(
 
 		Status = AcpiDsGetBufferArguments(SourceDesc);
 
-		if (ACPI_SUCCESS(Status))
-		{
+		if (ACPI_SUCCESS(Status)) {
 			/* Return an additional reference to the object */
 
 			ObjDesc = SourceDesc;
@@ -259,8 +250,7 @@ AcpiExResolveNodeToValue(
 
 	case ACPI_TYPE_STRING:
 
-		if (SourceDesc->Common.Type != ACPI_TYPE_STRING)
-		{
+		if (SourceDesc->Common.Type != ACPI_TYPE_STRING) {
 			ACPI_ERROR((AE_INFO, "Object not a String, type %s",
 			            AcpiUtGetObjectTypeName(SourceDesc)));
 			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
@@ -274,8 +264,7 @@ AcpiExResolveNodeToValue(
 
 	case ACPI_TYPE_INTEGER:
 
-		if (SourceDesc->Common.Type != ACPI_TYPE_INTEGER)
-		{
+		if (SourceDesc->Common.Type != ACPI_TYPE_INTEGER) {
 			ACPI_ERROR((AE_INFO, "Object not a Integer, type %s",
 			            AcpiUtGetObjectTypeName(SourceDesc)));
 			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
@@ -324,8 +313,7 @@ AcpiExResolveNodeToValue(
 
 	case ACPI_TYPE_LOCAL_REFERENCE:
 
-		switch (SourceDesc->Reference.Class)
-		{
+		switch (SourceDesc->Reference.Class) {
 		case ACPI_REFCLASS_TABLE:   /* This is a DdbHandle */
 		case ACPI_REFCLASS_REFOF:
 		case ACPI_REFCLASS_INDEX:

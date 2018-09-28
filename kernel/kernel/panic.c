@@ -52,16 +52,13 @@ void print_stack_trace()
 	printk("Backtrace:\r\n");
 	__asm volatile("mov %%ebp, %0" : "=r"(ebp));
 
-	while (ebp)
-	{
+	while (ebp) {
 		eip = ebp + 1;
 		symbol = elf_lookup_symbol(*eip, &kernel_elf, &offset);
 		printk("--> [0x%x] %s", *eip, symbol);
 
 		if (offset != -1)
-		{
 			printk("+%u", offset);
-		}
 
 		printk("\r\n");
 		ebp = (uint32_t *) *ebp;

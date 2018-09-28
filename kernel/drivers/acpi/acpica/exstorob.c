@@ -137,8 +137,8 @@ ACPI_MODULE_NAME("exstorob")
 
 ACPI_STATUS
 AcpiExStoreBufferToBuffer(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     *TargetDesc)
 {
 	UINT32                  Length;
 	UINT8                   *Buffer;
@@ -150,9 +150,7 @@ AcpiExStoreBufferToBuffer(
 	/* If Source and Target are the same, just return */
 
 	if (SourceDesc == TargetDesc)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* We know that SourceDesc is a buffer by now */
 
@@ -164,22 +162,18 @@ AcpiExStoreBufferToBuffer(
 	 * allocate a new buffer of the proper length
 	 */
 	if ((TargetDesc->Buffer.Length == 0) ||
-	        (TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER))
-	{
+	    (TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)) {
 		TargetDesc->Buffer.Pointer = ACPI_ALLOCATE(Length);
 
 		if (!TargetDesc->Buffer.Pointer)
-		{
 			return_ACPI_STATUS(AE_NO_MEMORY);
-		}
 
 		TargetDesc->Buffer.Length = Length;
 	}
 
 	/* Copy source buffer to target buffer */
 
-	if (Length <= TargetDesc->Buffer.Length)
-	{
+	if (Length <= TargetDesc->Buffer.Length) {
 		/* Clear existing buffer and copy in the new one */
 
 		memset(TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
@@ -200,17 +194,14 @@ AcpiExStoreBufferToBuffer(
 		 * according to the ACPI spec. Integer-to-Buffer and Buffer-to-Buffer
 		 * copy must not truncate the original buffer.
 		 */
-		if (OriginalSrcType == ACPI_TYPE_STRING)
-		{
+		if (OriginalSrcType == ACPI_TYPE_STRING) {
 			/* Set the new length of the target */
 
 			TargetDesc->Buffer.Length = Length;
 		}
 
 #endif
-	}
-	else
-	{
+	} else {
 		/* Truncate the source, copy only what will fit */
 
 		memcpy(TargetDesc->Buffer.Pointer, Buffer,
@@ -244,8 +235,8 @@ AcpiExStoreBufferToBuffer(
 
 ACPI_STATUS
 AcpiExStoreStringToString(
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *TargetDesc)
+        ACPI_OPERAND_OBJECT     *SourceDesc,
+        ACPI_OPERAND_OBJECT     *TargetDesc)
 {
 	UINT32                  Length;
 	UINT8                   *Buffer;
@@ -257,9 +248,7 @@ AcpiExStoreStringToString(
 	/* If Source and Target are the same, just return */
 
 	if (SourceDesc == TargetDesc)
-	{
 		return_ACPI_STATUS(AE_OK);
-	}
 
 	/* We know that SourceDesc is a string by now */
 
@@ -271,8 +260,7 @@ AcpiExStoreStringToString(
 	 * pointer is not a static pointer (part of an ACPI table)
 	 */
 	if ((Length < TargetDesc->String.Length) &&
-	        (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
-	{
+	    (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER))) {
 		/*
 		 * String will fit in existing non-static buffer.
 		 * Clear old string and copy in the new one
@@ -280,28 +268,23 @@ AcpiExStoreStringToString(
 		memset(TargetDesc->String.Pointer, 0,
 		       (ACPI_SIZE) TargetDesc->String.Length + 1);
 		memcpy(TargetDesc->String.Pointer, Buffer, Length);
-	}
-	else
-	{
+	} else {
 		/*
 		 * Free the current buffer, then allocate a new buffer
 		 * large enough to hold the value
 		 */
 		if (TargetDesc->String.Pointer &&
-		        (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
-		{
+		    (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER))) {
 			/* Only free if not a pointer into the DSDT */
 
 			ACPI_FREE(TargetDesc->String.Pointer);
 		}
 
 		TargetDesc->String.Pointer =
-		    ACPI_ALLOCATE_ZEROED((ACPI_SIZE) Length + 1);
+		        ACPI_ALLOCATE_ZEROED((ACPI_SIZE) Length + 1);
 
 		if (!TargetDesc->String.Pointer)
-		{
 			return_ACPI_STATUS(AE_NO_MEMORY);
-		}
 
 		TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
 		memcpy(TargetDesc->String.Pointer, Buffer, Length);

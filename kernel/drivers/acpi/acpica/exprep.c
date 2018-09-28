@@ -128,18 +128,18 @@ ACPI_MODULE_NAME("exprep")
 
 static UINT32
 AcpiExDecodeFieldAccess(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
-    UINT32                  *ReturnByteAlignment);
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        UINT8                   FieldFlags,
+        UINT32                  *ReturnByteAlignment);
 
 
 #ifdef ACPI_UNDER_DEVELOPMENT
 
 static UINT32
 AcpiExGenerateAccess(
-    UINT32                  FieldBitOffset,
-    UINT32                  FieldBitLength,
-    UINT32                  RegionLength);
+        UINT32                  FieldBitOffset,
+        UINT32                  FieldBitLength,
+        UINT32                  RegionLength);
 
 
 /*******************************************************************************
@@ -166,9 +166,9 @@ AcpiExGenerateAccess(
 
 static UINT32
 AcpiExGenerateAccess(
-    UINT32                  FieldBitOffset,
-    UINT32                  FieldBitLength,
-    UINT32                  RegionLength)
+        UINT32                  FieldBitOffset,
+        UINT32                  FieldBitLength,
+        UINT32                  RegionLength)
 {
 	UINT32                  FieldByteLength;
 	UINT32                  FieldByteOffset;
@@ -187,10 +187,10 @@ AcpiExGenerateAccess(
 	/* Round Field start offset and length to "minimal" byte boundaries */
 
 	FieldByteOffset = ACPI_DIV_8(
-	                      ACPI_ROUND_DOWN(FieldBitOffset, 8));
+	                          ACPI_ROUND_DOWN(FieldBitOffset, 8));
 
 	FieldByteEndOffset = ACPI_DIV_8(
-	                         ACPI_ROUND_UP(FieldBitLength + FieldBitOffset, 8));
+	                             ACPI_ROUND_UP(FieldBitLength + FieldBitOffset, 8));
 
 	FieldByteLength = FieldByteEndOffset - FieldByteOffset;
 
@@ -208,8 +208,7 @@ AcpiExGenerateAccess(
 	 *
 	 * Start at ByteAcc and work upwards to QwordAcc max. (1,2,4,8 bytes)
 	 */
-	for (AccessByteWidth = 1; AccessByteWidth <= 8; AccessByteWidth <<= 1)
-	{
+	for (AccessByteWidth = 1; AccessByteWidth <= 8; AccessByteWidth <<= 1) {
 		/*
 		 * 1) Round end offset up to next access boundary and make sure that
 		 *    this does not go beyond the end of the parent region.
@@ -218,15 +217,14 @@ AcpiExGenerateAccess(
 		 *    case yet).
 		 */
 		if (ACPI_ROUND_UP(FieldByteEndOffset, AccessByteWidth) <=
-		        RegionLength)
-		{
+		    RegionLength) {
 			FieldStartOffset =
-			    ACPI_ROUND_DOWN(FieldByteOffset, AccessByteWidth) /
-			    AccessByteWidth;
+			        ACPI_ROUND_DOWN(FieldByteOffset, AccessByteWidth) /
+			        AccessByteWidth;
 
 			FieldEndOffset =
-			    ACPI_ROUND_UP((FieldByteLength + FieldByteOffset),
-			                  AccessByteWidth) / AccessByteWidth;
+			        ACPI_ROUND_UP((FieldByteLength + FieldByteOffset),
+			                      AccessByteWidth) / AccessByteWidth;
 
 			Accesses = FieldEndOffset - FieldStartOffset;
 
@@ -239,8 +237,7 @@ AcpiExGenerateAccess(
 
 			/* Single access is optimal */
 
-			if (Accesses <= 1)
-			{
+			if (Accesses <= 1) {
 				ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 				                  "Entire field can be accessed "
 				                  "with one operation of size %u\n",
@@ -252,20 +249,16 @@ AcpiExGenerateAccess(
 			 * Fits in the region, but requires more than one read/write.
 			 * try the next wider access on next iteration
 			 */
-			if (Accesses < MinimumAccesses)
-			{
+			if (Accesses < MinimumAccesses) {
 				MinimumAccesses = Accesses;
 				MinimumAccessWidth = AccessByteWidth;
 			}
-		}
-		else
-		{
+		} else {
 			ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 			                  "AccessWidth %u end is NOT within region\n",
 			                  AccessByteWidth));
 
-			if (AccessByteWidth == 1)
-			{
+			if (AccessByteWidth == 1) {
 				ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 				                  "Field goes beyond end-of-region!\n"));
 
@@ -314,9 +307,9 @@ AcpiExGenerateAccess(
 
 static UINT32
 AcpiExDecodeFieldAccess(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
-    UINT32                  *ReturnByteAlignment)
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        UINT8                   FieldFlags,
+        UINT32                  *ReturnByteAlignment)
 {
 	UINT32                  Access;
 	UINT32                  ByteAlignment;
@@ -328,15 +321,14 @@ AcpiExDecodeFieldAccess(
 
 	Access = (FieldFlags & AML_FIELD_ACCESS_TYPE_MASK);
 
-	switch (Access)
-	{
+	switch (Access) {
 	case AML_FIELD_ACCESS_ANY:
 
 #ifdef ACPI_UNDER_DEVELOPMENT
 		ByteAlignment =
-		    AcpiExGenerateAccess(ObjDesc->CommonField.StartFieldBitOffset,
-		                         ObjDesc->CommonField.BitLength,
-		                         0xFFFFFFFF /* Temp until we pass RegionLength as parameter */);
+		        AcpiExGenerateAccess(ObjDesc->CommonField.StartFieldBitOffset,
+		                             ObjDesc->CommonField.BitLength,
+		                             0xFFFFFFFF /* Temp until we pass RegionLength as parameter */);
 		BitLength = ByteAlignment * 8;
 #endif
 
@@ -380,8 +372,7 @@ AcpiExDecodeFieldAccess(
 		return_UINT32(0);
 	}
 
-	if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD)
-	{
+	if (ObjDesc->Common.Type == ACPI_TYPE_BUFFER_FIELD) {
 		/*
 		 * BufferField access can be on any byte boundary, so the
 		 * ByteAlignment is always 1 byte -- regardless of any ByteAlignment
@@ -418,11 +409,11 @@ AcpiExDecodeFieldAccess(
 
 ACPI_STATUS
 AcpiExPrepCommonFieldObject(
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
-    UINT32                  FieldBitPosition,
-    UINT32                  FieldBitLength)
+        ACPI_OPERAND_OBJECT     *ObjDesc,
+        UINT8                   FieldFlags,
+        UINT8                   FieldAttribute,
+        UINT32                  FieldBitPosition,
+        UINT32                  FieldBitLength)
 {
 	UINT32                  AccessBitWidth;
 	UINT32                  ByteAlignment;
@@ -457,12 +448,10 @@ AcpiExPrepCommonFieldObject(
 	 * the same (equivalent) as the ByteAlignment.
 	 */
 	AccessBitWidth = AcpiExDecodeFieldAccess(
-	                     ObjDesc, FieldFlags, &ByteAlignment);
+	                         ObjDesc, FieldFlags, &ByteAlignment);
 
 	if (!AccessBitWidth)
-	{
 		return_ACPI_STATUS(AE_AML_OPERAND_VALUE);
-	}
 
 	/* Setup width (access granularity) fields (values are: 1, 2, 4, 8) */
 
@@ -480,7 +469,7 @@ AcpiExPrepCommonFieldObject(
 	 * region or buffer.
 	 */
 	NearestByteAddress =
-	    ACPI_ROUND_BITS_DOWN_TO_BYTES(FieldBitPosition);
+	        ACPI_ROUND_BITS_DOWN_TO_BYTES(FieldBitPosition);
 	ObjDesc->CommonField.BaseByteOffset = (UINT32)
 	                                      ACPI_ROUND_DOWN(NearestByteAddress, ByteAlignment);
 
@@ -489,7 +478,7 @@ AcpiExPrepCommonFieldObject(
 	 * a field datum.
 	 */
 	ObjDesc->CommonField.StartFieldBitOffset = (UINT8)
-	        (FieldBitPosition - ACPI_MUL_8(ObjDesc->CommonField.BaseByteOffset));
+	                (FieldBitPosition - ACPI_MUL_8(ObjDesc->CommonField.BaseByteOffset));
 
 	return_ACPI_STATUS(AE_OK);
 }
@@ -510,7 +499,7 @@ AcpiExPrepCommonFieldObject(
 
 ACPI_STATUS
 AcpiExPrepFieldValue(
-    ACPI_CREATE_FIELD_INFO  *Info)
+        ACPI_CREATE_FIELD_INFO  *Info)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_OPERAND_OBJECT     *SecondDesc = NULL;
@@ -524,18 +513,15 @@ AcpiExPrepFieldValue(
 
 	/* Parameter validation */
 
-	if (Info->FieldType != ACPI_TYPE_LOCAL_INDEX_FIELD)
-	{
-		if (!Info->RegionNode)
-		{
+	if (Info->FieldType != ACPI_TYPE_LOCAL_INDEX_FIELD) {
+		if (!Info->RegionNode) {
 			ACPI_ERROR((AE_INFO, "Null RegionNode"));
 			return_ACPI_STATUS(AE_AML_NO_OPERAND);
 		}
 
 		Type = AcpiNsGetType(Info->RegionNode);
 
-		if (Type != ACPI_TYPE_REGION)
-		{
+		if (Type != ACPI_TYPE_REGION) {
 			ACPI_ERROR((AE_INFO, "Needed Region, found type 0x%X (%s)",
 			            Type, AcpiUtGetTypeName(Type)));
 
@@ -548,9 +534,7 @@ AcpiExPrepFieldValue(
 	ObjDesc = AcpiUtCreateInternalObject(Info->FieldType);
 
 	if (!ObjDesc)
-	{
 		return_ACPI_STATUS(AE_NO_MEMORY);
-	}
 
 	/* Initialize areas of the object that are common to all fields */
 
@@ -559,16 +543,14 @@ AcpiExPrepFieldValue(
 	                                     Info->FieldFlags, Info->Attribute,
 	                                     Info->FieldBitPosition, Info->FieldBitLength);
 
-	if (ACPI_FAILURE(Status))
-	{
+	if (ACPI_FAILURE(Status)) {
 		AcpiUtDeleteObjectDesc(ObjDesc);
 		return_ACPI_STATUS(Status);
 	}
 
 	/* Initialize areas of the object that are specific to the field type */
 
-	switch (Info->FieldType)
-	{
+	switch (Info->FieldType) {
 	case ACPI_TYPE_LOCAL_REGION_FIELD:
 
 		ObjDesc->Field.RegionObj = AcpiNsGetAttachedObject(Info->RegionNode);
@@ -577,28 +559,23 @@ AcpiExPrepFieldValue(
 
 		ObjDesc->Field.AccessLength = Info->AccessLength;
 
-		if (Info->ConnectionNode)
-		{
+		if (Info->ConnectionNode) {
 			SecondDesc = Info->ConnectionNode->Object;
 
-			if (!(SecondDesc->Common.Flags & AOPOBJ_DATA_VALID))
-			{
+			if (!(SecondDesc->Common.Flags & AOPOBJ_DATA_VALID)) {
 				Status = AcpiDsGetBufferArguments(SecondDesc);
 
-				if (ACPI_FAILURE(Status))
-				{
+				if (ACPI_FAILURE(Status)) {
 					AcpiUtDeleteObjectDesc(ObjDesc);
 					return_ACPI_STATUS(Status);
 				}
 			}
 
 			ObjDesc->Field.ResourceBuffer =
-			    SecondDesc->Buffer.Pointer;
+			        SecondDesc->Buffer.Pointer;
 			ObjDesc->Field.ResourceLength =
-			    (UINT16) SecondDesc->Buffer.Length;
-		}
-		else if (Info->ResourceBuffer)
-		{
+			        (UINT16) SecondDesc->Buffer.Length;
+		} else if (Info->ResourceBuffer) {
 			ObjDesc->Field.ResourceBuffer = Info->ResourceBuffer;
 			ObjDesc->Field.ResourceLength = Info->ResourceLength;
 		}
@@ -608,17 +585,15 @@ AcpiExPrepFieldValue(
 		/* Allow full data read from EC address space */
 
 		if ((ObjDesc->Field.RegionObj->Region.SpaceId == ACPI_ADR_SPACE_EC) &&
-		        (ObjDesc->CommonField.BitLength > 8))
-		{
+		    (ObjDesc->CommonField.BitLength > 8)) {
 			AccessByteWidth = ACPI_ROUND_BITS_UP_TO_BYTES(
-			                      ObjDesc->CommonField.BitLength);
+			                          ObjDesc->CommonField.BitLength);
 
 			/* Maximum byte width supported is 255 */
 
-			if (AccessByteWidth < 256)
-			{
+			if (AccessByteWidth < 256) {
 				ObjDesc->CommonField.AccessByteWidth =
-				    (UINT8) AccessByteWidth;
+				        (UINT8) AccessByteWidth;
 			}
 		}
 
@@ -638,9 +613,9 @@ AcpiExPrepFieldValue(
 
 		ObjDesc->BankField.Value = Info->BankValue;
 		ObjDesc->BankField.RegionObj =
-		    AcpiNsGetAttachedObject(Info->RegionNode);
+		        AcpiNsGetAttachedObject(Info->RegionNode);
 		ObjDesc->BankField.BankObj =
-		    AcpiNsGetAttachedObject(Info->RegisterNode);
+		        AcpiNsGetAttachedObject(Info->RegisterNode);
 
 		/* An additional reference for the attached objects */
 
@@ -673,12 +648,11 @@ AcpiExPrepFieldValue(
 		/* Get the Index and Data registers */
 
 		ObjDesc->IndexField.IndexObj =
-		    AcpiNsGetAttachedObject(Info->RegisterNode);
+		        AcpiNsGetAttachedObject(Info->RegisterNode);
 		ObjDesc->IndexField.DataObj =
-		    AcpiNsGetAttachedObject(Info->DataRegisterNode);
+		        AcpiNsGetAttachedObject(Info->DataRegisterNode);
 
-		if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
-		{
+		if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj) {
 			ACPI_ERROR((AE_INFO, "Null Index Object during field prep"));
 			AcpiUtDeleteObjectDesc(ObjDesc);
 			return_ACPI_STATUS(AE_AML_INTERNAL);
@@ -707,8 +681,8 @@ AcpiExPrepFieldValue(
 		 *          ACPI_DIV_8 (Info->FieldBitPosition);
 		 */
 		ObjDesc->IndexField.Value = (UINT32) ACPI_ROUND_DOWN(
-		                                ACPI_DIV_8(Info->FieldBitPosition),
-		                                ObjDesc->IndexField.AccessByteWidth);
+		                                    ACPI_DIV_8(Info->FieldBitPosition),
+		                                    ObjDesc->IndexField.AccessByteWidth);
 
 		ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 		                  "IndexField: BitOff %X, Off %X, Value %X, "
@@ -733,7 +707,7 @@ AcpiExPrepFieldValue(
 	 * preserving the current type of that NamedObj.
 	 */
 	Status = AcpiNsAttachObject(
-	             Info->FieldNode, ObjDesc, AcpiNsGetType(Info->FieldNode));
+	                 Info->FieldNode, ObjDesc, AcpiNsGetType(Info->FieldNode));
 
 	ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 	                  "Set NamedObj %p [%4.4s], ObjDesc %p\n",

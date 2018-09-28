@@ -142,8 +142,8 @@ ACPI_MODULE_NAME("utids")
 
 ACPI_STATUS
 AcpiUtExecute_HID(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId)
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        ACPI_PNP_DEVICE_ID      **ReturnId)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_PNP_DEVICE_ID      *Hid;
@@ -158,28 +158,21 @@ AcpiUtExecute_HID(
 	                              ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Get the size of the String to be returned, includes null terminator */
 
 	if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
-	{
 		Length = ACPI_EISAID_STRING_SIZE;
-	}
 	else
-	{
 		Length = ObjDesc->String.Length + 1;
-	}
 
 	/* Allocate a buffer for the HID */
 
 	Hid = ACPI_ALLOCATE_ZEROED(
-	          sizeof(ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
+	              sizeof(ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
 
-	if (!Hid)
-	{
+	if (!Hid) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -191,13 +184,9 @@ AcpiUtExecute_HID(
 	/* Convert EISAID to a string or simply copy existing string */
 
 	if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
-	{
 		AcpiExEisaIdToString(Hid->String, ObjDesc->Integer.Value);
-	}
 	else
-	{
 		strcpy(Hid->String, ObjDesc->String.Pointer);
-	}
 
 	Hid->Length = Length;
 	*ReturnId = Hid;
@@ -232,8 +221,8 @@ Cleanup:
 
 ACPI_STATUS
 AcpiUtExecute_UID(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId)
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        ACPI_PNP_DEVICE_ID      **ReturnId)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_PNP_DEVICE_ID      *Uid;
@@ -248,28 +237,21 @@ AcpiUtExecute_UID(
 	                              ACPI_BTYPE_INTEGER | ACPI_BTYPE_STRING, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Get the size of the String to be returned, includes null terminator */
 
 	if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
-	{
 		Length = ACPI_MAX64_DECIMAL_DIGITS + 1;
-	}
 	else
-	{
 		Length = ObjDesc->String.Length + 1;
-	}
 
 	/* Allocate a buffer for the UID */
 
 	Uid = ACPI_ALLOCATE_ZEROED(
-	          sizeof(ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
+	              sizeof(ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
 
-	if (!Uid)
-	{
+	if (!Uid) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -281,13 +263,9 @@ AcpiUtExecute_UID(
 	/* Convert an Integer to string, or just copy an existing string */
 
 	if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
-	{
 		AcpiExIntegerToString(Uid->String, ObjDesc->Integer.Value);
-	}
 	else
-	{
 		strcpy(Uid->String, ObjDesc->String.Pointer);
-	}
 
 	Uid->Length = Length;
 	*ReturnId = Uid;
@@ -327,8 +305,8 @@ Cleanup:
 
 ACPI_STATUS
 AcpiUtExecute_CID(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID_LIST **ReturnCidList)
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        ACPI_PNP_DEVICE_ID_LIST **ReturnCidList)
 {
 	ACPI_OPERAND_OBJECT     **CidObjects;
 	ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -352,9 +330,7 @@ AcpiUtExecute_CID(
 	                              &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/*
 	 * Get the count and size of the returned _CIDs. _CID can return either
@@ -362,25 +338,20 @@ AcpiUtExecute_CID(
 	 * Note: This section also validates that all CID elements are of the
 	 * correct type (Integer or String).
 	 */
-	if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE)
-	{
+	if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE) {
 		Count = ObjDesc->Package.Count;
 		CidObjects = ObjDesc->Package.Elements;
-	}
-	else /* Single Integer or String CID */
-	{
+	} else { /* Single Integer or String CID */
 		Count = 1;
 		CidObjects = &ObjDesc;
 	}
 
 	StringAreaSize = 0;
 
-	for (i = 0; i < Count; i++)
-	{
+	for (i = 0; i < Count; i++) {
 		/* String lengths include null terminator */
 
-		switch (CidObjects[i]->Common.Type)
-		{
+		switch (CidObjects[i]->Common.Type) {
 		case ACPI_TYPE_INTEGER:
 
 			StringAreaSize += ACPI_EISAID_STRING_SIZE;
@@ -410,8 +381,7 @@ AcpiUtExecute_CID(
 
 	CidList = ACPI_ALLOCATE_ZEROED(CidListSize);
 
-	if (!CidList)
-	{
+	if (!CidList) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
@@ -423,18 +393,14 @@ AcpiUtExecute_CID(
 
 	/* Copy/convert the CIDs to the return buffer */
 
-	for (i = 0; i < Count; i++)
-	{
-		if (CidObjects[i]->Common.Type == ACPI_TYPE_INTEGER)
-		{
+	for (i = 0; i < Count; i++) {
+		if (CidObjects[i]->Common.Type == ACPI_TYPE_INTEGER) {
 			/* Convert the Integer (EISAID) CID to a string */
 
 			AcpiExEisaIdToString(
-			    NextIdString, CidObjects[i]->Integer.Value);
+			        NextIdString, CidObjects[i]->Integer.Value);
 			Length = ACPI_EISAID_STRING_SIZE;
-		}
-		else /* ACPI_TYPE_STRING */
-		{
+		} else { /* ACPI_TYPE_STRING */
 			/* Copy the String CID from the returned object */
 
 			strcpy(NextIdString, CidObjects[i]->String.Pointer);
@@ -483,8 +449,8 @@ Cleanup:
 
 ACPI_STATUS
 AcpiUtExecute_CLS(
-    ACPI_NAMESPACE_NODE     *DeviceNode,
-    ACPI_PNP_DEVICE_ID      **ReturnId)
+        ACPI_NAMESPACE_NODE     *DeviceNode,
+        ACPI_PNP_DEVICE_ID      **ReturnId)
 {
 	ACPI_OPERAND_OBJECT     *ObjDesc;
 	ACPI_OPERAND_OBJECT     **ClsObjects;
@@ -502,9 +468,7 @@ AcpiUtExecute_CLS(
 	                              ACPI_BTYPE_PACKAGE, &ObjDesc);
 
 	if (ACPI_FAILURE(Status))
-	{
 		return_ACPI_STATUS(Status);
-	}
 
 	/* Get the size of the String to be returned, includes null terminator */
 
@@ -512,31 +476,23 @@ AcpiUtExecute_CLS(
 	ClsObjects = ObjDesc->Package.Elements;
 	Count = ObjDesc->Package.Count;
 
-	if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE)
-	{
+	if (ObjDesc->Common.Type == ACPI_TYPE_PACKAGE) {
 		if (Count > 0 && ClsObjects[0]->Common.Type == ACPI_TYPE_INTEGER)
-		{
 			ClassCode[0] = (UINT8) ClsObjects[0]->Integer.Value;
-		}
 
 		if (Count > 1 && ClsObjects[1]->Common.Type == ACPI_TYPE_INTEGER)
-		{
 			ClassCode[1] = (UINT8) ClsObjects[1]->Integer.Value;
-		}
 
 		if (Count > 2 && ClsObjects[2]->Common.Type == ACPI_TYPE_INTEGER)
-		{
 			ClassCode[2] = (UINT8) ClsObjects[2]->Integer.Value;
-		}
 	}
 
 	/* Allocate a buffer for the CLS */
 
 	Cls = ACPI_ALLOCATE_ZEROED(
-	          sizeof(ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
+	              sizeof(ACPI_PNP_DEVICE_ID) + (ACPI_SIZE) Length);
 
-	if (!Cls)
-	{
+	if (!Cls) {
 		Status = AE_NO_MEMORY;
 		goto Cleanup;
 	}
