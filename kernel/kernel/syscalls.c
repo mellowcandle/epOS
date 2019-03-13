@@ -27,6 +27,8 @@
 
 #define DEBUG
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+
 #include <syscall.h>
 #include <errno.h>
 #include <stat.h>
@@ -37,9 +39,6 @@
 #include <lib/string.h>
 #include <cpu.h>
 #include <process.h>
-
-
-#define SYSCALLS_COUNT 18
 
 int syscall_exit(int ret)
 {
@@ -62,7 +61,6 @@ int syscall_open(char *file, int flags, int mode)
 	if (!strcmp(file, "/dev/console"))
 		return 1;
 	else
-
 		return 0;
 }
 
@@ -76,6 +74,7 @@ int syscall_read(int fd, char *buf, int len)
 int syscall_write(int fd, char *buf, int len)
 {
 	FUNC_ENTER();
+	pr_debug("+write() fd=%d len=%d\r\n", fd, len);
 
 	switch (fd) {
 	case 1:
@@ -234,7 +233,12 @@ int syscall_wait(int *status)
 	return -1;
 }
 
-static void *syscalls[SYSCALLS_COUNT] = {
+int syscall_dup(int fd)
+{
+	FUNC_ENTER();
+	return fd + 1;
+}
+static void *syscalls[] = {
 	&syscall_exit,
 	&syscall_close,
 	&syscall_execve,
@@ -252,7 +256,8 @@ static void *syscalls[SYSCALLS_COUNT] = {
 	&syscall_times,
 	&syscall_unlink,
 	&syscall_wait,
-	&syscall_write
+	&syscall_write,
+	&syscall_dup,
 };
 
 static void syscall_handler(registers_t *regs)
@@ -262,7 +267,7 @@ static void syscall_handler(registers_t *regs)
 
 	pr_debug("syscall handler: %u\r\n", regs->eax);
 
-	if (regs->eax >= SYSCALLS_COUNT)
+	if (regs->eax >= ARRAY_SIZE(syscalls))
 		return;
 
 	save_registers(current, regs);
@@ -290,9 +295,8 @@ static void syscall_handler(registers_t *regs)
 	switch_to_task(current);
 
 }
+
 void init_syscalls()
 {
 	register_interrupt_handler(0x40, &syscall_handler);
 }
-
-

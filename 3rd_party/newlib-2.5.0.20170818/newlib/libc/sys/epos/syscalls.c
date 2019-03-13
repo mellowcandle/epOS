@@ -28,7 +28,8 @@ DEFN_SYSCALL1(times, 14, struct tms *)
 DEFN_SYSCALL1(unlink, 15, char *)
 DEFN_SYSCALL1(wait, 16, int *)
 DEFN_SYSCALL3(write, 17, int, char *, int)
-DEFN_SYSCALL2(gettimeofday, 18, struct timeval *, void *);
+DEFN_SYSCALL2(gettimeofday, 18, struct timeval *, void *)
+DEFN_SYSCALL1(dup, 19, int);
 
 void _exit(int ret)
 {
@@ -99,6 +100,11 @@ int open(const char *name, int flags, ...)
 	} else if (result < 0) {
 		errno = -result;
 	}
+}
+
+int dup(int fd)
+{
+	return syscall_dup(fd);
 }
 
 int read(int file, char *ptr, int len)
