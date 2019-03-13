@@ -4,7 +4,7 @@ branches:
   - coverity_scan
 language: c
 compiler: gcc
-dist: trusty
+dist: xenial
 sudo: true
 script:
   - ./prepare.sh
