@@ -55,7 +55,7 @@ static void mmodules_run(multiboot_module_t *module)
 //	pages_count = divide_up(pages_count, PAGE_SIZE);
 	init_ramfs(module->mod_start, module->mod_end - module->mod_start);
 
-	if (ramfs_find_node("./bin/test1", &tar_header)) {
+	if (ramfs_find_node("./bin/init", &tar_header)) {
 		pr_fatal("Can't find init process...\r\n");
 
 		while (1);

@@ -86,7 +86,7 @@ clean:
 overlay: apps
 	@echo "Preparing RAMFS:"
 	@mkdir -p overlay/bin
-	@cp apps/test1 overlay/bin/test1
+	@cp apps/init overlay/bin/init
 #	@cp apps/test2 overlay/bin/test2
 #	@tar cvf rootfs.tar -C ${EPOS_SYSROOT} .
 	@tar cvf rootfs.tar -C overlay .

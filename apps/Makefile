@@ -32,9 +32,9 @@ WARNINGS := -Wall -Wextra -Wno-unused-value -Wno-unused-parameter
 CFLAGS := -std=gnu99  -fno-stack-protector -c -g --sysroot=${EPOS_SYSROOT}
 INCLUDES := -I../libc -I../kernel/include/uapi
 
-all: test1
+all: init
 
-OBJFILES := test1.o
+OBJFILES := init.o
 OBJFILES2 := test2.o
 
 .c.o:
@@ -45,7 +45,7 @@ OBJFILES2 := test2.o
 	@echo "(AS) $@"
 	@$(ASM) -f elf -o $@ $<
 
-test1: $(OBJFILES)
+init: $(OBJFILES)
 	$(CC) --sysroot=${EPOS_SYSROOT} -Wl,-Map=program.map  -o $@ $^  # emulate 32 bits ELF, the binary output is specified
 test2: $(OBJFILES2)
 	$(CC) -T linker.ld -Wl,-Map=program.map -L../libc -ffreestanding -nostdlib -lc -o $@ $^ ../libc/libc.a $(TOOLCHAIN_PATH)/lib/gcc/i686-elf/4.9.1/libgcc.a # emulate 32 bits ELF, the binary output is specified
