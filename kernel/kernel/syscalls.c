@@ -27,8 +27,7 @@
 
 #define DEBUG
 
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-
+#include <file.h>
 #include <syscall.h>
 #include <errno.h>
 #include <stat.h>
@@ -56,44 +55,89 @@ int syscall_exit(int ret)
 
 int syscall_open(char *file, int flags, int mode)
 {
+	struct file *filp;
+	int rc;
+
 	FUNC_ENTER();
 
-	if (!strcmp(file, "/dev/console"))
-		return 1;
+	filp = kmalloc(sizeof(*filp));
+	if (!filp)
+		return -ENOMEM;
+
+	if (!strncmp(file, "/dev/", 5)) {
+		filp->f_ops = &devfs_fops;
+		rc = devfs_bind(&file[5], filp);
+	}
 	else
-		return 0;
+		;
+//		filp->f_ops = &ramfs_fops;
+
+
+	if (rc) {
+		kfree(filp);
+		return rc;
+	}
+
+	rc = filp->f_ops->open(NULL, filp);
+	if (rc) {
+		kfree(filp);
+		return rc;
+	}
+
+	filp->fd = get_next_fd(filp);
+	if (filp->fd < 0)
+		kfree(filp);
+
+	return filp->fd;
 }
 
 int syscall_read(int fd, char *buf, int len)
 {
+	struct file *file;
+
 	FUNC_ENTER();
 
-	return 0;
+	file = get_file_from_fd(fd);
+	if (!file)
+		return -ENOENT;
+
+	if (file->f_ops->read)
+		return file->f_ops->read(file, buf, len, &file->offset);
+
+	return -EPERM;
 }
 
 int syscall_write(int fd, char *buf, int len)
 {
+	struct file *file;
+
 	FUNC_ENTER();
 	pr_debug("+write() fd=%d len=%d\r\n", fd, len);
 
-	switch (fd) {
-	case 1:
-	case 2:
-		printk("%s", buf);
-		break;
-	default:
-		break;
-	}
+	file = get_file_from_fd(fd);
+	if (!file)
+		return -ENOENT;
 
-	return len;
+	if (file->f_ops->write)
+		return file->f_ops->write(file, buf, len, &file->offset);
+
+	return -EPERM;
 }
 
-
-
-int syscall_close(int file)
+int syscall_close(int fd)
 {
-	pr_debug("+syscall_close: file: %d\r\n", file);
-	return 0;
+	struct file *file;
+
+	FUNC_ENTER();
+
+	file = get_file_from_fd(fd);
+	if (!file)
+		return -ENOENT;
+
+	if (file->f_ops->release)
+		return file->f_ops->release(NULL, file);
+
+	return -EPERM;
 }
 
 int syscall_execve(char *name, char **argv, char **env)
@@ -153,10 +197,20 @@ int syscall_link(char *old, char *new)
 	return -1;
 }
 
-int syscall_lseek(int file, int ptr, int dir)
+int syscall_lseek(int fd, int ptr, int dir)
 {
+	struct file *filp;
+
 	FUNC_ENTER();
-	return 0;
+
+	filp = get_file_from_fd(fd);
+	if (!filp)
+		return -ENOENT;
+
+	if (filp->f_ops->llseek)
+		return filp->f_ops->llseek(filp, ptr, dir);
+
+	return -EPERM;
 }
 
 int syscall_sbrk(int incr)
@@ -235,9 +289,27 @@ int syscall_wait(int *status)
 
 int syscall_dup(int fd)
 {
-	FUNC_ENTER();
-	return fd + 1;
+	struct file *file;
+
+	file = get_file_from_fd(fd);
+	if (!file)
+		return -EBADF;
+
+	return get_next_fd(file);
 }
+
+int syscall_dup2(int fd1, int fd2)
+{
+	struct file *file;
+
+	file = get_file_from_fd(fd1);
+	if (!file)
+		return -EBADF;
+
+	return set_fd(file, fd2);
+}
+
+
 static void *syscalls[] = {
 	&syscall_exit,
 	&syscall_close,
@@ -258,6 +330,7 @@ static void *syscalls[] = {
 	&syscall_wait,
 	&syscall_write,
 	&syscall_dup,
+	&syscall_dup2,
 };
 
 static void syscall_handler(registers_t *regs)

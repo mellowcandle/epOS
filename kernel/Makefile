@@ -33,7 +33,7 @@ ASM     = nasm
 
 CFLAGS := -g -std=gnu99 -nostdlib -ffreestanding -fstack-protector-strong $(WARNINGS)
 
-PROJDIRS := include kernel lib boot drivers mem arch
+PROJDIRS := include kernel lib boot drivers mem arch fs
 
 INCLUDES := -Iinclude -Iarch/x86/include -Idrivers/include -Iinclude/uapi
 SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.c")

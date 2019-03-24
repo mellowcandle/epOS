@@ -36,6 +36,8 @@
 struct multiboot_info;
 typedef struct multiboot_info multiboot_info_t;
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+
 #define MAX(_x, _y) (((_x) > (_y)) ? (_x) : (_y))
 #define MIN(_x, _y) (((_x) < (_y)) ? (_x) : (_y))
 #define BETWEEN(a, b, c) \

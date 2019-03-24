@@ -24,7 +24,7 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-#define DEBUG
+//#define DEBUG
 
 #include <process.h>
 #include <lib/list.h>

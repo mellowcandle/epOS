@@ -30,6 +30,7 @@ DEFN_SYSCALL1(wait, 16, int *)
 DEFN_SYSCALL3(write, 17, int, char *, int)
 DEFN_SYSCALL2(gettimeofday, 18, struct timeval *, void *)
 DEFN_SYSCALL1(dup, 19, int);
+DEFN_SYSCALL2(dup2, 20, int, int);
 
 void _exit(int ret)
 {
@@ -105,6 +106,11 @@ int open(const char *name, int flags, ...)
 int dup(int fd)
 {
 	return syscall_dup(fd);
+}
+
+int dup2(int fd, int fd2)
+{
+	return syscall_dup2(fd, fd2);
 }
 
 int read(int file, char *ptr, int len)

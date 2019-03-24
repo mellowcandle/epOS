@@ -24,18 +24,58 @@
 
 	For more information, please refer to <http://unlicense.org>
 */
-//#define DEBUG
+#define DEBUG
 
 #include <tar.h>
 #include <lib/list.h>
 #include <kmalloc.h>
 #include <printk.h>
 #include <lib/string.h>
+#include <file.h>
 
 #define TAR_BLOCK_SIZE 512
 #define BLOCK_MASK (~(TAR_BLOCK_SIZE-1))
 #define BLOCK_ALIGN_UP(_x) (((_x)+TAR_BLOCK_SIZE - 1) & BLOCK_MASK)
 
+static off_t ramfs_llseek(struct file *filp, off_t off, int flags)
+{
+	FUNC_ENTER();
+	return 0;
+}
+
+static size_t ramfs_read(struct file *filp, char *buf, size_t size, off_t *offset)
+{
+	FUNC_ENTER();
+	return 0;
+}
+
+static long ramfs_ioctl(struct file *filp, unsigned int ctl, unsigned long arg)
+{
+	FUNC_ENTER();
+	return 0;
+}
+
+static int ramfs_open(struct inode *inode, struct file *filp)
+{
+	FUNC_ENTER();
+	return 0;
+}
+
+static int ramfs_release(struct inode *inode, struct file *filp)
+{
+	FUNC_ENTER();
+	return 0;
+}
+
+const struct file_ops ramfs_fops = {
+	.llseek = ramfs_llseek,
+	.read = ramfs_read,
+	.write = NULL,
+	.flush = NULL,
+	.ioctl = ramfs_ioctl,
+	.open = ramfs_open,
+	.release = ramfs_release,
+};
 
 static LIST(ramfs_headers);
 typedef struct {

@@ -1,5 +1,5 @@
 
-//#define DEBUG
+#define DEBUG
 
 #include <acpica/acpi.h>
 #include <kmalloc.h>
@@ -7,6 +7,8 @@
 #include <mem/memory.h>
 #include <bits.h>
 #include <cpu.h>
+#include <spinlock.h>
+
 static heap_t acpi_heap;
 
 ACPI_STATUS AcpiOsInitialize()
@@ -172,6 +174,8 @@ ACPI_STATUS AcpiOsSignalSemaphore(ACPI_SEMAPHORE Handle, UINT32 Units)
 ACPI_STATUS AcpiOsCreateLock(ACPI_SPINLOCK *OutHandle)
 {
 	FUNC_ENTER();
+	spinlock *lock = (spinlock *)OutHandle;
+	*lock = 0;
 	return 0;
 }
 
@@ -183,12 +187,14 @@ void AcpiOsDeleteLock(ACPI_HANDLE Handle)
 ACPI_CPU_FLAGS AcpiOsAcquireLock(ACPI_SPINLOCK Handle)
 {
 	FUNC_ENTER();
+	spin_lock((spinlock *)Handle);
 	return 0;
 }
 
 void AcpiOsReleaseLock(ACPI_SPINLOCK Handle, ACPI_CPU_FLAGS Flags)
 {
 	FUNC_ENTER();
+	spin_unlock((spinlock *)Handle);
 }
 ACPI_STATUS AcpiOsInstallInterruptHandler(UINT32 InterruptLevel, ACPI_OSD_HANDLER Handler,
                 void *Context)

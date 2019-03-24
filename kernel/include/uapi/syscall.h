@@ -109,4 +109,5 @@ DECL_SYSCALL1(wait, int *)
 DECL_SYSCALL3(write, int, char *, int)
 DECL_SYSCALL2(gettimeofday, struct timeval *, void *)
 DECL_SYSCALL1(dup, int)
+DECL_SYSCALL2(dup2, int, int)
 #endif /* end of include guard: SYSCALL_H_M6WW51RJ */

@@ -187,4 +187,42 @@ static inline void cpu_relax()
 	__asm volatile("hlt");
 }
 
+/* Compile read-write barrier */
+#define wmb() asm volatile("": : :"memory")
+
+/* Pause instruction to prevent excess processor bus usage */
+#define cpu_relax() asm volatile("pause\n": : :"memory")
+
+static inline unsigned xchg_32(void *ptr, unsigned x)
+{
+	__asm volatile("xchgl %0,%1"
+				:"=r" ((unsigned) x)
+				:"m" (*(volatile unsigned *)ptr), "0" (x)
+				:"memory");
+
+	return x;
+}
+
+static inline unsigned short xchg_16(void *ptr, unsigned short x)
+{
+	__asm volatile("xchgw %0,%1"
+				:"=r" ((unsigned short) x)
+				:"m" (*(volatile unsigned short *)ptr), "0" (x)
+				:"memory");
+
+	return x;
+}
+
+/* Test and set a bit */
+static inline char atomic_bitsetandtest(void *ptr, int x)
+{
+	char out;
+	__asm volatile("lock; bts %2,%1\n"
+						"sbb %0,%0\n"
+				:"=r" (out), "=m" (*(volatile long long *)ptr)
+				:"Ir" (x)
+				:"memory");
+
+	return out;
+}
 #endif /* CPU_H_ */
